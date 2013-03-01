@@ -1,0 +1,112 @@
+
+<Report>
+   <Author>Fredy Ramirez</Author>
+   <Description>Report test</Description>
+
+   <ReportParameters>
+      <ReportParameter>
+         <Name>parameter_1</Name>
+         <DataType>String</DataType>
+      </ReportParameter>
+      <ReportParameter>
+         <Name>parameter_2</Name>
+         <DataType>String</DataType>
+      </ReportParameter>
+   </ReportParameters>
+
+  <Body>
+    <Height>249.8pt</Height>
+    <ReportItems>
+      <Line>
+        <Name>Line2</Name>
+        <Height>17.31pt</Height>
+        <Width>288.28pt</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <BorderColor>
+            <Default>Blue</Default>
+          </BorderColor>
+          <BorderWidth>
+            <Default>5pt</Default>
+          </BorderWidth>
+        </Style>
+        <Left>37.4pt</Left>
+        <Top>15.5pt</Top>
+      </Line>
+      <Line>
+        <Name>Line3</Name>
+        <Height>-42.15pt</Height>
+        <Width>144.55pt</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <BorderColor>
+            <Default>Green</Default>
+          </BorderColor>
+          <BorderWidth>
+            <Default>5pt</Default>
+          </BorderWidth>
+        </Style>
+        <Left>319.19pt</Left>
+        <Top>71.69pt</Top>
+      </Line>
+      <Line>
+        <Name>Line5</Name>
+        <Height>-0.02pt</Height>
+        <Width>295.93pt</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Dotted</Default>
+          </BorderStyle>
+          <BorderColor>
+            <Default>Black</Default>
+          </BorderColor>
+          <BorderWidth>
+            <Default>3pt</Default>
+          </BorderWidth>
+        </Style>
+        <Left>132.50pt</Left>
+        <Top>122.88pt</Top>
+      </Line>
+
+      <Rectangle>
+        <Name>Rectangle1</Name>
+        <Height>108.41pt</Height>
+        <Width>108.41pt</Width>
+        <Left>29.2pt</Left>
+        <Top>169.4pt</Top>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+            <Left>Solid</Left>
+            <Right>Solid</Right>
+            <Top>Solid</Top>
+            <Bottom>None</Bottom>
+          </BorderStyle>
+
+          <BorderColor>
+            <Default>Yellow</Default>
+            <Top>Blue</Top>
+          </BorderColor>
+
+          <BorderWidth>
+            <Default>2pt</Default>
+            <Left>2pt</Left>
+            <Right>2pt</Right>
+            <Top>2pt</Top>
+            <Bottom>2pt</Bottom>
+          </BorderWidth>
+          <BackgroundColor>Pink</BackgroundColor>
+        </Style>
+        <ZIndex>1</ZIndex>
+      </Rectangle>
+
+    </ReportItems>
+    <Columns>1</Columns>
+  </Body>
+
+</Report>
+

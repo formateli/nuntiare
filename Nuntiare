@@ -1,0 +1,157 @@
+#!/usr/bin/python
+
+# This file is part of Nuntiare project. 
+# The COPYRIGHT file at the top level of this repository 
+# contains the full copyright notices and license terms.
+
+__appname__='Nuntiare command line tool'
+
+import sys
+import os
+import logging
+from nuntiare import __version__, __copyright__, __license__
+from nuntiare.tools import get_parameters_from_string
+from nuntiare.report import Report
+from nuntiare.render import get_render
+
+logging.basicConfig(filename='Nuntiare.log',level=logging.DEBUG)
+logger = logging.getLogger('App')
+
+def write_help_spacing(s1, s2):
+    total_space=35
+    if s1==None:
+        space = ' ' * total_space
+        result = space + s2
+    else:
+        space = ' ' * (total_space - len(s1))
+        result = s1 + space + s2
+    print result
+
+def show_head():
+    print "{0} version {1}".format(__appname__, __version__)
+    print " Copyright {0}".format(__copyright__)
+    print " Licensed under {0}".format(__license__)
+
+def show_license():
+    show_head()
+    print ""
+    print "Nuntiare comes with ABSOLUTELY NO WARRANTY. This is free software,"
+    print "and you are welcome to redistribute it under certain conditions."
+    print ""
+    print "For help, Nuntiare -?"
+    print ""
+
+def show_help():
+    show_head()
+    print ""
+    print "Runs a xml report definition file and renders it for each specified type."
+    print "Usage:"
+    print "Nuntiare [OPTION...]"
+    print "   Ex: ./Nuntiare -f report.xml -r pdf,csv --compress --overwrite-false"
+    print ""
+
+    print "Options:"			
+    write_help_spacing("-f, --file F1[, F2, Fn]", "List of xml report definition files to process. Ex. -f file1.xml,file2.xml")
+    write_help_spacing(None, "Report parameters can be passed using '?' after the file.")
+    write_help_spacing(None, "Multiple report parameters are separated by '+'.")
+    write_help_spacing(None, "Ex: -f file1.xml?parm1=XYZ Inc.+parm2=1000")
+    write_help_spacing("-o, --output NAME", "Output file name without extension. Default: xml report definition file name")
+    write_help_spacing("-d, --directory PATH", "Where output file will be located. Default: execution dir.")
+    write_help_spacing("-r, --render R1[, R2, Rn]", "List of render types to be processed for report definition files.")
+    write_help_spacing(None, "Ex: html,pdf,csv,reader. See Nuntiare.cfg for definitions.")
+    write_help_spacing("--overwrite-false", "Do not overwrite resulting file. Default: True")
+    write_help_spacing("-c, --compress", "Compress resulting files.")
+    write_help_spacing("-l, --license", "Shows license and warranty.")
+    write_help_spacing("-?, -h, --help", "Shows this help. Others parameters will be ommited.")
+    print ""
+
+def error_with_log(error):
+    print ""
+    logger.error(error)
+    print error
+    sys.exit()
+
+def do_render(files, render_list, dir_path):
+    for f in files:
+        info = get_parameters_from_string(f)
+        filename=info['file']           
+        filename=os.path.join(dir_path, filename)
+        if not os.path.exists(filename):
+            logger.warn("File '{0}' does not exist.".format(filename))
+            continue
+        logger.debug("Processing report definition file '{0}'".format(filename))
+
+        for key, value in info['parameters'].items() :
+            logger.debug("  Parameter '{0}' = '{1}'".format(key, value))
+        
+        #TODO try exception
+        report = Report(filename, parameters=info['parameters'])
+
+        for r in render_list:
+            logger.info("Rendering to '{0}'".format(r))
+            render = get_render(r)
+            render.render(report)
+
+if len(sys.argv)==1:
+    show_help()
+    sys.exit()
+
+arguments={}
+i=1
+while i < len(sys.argv):
+    val=None
+    if sys.argv[i].startswith("-"):
+        key = sys.argv[i].strip().lower()
+        if i < len(sys.argv) - 1 and not sys.argv[i+1].startswith("-"):
+            val = sys.argv[i+1]
+            i=i+1
+        arguments[key]=val
+    else:
+        error_with_log("ERROR: Invalid argument format near '{0}'. Run --help for more information.".format(sys.argv[i]))
+    i=i+1
+
+files=None
+render=None
+output_name=None
+dir_path=None
+compress=False
+overwrite = True
+for key, value in arguments.items():
+    if key== "-f" or key=="--file":
+        if value != None:
+            files = value.split(',')
+    elif key== "-r" or key=="--render":
+        if value != None:
+            render = value.split(',')
+    elif key== "-o" or key=="--output":
+        output_name = value
+    elif key== "-d" or key=="--directory":
+        dir_path = value
+    elif key== "-c" or key=="--compress":
+        compress=True
+    elif key== "--overwrite-false":
+        overwrite = False
+    elif key== "-l" or key=="--license":
+        show_license()
+    elif key== "-h" or key=="-?" or key=="--help":
+        show_help()
+        sys.exit()
+    else:
+        error_with_log("ERROR: Unknown parameter '{0}'".format(key))
+
+if not files:
+    error_with_log("No xml report definition file to process. -f parameter is required.")
+if not render:
+    error_with_log("No render type to process. -r parameter is required.")
+if not dir_path:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+do_render(files, render, dir_path)
+
+
+
+
+
+
+
+

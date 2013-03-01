@@ -1,0 +1,20 @@
+
+Nuntiare (reporte en latin), es un proyecto que implementa una adaptacion de las especifiaciones RDL (Report Definition Language), escrito en Python.
+
+El proyecto consta de las siguientes partes:
+   - Nuntiare module: Libreria en la cual se valida y compila los reportes definidos en archivos xml, para su posterior manipulacion, usualmente para presentarlo en formatos especificos (html, pdf, xls, csv, etc)
+   - Nuntiare.Designer: Diseñador de reportes
+   - Nuntiare.Command -  Herramienta de la linea de comando para manipular reportes
+   - Renders basicos:
+      - Nuntiare.Reader: Presenta los reportes con opcion de modificar los parametros, desde aqui se puede exportar el reporte a otro formato.
+      - Nuntiare.printer
+      - Nuntiare.pdf
+      - Nuntiare.csv
+
+
+- TODO:
+   - DataProviders
+      - xml
+      - csv
+      - API 2.0 database
+   - Tests
