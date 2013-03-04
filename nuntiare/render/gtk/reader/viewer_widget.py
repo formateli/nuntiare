@@ -4,7 +4,7 @@
 
 import gtk
 from decimal import Decimal
-from nuntiare.pages.page_item import PageLine, PageRectangle, ColorItem
+from nuntiare.pages.page_item import PageLine, PageRectangle, ColorItem, SizeItem, BorderStyleItem
 
 # A Gtk widget that shows rendered pages in a form.
 
@@ -45,9 +45,6 @@ class ViewerWidget(gtk.ScrolledWindow):
 
     def draw_figure(self, it, curr_info, cr):
         if isinstance(it, PageLine):
-            if not it.style.border_color or not it.style.border_color.default:
-                # Nothing to draw
-                return curr_info
             curr_info = self.draw_line(cr, curr_info, 
                             None, it.style.border_color.default, 
                             None, it.style.border_style.default, 
@@ -153,7 +150,7 @@ class ViewerWidget(gtk.ScrolledWindow):
                 return st
 
         # TODO - for now, only resolve to 'Dotted' for others than None or Solid
-        cr.set_dash([5.0])        
+        cr.set_dash([5.0])
         return st
 
     def set_curr_border_width(self, curr_border_width, new_border_width, cr):

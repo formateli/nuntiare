@@ -9,7 +9,7 @@ class PageItem(object):
         self.height = report_item.get_element("Height").value()
         self.width = report_item.get_element("Width").value()
 
-        self.style = StyleItem(report_item.get_element("Style"))
+        self.style = StyleItem(get_element(report_item, "Style"))
 
 
 class PageLine(PageItem):
@@ -24,20 +24,20 @@ class PageRectangle(PageItem):
 
 class StyleItem(object):
     def __init__(self, style):
-        self.border_color = BorderColor(style.get_element("BorderColor"))
-        self.border_style = BorderStyle(style.get_element("BorderStyle"))
-        self.border_width = BorderWidth(style.get_element("BorderWidth"))
-        self.background_color = get_color(style.get_element("BackgroundColor"))
+        self.border_color = BorderColor(get_element(style, "BorderColor"))
+        self.border_style = BorderStyle(get_element(style, "BorderStyle"))
+        self.border_width = BorderWidth(get_element(style, "BorderWidth"))
+        self.background_color = get_color(get_element(style, "BackgroundColor"))
 
 
 class BorderInfo(object):
     def __init__(self, element):
         # get element definition
-        self.default = element.get_element('Default')
-        self.left = element.get_element('Left')
-        self.right = element.get_element('Right')
-        self.top = element.get_element('Top')
-        self.bottom = element.get_element('Bottom')
+        self.default = get_element(element, 'Default')
+        self.left = get_element(element, 'Left')
+        self.right = get_element(element, 'Right')
+        self.top = get_element(element, 'Top')
+        self.bottom = get_element(element, 'Bottom')
 
 
 class BorderColor(BorderInfo):
@@ -114,12 +114,18 @@ class SizeItem(object):
         if size:
             self.value = size.value() 
 
+def get_element(element, element_name):
+    el = None
+    if element:
+        el = element.get_element(element_name)
+    return el
+
 def get_color(el):
     if not el:
         return None 
     return ColorItem(el)
 
-def get_border_style(el):    
+def get_border_style(el):
     if not el:
         return None 
     return BorderStyleItem(el)

@@ -55,9 +55,12 @@
         <Height>-42.15pt</Height>
         <Width>144.55pt</Width>
         <Style>
+
+<!-- If none, default BorderStyle must be Solid
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
+-->
           <BorderColor>
             <Default>Green</Default>
           </BorderColor>
@@ -76,9 +79,11 @@
           <BorderStyle>
             <Default>Dotted</Default>
           </BorderStyle>
+<!-- If none, default BorderColor must be black
           <BorderColor>
             <Default>Black</Default>
           </BorderColor>
+-->
           <BorderWidth>
             <Default>3pt</Default>
           </BorderWidth>
