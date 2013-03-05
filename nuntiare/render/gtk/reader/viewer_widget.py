@@ -15,16 +15,13 @@ class ViewerWidget(gtk.ScrolledWindow):
     def __init__(self, report):
         super(ViewerWidget, self).__init__()
 
+        self.report = report
+
         self.set_border_width(10)
         self.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
 
-        self.report = report
-        self.width = self.Mm2Dot(report.get_element('PageWidth').value())
-        self.height = self.Mm2Dot(report.get_element('PageHeight').value())
-        self.margin_left = self.Mm2Dot(report.get_element('LeftMargin').value())
-        self.margin_right = self.Mm2Dot(report.get_element('RightMargin').value())
-        self.margin_top = self.Mm2Dot(report.get_element('TopMargin').value())
-        self.margin_bottom = self.Mm2Dot(report.get_element('BottomMargin').value())
+        self.width = self.Mm2Dot(report.pages.width)
+        self.height = self.Mm2Dot(report.pages.height)
 
         darea = gtk.DrawingArea()
         darea.set_size_request(1000, 1000)
@@ -36,7 +33,7 @@ class ViewerWidget(gtk.ScrolledWindow):
     def expose(self, widget, event):
         cr = widget.window.cairo_create()
 
-        for pg in self.report.pages:
+        for pg in self.report.pages.pages:
             curr_info = self.draw_blank_page(cr)
 
             for it in pg.page_items:
