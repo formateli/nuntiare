@@ -5,7 +5,7 @@
 from nuntiare import logger
 
 def get_xml_tag_value(node):
-    'Returns the valid value of node'
+    'Returns the valid value of xml node'
     xml_str = node.toxml() 
     start = xml_str.find('>')
     if start == -1:
@@ -56,6 +56,21 @@ def raise_error_with_log(message, error_type=None):
         raise ValueError(message)
     raise ValueError(message)
 
+def get_element_value_or_default(element, default):
+    '''
+    Gets the value of a report element or the its default value 
+    '''
+    if not element:
+        return default
+    value = element.value()
+    if not value:
+        return default
+    return value
 
+def inch_2_mm(inch):
+    '''
+    Converts inches to millimeters
+    '''
+    return inch * 25.4
 
 
