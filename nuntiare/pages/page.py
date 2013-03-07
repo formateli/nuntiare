@@ -19,31 +19,44 @@ class Pages(object):
         self.margin_right = get_value(report.get_element("RightMargin"), 0)
         self.margin_bottom = get_value(report.get_element("BottomMargin"), 0)
 
-        self.header = HeaderFooterInfo(report.get_element("PageHeader"))
-        self.footer = HeaderFooterInfo(report.get_element("PageFooter"))
+        self.header = HeaderInfo(report.get_element("PageHeader"))
+        self.footer = FooterInfo(report.get_element("PageFooter"))
         self.body = BodyInfo(report.get_element("Body"))
 
     def build_pages(self):
         last_page = False
         while not last_page:
             pg = Page()
-            self.run_section(self.header.definition, pg)
-            self.run_section(self.footer.definition, pg)
-            last_page = self.run_section(self.body.definition, pg)
+            last_page = self.run_section(self.body, pg)
             pg.page_number = len(self.pages) + 1
             self.add_page(pg)
 
+        # Run Header and footer 
+        for page in self.pages:
+            self.run_section(self.header, page)
+            self.run_section(self.footer, page)
+
     def run_section(self, section, page):
         last_page = True
-        if not section:
+        if not section.definition:
             return last_page
-        items = section.get_element("ReportItems")
+
+        if isinstance(section, HeaderInfo):
+            top = self.margin_top
+        elif isinstance(section, BodyInfo):
+            top = self.margin_top + self.header.height
+        elif isinstance(section, FooterInfo):
+            top = self.height - self.margin_bottom - self.footer.height
+        else: 
+            raise_error_with_log('Unknown section type {0}'.format(str(section)))
+
+        items = section.definition.get_element("ReportItems")
         for name, it in items.reportitems_list.items():
             page_item = None
             if isinstance(it, Line):
-                page_item = PageLine(it)    
+                page_item = PageLine(it, top, self.margin_left)
             if isinstance(it, Rectangle):
-                page_item = PageRectangle(it)
+                page_item = PageRectangle(it, top, self.margin_left)
             page.add_page_item(page_item)
 
         return last_page
@@ -72,6 +85,13 @@ class HeaderFooterInfo(object):
             self.print_on_first_page = get_value(element.get_element("PrintOnFirstPage"), False)
             self.print_on_last_page = get_value(element.get_element("PrintOnLastPage"), False)
 
+class HeaderInfo(HeaderFooterInfo):
+    def __init__(self, element):
+        super(HeaderInfo, self).__init__(element)
+
+class FooterInfo(HeaderFooterInfo):
+    def __init__(self, element):
+        super(FooterInfo, self).__init__(element)
 
 class BodyInfo(object):
     def __init__(self, element):

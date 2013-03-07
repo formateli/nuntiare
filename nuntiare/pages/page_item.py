@@ -3,9 +3,9 @@
 # contains the full copyright notices and license terms.
 
 class PageItem(object):
-    def __init__(self, report_item):
-        self.top = report_item.get_element("Top").value()
-        self.left = report_item.get_element("Left").value()
+    def __init__(self, report_item, parent_top, parent_left):
+        self.top = report_item.get_element("Top").value() + parent_top
+        self.left = report_item.get_element("Left").value() + parent_left
         self.height = report_item.get_element("Height").value()
         self.width = report_item.get_element("Width").value()
 
@@ -13,13 +13,13 @@ class PageItem(object):
 
 
 class PageLine(PageItem):
-    def __init__(self, report_item):
-        super(PageLine, self).__init__(report_item)
+    def __init__(self, report_item, parent_top, parent_left):
+        super(PageLine, self).__init__(report_item, parent_top, parent_left)
 
 
 class PageRectangle(PageItem):
-    def __init__(self, report_item):
-        super(PageRectangle, self).__init__(report_item)
+    def __init__(self, report_item, parent_top, parent_left):
+        super(PageRectangle, self).__init__(report_item, parent_top, parent_left)
 
 
 class StyleItem(object):
