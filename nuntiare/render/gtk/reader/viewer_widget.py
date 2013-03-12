@@ -4,7 +4,8 @@
 
 import gtk
 from decimal import Decimal
-from nuntiare.pages.page_item import PageLine, PageRectangle, ColorItem, SizeItem, BorderStyleItem
+from nuntiare.pages.page_item import PageLine, PageRectangle
+from nuntiare.pages.style import StyleItem
 
 # A Gtk widget that shows rendered pages in a form.
 
@@ -43,9 +44,9 @@ class ViewerWidget(gtk.ScrolledWindow):
     def draw_figure(self, it, curr_info, cr):
         if isinstance(it, PageLine):
             curr_info = self.draw_line(cr, curr_info, 
-                            None, it.style.border_color.default, 
-                            None, it.style.border_style.default, 
-                            None, it.style.border_width.default, 
+                            it.style.border_color.default, 
+                            it.style.border_style.default, 
+                            it.style.border_width.default, 
                             it.top, it.left, it.height, it.width)
 
         if isinstance(it, PageRectangle):
@@ -59,26 +60,25 @@ class ViewerWidget(gtk.ScrolledWindow):
 
             # Draw each border
             curr_info = self.draw_line(cr, curr_info, 
-                            it.style.border_color.top, it.style.border_color.default, 
-                            it.style.border_style.top, it.style.border_style.default, 
-                            it.style.border_width.top, it.style.border_width.default, 
+                            it.style.border_color.top, 
+                            it.style.border_style.top, 
+                            it.style.border_width.top, 
                             it.top, it.left, 0, it.width)
             curr_info = self.draw_line(cr, curr_info, 
-                            it.style.border_color.left, it.style.border_color.default, 
-                            it.style.border_style.left, it.style.border_style.default, 
-                            it.style.border_width.left, it.style.border_width.default, 
+                            it.style.border_color.left,
+                            it.style.border_style.left,
+                            it.style.border_width.left,
                             it.top, it.left, it.height, 0)
             curr_info = self.draw_line(cr, curr_info, 
-                            it.style.border_color.bottom, it.style.border_color.default, 
-                            it.style.border_style.bottom, it.style.border_style.default, 
-                            it.style.border_width.bottom, it.style.border_width.default, 
+                            it.style.border_color.bottom,
+                            it.style.border_style.bottom,
+                            it.style.border_width.bottom,
                             it.top + it.height, it.left, 0, it.width)
             curr_info = self.draw_line(cr, curr_info, 
-                            it.style.border_color.right, it.style.border_color.default, 
-                            it.style.border_style.right, it.style.border_style.default, 
-                            it.style.border_width.right, it.style.border_width.default, 
+                            it.style.border_color.right,
+                            it.style.border_style.right,
+                            it.style.border_width.right,
                             it.top, it.left + it.width, it.height, 0)
-
         return curr_info
 
     def draw_blank_page(self, cr):
@@ -94,26 +94,14 @@ class ViewerWidget(gtk.ScrolledWindow):
         return {'color':None, 'border_width':1.0, 'border_style':'Solid'}
 
     def draw_line(self, cr, curr_info, 
-                new_color, default_color, 
-                new_border_style, default_border_style, 
-                new_border_width, default_border_width, 
+                color, border_style, border_width,
                 top, left, height, width):
 
-        border_style = self.select_default (new_border_style, default_border_style)
-        if not border_style: # Use default border style: solid
-            border_style = BorderStyleItem()
         curr_info['border_style'] = self.set_curr_border_style(curr_info['border_style'], border_style, cr)
         if curr_info['border_style'] == 'None':
             return curr_info
 
-        color = self.select_default (new_color, default_color)
-        if not color: # Use default color black full opaque
-            color = ColorItem()
         curr_info['color'] = self.set_curr_color(curr_info['color'], color, cr)
-
-        border_width = self.select_default (new_border_width, default_border_width)
-        if not border_width: # Use default border width: 1.0 pt
-            border_width = SizeItem()
         curr_info['border_width'] = self.set_curr_border_width(curr_info['border_width'], border_width, cr)
 
         cr.move_to(self.Mm2Dot(left), self.Mm2Dot(top))
@@ -139,12 +127,9 @@ class ViewerWidget(gtk.ScrolledWindow):
         # Change current border_style
         st = new_border_style.value
 
-        if not st or st.lower() == 'solid' or st.lower() == 'none':
+        if st.lower() == 'solid' or st.lower() == 'none':
             cr.set_dash([])
-            if not st:
-                return 'Solid' 
-            else:
-                return st
+            return st
 
         # TODO - for now, only resolve to 'Dotted' for others than None or Solid
         cr.set_dash([5.0])
@@ -155,18 +140,8 @@ class ViewerWidget(gtk.ScrolledWindow):
             return curr_border_width 
         # Change current border_width
         st = new_border_width.value
-        if not st:
-            cr.set_line_width(1.0) # TODO make convertion from mm to dot?
-            return 1.0
-
         cr.set_line_width(self.Mm2Dot(st))
         return st
-
-    def select_default(self, new, default):
-        res = default
-        if new:
-            res = new
-        return res
 
     def get_float_rgba(self, c):
         return float(c) / float(65535) 

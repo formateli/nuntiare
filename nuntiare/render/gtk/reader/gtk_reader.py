@@ -3,11 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import gtk
-from nuntiare.render.gtk.reader.viewer_widget import ViewerWidget
-
-import math
-from decimal import Decimal
-from nuntiare.pages.page_item import PageLine, PageRectangle, ColorItem
+from viewer_widget import ViewerWidget
 
 class GtkReader(gtk.Window):
 

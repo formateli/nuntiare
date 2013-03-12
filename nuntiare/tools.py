@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from nuntiare import logger
+from decimal import Decimal
 
 def get_xml_tag_value(node):
     'Returns the valid value of xml node'
@@ -56,21 +57,30 @@ def raise_error_with_log(message, error_type=None):
         raise ValueError(message)
     raise ValueError(message)
 
-def get_element_value_or_default(element, default):
+def get_element_from_parent(parent_element, child_name):
     '''
-    Gets the value of a report element or the its default value 
+    Returns a child element definition from parent element
+    '''
+    el = None
+    if parent_element:
+        el = parent_element.get_element(child_name)
+    return el
+
+def get_element_value_or_default(element, default_value):
+    '''
+    Gets the value of a report element of type expression, or its default value 
     '''
     if not element:
-        return default
+        return default_value
     value = element.value()
     if not value:
-        return default
+        return default_value
     return value
 
 def inch_2_mm(inch):
     '''
     Converts inches to millimeters
     '''
-    return inch * 25.4
+    return Decimal(inch * 25.4)
 
 
