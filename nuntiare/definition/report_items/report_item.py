@@ -55,4 +55,19 @@ class ReportItem(Element):
             self.zindex = zindex.value()  
 
 
+class Line(ReportItem):
+    def __init__(self, node, lnk):
+        super(Line, self).__init__(node, lnk)
+
+
+class Rectangle(ReportItem):
+    def __init__(self, node, lnk):
+        super(Rectangle, self).__init__(node, lnk)
+
+
+class Image(ReportItem):
+    def __init__(self, node, lnk):
+        super(Image, self).__init__(node, lnk)
+
+
 

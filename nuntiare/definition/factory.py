@@ -17,10 +17,8 @@ from style.background import BackgroudImage, BackgroundRepeat, BackgroundGradien
 from report_parameter import ReportParameters, ReportParameter, ValidValues, DataSetReference, ParameterValues, ParameterValue, DefaultValue, Values
 from header_footer import PageHeader, PageFooter
 from body import Body
-from report_items.report_item import ReportItems
-from report_items.line import Line
-from report_items.rectangle import Rectangle
-from report_items.image import Image, ImageSourceEnum, ImageSizingEnum
+from report_items.report_item import ReportItems, Line, Rectangle, Image
+from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
 
 def get_element(name, node, lnk):

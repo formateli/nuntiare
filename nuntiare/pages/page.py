@@ -2,8 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.report_items.line import Line
-from nuntiare.definition.report_items.rectangle import Rectangle
+from nuntiare.definition.report_items.report_item import Line, Rectangle
 from nuntiare.pages.section import HeaderInfo, FooterInfo, BodyInfo
 from nuntiare.pages.page_item import PageLine, PageRectangle
 from nuntiare.tools import raise_error_with_log, get_element_value_or_default, inch_2_mm

@@ -2,12 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from report_item import ReportItem
 from nuntiare.definition.enum import Enum
-
-class Image(ReportItem):
-    def __init__(self, node, lnk):
-        super(Image, self).__init__(node, lnk)
 
 class ImageSourceEnum(Enum):
     enum_list={'external': 'External',
