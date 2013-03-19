@@ -3,8 +3,10 @@
 # contains the full copyright notices and license terms.
 
 import gtk
+import pango
+import pangocairo
 from decimal import Decimal
-from nuntiare.pages.page_item import PageLine, PageRectangle
+from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
 from nuntiare.pages.style import StyleItem
 
 # A Gtk widget that shows rendered pages in a form.
@@ -21,14 +23,14 @@ class ViewerWidget(gtk.ScrolledWindow):
         self.set_border_width(10)
         self.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
 
-        self.width = self.Mm2Dot(report.pages.width)
-        self.height = self.Mm2Dot(report.pages.height)
+        self.width = self.Mm2Dot(report.pages.width) 
+        self.height = self.Mm2Dot(report.pages.height) 
 
-        darea = gtk.DrawingArea()
-        darea.set_size_request(1000, 1000)
-        darea.connect("expose-event", self.expose)
+        self.darea = gtk.DrawingArea()
+        self.darea.set_size_request(self.Mm2Dot(report.pages.width) + 100, self.Mm2Dot(report.pages.height) + (len(report.pages.pages) + 100))
+        self.darea.connect("expose-event", self.expose)
 
-        self.add_with_viewport(darea)
+        self.add_with_viewport(self.darea)
 
 
     def expose(self, widget, event):
@@ -49,6 +51,43 @@ class ViewerWidget(gtk.ScrolledWindow):
                             it.style.border_width.default, 
                             it.top, it.left, it.height, it.width)
 
+        if isinstance(it, PageText):
+            self.draw_rectangle_borders(cr, curr_info, it)
+            if not it.value:
+                return curr_info
+
+            pc = pangocairo.CairoContext(cr)
+
+            font_sz = 16
+            while font_sz > 6:
+                name_fd = pango.FontDescription("DejaVu")
+                name_fd.set_size(font_sz * pango.SCALE)
+                layout = pc.create_layout()
+                layout.set_font_description(name_fd)
+                layout.set_text(it.value)
+                layout.set_alignment(pango.ALIGN_CENTER)
+                #if multiline:
+                layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
+
+                if layout.get_size()[0] > (self.Mm2Dot(it.width) * pango.SCALE):
+                    font_sz -= 1
+                    continue
+
+                if layout.get_size()[1] > (self.Mm2Dot(it.height) * pango.SCALE):
+                    font_sz -= 1
+                    continue
+
+                # draw
+                text_x, text_y, text_w, text_h = layout.get_extents()[1]
+                #x = (self.Mm2Dot(it.width) / 2) - (text_w/2.0)/pango.SCALE - int(float(text_x)/pango.SCALE)
+                #y = y + (self.Mm2Dot(text_height)/2) - (text_h/2.0)/pango.SCALE - int(float(text_y)/pango.SCALE)
+                #x = (self.Mm2Dot(it.width) / 2) - Decimal((text_w/2.0)/pango.SCALE) - Decimal(text_x/pango.SCALE)
+                #y = (self.Mm2Dot(it.height)/2) - Decimal((text_h/2.0)/pango.SCALE) - Decimal((text_y)/pango.SCALE)
+                #cr.move_to(x, y)
+                cr.move_to(self.Mm2Dot(it.left), self.Mm2Dot(it.top))
+                pc.show_layout(layout)
+                break
+
         if isinstance(it, PageRectangle):
             cr.set_line_width(0.0)
             curr_info['border_width'] = 0.0
@@ -57,29 +96,31 @@ class ViewerWidget(gtk.ScrolledWindow):
             if curr_info['color']: # if not, background color is Transparent, nothing to draw
                 cr.rectangle(self.Mm2Dot(it.left), self.Mm2Dot(it.top), self.Mm2Dot(it.width), self.Mm2Dot(it.height))
                 cr.fill()
+            self.draw_rectangle_borders(cr, curr_info, it)
 
-            # Draw each border
-            curr_info = self.draw_line(cr, curr_info, 
+        return curr_info
+
+    def draw_rectangle_borders(self, cr, curr_info, it):
+        curr_info = self.draw_line(cr, curr_info, 
                             it.style.border_color.top, 
                             it.style.border_style.top, 
                             it.style.border_width.top, 
                             it.top, it.left, 0, it.width)
-            curr_info = self.draw_line(cr, curr_info, 
+        curr_info = self.draw_line(cr, curr_info, 
                             it.style.border_color.left,
                             it.style.border_style.left,
                             it.style.border_width.left,
                             it.top, it.left, it.height, 0)
-            curr_info = self.draw_line(cr, curr_info, 
+        curr_info = self.draw_line(cr, curr_info, 
                             it.style.border_color.bottom,
                             it.style.border_style.bottom,
                             it.style.border_width.bottom,
                             it.top + it.height, it.left, 0, it.width)
-            curr_info = self.draw_line(cr, curr_info, 
+        curr_info = self.draw_line(cr, curr_info, 
                             it.style.border_color.right,
                             it.style.border_style.right,
                             it.style.border_width.right,
                             it.top, it.left + it.width, it.height, 0)
-        return curr_info
 
     def draw_blank_page(self, cr):
         cr.set_line_width(1.0)
@@ -106,6 +147,7 @@ class ViewerWidget(gtk.ScrolledWindow):
 
         cr.move_to(self.Mm2Dot(left), self.Mm2Dot(top))
         cr.rel_line_to(self.Mm2Dot(width), self.Mm2Dot(height))
+        cr.close_path()
         cr.stroke()
         return curr_info
 
@@ -148,3 +190,4 @@ class ViewerWidget(gtk.ScrolledWindow):
 
     def Mm2Dot(self, mm):
         return (mm * PIXELS_PER_INCH) / Decimal(25.4)
+

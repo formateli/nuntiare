@@ -32,6 +32,28 @@
   <Body>
     <Height>249.8pt</Height>
     <ReportItems>
+
+      <Textbox>
+        <Name>TextBox1</Name>
+        <Value>Hola Mundo!</Value>
+        <Height>50pt</Height>
+        <Width>300pt</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <BorderColor>
+            <Default>Violet</Default>
+            <Right>Green</Right>
+          </BorderColor>
+          <BorderWidth>
+            <Default>5pt</Default>
+          </BorderWidth>
+        </Style>
+        <Left>5pt</Left>
+        <Top>400pt</Top>
+      </Textbox>
+
       <Line>
         <Name>Line2</Name>
         <Height>17.31pt</Height>

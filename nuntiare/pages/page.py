@@ -2,9 +2,9 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.report_items.report_item import Line, Rectangle
+from nuntiare.definition.report_items.report_item import Line, Rectangle, Textbox
 from nuntiare.pages.section import HeaderInfo, FooterInfo, BodyInfo
-from nuntiare.pages.page_item import PageLine, PageRectangle
+from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
 from nuntiare.tools import raise_error_with_log, get_element_value_or_default, inch_2_mm
 
 class Pages(object):
@@ -31,7 +31,7 @@ class Pages(object):
             pg.page_number = len(self.pages) + 1
             self.add_page(pg)
 
-        # Run Header and footer 
+        # Run Header and footer for each page 
         for page in self.pages:
             self.run_section(self.header, page)
             self.run_section(self.footer, page)
@@ -57,6 +57,8 @@ class Pages(object):
                 page_item = PageLine(it, top, self.margin_left)
             if isinstance(it, Rectangle):
                 page_item = PageRectangle(it, top, self.margin_left)
+            if isinstance(it, Textbox):
+                page_item = PageText(it, top, self.margin_left)
             page.add_page_item(page_item)
 
         return last_page

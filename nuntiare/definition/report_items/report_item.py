@@ -42,6 +42,12 @@ class ReportItem(Element):
                   'Bookmark': [Element.STRING],
                   'RepeatWith': [Element.STRING],
                   'Custom': [Element.ELEMENT],
+                  'Value': [Element.STRING],
+                  'CanGrow': [Element.BOOLEAN],
+                  'CanShrink': [Element.BOOLEAN],
+                  'HideDuplicates': [Element.STRING],
+                  'ToggleImage': [Element.ELEMENT],
+                  'UserSort': [Element.ELEMENT],
                  }
 
         super(ReportItem, self).__init__(node, elements, lnk)
@@ -68,6 +74,11 @@ class Rectangle(ReportItem):
 class Image(ReportItem):
     def __init__(self, node, lnk):
         super(Image, self).__init__(node, lnk)
+
+
+class Textbox(ReportItem):
+    def __init__(self, node, lnk):
+        super(Textbox, self).__init__(node, lnk)
 
 
 

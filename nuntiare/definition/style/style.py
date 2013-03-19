@@ -39,5 +39,3 @@ class Style(Element):
 
         super(Style, self).__init__(node, elements, lnk)
 
-
-

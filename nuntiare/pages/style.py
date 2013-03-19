@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import logger
+#from nuntiare import logger
 from nuntiare.definition.size import Size
 from nuntiare.definition.string import String
 from nuntiare.definition.color import Color
@@ -46,10 +46,8 @@ def get_style_item(name, id, obj):
         item_list = border_width_list
 
     if item_list.has_key(id):
-        logger.debug("Returning item_list '{0}': '{1}'".format(name, id))
         return item_list[id] 
 
-    logger.debug("Creating item_list '{0}': '{1}'".format(name, id))
     if obj:
         item_list[id] = obj
     else:
