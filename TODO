@@ -4,17 +4,16 @@ CRITICAL
 --------
 
 - GtkReader:
-  - PageHeader, PageFooter, dibujar hoja
-  - Dibujar cuadro de textos
-  - Grid de datos
+   - Style in page sections (Header, body and footer)
+   - Textbox 
+   - DataRegions:
+      - List
+      - Table
 
 -----
 OTHER
 -----
 
-- Copyright y license del proyecto
-- Crear repositorio en google code
-
 - Mejorar xml DataProvider
-   - SELECT id, name FROM Raw WHERE id=1 AND | OR
+   - SELECT id, name FROM Raw WHERE id=1 AND | OR ...
 

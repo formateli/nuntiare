@@ -11,7 +11,8 @@ from nuntiare.pages.style import StyleItem
 
 # A Gtk widget that shows rendered pages in a form.
 
-PIXELS_PER_INCH=Decimal(72)
+#PIXELS_PER_INCH=Decimal(72) # We use the standard 72dpi
+PIXELS_PER_INCH=Decimal(85) # TODO--> get dpi, should be in a cfg file?
 
 class ViewerWidget(gtk.ScrolledWindow):
 
@@ -58,9 +59,9 @@ class ViewerWidget(gtk.ScrolledWindow):
 
             pc = pangocairo.CairoContext(cr)
 
-            font_sz = 16
+            font_sz = 12
             while font_sz > 6:
-                name_fd = pango.FontDescription("DejaVu")
+                name_fd = pango.FontDescription("Sans")
                 name_fd.set_size(font_sz * pango.SCALE)
                 layout = pc.create_layout()
                 layout.set_font_description(name_fd)
@@ -69,13 +70,13 @@ class ViewerWidget(gtk.ScrolledWindow):
                 #if multiline:
                 layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
 
-                if layout.get_size()[0] > (self.Mm2Dot(it.width) * pango.SCALE):
-                    font_sz -= 1
-                    continue
+                #if layout.get_size()[0] > (self.Mm2Dot(it.width) * pango.SCALE):
+                #    font_sz -= 1
+                #    continue
 
-                if layout.get_size()[1] > (self.Mm2Dot(it.height) * pango.SCALE):
-                    font_sz -= 1
-                    continue
+                #if layout.get_size()[1] > (self.Mm2Dot(it.height) * pango.SCALE):
+                #    font_sz -= 1
+                #   continue
 
                 # draw
                 text_x, text_y, text_w, text_h = layout.get_extents()[1]
@@ -129,7 +130,7 @@ class ViewerWidget(gtk.ScrolledWindow):
                     self.get_float_rgba(65235), 
                     self.get_float_rgba(65235),
                     self.get_float_rgba(65235))
-        cr.rectangle(10, 10, self.width, self.height)
+        cr.rectangle(0, 0, self.width, self.height)
         cr.fill()
 
         return {'color':None, 'border_width':1.0, 'border_style':'Solid'}

@@ -3,32 +3,34 @@
   <Description>
   </Description>
   <Author>Grupo PCW</Author>
-  <PageHeight>11in</PageHeight>
-  <PageWidth>8.5in</PageWidth>
+  <PageWidth>210mm</PageWidth>
+  <PageHeight>280mm</PageHeight>
   <Width>8.5in</Width>
-  <TopMargin>.25in</TopMargin>
-  <LeftMargin>.25in</LeftMargin>
-  <RightMargin>.5in</RightMargin>
-  <BottomMargin>.65in</BottomMargin>
+  <TopMargin>2cm</TopMargin>
+  <LeftMargin>2cm</LeftMargin>
+  <RightMargin>2cm</RightMargin>
+  <BottomMargin>2cm</BottomMargin>
+
   <PageHeader>
-    <Height>47.3pt</Height>
+    <Height>50mm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
     <PrintOnLastPage>true</PrintOnLastPage>
     <ReportItems>
       <Line>
         <Name>Line1</Name>
         <Height>0.00pt</Height>
-        <Width>72.27pt</Width>
+        <Width>10cm</Width>
         <Style>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
         </Style>
-        <Left>67.1pt</Left>
-        <Top>22.1pt</Top>
+        <Left>5mm</Left>
+        <Top>5mm</Top>
       </Line>
     </ReportItems>
   </PageHeader>
+
   <Body>
     <Height>249.8pt</Height>
     <ReportItems>
@@ -150,7 +152,7 @@
     <Columns>1</Columns>
   </Body>
   <PageFooter>
-    <Height>50.2pt</Height>
+    <Height>50mm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
     <PrintOnLastPage>true</PrintOnLastPage>
     <ReportItems>
