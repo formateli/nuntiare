@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report Name="PCW">
+  <Description>
+  </Description>
+  <Author>Fredy Ramirez</Author>
+  <PageWidth>210mm</PageWidth>
+  <PageHeight>280mm</PageHeight>
+  <Width>8.5in</Width>
+  <TopMargin>1cm</TopMargin>
+  <LeftMargin>1cm</LeftMargin>
+  <RightMargin>1cm</RightMargin>
+  <BottomMargin>1cm</BottomMargin>
+
+  <Body>
+    <Height>250pt</Height>
+    <ReportItems>
+
+      <Textbox>
+        <Name>TextBox1</Name>
+        <Value>Left align top</Value>
+        <Height>2cm</Height>
+        <Width>6cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <VerticalAlign>Top</VerticalAlign>
+        </Style>
+        <Left>0mm</Left>
+        <Top>0mm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox2</Name>
+        <Value>Left align middle</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Left>7cm</Left>
+        <Top>0mm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox3</Name>
+        <Value>Left align bottom</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Left</TextAlign>
+          <VerticalAlign>Bottom</VerticalAlign>
+        </Style>
+        <Left>13cm</Left>
+        <Top>0mm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox4</Name>
+        <Value>Center align top</Value>
+        <Height>2cm</Height>
+        <Width>6cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Center</TextAlign>
+          <VerticalAlign>Top</VerticalAlign>
+        </Style>
+        <Left>0mm</Left>
+        <Top>3cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox5</Name>
+        <Value>Center align middle</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Center</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Left>7cm</Left>
+        <Top>3cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox6</Name>
+        <Value>Center align bottom</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Center</TextAlign>
+          <VerticalAlign>Bottom</VerticalAlign>
+        </Style>
+        <Left>13cm</Left>
+        <Top>3cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox7</Name>
+        <Value>Right align top</Value>
+        <Height>2cm</Height>
+        <Width>6cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Top</VerticalAlign>
+        </Style>
+        <Left>0mm</Left>
+        <Top>6cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox8</Name>
+        <Value>Right align middle</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Left>7cm</Left>
+        <Top>6cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox9</Name>
+        <Value>Right align bottom</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Bottom</VerticalAlign>
+        </Style>
+        <Left>13cm</Left>
+        <Top>6cm</Top>
+      </Textbox>
+
+    </ReportItems>
+    <Columns>1</Columns>
+
+  </Body>
+
+</Report>
+

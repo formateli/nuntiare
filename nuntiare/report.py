@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import uuid
+import datetime
 from nuntiare import logger, __reports__
 from nuntiare.tools import raise_error_with_log
 from definition.link import Link
@@ -46,8 +47,9 @@ class Report(object):
     def run(self, parameters):
         self.globals={}
         self.globals['page_number'] = 0
-        self.globals['total_pages'] = 0
-        #self.globals['execution_time']= TODO add now()
+        self.globals['total_pages'] = 0       
+        self.globals['execution_time'] = datetime.datetime.now()
+        logger.info('Execution time: {0}'.format(self.globals['execution_time']))
 
         # 1.- Build data_sources
         if self.data_sources:

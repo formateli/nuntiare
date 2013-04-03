@@ -4,11 +4,11 @@ CRITICAL
 --------
 
 - GtkReader:
-   - Style in page sections (Header, body and footer)
    - Textbox 
    - DataRegions:
       - List
       - Table
+   - Body Columns
 
 -----
 OTHER

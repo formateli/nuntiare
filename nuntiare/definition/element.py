@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from nuntiare import logger
+from nuntiare.tools import raise_error_with_log
 from link import Link
 
 class Element(object):
@@ -33,6 +34,8 @@ class Element(object):
             if elements[n.nodeName][0]==Element.ELEMENT:
                 el = factory.get_element(n.nodeName,n, lnk)
                 if n.nodeName in ("Line", "Rectangle", "Textbox", "Image","Subreport", "CustomReportItem", "DataRegion") :
+                    if self.reportitems_list.has_key(el.name):
+                        raise_error_with_log("ReportItem '{0}' already exists. [{1}]".format(el.name, n.nodeName))
                     self.reportitems_list[el.name] = el
                 else:
                     self.element_list[n.nodeName] = el

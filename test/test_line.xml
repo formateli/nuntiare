@@ -2,7 +2,7 @@
 <Report Name="PCW">
   <Description>
   </Description>
-  <Author>Grupo PCW</Author>
+  <Author>Fredy Ramirez</Author>
   <PageWidth>210mm</PageWidth>
   <PageHeight>280mm</PageHeight>
   <Width>8.5in</Width>
@@ -12,9 +12,23 @@
   <BottomMargin>2cm</BottomMargin>
 
   <PageHeader>
-    <Height>50mm</Height>
+    <Height>30mm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
     <PrintOnLastPage>true</PrintOnLastPage>
+
+    <Style>
+      <BorderStyle>
+        <Default>Solid</Default>
+      </BorderStyle>
+      <BorderColor>
+        <Default>Blach</Default>
+      </BorderColor>
+      <BorderWidth>
+        <Default>1pt</Default>
+      </BorderWidth>
+      <BackgroundColor>Yellow</BackgroundColor>
+    </Style>
+
     <ReportItems>
       <Line>
         <Name>Line1</Name>
@@ -32,12 +46,12 @@
   </PageHeader>
 
   <Body>
-    <Height>249.8pt</Height>
+    <Height>250pt</Height>
     <ReportItems>
 
       <Textbox>
         <Name>TextBox1</Name>
-        <Value>Hola Mundo!</Value>
+        <Value>Hola bello Mundo!</Value>
         <Height>50pt</Height>
         <Width>300pt</Width>
         <Style>
@@ -120,8 +134,8 @@
         <Name>Rectangle1</Name>
         <Height>108.41pt</Height>
         <Width>108.41pt</Width>
-        <Left>29.2pt</Left>
-        <Top>169.4pt</Top>
+        <Left>50mm</Left>
+        <Top>50mm</Top>
         <Style>
           <BorderStyle>
             <Default>Solid</Default>
@@ -150,11 +164,27 @@
 
     </ReportItems>
     <Columns>1</Columns>
+
   </Body>
+
   <PageFooter>
-    <Height>50mm</Height>
+    <Height>30mm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
     <PrintOnLastPage>true</PrintOnLastPage>
+
+    <Style>
+      <BorderStyle>
+        <Default>Solid</Default>
+      </BorderStyle>
+      <BorderColor>
+        <Default>Blach</Default>
+      </BorderColor>
+      <BorderWidth>
+        <Default>1pt</Default>
+      </BorderWidth>
+      <BackgroundColor>Yellow</BackgroundColor>
+    </Style>
+
     <ReportItems>
       <Line>
         <Name>Line3</Name>

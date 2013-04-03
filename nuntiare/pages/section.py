@@ -2,7 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.tools import raise_error_with_log, get_element_value_or_default, inch_2_mm
+from style import StyleInfo
+from nuntiare.tools import raise_error_with_log, get_element_value_or_default, get_element_from_parent, inch_2_mm
 
 
 ''' 
@@ -16,7 +17,7 @@ class SectionInfo(object):
         self.style = None
         if element:
             self.height = get_element_value_or_default(element.get_element("Height"), 0)
-            self.style = get_element_value_or_default(element.get_element("Style"), None)
+            self.style = StyleInfo(get_element_from_parent(element, "Style"))
 
 
 class HeaderFooterInfo(SectionInfo):
