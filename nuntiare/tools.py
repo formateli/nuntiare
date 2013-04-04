@@ -5,6 +5,11 @@
 from nuntiare import logger
 from decimal import Decimal
 
+size_6 = Decimal(6)
+size_10 = Decimal(10)
+size_25_4 = Decimal(25.4)
+size_72 = Decimal(72)
+
 def get_xml_tag_value(node):
     'Returns the valid value of xml node'
     xml_str = node.toxml() 
@@ -82,5 +87,21 @@ def inch_2_mm(inch):
     Converts inches to millimeters
     '''
     return Decimal(inch * 25.4)
+
+def get_size_in_unit(size, unit):
+    unit = unit.strip().lower()
+    if unit=='mm':
+        return size    
+
+    if unit=="in":
+        return size / size_25_4
+    elif unit=="cm":
+        return size / size_10
+    elif unit=="pt":
+        return (size / size_25_4) * size_72;
+    elif unit=="pc":
+        return (size / size_25_4) * size_6;
+
+    raise_error_with_log("Unknown unit '{0}'".format(unit))
 
 

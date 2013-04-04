@@ -180,7 +180,7 @@ class ColorInfo(object):
 
 class TextInfo(object):
     def __init__(self, element):
-        self.font_family = get_element_value_or_default(get_element_from_parent(element, 'FontFamily'), None)
+        self.font_family = get_element_value_or_default(get_element_from_parent(element, 'FontFamily'), 'Arial')
         self.font_style = get_element_value_or_default(get_element_from_parent(element, 'FontStyle'), 'Normal')
         self.font_size = self.get_size('FontSize', element, '10 pt') 
         self.font_weight = get_element_value_or_default(get_element_from_parent(element, 'FontWeight'), 'Normal')

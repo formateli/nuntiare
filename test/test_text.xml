@@ -17,10 +17,11 @@
 
       <Textbox>
         <Name>TextBox1</Name>
-        <Value>Left align top</Value>
+        <Value>Left top 14pt</Value>
         <Height>2cm</Height>
         <Width>6cm</Width>
         <Style>
+          <FontSize>14 pt</FontSize>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
@@ -32,7 +33,7 @@
 
       <Textbox>
         <Name>TextBox2</Name>
-        <Value>Left align middle</Value>
+        <Value>Left middle</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
@@ -47,7 +48,7 @@
 
       <Textbox>
         <Name>TextBox3</Name>
-        <Value>Left align bottom</Value>
+        <Value>Left bottom</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
@@ -63,7 +64,7 @@
 
       <Textbox>
         <Name>TextBox4</Name>
-        <Value>Center align top</Value>
+        <Value>Center top</Value>
         <Height>2cm</Height>
         <Width>6cm</Width>
         <Style>
@@ -79,7 +80,7 @@
 
       <Textbox>
         <Name>TextBox5</Name>
-        <Value>Center align middle</Value>
+        <Value>Center middle</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
@@ -95,10 +96,15 @@
 
       <Textbox>
         <Name>TextBox6</Name>
-        <Value>Center align bottom</Value>
+        <Value>Center bottom</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
+          <Color>White</Color>
+          <BackgroundColor>Black</BackgroundColor>
+          <BorderColor>
+            <Default>Blue</Default>
+          </BorderColor>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
@@ -111,10 +117,13 @@
 
       <Textbox>
         <Name>TextBox7</Name>
-        <Value>Right align top</Value>
+        <Value>Right top 18pt</Value>
         <Height>2cm</Height>
         <Width>6cm</Width>
         <Style>
+          <Color>Red</Color>
+          <FontSize>18pt</FontSize>
+          <BackgroundColor>Pink</BackgroundColor>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
@@ -127,7 +136,7 @@
 
       <Textbox>
         <Name>TextBox8</Name>
-        <Value>Right align middle</Value>
+        <Value>Right middle</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
@@ -143,9 +152,10 @@
 
       <Textbox>
         <Name>TextBox9</Name>
-        <Value>Right align bottom</Value>
+        <Value>Right bottom</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
+
         <Style>
           <BorderStyle>
             <Default>Solid</Default>
@@ -155,6 +165,58 @@
         </Style>
         <Left>13cm</Left>
         <Top>6cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox11</Name>
+        <Value>ABCDE Sans</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>10cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox12</Name>
+        <Value>ABCDE Arial</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontFamily>Arial</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>11cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox13</Name>
+        <Value>ABCDE Monospace</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontFamily>Monospace</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>12cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox14</Name>
+        <Value>ABCDE Wxyz</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontFamily>Wxyz</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>13cm</Top>
       </Textbox>
 
     </ReportItems>

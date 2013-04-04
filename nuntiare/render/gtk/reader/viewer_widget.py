@@ -8,6 +8,7 @@ import pangocairo
 from decimal import Decimal
 from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
 from nuntiare.pages.style import StyleItem
+from nuntiare.tools import get_size_in_unit
 
 # A Gtk widget that shows rendered pages in a form.
 
@@ -63,48 +64,40 @@ class ViewerWidget(gtk.ScrolledWindow):
 
             pc = pangocairo.CairoContext(cr)
 
-            font_sz = 12
-            while font_sz > 6:
-                name_fd = pango.FontDescription("Sans")
-                name_fd.set_size(font_sz * pango.SCALE)
+            font_sz = get_size_in_unit(it.style.text.font_size.value, 'pt')
 
-                layout = pc.create_layout()
-                layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
-                layout.set_font_description(name_fd)
+            name_fd = pango.FontDescription(it.style.text.font_family)
+            name_fd.set_size(font_sz * pango.SCALE)
 
-                layout.set_text(it.value)
+            layout = pc.create_layout()
+            layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
+            layout.set_font_description(name_fd)
 
-                if it.style.text.text_align == 'General' or it.style.text.text_align == 'Left':
-                    layout.set_alignment(pango.ALIGN_LEFT) 
-                elif it.style.text.text_align == 'Right':
-                    layout.set_alignment(pango.ALIGN_RIGHT)
-                elif it.style.text.text_align == 'Center':
-                    layout.set_alignment(pango.ALIGN_CENTER)
-                elif it.style.text.text_align == 'Justify':
-                    layout.set_justify(True) 
+            layout.set_text(it.value)
 
+            if it.style.text.text_align == 'General' or it.style.text.text_align == 'Left':
+                layout.set_alignment(pango.ALIGN_LEFT) 
+            elif it.style.text.text_align == 'Right':
+                layout.set_alignment(pango.ALIGN_RIGHT)
+            elif it.style.text.text_align == 'Center':
+                layout.set_alignment(pango.ALIGN_CENTER)
+            elif it.style.text.text_align == 'Justify':
+                layout.set_justify(True) 
 
-                #if layout.get_size()[0] > (self.Mm2Dot(it.width) * pango.SCALE):
-                #    font_sz -= 1
-                #    continue
+            text_x, text_y, text_w, text_h = layout.get_extents()[1]
 
-                #if layout.get_size()[1] > (self.Mm2Dot(it.height) * pango.SCALE):
-                #    font_sz -= 1
-                #   continue
+            # Default Top position
+            x = self.Mm2Dot(it.left)
+            y = self.Mm2Dot(it.top)   
+            if it.style.text.vertical_align == 'Middle':
+                y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)) / 2)
+            elif it.style.text.vertical_align == 'Bottom':
+                y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)))
 
-                # draw
-                text_x, text_y, text_w, text_h = layout.get_extents()[1]
+            curr_info['color'] = self.set_curr_color(curr_info['color'], it.style.text.color, cr)
+            cr.move_to(x, y)
+            pc.show_layout(layout)
 
-                # Default Top position
-                x = self.Mm2Dot(it.left)
-                y = self.Mm2Dot(it.top)   
-                if it.style.text.vertical_align == 'Middle':
-                    y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)) / 2)
-                elif it.style.text.vertical_align == 'Bottom':
-                    y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)))
-                cr.move_to(x, y)
-                pc.show_layout(layout)
-                break
 
         if isinstance(it, PageRectangle):
             curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
@@ -117,8 +110,8 @@ class ViewerWidget(gtk.ScrolledWindow):
         cr.set_line_width(0.0)
         curr_info['border_width'] = 0.0
         curr_info['border_style'] = None
-        curr_info['color'] = self.set_curr_color(curr_info['color'], style.background_color, cr)
-        if curr_info['color']: # if not, background color is Transparent, nothing to draw
+        curr_info['background_color'] = self.set_curr_color(curr_info['background_color'], style.background_color, cr)
+        if curr_info['background_color']: # if not, background color is Transparent, nothing to draw
             cr.rectangle(left, top, width, height)
             cr.fill()
         self.draw_rectangle_borders(cr, curr_info, style, top, left, height, width)
@@ -156,9 +149,11 @@ class ViewerWidget(gtk.ScrolledWindow):
         cr.rectangle(0, 0, self.width, self.height)
         cr.fill()
 
-        #TODO Sections Style
-
-        curr_info = {'color':None, 'border_width':1.0, 'border_style':'Solid'}
+        curr_info = {'background_color':None, 
+                     'color':None, 
+                     'border_width':1.0, 
+                     'border_style':'Solid'
+                    }
         
         self.draw_section_style(self.report.pages.header, self.Mm2Dot(self.report.pages.margin_top), 
                 self.Mm2Dot(self.report.pages.margin_left), self.Mm2Dot(self.report.pages.header.height),
@@ -190,7 +185,7 @@ class ViewerWidget(gtk.ScrolledWindow):
         if curr_info['border_style'] == 'None':
             return curr_info
 
-        curr_info['color'] = self.set_curr_color(curr_info['color'], color, cr)
+        curr_info['background_color'] = self.set_curr_color(curr_info['background_color'], color, cr)
         curr_info['border_width'] = self.set_curr_border_width(curr_info['border_width'], border_width, cr)
 
         cr.move_to(left, top)
