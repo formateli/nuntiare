@@ -219,6 +219,215 @@
         <Top>13cm</Top>
       </Textbox>
 
+      <Textbox>
+        <Name>TextBox15</Name>
+        <Value>Style Normal</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>15cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox16</Name>
+        <Value>Style Italic</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontStyle>Italic</FontStyle> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>15.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox17</Name>
+        <Value>Weight 100</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>100</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>16.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox18</Name>
+        <Value>Weight 200</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>200</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>17cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox19</Name>
+        <Value>Weight 300</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>300</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>17.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox20</Name>
+        <Value>Weight 400</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>400</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>18cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox21</Name>
+        <Value>Weight 500</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>500</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>18.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox22</Name>
+        <Value>Weight 600</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>600</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>19cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox23</Name>
+        <Value>Weight 700</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>700</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>19.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox24</Name>
+        <Value>Weight 800</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>800</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>20cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox25</Name>
+        <Value>Weight 900</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>900</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>20.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox26</Name>
+        <Value>Weight Lighter</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>Lighter</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>21cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox27</Name>
+        <Value>Weight Normal</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>Normal</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>21.5cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox28</Name>
+        <Value>Weight Bold</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>Bold</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>22cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox29</Name>
+        <Value>Weight Bolder</Value>
+        <Height>1cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <FontWeight>Bolder</FontWeight> 
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+        <Left>0mm</Left>
+        <Top>22.5cm</Top>
+      </Textbox>
+
     </ReportItems>
     <Columns>1</Columns>
 

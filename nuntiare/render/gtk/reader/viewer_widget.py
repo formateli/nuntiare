@@ -69,6 +69,26 @@ class ViewerWidget(gtk.ScrolledWindow):
             name_fd = pango.FontDescription(it.style.text.font_family)
             name_fd.set_size(font_sz * pango.SCALE)
 
+            if it.style.text.font_style == 'Normal':
+                name_fd.set_style(pango.STYLE_NORMAL)
+            elif it.style.text.font_style == 'Italic':
+                name_fd.set_style(pango.STYLE_ITALIC)
+
+            if it.style.text.font_weight == 'Lighter' or it.style.text.font_weight == '100' or it.style.text.font_weight == '200':
+                name_fd.set_weight(pango.WEIGHT_ULTRALIGHT)
+            elif it.style.text.font_weight == '300':
+                name_fd.set_weight(pango.WEIGHT_LIGHT)
+            elif it.style.text.font_weight == 'Normal' or it.style.text.font_weight == '400' or it.style.text.font_weight == '500':
+                name_fd.set_weight(pango.WEIGHT_NORMAL)
+            elif it.style.text.font_weight == 'Bold' or it.style.text.font_weight == '600' or it.style.text.font_weight == '700':
+                name_fd.set_weight(pango.WEIGHT_BOLD)
+            elif it.style.text.font_weight == 'Bolder' or it.style.text.font_weight == '800':
+                name_fd.set_weight(pango.WEIGHT_ULTRABOLD)
+            elif it.style.text.font_weight == '900':
+                name_fd.set_weight(pango.WEIGHT_HEAVY)
+
+            # TODO TextDecoration, Padding
+
             layout = pc.create_layout()
             layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
             layout.set_font_description(name_fd)
@@ -83,6 +103,7 @@ class ViewerWidget(gtk.ScrolledWindow):
                 layout.set_alignment(pango.ALIGN_CENTER)
             elif it.style.text.text_align == 'Justify':
                 layout.set_justify(True) 
+
 
             text_x, text_y, text_w, text_h = layout.get_extents()[1]
 

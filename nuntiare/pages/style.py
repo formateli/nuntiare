@@ -181,13 +181,19 @@ class ColorInfo(object):
 class TextInfo(object):
     def __init__(self, element):
         self.font_family = get_element_value_or_default(get_element_from_parent(element, 'FontFamily'), 'Arial')
+
+        # Normal | Italic
         self.font_style = get_element_value_or_default(get_element_from_parent(element, 'FontStyle'), 'Normal')
         self.font_size = self.get_size('FontSize', element, '10 pt') 
+        # Lighter | Normal | Bold | Bolder | 100 | 200 | 300 | 400 | 500 | 600 |700 | 800 | 900
         self.font_weight = get_element_value_or_default(get_element_from_parent(element, 'FontWeight'), 'Normal')
         self.format = get_element_value_or_default(get_element_from_parent(element, 'Format'), None)
-        self.font_decoration = get_element_value_or_default(get_element_from_parent(element, 'TextDecoration'), 'None')
-        self.text_align = get_element_value_or_default(get_element_from_parent(element, 'TextAlign'), 'General')
-        self.vertical_align = get_element_value_or_default(get_element_from_parent(element, 'VerticalAlign'), 'Top')
+        # Underline | Overline | LineThrough | None
+        self.text_decoration = get_element_value_or_default(get_element_from_parent(element, 'TextDecoration'), 'None') 
+        # General | Left | Right | Center Justify
+        self.text_align = get_element_value_or_default(get_element_from_parent(element, 'TextAlign'), 'General') 
+        # Top | Middle | Bottom
+        self.vertical_align = get_element_value_or_default(get_element_from_parent(element, 'VerticalAlign'), 'Top') 
 
         # Foreground color. Default Black
         self.color = get_color_by_element(get_element_from_parent(element, "Color"))
