@@ -17,11 +17,14 @@
 
       <Textbox>
         <Name>TextBox1</Name>
-        <Value>Left top 14pt</Value>
-        <Height>2cm</Height>
+        <Value>Left top 14pt&#10;Line 2&#10;Line 3&#10;Line 4&#10;Line 5&#10;CanGrow=True</Value>
+        <Height>2.5cm</Height>
         <Width>6cm</Width>
+        <CanGrow>True</CanGrow>
         <Style>
           <FontSize>14 pt</FontSize>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <PaddingTop>2 mm</PaddingTop>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>
@@ -33,8 +36,8 @@
 
       <Textbox>
         <Name>TextBox2</Name>
-        <Value>Left middle</Value>
-        <Height>2cm</Height>
+        <Value>Left middle&#10;Line 2</Value>
+        <Height>2.5cm</Height>
         <Width>5cm</Width>
         <Style>
           <BorderStyle>
@@ -48,8 +51,8 @@
 
       <Textbox>
         <Name>TextBox3</Name>
-        <Value>Left bottom</Value>
-        <Height>2cm</Height>
+        <Value>Left bottom&#10;Line 2</Value>
+        <Height>2.5cm</Height>
         <Width>5cm</Width>
         <Style>
           <BorderStyle>
@@ -57,11 +60,13 @@
           </BorderStyle>
           <TextAlign>Left</TextAlign>
           <VerticalAlign>Bottom</VerticalAlign>
+          <PaddingBottom>2 mm</PaddingBottom>
         </Style>
         <Left>13cm</Left>
         <Top>0mm</Top>
       </Textbox>
 
+<!--
       <Textbox>
         <Name>TextBox4</Name>
         <Value>Center top</Value>
@@ -77,6 +82,7 @@
         <Left>0mm</Left>
         <Top>3cm</Top>
       </Textbox>
+-->
 
       <Textbox>
         <Name>TextBox5</Name>
@@ -117,13 +123,16 @@
 
       <Textbox>
         <Name>TextBox7</Name>
-        <Value>Right top 18pt</Value>
-        <Height>2cm</Height>
+        <Value>Right top 18pt&#10;CanShrink=True</Value>
+        <Height>4cm</Height>
         <Width>6cm</Width>
+        <CanShrink>True</CanShrink>
         <Style>
           <Color>Red</Color>
           <FontSize>18pt</FontSize>
           <BackgroundColor>Pink</BackgroundColor>
+          <PaddingRight>2 mm</PaddingRight>
+          <PaddingTop>2 mm</PaddingTop>
           <BorderStyle>
             <Default>Solid</Default>
           </BorderStyle>

@@ -56,11 +56,15 @@ class ViewerWidget(gtk.ScrolledWindow):
                             self.Mm2Dot(it.height), self.Mm2Dot(it.width))
 
         if isinstance(it, PageText):
-            curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
-                     self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
-
             if not it.value:
+                curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
+                        self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
                 return curr_info
+
+            rec_top = self.Mm2Dot(it.top)
+            rec_left = self.Mm2Dot(it.left)
+            rec_height = self.Mm2Dot(it.height)
+            rec_width = self.Mm2Dot(it.width)
 
             pc = pangocairo.CairoContext(cr)
 
@@ -69,28 +73,37 @@ class ViewerWidget(gtk.ScrolledWindow):
             name_fd = pango.FontDescription(it.style.text.font_family)
             name_fd.set_size(font_sz * pango.SCALE)
 
+            # Font style
             if it.style.text.font_style == 'Normal':
                 name_fd.set_style(pango.STYLE_NORMAL)
             elif it.style.text.font_style == 'Italic':
                 name_fd.set_style(pango.STYLE_ITALIC)
 
-            if it.style.text.font_weight == 'Lighter' or it.style.text.font_weight == '100' or it.style.text.font_weight == '200':
+            # Font weight
+            if it.style.text.font_weight == 'Lighter' or \
+                    it.style.text.font_weight == '100' or \
+                    it.style.text.font_weight == '200':
                 name_fd.set_weight(pango.WEIGHT_ULTRALIGHT)
             elif it.style.text.font_weight == '300':
                 name_fd.set_weight(pango.WEIGHT_LIGHT)
-            elif it.style.text.font_weight == 'Normal' or it.style.text.font_weight == '400' or it.style.text.font_weight == '500':
+            elif it.style.text.font_weight == 'Normal' or \
+                    it.style.text.font_weight == '400' or \
+                    it.style.text.font_weight == '500':
                 name_fd.set_weight(pango.WEIGHT_NORMAL)
-            elif it.style.text.font_weight == 'Bold' or it.style.text.font_weight == '600' or it.style.text.font_weight == '700':
+            elif it.style.text.font_weight == 'Bold' or \
+                    it.style.text.font_weight == '600' or \
+                    it.style.text.font_weight == '700':
                 name_fd.set_weight(pango.WEIGHT_BOLD)
-            elif it.style.text.font_weight == 'Bolder' or it.style.text.font_weight == '800':
+            elif it.style.text.font_weight == 'Bolder' or \
+                    it.style.text.font_weight == '800':
                 name_fd.set_weight(pango.WEIGHT_ULTRABOLD)
             elif it.style.text.font_weight == '900':
                 name_fd.set_weight(pango.WEIGHT_HEAVY)
 
-            # TODO TextDecoration, Padding
+            # TODO TextDecoration
 
             layout = pc.create_layout()
-            layout.set_width(int(self.Mm2Dot(it.width) * pango.SCALE))
+            layout.set_width(int(self.Mm2Dot(it.width - it.style.text.padding_left.value - it.style.text.padding_right.value) * pango.SCALE))
             layout.set_font_description(name_fd)
 
             layout.set_text(it.value)
@@ -101,20 +114,27 @@ class ViewerWidget(gtk.ScrolledWindow):
                 layout.set_alignment(pango.ALIGN_RIGHT)
             elif it.style.text.text_align == 'Center':
                 layout.set_alignment(pango.ALIGN_CENTER)
-            elif it.style.text.text_align == 'Justify':
+            elif it.style.text.text_align == 'Justify': # TODO Modify xml definition
                 layout.set_justify(True) 
-
 
             text_x, text_y, text_w, text_h = layout.get_extents()[1]
 
-            # Default Top position
-            x = self.Mm2Dot(it.left)
-            y = self.Mm2Dot(it.top)   
+            x = self.Mm2Dot(it.left + it.style.text.padding_left.value)
+            y = self.Mm2Dot(it.top + it.style.text.padding_top.value)   
             if it.style.text.vertical_align == 'Middle':
                 y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)) / 2)
             elif it.style.text.vertical_align == 'Bottom':
-                y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)))
+                y = y + ((self.Mm2Dot(it.height - it.style.text.padding_bottom.value) - (text_h / pango.SCALE)))
 
+            # Draw rectangle
+            if it.can_grow and rec_height < text_h / pango.SCALE:
+                rec_height = text_h / pango.SCALE + (self.Mm2Dot(it.style.text.padding_top.value + it.style.text.padding_bottom.value))
+            elif it.can_shrink and rec_height > text_h / pango.SCALE:
+                rec_height = text_h / pango.SCALE + (self.Mm2Dot(it.style.text.padding_top.value + it.style.text.padding_bottom.value))
+            #TODO if not it.can_grow and not it.can_shrink and rec_height < text_h / pango.SCALE --> Clip text 
+            curr_info = self.draw_rectangle(it.style, rec_top, rec_left, rec_height, rec_width, curr_info, cr)
+
+            # Draw text
             curr_info['color'] = self.set_curr_color(curr_info['color'], it.style.text.color, cr)
             cr.move_to(x, y)
             pc.show_layout(layout)
