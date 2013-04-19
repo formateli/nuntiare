@@ -131,7 +131,7 @@
           <Color>Red</Color>
           <FontSize>18pt</FontSize>
           <BackgroundColor>Pink</BackgroundColor>
-          <PaddingRight>2 mm</PaddingRight>
+          <PaddingRight>3 mm</PaddingRight>
           <PaddingTop>2 mm</PaddingTop>
           <BorderStyle>
             <Default>Solid</Default>
@@ -174,6 +174,36 @@
         </Style>
         <Left>13cm</Left>
         <Top>6cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox9-2</Name>
+        <Value>Text Clipped 1&#10;Text Clipped 2&#10;Text Clipped 3&#10;Text Clipped 4&#10;Text Clipped 5&#10;Text Clipped 6 17</Value>
+        <Height>2cm</Height>
+        <Width>5cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Left>13cm</Left>
+        <Top>9 cm</Top>
+      </Textbox>
+
+      <Textbox>
+        <Name>TextBox9-3</Name>
+        <Value>TextClipped 1XText Clipped 2XText Clipped 3XText Clipped 4XText Clipped 5XText Clipped 6</Value>
+        <Height>1.5cm</Height>
+        <Width>4cm</Width>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Left>13cm</Left>
+        <Top>12 cm</Top>
       </Textbox>
 
       <Textbox>

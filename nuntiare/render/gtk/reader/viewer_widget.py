@@ -3,12 +3,13 @@
 # contains the full copyright notices and license terms.
 
 import gtk
+import cairo
 import pango
 import pangocairo
 from decimal import Decimal
 from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
 from nuntiare.pages.style import StyleItem
-from nuntiare.tools import get_size_in_unit
+from nuntiare.tools import get_size_in_unit, raise_error_with_log
 
 # A Gtk widget that shows rendered pages in a form.
 
@@ -56,17 +57,25 @@ class ViewerWidget(gtk.ScrolledWindow):
                             self.Mm2Dot(it.height), self.Mm2Dot(it.width))
 
         if isinstance(it, PageText):
-            if not it.value:
-                curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
-                        self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
+            text = it.value
+            top = self.Mm2Dot(it.top)
+            left = self.Mm2Dot(it.left)
+            height = self.Mm2Dot(it.height)
+            width = self.Mm2Dot(it.width)
+
+            if not text or text=="":
+                curr_info = self.draw_rectangle(it.style, top, left, 
+                        height, it.width, curr_info, cr)
                 return curr_info
 
-            rec_top = self.Mm2Dot(it.top)
-            rec_left = self.Mm2Dot(it.left)
-            rec_height = self.Mm2Dot(it.height)
-            rec_width = self.Mm2Dot(it.width)
+            padding_top = self.Mm2Dot(it.style.text.padding_top.value)
+            padding_left = self.Mm2Dot(it.style.text.padding_left.value)
+            padding_right = self.Mm2Dot(it.style.text.padding_right.value)
+            padding_bottom = self.Mm2Dot(it.style.text.padding_bottom.value)
+            max_height = height - padding_top - padding_bottom
 
-            pc = pangocairo.CairoContext(cr)
+            if max_height <= 0:
+                raise_error_with_log("Textbox drawable height area must be greater than zero. See height and padding values.")
 
             font_sz = get_size_in_unit(it.style.text.font_size.value, 'pt')
 
@@ -102,11 +111,10 @@ class ViewerWidget(gtk.ScrolledWindow):
 
             # TODO TextDecoration
 
+            pc = pangocairo.CairoContext(cr)
             layout = pc.create_layout()
-            layout.set_width(int(self.Mm2Dot(it.width - it.style.text.padding_left.value - it.style.text.padding_right.value) * pango.SCALE))
+            layout.set_width(int((width - padding_left - padding_right) * pango.SCALE))
             layout.set_font_description(name_fd)
-
-            layout.set_text(it.value)
 
             if it.style.text.text_align == 'General' or it.style.text.text_align == 'Left':
                 layout.set_alignment(pango.ALIGN_LEFT) 
@@ -117,22 +125,32 @@ class ViewerWidget(gtk.ScrolledWindow):
             elif it.style.text.text_align == 'Justify': # TODO Modify xml definition
                 layout.set_justify(True) 
 
+            layout.set_text(text)
+
             text_x, text_y, text_w, text_h = layout.get_extents()[1]
 
-            x = self.Mm2Dot(it.left + it.style.text.padding_left.value)
-            y = self.Mm2Dot(it.top + it.style.text.padding_top.value)   
-            if it.style.text.vertical_align == 'Middle':
-                y = y + ((self.Mm2Dot(it.height) - (text_h / pango.SCALE)) / 2)
-            elif it.style.text.vertical_align == 'Bottom':
-                y = y + ((self.Mm2Dot(it.height - it.style.text.padding_bottom.value) - (text_h / pango.SCALE)))
+            rec_height = height
 
-            # Draw rectangle
-            if it.can_grow and rec_height < text_h / pango.SCALE:
-                rec_height = text_h / pango.SCALE + (self.Mm2Dot(it.style.text.padding_top.value + it.style.text.padding_bottom.value))
-            elif it.can_shrink and rec_height > text_h / pango.SCALE:
-                rec_height = text_h / pango.SCALE + (self.Mm2Dot(it.style.text.padding_top.value + it.style.text.padding_bottom.value))
-            #TODO if not it.can_grow and not it.can_shrink and rec_height < text_h / pango.SCALE --> Clip text 
-            curr_info = self.draw_rectangle(it.style, rec_top, rec_left, rec_height, rec_width, curr_info, cr)
+            if it.can_grow and max_height < text_h / pango.SCALE:
+                rec_height = (text_h / pango.SCALE) + padding_top + padding_bottom
+            elif it.can_shrink and max_height > text_h / pango.SCALE:
+                rec_height = (text_h / pango.SCALE) + padding_top + padding_bottom
+            elif not it.can_grow and not it.can_shrink and max_height < text_h / pango.SCALE:
+                #TODO There must be a better way to do this.. Ex. Text clipping           
+                while text_h / pango.SCALE > max_height:
+                    line = layout.get_line(layout.get_line_count() - 1) # Get last line
+                    text = text[:line.start_index - 1] # Remove last text
+                    layout.set_text(text) # Set new text
+                    text_x, text_y, text_w, text_h = layout.get_extents()[1]
+
+            x = left + padding_left
+            y = top + padding_top
+            if it.style.text.vertical_align == 'Middle':
+                y = y + ((max_height - (text_h / pango.SCALE)) / 2)
+            elif it.style.text.vertical_align == 'Bottom':
+                y = y + ((height - padding_bottom - (text_h / pango.SCALE)))
+
+            curr_info = self.draw_rectangle(it.style, top, left, rec_height, width, curr_info, cr)
 
             # Draw text
             curr_info['color'] = self.set_curr_color(curr_info['color'], it.style.text.color, cr)
@@ -144,7 +162,7 @@ class ViewerWidget(gtk.ScrolledWindow):
             curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
                      self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
 
-        return curr_info
+        return curr_info    
 
     def draw_rectangle(self, style, top, left, height, width, 
                         curr_info, cr):
