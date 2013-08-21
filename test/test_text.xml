@@ -11,6 +11,31 @@
   <RightMargin>1cm</RightMargin>
   <BottomMargin>1cm</BottomMargin>
 
+  <PageHeader>
+    <Height>60.2pt</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox>
+        <Name>header1</Name>
+        <Height>25.54pt</Height>
+        <Width>570pt</Width>
+        <Value>Test on TextBoxes</Value>
+        <Left>0.00pt</Left>
+        <Top>0.00pt</Top>
+        <Style>
+          <BorderStyle />
+          <BorderColor />
+          <BorderWidth />
+          <FontWeight>Bold</FontWeight>
+          <FontSize>16pt</FontSize>
+          <TextAlign>Center</TextAlign>
+        </Style>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+
   <Body>
     <Height>250pt</Height>
     <ReportItems>

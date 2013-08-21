@@ -18,6 +18,7 @@ from report_parameter import ReportParameters, ReportParameter, ValidValues, Dat
 from header_footer import PageHeader, PageFooter
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
+from report_items.data_region.grid import Grid, TableColumns, Details, TableColumn, TableRows, TableRow, TableCells, TableCell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
 
@@ -65,6 +66,23 @@ def get_element(name, node, lnk):
         obj = Textbox(node, ln)
     elif name=='Image':
         obj = Image(node, ln)
+    elif name=='Grid':
+        obj = Grid(node, ln)
+    elif name=='TableColumns':
+        obj = TableColumns(node, ln)
+    elif name=='TableColumn':
+        obj = TableColumn(node, ln)
+    elif name=='Details':
+        obj = Details(node, ln)
+    elif name=='TableRows':
+        obj = TableRows(node, ln)
+    elif name=='TableRow':
+        obj = TableRow(node, ln)
+    elif name=='TableCells':
+        obj = TableCells(node, ln)
+    elif name=='TableCell':
+        obj = TableCell(node, ln)
+
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
     

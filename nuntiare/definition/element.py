@@ -33,7 +33,7 @@ class Element(object):
                 continue
             if elements[n.nodeName][0]==Element.ELEMENT:
                 el = factory.get_element(n.nodeName,n, lnk)
-                if n.nodeName in ("Line", "Rectangle", "Textbox", "Image","Subreport", "CustomReportItem", "DataRegion") :
+                if n.nodeName in ("Line", "Rectangle", "Textbox", "Image","Subreport", "CustomReportItem", "Grid") :
                     if self.reportitems_list.has_key(el.name):
                         raise_error_with_log("ReportItem '{0}' already exists. [{1}]".format(el.name, n.nodeName))
                     self.reportitems_list[el.name] = el

@@ -11,7 +11,6 @@ class PageHeaderFooter(Element):
                   'PrintOnLastPage': [Element.BOOLEAN],
                   'Style': [Element.ELEMENT],
                   'ReportItems': [Element.ELEMENT],
-                  'Style': [Element.ELEMENT],
                  }
 
         super(PageHeaderFooter, self).__init__(node, elements, lnk)

@@ -13,7 +13,8 @@ class ReportItems(Element):
                   'Image': [Element.ELEMENT],
                   'Subreport': [Element.ELEMENT],
                   'CustomReportItem': [Element.ELEMENT],
-                  'DataRegion': [Element.ELEMENT],
+                  # DataRegion elements...
+                  'Grid': [Element.ELEMENT],
                  }
 
         super(ReportItems, self).__init__(node, elements, lnk)
@@ -48,6 +49,9 @@ class ReportItem(Element):
                   'HideDuplicates': [Element.STRING],
                   'ToggleImage': [Element.ELEMENT],
                   'UserSort': [Element.ELEMENT],
+                  # DataRegion elements...
+                  'TableColumns': [Element.ELEMENT],
+                  'Details': [Element.ELEMENT],
                  }
 
         super(ReportItem, self).__init__(node, elements, lnk)

@@ -26,7 +26,6 @@ class HeaderFooterInfo(SectionInfo):
         self.print_on_first_page = False
         self.print_on_last_page = False
         if element:
-            self.height = get_element_value_or_default(element.get_element("Height"), 0)
             self.print_on_first_page = get_element_value_or_default(element.get_element("PrintOnFirstPage"), False)
             self.print_on_last_page = get_element_value_or_default(element.get_element("PrintOnLastPage"), False)
 
