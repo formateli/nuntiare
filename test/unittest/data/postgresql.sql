@@ -52,15 +52,3 @@ INSERT INTO city (id, name, province, population, is_capital) VALUES
     (14, 'Pocrí', 5, 3397, FALSE),
     (15, 'Tonosí', 5, 9736, FALSE);
 
-
-
-
-
-
-
-
-
-
-
-
-

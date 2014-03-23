@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+  <Name>Test Grid</Name>
+  <Description>
+  </Description>
+  <Author>Fredy Ramirez</Author>
+  <PageWidth>210mm</PageWidth>
+  <PageHeight>280mm</PageHeight>
+  <Width>8.5in</Width>
+  <TopMargin>1cm</TopMargin>
+  <LeftMargin>1cm</LeftMargin>
+  <RightMargin>1cm</RightMargin>
+  <BottomMargin>1cm</BottomMargin>
+
+  <PageHeader>
+    <Height>1.5cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <Style>
+      <BorderColor>
+        <Bottom>Black</Bottom>
+      </BorderColor>
+      <BorderWidth>
+        <Bottom>2 pt</Bottom>
+      </BorderWidth>
+      <BorderStyle>
+        <Bottom>Solid</Bottom>
+      </BorderStyle>
+    </Style>
+    <ReportItems>
+      <Textbox>
+        <Name>header1</Name>
+        <Height>1.5cm</Height>
+        <Width>180mm</Width>
+        <Value>Grid Test</Value>
+        <Left>0.00pt</Left>
+        <Top>3mm</Top>
+        <Style>
+          <FontWeight>Bold</FontWeight>
+          <FontSize>16pt</FontSize>
+          <TextAlign>Center</TextAlign>
+        </Style>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+
+  <Body>
+    <Height>250pt</Height>
+    <ReportItems>
+        <Grid>
+            <Name>grid1</Name>
+            <Top>5mm</Top>
+            <Left>5mm</Left>
+
+            <Columns>
+                <Column>
+                    <Width>10mm</Width>
+                </Column>
+                <Column>
+                    <Width>20mm</Width>
+                </Column>
+                <Column>
+                    <Width>30mm</Width>
+                </Column>
+            </Columns>
+
+            <Rows>
+                <Row>
+                    <Height>10mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+
+                                <Textbox>
+                                    <Name>TextBox1</Name>
+                                    <Value>Tb1 on Cell1</Value>
+                                </Textbox>
+
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
+                </Row>
+                <Row>
+                    <Height>20mm</Height>
+                </Row>
+                <Row>
+                    <Height>30mm</Height>
+                </Row>
+            </Rows>
+
+        </Grid>
+    </ReportItems>
+
+    <Columns>1</Columns>
+
+  </Body>
+
+  <PageFooter>
+    <Height>1.5cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <Style>
+      <BorderColor>
+        <Top>Black</Top>
+      </BorderColor>
+      <BorderWidth>
+        <Top>2 pt</Top>
+      </BorderWidth>
+      <BorderStyle>
+        <Top>Solid</Top>
+      </BorderStyle>
+    </Style>
+    <ReportItems>
+      <Textbox>
+        <Name>footer1</Name>
+        <Height>1.5cm</Height>
+        <Width>180mm</Width>
+        <Value></Value>
+        <Left>0.00pt</Left>
+        <Top>3mm</Top>
+        <Style>
+          <FontWeight>Bold</FontWeight>
+          <FontSize>16pt</FontSize>
+          <TextAlign>Center</TextAlign>
+        </Style>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+    </ReportItems>
+  </PageFooter>
+
+</Report>

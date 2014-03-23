@@ -15,3 +15,4 @@ class DataType(Enum):
 
     def __init__(self, expression):
         super(DataType, self).__init__('DataType', expression, DataType.enum_list)
+

@@ -11,14 +11,16 @@ from integer import Integer
 from boolean import Boolean
 from data_type import DataType
 from style.style import Style
-from style.font import FontStyle, FontWeight, TextDecoration, TextAlign, VerticalAlign, TextDirection, WritingMode
+from style.font import FontStyle, FontWeight, TextDecoration, \
+    TextAlign, VerticalAlign, TextDirection, WritingMode
 from style.border import BorderColor, BorderWidth, BorderStyle, BorderStyleEnum
 from style.background import BackgroudImage, BackgroundRepeat, BackgroundGradientType
-from report_parameter import ReportParameters, ReportParameter, ValidValues, DataSetReference, ParameterValues, ParameterValue, DefaultValue, Values
+from report_parameter import ReportParameters, ReportParameter, ValidValues, \
+    DataSetReference, ParameterValues, ParameterValue, DefaultValue, Values
 from header_footer import PageHeader, PageFooter
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
-from report_items.data_region.grid import Grid, TableColumns, Details, TableColumn, TableRows, TableRow, TableCells, TableCell
+from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
 
@@ -68,26 +70,23 @@ def get_element(name, node, lnk):
         obj = Image(node, ln)
     elif name=='Grid':
         obj = Grid(node, ln)
-    elif name=='TableColumns':
-        obj = TableColumns(node, ln)
-    elif name=='TableColumn':
-        obj = TableColumn(node, ln)
-    elif name=='Details':
-        obj = Details(node, ln)
-    elif name=='TableRows':
-        obj = TableRows(node, ln)
-    elif name=='TableRow':
-        obj = TableRow(node, ln)
-    elif name=='TableCells':
-        obj = TableCells(node, ln)
-    elif name=='TableCell':
-        obj = TableCell(node, ln)
-
+    elif name=='Columns':
+        obj = Columns(node, ln)
+    elif name=='Column':
+        obj = Column(node, ln)
+    elif name=='Rows':
+        obj = Rows(node, ln)
+    elif name=='Row':
+        obj = Row(node, ln)
+    elif name=='Cells':
+        obj = Cells(node, ln)
+    elif name=='Cell':
+        obj = Cell(node, ln)
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
-    
-    obj.lnk.obj=obj
+
     return obj
+
 
 def get_expression(name, node):
     value = get_xml_tag_value(node)
@@ -111,7 +110,7 @@ def get_expression(name, node):
     if name==10: # Element.LANGUAGE
         return None
 
-    finish_critical("Unknown Expression: '" + str(name) + "'") 
+    finish_critical("Unknown expression element definition: '{0}'".format(name))
 
 
 def get_enum(name, node):
@@ -145,11 +144,10 @@ def get_enum(name, node):
     if name=='DataType':
         return DataType(value)
 
-    finish_critical("Unknown Enum: '" + name + "'")
+    finish_critical("Unknown Enum: '{0}'".format(name))
+
 
 def finish_critical(error):
     logger.critical(error)
     raise ValueError(error)
-
-
 

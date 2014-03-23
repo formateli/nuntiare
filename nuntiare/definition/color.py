@@ -13,7 +13,7 @@ class Color(Expression):
 
         if self.is_constant:
             self.set_color(self.expression)
-        else:  
+        else:
             self.set_default_color()
 
     def value(self):
@@ -53,7 +53,6 @@ class Color(Expression):
 
         self.convert_hexstring_to_argb(str_input)
 
-
     def convert_hexstring_to_argb(self, hex_color):
         self.set_default_color()
         if (hex_color=="#FF000000"):
@@ -62,7 +61,7 @@ class Color(Expression):
 	hex_color = hex_color[1:] # Remove '#'
 
         if len(hex_color) < 6 or len(hex_color) > 8:
-            logger.warn("Color '" + hex_color + "' not in correct format. Black assigned.")
+            logger.warn("Color '{0}' not in correct format. Black assigned.".format(hex_color))
             return
 
         if len(hex_color) == 6:
@@ -70,9 +69,8 @@ class Color(Expression):
 
         self.set_values('#' + hex_color)
 
-def get_color_by_name(name):
-    # See http://msdn.microsoft.com/en-us/library/14w97wkc
 
+def get_color_by_name(name):
     if name=="AliceBlue":
         return "#FFF0F8FF"
     if name=="AntiqueWhite":
@@ -352,7 +350,6 @@ def get_color_by_name(name):
     if name=="YellowGreen":
         return "#FF9ACD32"
 
-    logger.warn("Color '" + name + "' not implemented. Black assigned.")
+    logger.warn("Color '{0}' not implemented. Black assigned.".format(name))
     return "#FF000000"
-
 

@@ -2,12 +2,12 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-#from nuntiare import logger
 from nuntiare.definition.size import Size
 from nuntiare.definition.string import String
 from nuntiare.definition.color import Color
-from nuntiare.tools import get_element_from_parent, get_element_value_or_default
+from nuntiare.tools import get_element_from_parent, get_expression_value_or_default
 
+# Cache of objects
 color_list = {}
 style_list = {}
 size_list = {}
@@ -68,7 +68,7 @@ def get_color_by_element(el):
 def get_style_size_by_element(name, el):
     if not el:
         return None
-    item = StyleItem(el)       
+    item = StyleItem(el)
     return get_style_item(name, item.value, item)
 
 
@@ -180,20 +180,20 @@ class ColorInfo(object):
 
 class TextInfo(object):
     def __init__(self, element):
-        self.font_family = get_element_value_or_default(get_element_from_parent(element, 'FontFamily'), 'Arial')
+        self.font_family = get_expression_value_or_default(element, 'FontFamily', 'Arial')
 
         # Normal | Italic
-        self.font_style = get_element_value_or_default(get_element_from_parent(element, 'FontStyle'), 'Normal')
+        self.font_style = get_expression_value_or_default(element, 'FontStyle', 'Normal')
         self.font_size = self.get_size('FontSize', element, '10 pt') 
         # Lighter | Normal | Bold | Bolder | 100 | 200 | 300 | 400 | 500 | 600 |700 | 800 | 900
-        self.font_weight = get_element_value_or_default(get_element_from_parent(element, 'FontWeight'), 'Normal')
-        self.format = get_element_value_or_default(get_element_from_parent(element, 'Format'), None)
+        self.font_weight = get_expression_value_or_default(element, 'FontWeight', 'Normal')
+        self.format = get_expression_value_or_default(element, 'Format', None)
         # Underline | Overline | LineThrough | None
-        self.text_decoration = get_element_value_or_default(get_element_from_parent(element, 'TextDecoration'), 'None') 
-        # General | Left | Right | Center Justify
-        self.text_align = get_element_value_or_default(get_element_from_parent(element, 'TextAlign'), 'General') 
+        self.text_decoration = get_expression_value_or_default(element, 'TextDecoration', 'None') 
+        # General | Left | Right | Center | Justify
+        self.text_align = get_expression_value_or_default(element, 'TextAlign', 'General') 
         # Top | Middle | Bottom
-        self.vertical_align = get_element_value_or_default(get_element_from_parent(element, 'VerticalAlign'), 'Top') 
+        self.vertical_align = get_expression_value_or_default(element, 'VerticalAlign', 'Top') 
 
         # Foreground color. Default Black
         self.color = get_color_by_element(get_element_from_parent(element, "Color"))

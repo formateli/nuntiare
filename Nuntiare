@@ -74,10 +74,12 @@ def error_with_log(error):
 def do_render(files, render_list, dir_path):
     for f in files:
         info = get_parameters_from_string(f)
-        filename=info['file']           
+        filename=info['file']
         filename=os.path.join(dir_path, filename)
         if not os.path.exists(filename):
-            logger.warn("File '{0}' does not exist.".format(filename))
+            no_file = "File '{0}' does not exist. Continue with next file.".format(filename)
+            logger.warn(no_file)
+            print no_file
             continue
         logger.debug("Processing report definition file '{0}'".format(filename))
 
@@ -90,6 +92,11 @@ def do_render(files, render_list, dir_path):
         for r in render_list:
             logger.info("Rendering to '{0}'".format(r))
             render = get_render(r)
+            if not render:
+                no_render = "Render '{0}' not found. Continue with next render.".format(r)
+                logger.warn(no_render)
+                print no_render
+                continue
             render.render(report)
 
 if len(sys.argv)==1:
@@ -147,11 +154,4 @@ if not dir_path:
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
 do_render(files, render, dir_path)
-
-
-
-
-
-
-
 

@@ -28,7 +28,7 @@ class ReportItem(Element):
     ReportItem is allowed.
     '''
 
-    def __init__(self, node, lnk):
+    def __init__(self, node, lnk, additional_elements):
         elements={'Name': [Element.STRING], 
                   'Style': [Element.ELEMENT],
                   'Action': [Element.ELEMENT],
@@ -43,16 +43,11 @@ class ReportItem(Element):
                   'Bookmark': [Element.STRING],
                   'RepeatWith': [Element.STRING],
                   'Custom': [Element.ELEMENT],
-                  'Value': [Element.STRING],
-                  'CanGrow': [Element.BOOLEAN],
-                  'CanShrink': [Element.BOOLEAN],
-                  'HideDuplicates': [Element.STRING],
-                  'ToggleImage': [Element.ELEMENT],
-                  'UserSort': [Element.ELEMENT],
-                  # DataRegion elements...
-                  'TableColumns': [Element.ELEMENT],
-                  'Details': [Element.ELEMENT],
                  }
+
+        if additional_elements:
+            for key, value in additional_elements.items():
+                elements[key] = value
 
         super(ReportItem, self).__init__(node, elements, lnk)
 
@@ -67,22 +62,38 @@ class ReportItem(Element):
 
 class Line(ReportItem):
     def __init__(self, node, lnk):
-        super(Line, self).__init__(node, lnk)
+        super(Line, self).__init__(node, lnk, None)
 
 
 class Rectangle(ReportItem):
     def __init__(self, node, lnk):
-        super(Rectangle, self).__init__(node, lnk)
+        elements={'ReportItems': [Element.ELEMENT], 
+                  'PageBreakAtStart': [Element.BOOLEAN],
+                  'PageBreakAtEnd': [Element.BOOLEAN],
+                 }
+        super(Rectangle, self).__init__(node, lnk, elements)
 
 
 class Image(ReportItem):
     def __init__(self, node, lnk):
-        super(Image, self).__init__(node, lnk)
+        elements={'Source': [Element.ENUM, 'ImageSource'],
+                  'Value': [Element.VARIANT],
+                  'MIMEType': [Element.STRING],
+                  'Sizing': [Element.ENUM, 'ImageSizing'],
+                 }
+        super(Image, self).__init__(node, lnk, elements)
 
 
 class Textbox(ReportItem):
     def __init__(self, node, lnk):
-        super(Textbox, self).__init__(node, lnk)
+        elements={'Value': [Element.STRING],
+                  'CanGrow': [Element.BOOLEAN],
+                  'CanShrink': [Element.BOOLEAN],
+                  'HideDuplicates': [Element.STRING],
+                  'ToggleImage': [Element.ELEMENT],
+                  'UserSort': [Element.ELEMENT],
+                 }
+        super(Textbox, self).__init__(node, lnk, elements)
 
 
 

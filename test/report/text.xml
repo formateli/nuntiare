@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report Name="PCW">
+<Report>
+  <Name>Test Text</Name>
   <Description>
   </Description>
   <Author>Fredy Ramirez</Author>
@@ -12,21 +13,30 @@
   <BottomMargin>1cm</BottomMargin>
 
   <PageHeader>
-    <Height>60.2pt</Height>
+    <Height>1.5cm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
     <PrintOnLastPage>true</PrintOnLastPage>
+    <Style>
+      <BorderColor>
+        <Bottom>Red</Bottom>
+      </BorderColor>
+      <BorderWidth>
+        <Bottom>2 pt</Bottom>
+      </BorderWidth>
+      <BorderStyle>
+        <Bottom>Solid</Bottom>
+      </BorderStyle>
+      <BackgroundColor>Yellow</BackgroundColor>
+    </Style>
     <ReportItems>
       <Textbox>
         <Name>header1</Name>
-        <Height>25.54pt</Height>
-        <Width>570pt</Width>
-        <Value>Test on TextBoxes</Value>
+        <Height>1.5cm</Height>
+        <Width>180mm</Width>
+        <Value>TextBox in header</Value>
         <Left>0.00pt</Left>
-        <Top>0.00pt</Top>
+        <Top>3mm</Top>
         <Style>
-          <BorderStyle />
-          <BorderColor />
-          <BorderWidth />
           <FontWeight>Bold</FontWeight>
           <FontSize>16pt</FontSize>
           <TextAlign>Center</TextAlign>
@@ -43,7 +53,7 @@
       <Textbox>
         <Name>TextBox1</Name>
         <Value>Left top 14pt&#10;Line 2&#10;Line 3&#10;Line 4&#10;Line 5&#10;CanGrow=True</Value>
-        <Height>2.5cm</Height>
+        <Height>5mm</Height>
         <Width>6cm</Width>
         <CanGrow>True</CanGrow>
         <Style>
@@ -55,8 +65,8 @@
           </BorderStyle>
           <VerticalAlign>Top</VerticalAlign>
         </Style>
-        <Left>0mm</Left>
-        <Top>0mm</Top>
+        <Left>0cm</Left>
+        <Top>1mm</Top>
       </Textbox>
 
       <Textbox>
@@ -71,7 +81,7 @@
           <VerticalAlign>Middle</VerticalAlign>
         </Style>
         <Left>7cm</Left>
-        <Top>0mm</Top>
+        <Top>1mm</Top>
       </Textbox>
 
       <Textbox>
@@ -88,15 +98,15 @@
           <PaddingBottom>2 mm</PaddingBottom>
         </Style>
         <Left>13cm</Left>
-        <Top>0mm</Top>
+        <Top>1mm</Top>
       </Textbox>
 
-<!--
+
       <Textbox>
         <Name>TextBox4</Name>
         <Value>Center top</Value>
         <Height>2cm</Height>
-        <Width>6cm</Width>
+        <Width>5cm</Width>
         <Style>
           <BorderStyle>
             <Default>Solid</Default>
@@ -104,10 +114,10 @@
           <TextAlign>Center</TextAlign>
           <VerticalAlign>Top</VerticalAlign>
         </Style>
-        <Left>0mm</Left>
+        <Left>7cm</Left>
         <Top>3cm</Top>
       </Textbox>
--->
+
 
       <Textbox>
         <Name>TextBox5</Name>
@@ -122,7 +132,7 @@
           <VerticalAlign>Middle</VerticalAlign>
         </Style>
         <Left>7cm</Left>
-        <Top>3cm</Top>
+        <Top>6cm</Top>
       </Textbox>
 
       <Textbox>
@@ -181,7 +191,7 @@
           <VerticalAlign>Middle</VerticalAlign>
         </Style>
         <Left>7cm</Left>
-        <Top>6cm</Top>
+        <Top>9cm</Top>
       </Textbox>
 
       <Textbox>
@@ -203,7 +213,7 @@
 
       <Textbox>
         <Name>TextBox9-2</Name>
-        <Value>Text Clipped 1&#10;Text Clipped 2&#10;Text Clipped 3&#10;Text Clipped 4&#10;Text Clipped 5&#10;Text Clipped 6 17</Value>
+        <Value>Text Clipped 1&#10;Text Clipped 2&#10;Text Clipped 3&#10;Text Clipped 4&#10;Text Clipped 5&#10;Text Clipped 6</Value>
         <Height>2cm</Height>
         <Width>5cm</Width>
         <Style>
@@ -496,6 +506,40 @@
     <Columns>1</Columns>
 
   </Body>
+
+  <PageFooter>
+    <Height>1.5cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <Style>
+      <BorderColor>
+        <Top>Red</Top>
+      </BorderColor>
+      <BorderWidth>
+        <Top>2 pt</Top>
+      </BorderWidth>
+      <BorderStyle>
+        <Top>Solid</Top>
+      </BorderStyle>
+      <BackgroundColor>Yellow</BackgroundColor>
+    </Style>
+    <ReportItems>
+      <Textbox>
+        <Name>footer1</Name>
+        <Height>1.5cm</Height>
+        <Width>180mm</Width>
+        <Value>TextBox in footer</Value>
+        <Left>0.00pt</Left>
+        <Top>3mm</Top>
+        <Style>
+          <FontWeight>Bold</FontWeight>
+          <FontSize>16pt</FontSize>
+          <TextAlign>Center</TextAlign>
+        </Style>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+    </ReportItems>
+  </PageFooter>
 
 </Report>
 

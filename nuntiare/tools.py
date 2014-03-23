@@ -10,6 +10,7 @@ size_10 = Decimal(10)
 size_25_4 = Decimal(25.4)
 size_72 = Decimal(72)
 
+
 def get_xml_tag_value(node):
     'Returns the valid value of xml node'
     xml_str = node.toxml() 
@@ -20,6 +21,7 @@ def get_xml_tag_value(node):
     if end < start:
         return ''
     return xml_str[start + 1:end]
+
 
 def get_parameters_from_string(string):
     '''
@@ -56,37 +58,41 @@ def get_parameters_from_string(string):
 
     return result
 
+
 def raise_error_with_log(message, error_type=None):
     logger.error(message)
     if not error_type or error_type=='ValueError':
         raise ValueError(message)
     raise ValueError(message)
 
+
 def get_element_from_parent(parent_element, child_name):
     '''
     Returns a child element definition from parent element
     '''
-    el = None
     if parent_element:
-        el = parent_element.get_element(child_name)
-    return el
+        return parent_element.get_element(child_name)
 
-def get_element_value_or_default(element, default_value):
+
+def get_expression_value_or_default(element, child_name, default_value):
     '''
     Gets the value of a report element of type expression, or its default value 
     '''
-    if not element:
+    el = get_element_from_parent(element, child_name) 
+    if not el:
         return default_value
-    value = element.value()
+    value = el.value()
     if not value:
         return default_value
     return value
+
 
 def inch_2_mm(inch):
     '''
     Converts inches to millimeters
     '''
     return Decimal(inch * 25.4)
+
 
 def get_size_in_unit(size, unit):
     unit = unit.strip().lower()

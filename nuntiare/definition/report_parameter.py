@@ -10,6 +10,7 @@ class ReportParameters(Element):
         elements={'ReportParameter': [Element.ELEMENT],}
         super(ReportParameters, self).__init__(node, elements, lnk) 
 
+
 class ReportParameter(Element):
     def __init__(self, node, lnk):
         elements={'Name': [Element.STRING],
@@ -39,6 +40,7 @@ class ValidValues(Element):
 
         super(ValidValues, self).__init__(node, elements, lnk)
 
+
 class DataSetReference(Element):
     def __init__(self, node, lnk):
         elements={'DataSetName  ': [Element.STRING],
@@ -48,11 +50,13 @@ class DataSetReference(Element):
 
         super(DataSetReference, self).__init__(node, elements, lnk)
 
+
 class ParameterValues(Element):
     def __init__(self, node, lnk):
         elements={'ParameterValue  ': [Element.ELEMENT]}
 
         super(ParameterValues, self).__init__(node, elements, lnk)
+
 
 class ParameterValue(Element):
     def __init__(self, node, lnk):
@@ -62,6 +66,7 @@ class ParameterValue(Element):
 
         super(ParameterValue, self).__init__(node, elements, lnk)
 
+
 class DefaultValue(Element):
     def __init__(self, node, lnk):
         elements={'DataSetReference   ': [Element.ELEMENT],
@@ -70,10 +75,10 @@ class DefaultValue(Element):
 
         super(DefaultValue, self).__init__(node, elements, lnk)
 
+
 class Values(Element):
     def __init__(self, node, lnk):
         elements={'Value  ': [Element.VARIANT]}
 
         super(Values, self).__init__(node, elements, lnk)
-
 

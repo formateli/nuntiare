@@ -7,7 +7,6 @@ from decimal import Decimal
 from nuntiare.tools import raise_error_with_log
 
 class Size(Expression):
-
     size_6 = Decimal(6)
     size_10 = Decimal(10)
     size_25_4 = Decimal(25.4)
@@ -27,9 +26,9 @@ class Size(Expression):
         self.expression = self.size
 
     def value(self):
-        result = super(Size, self).value()
         if self.is_constant:
-            return result
+            return self.size
+        result = super(Size, self).value()
         if not result:
             return None
         return self.get_value(result) 
@@ -60,7 +59,7 @@ class Size(Expression):
         elif unit=="pc":
             self.size = (self.size * Size.size_25_4) / Size.size_6;
         elif unit != "mm":
-            raise_error_with_log("Unknown unit '{0}'", format(unit))
+            raise_error_with_log("Unknown unit '{0}'".format(unit))
 
         self.original_size=size
         self.original_unit=unit
@@ -81,8 +80,5 @@ class Size(Expression):
         elif unit=="pc":
             return (self.size / Size.size_25_4) * Size.size_6;
 
-        raise_error_with_log("Unknown unit '{0}'", format(unit))
-
-
-
+        raise_error_with_log("Unknown unit '{0}'".format(unit))
 

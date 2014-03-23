@@ -12,7 +12,6 @@ class PageHeaderFooter(Element):
                   'Style': [Element.ELEMENT],
                   'ReportItems': [Element.ELEMENT],
                  }
-
         super(PageHeaderFooter, self).__init__(node, elements, lnk)
 
 class PageHeader(PageHeaderFooter):
@@ -22,7 +21,4 @@ class PageHeader(PageHeaderFooter):
 class PageFooter(PageHeaderFooter):
     def __init__(self, node, lnk):
         super(PageFooter, self).__init__(node, lnk)
-
-
-
 

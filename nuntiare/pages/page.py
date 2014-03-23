@@ -5,19 +5,19 @@
 from nuntiare.definition.report_items.report_item import Line, Rectangle, Textbox
 from nuntiare.pages.section import HeaderInfo, FooterInfo, BodyInfo
 from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
-from nuntiare.tools import raise_error_with_log, get_element_value_or_default, inch_2_mm
+from nuntiare.tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
     def __init__(self, report):
         self.pages = []
 
-        self.height = get_element_value_or_default(report.get_element("PageHeight"), inch_2_mm(11)) 
-        self.width = get_element_value_or_default(report.get_element("PageWidth"), inch_2_mm(8.5)) 
+        self.height = get_expression_value_or_default(report, "PageHeight", inch_2_mm(11)) 
+        self.width = get_expression_value_or_default(report, "PageWidth", inch_2_mm(8.5)) 
 
-        self.margin_top = get_element_value_or_default(report.get_element("TopMargin"), 0)
-        self.margin_left = get_element_value_or_default(report.get_element("LeftMargin"), 0)
-        self.margin_right = get_element_value_or_default(report.get_element("RightMargin"), 0)
-        self.margin_bottom = get_element_value_or_default(report.get_element("BottomMargin"), 0)
+        self.margin_top = get_expression_value_or_default(report, "TopMargin", 0)
+        self.margin_left = get_expression_value_or_default(report, "LeftMargin", 0)
+        self.margin_right = get_expression_value_or_default(report, "RightMargin", 0)
+        self.margin_bottom = get_expression_value_or_default(report, "BottomMargin", 0)
 
         self.header = HeaderInfo(report.get_element("PageHeader"))
         self.footer = FooterInfo(report.get_element("PageFooter"))
@@ -29,7 +29,7 @@ class Pages(object):
             pg = Page()
             last_page = self.run_section(self.body, pg)
             pg.page_number = len(self.pages) + 1
-            self.add_page(pg)
+            self.pages.append(pg)
 
         # Run Header and footer for each page 
         for page in self.pages:
@@ -62,9 +62,6 @@ class Pages(object):
             page.add_page_item(page_item)
 
         return last_page
-
-    def add_page(self, page):
-        self.pages.append(page)
 
 
 class Page(object):

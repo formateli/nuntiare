@@ -8,11 +8,10 @@ import unittest
 class DataProvidersTest(unittest.TestCase):
 
     def testDataProviders(self):
-        get_data_provider('xml') 
         dp = get_data_provider("no_name")
-        self.assertEqual(dp, None, "DataProvider must 'None'")
+        self.assertEqual(dp, None, "DataProvider must be 'None'")
 
-        providers = {'xml':'file=Panama.xml',
+        providers = {'xml':'file=data/Panama.xml',
                      'postgresql':"dbname=nuntiare_test host=localhost port=5433 user=postgres password=h12345678 client_encoding=UNICODE connect_timeout=0",
                     }
         print "\n"
@@ -35,6 +34,4 @@ class DataProvidersTest(unittest.TestCase):
 
         self.assertEqual(len(cursor.description), 5, "Not 5 colummns for: " + name)
         self.assertEqual(cursor.description[0][0], 'id', "First column is not id for: " + name)
-
-
 

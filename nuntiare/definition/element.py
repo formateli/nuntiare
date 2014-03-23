@@ -22,24 +22,31 @@ class Element(object):
 
     def __init__(self, node, elements, lnk):
 
+        lnk.obj=self
         self.element_list={}      # Here we list elements found for this element
         self.reportitems_list={}  # report items list. Only if it is a ReportItems element
         self.lnk=lnk              # This is the linking object. See link.py
-        
+
         import factory #--> Loading here we avoid circular references
 
         for n in node.childNodes:
             if not elements.has_key(n.nodeName):
+                if n.nodeName != '#text':
+                    logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
                 continue
-            if elements[n.nodeName][0]==Element.ELEMENT:
-                el = factory.get_element(n.nodeName,n, lnk)
-                if n.nodeName in ("Line", "Rectangle", "Textbox", "Image","Subreport", "CustomReportItem", "Grid") :
+            if elements[n.nodeName][0] == Element.ELEMENT:
+                el = factory.get_element(n.nodeName, n, lnk)
+                if n.nodeName in ("Line","Rectangle","Textbox","Image","Subreport","CustomReportItem","Grid"):
                     if self.reportitems_list.has_key(el.name):
                         raise_error_with_log("ReportItem '{0}' already exists. [{1}]".format(el.name, n.nodeName))
+                    if n.nodeName in ("Textbox"): 
+                        if lnk.report.report_items.has_key(el.name):
+                            raise_error_with_log("Report already has a Texbox with name '{0}'".format(el.name))
+                        else:
+                            lnk.report.report_items[el.name] = el
                     self.reportitems_list[el.name] = el
                 else:
                     self.element_list[n.nodeName] = el
-                el.lnk.parent=self
             elif elements[n.nodeName][0]==Element.ENUM:
                 self.element_list[n.nodeName]=factory.get_enum(elements[n.nodeName][1], n)
             else: 
@@ -60,8 +67,4 @@ class Element(object):
     def get_element(self, name):
         if self.element_list.has_key(name):
             return self.element_list[name]
-        return None
-
-
-
 

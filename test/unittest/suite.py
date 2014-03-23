@@ -5,7 +5,7 @@
 import sys, os
 try:
     DIR = os.path.dirname(os.path.realpath(__file__))
-    DIR = os.path.normpath(os.path.join(DIR, '..', 'nuntiare'))
+    DIR = os.path.normpath(os.path.join(DIR, '../..', 'nuntiare'))
     if os.path.isdir(DIR):
         sys.path.insert(0, os.path.dirname(DIR))
 except NameError:
@@ -15,7 +15,6 @@ import logging
 logging.basicConfig(filename='nuntiare_test.log',level=logging.DEBUG)
 
 import unittest
-#import prueba
 import data_providers
 import report
 
@@ -26,5 +25,4 @@ suite.addTests(loader.loadTestsFromModule(report))
 
 runner = unittest.TextTestRunner(verbosity=2)
 result = runner.run(suite)
-
 

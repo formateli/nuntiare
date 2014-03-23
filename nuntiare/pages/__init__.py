@@ -9,4 +9,3 @@ def get_pages(report):
     pages.build_pages()
     return pages
 
-

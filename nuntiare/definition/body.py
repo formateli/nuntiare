@@ -13,7 +13,5 @@ class Body(Element):
                   'ColumnSpacing': [Element.SIZE],
                   'Style': [Element.ELEMENT],
                  }
-
         super(Body, self).__init__(node, elements, lnk)
-
 
