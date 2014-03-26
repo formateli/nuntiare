@@ -3,8 +3,9 @@
 # contains the full copyright notices and license terms.
 
 from nuntiare.definition.report_items.report_item import Line, Rectangle, Textbox
+from nuntiare.definition.report_items.grid import Grid
 from nuntiare.pages.section import HeaderInfo, FooterInfo, BodyInfo
-from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
+from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid
 from nuntiare.tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
@@ -24,44 +25,103 @@ class Pages(object):
         self.body = BodyInfo(report.get_element("Body"))
 
     def build_pages(self):
-        last_page = False
-        while not last_page:
-            pg = Page()
-            last_page = self.run_section(self.body, pg)
-            pg.page_number = len(self.pages) + 1
-            self.pages.append(pg)
+
+        pg = Page()
+        self.run_reportitems(pg, self.body.definition, self.margin_top + self.header.height, self.margin_left)
+        pg.page_number = len(self.pages) + 1
+        self.pages.append(pg)
 
         # Run Header and footer for each page 
         for page in self.pages:
-            self.run_section(self.header, page)
-            self.run_section(self.footer, page)
+            self.run_reportitems(page, self.header.definition, self.margin_top, self.margin_left)
+            self.run_reportitems(page, self.footer.definition, self.height - self.margin_bottom - self.footer.height, self.margin_left)
 
-    def run_section(self, section, page):
-        last_page = True
-        if not section.definition:
-            return last_page
+    def run_reportitems(self, page, element, top, left, height=None, width=None):
+        result = {'can_grow' : False,
+                  'can_shrink' : False,
+                  'min_height' : 30000,
+                  'max_height' : 0,
+                  'item_list' : [],
+                 }
 
-        if isinstance(section, HeaderInfo):
-            top = self.margin_top
-        elif isinstance(section, BodyInfo):
-            top = self.margin_top + self.header.height
-        elif isinstance(section, FooterInfo):
-            top = self.height - self.margin_bottom - self.footer.height
-        else: 
-            raise_error_with_log('Unknown section type {0}'.format(str(section)))
+        items = element.get_element("ReportItems")
 
-        items = section.definition.get_element("ReportItems")
         for name, it in items.reportitems_list.items():
             page_item = None
-            if isinstance(it, Line):
-                page_item = PageLine(it, top, self.margin_left)
-            if isinstance(it, Rectangle):
-                page_item = PageRectangle(it, top, self.margin_left)
-            if isinstance(it, Textbox):
-                page_item = PageText(it, top, self.margin_left)
-            page.add_page_item(page_item)
 
-        return last_page
+            if isinstance(it, Line):
+                page_item = PageLine(it, top, left)
+                page.add_page_item(page_item)
+            if isinstance(it, Rectangle):
+                page_item = PageRectangle(it, top, left)
+                page.add_page_item(page_item)
+            if isinstance(it, Textbox):
+                page_item = PageText(it, top, left, height, width)
+                result['can_grow'] = page_item.can_grow
+                result['can_shrink'] = page_item.can_shrink
+                if page_item.height < result['min_height']:
+                    result['min_height'] = page_item.height
+                if page_item.height > result['max_height']:
+                    result['max_height'] = page_item.height
+                result['item_list'].append(page_item)
+                page.add_page_item(page_item)
+            if isinstance(it, Grid):
+                page_item = PageGrid(it, top, left)
+                page.add_page_item(page_item)
+                grid_top = get_expression_value_or_default(it, "Top", 0)
+                grid_left = get_expression_value_or_default(it, "Left", 0)  
+                columns = it.get_element("Columns")
+                rows = it.get_element("Rows")
+                sum_height = 0
+                for row in rows.row_list:
+                    sum_width = 0 
+                    cells = row.get_element("Cells")
+                    if not cells:
+                        raise_error_with_log("Cells not found in grid Row. Grid name: '{0}'".format(it.name))
+                    if len (columns.column_list) != len (cells.cell_list):
+                        raise_error_with_log("Row cells quantity and Columns quantity must be equal. Grid name: '{0}'".format(it.name))
+
+                    row_height = get_expression_value_or_default(row, "Height", 0)
+                    can_grow = False 
+                    can_shrink = False 
+                    min_height = 30000
+                    max_height = 0
+                    item_list = []
+
+                    i=0
+                    for cell in cells.cell_list:
+                        col_width = get_expression_value_or_default(columns.column_list[i], "Width", 0) 
+                        data = self.run_reportitems(page, cell, 
+                            top + grid_top + sum_height,
+                            left + grid_left + sum_width, 
+                            row_height,
+                            col_width)
+ 
+                        if data['can_grow']:
+                            can_grow = True 
+                        if data['can_shrink']:
+                            can_shrink = True
+                        if data['min_height'] < min_height:
+                            min_height = data['min_height']
+                        if data['max_height'] > max_height:
+                            max_height = data['max_height']
+
+                        for item in data['item_list']:
+                            item_list.append(item)
+
+                        sum_width = sum_width + col_width
+                        i=i+1
+
+                    if can_grow and max_height > row_height:
+                        row_height = max_height
+                        for item in item_list:
+                            item.height = max_height
+
+                    sum_height = sum_height + row_height
+
+                page_item.width = sum_width
+
+        return result
 
 
 class Page(object):
@@ -71,5 +131,4 @@ class Page(object):
 
     def add_page_item(self, page_item):
         self.page_items.append(page_item)
-
 

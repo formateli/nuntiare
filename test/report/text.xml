@@ -536,7 +536,7 @@
           <FontSize>16pt</FontSize>
           <TextAlign>Center</TextAlign>
         </Style>
-        <ZIndex>1</ZIndex>
+        <ZIndex>5</ZIndex>
       </Textbox>
     </ReportItems>
   </PageFooter>

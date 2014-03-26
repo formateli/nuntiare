@@ -16,6 +16,7 @@ class Grid(ReportItem):
 class Columns(Element):
     def __init__(self, node, lnk):
         elements={'Column': [Element.ELEMENT],}
+        self.column_list=[]
         super(Columns, self).__init__(node, elements, lnk)
 
 
@@ -25,11 +26,13 @@ class Column(Element):
                   'Visibility': [Element.ELEMENT],
                  }
         super(Column, self).__init__(node, elements, lnk)
+        lnk.parent.column_list.append(self)
 
 
 class Rows(Element):
     def __init__(self, node, lnk):
         elements={'Row': [Element.ELEMENT],}
+        self.row_list=[]
         super(Rows, self).__init__(node, elements, lnk)
 
 
@@ -40,11 +43,13 @@ class Row(Element):
                   'Visibility': [Element.ELEMENT],
                  }
         super(Row, self).__init__(node, elements, lnk)
+        lnk.parent.row_list.append(self)
 
 
 class Cells(Element):
     def __init__(self, node, lnk):
         elements={'Cell': [Element.ELEMENT],}
+        self.cell_list=[]
         super(Cells, self).__init__(node, elements, lnk)
 
 
@@ -54,4 +59,5 @@ class Cell(Element):
                   'ColSpan': [Element.INTEGER],
                  }
         super(Cell, self).__init__(node, elements, lnk)
+        lnk.parent.cell_list.append(self)
 

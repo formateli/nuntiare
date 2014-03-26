@@ -7,14 +7,10 @@ import cairo
 import pango
 import pangocairo
 from decimal import Decimal
+from nuntiare import __pixels_per_inch__
 from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
 from nuntiare.pages.style import StyleItem
 from nuntiare.tools import get_size_in_unit, raise_error_with_log
-
-# A Gtk widget that shows rendered pages in a form.
-
-#PIXELS_PER_INCH=Decimal(72) # We use the standard 72dpi
-PIXELS_PER_INCH=Decimal(85) # TODO--> get dpi, should be in a cfg file?
 
 class ViewerWidget(gtk.ScrolledWindow):
 
@@ -22,6 +18,7 @@ class ViewerWidget(gtk.ScrolledWindow):
         super(ViewerWidget, self).__init__()
 
         self.report = report
+        self.pages = report.pages
 
         self.set_border_width(10)
         self.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_ALWAYS)
@@ -40,7 +37,7 @@ class ViewerWidget(gtk.ScrolledWindow):
     def expose(self, widget, event):
         cr = widget.window.cairo_create()
 
-        for pg in self.report.pages.pages:
+        for pg in self.pages.pages:
             curr_info = self.draw_blank_page(cr)
 
             for it in pg.page_items:
@@ -162,6 +159,11 @@ class ViewerWidget(gtk.ScrolledWindow):
             curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
                      self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
 
+        #if isinstance(it, PageGrid):
+        #    pass
+        #    curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
+        #             self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
+
         return curr_info    
 
     def draw_rectangle(self, style, top, left, height, width, 
@@ -214,19 +216,19 @@ class ViewerWidget(gtk.ScrolledWindow):
                      'border_style':'Solid'
                     }
         
-        self.draw_section_style(self.report.pages.header, self.Mm2Dot(self.report.pages.margin_top), 
-                self.Mm2Dot(self.report.pages.margin_left), self.Mm2Dot(self.report.pages.header.height),
-                self.Mm2Dot(self.report.pages.width - self.report.pages.margin_left - self.report.pages.margin_right),
+        self.draw_section_style(self.pages.header, self.Mm2Dot(self.pages.margin_top), 
+                self.Mm2Dot(self.pages.margin_left), self.Mm2Dot(self.pages.header.height),
+                self.Mm2Dot(self.pages.width - self.pages.margin_left - self.pages.margin_right),
                 curr_info, cr)
-        self.draw_section_style(self.report.pages.body, self.Mm2Dot(self.report.pages.margin_top + self.report.pages.header.height), 
-                self.Mm2Dot(self.report.pages.margin_left), self.Mm2Dot(self.report.pages.body.height),
-                self.Mm2Dot(self.report.pages.width - self.report.pages.margin_left - self.report.pages.margin_right),
+        self.draw_section_style(self.pages.body, self.Mm2Dot(self.pages.margin_top + self.pages.header.height), 
+                self.Mm2Dot(self.pages.margin_left), self.Mm2Dot(self.pages.body.height),
+                self.Mm2Dot(self.pages.width - self.pages.margin_left - self.pages.margin_right),
                 curr_info, cr)
-        self.draw_section_style(self.report.pages.footer, 
-                self.Mm2Dot(self.report.pages.height - self.report.pages.margin_bottom - self.report.pages.footer.height), 
-                self.Mm2Dot(self.report.pages.margin_left), 
-                self.Mm2Dot(self.report.pages.footer.height),
-                self.Mm2Dot(self.report.pages.width - self.report.pages.margin_left - self.report.pages.margin_right),
+        self.draw_section_style(self.pages.footer, 
+                self.Mm2Dot(self.pages.height - self.pages.margin_bottom - self.pages.footer.height), 
+                self.Mm2Dot(self.pages.margin_left), 
+                self.Mm2Dot(self.pages.footer.height),
+                self.Mm2Dot(self.pages.width - self.pages.margin_left - self.pages.margin_right),
                 curr_info, cr)
 
         return curr_info
@@ -242,7 +244,7 @@ class ViewerWidget(gtk.ScrolledWindow):
 
         curr_info['border_style'] = self.set_curr_border_style(curr_info['border_style'], border_style, cr)
         if curr_info['border_style'] == 'None':
-            return curr_info
+            return curr_info # Nothing to draw
 
         curr_info['background_color'] = self.set_curr_color(curr_info['background_color'], color, cr)
         curr_info['border_width'] = self.set_curr_border_width(curr_info['border_width'], border_width, cr)
@@ -291,5 +293,5 @@ class ViewerWidget(gtk.ScrolledWindow):
         return float(c) / float(65535) 
 
     def Mm2Dot(self, mm):
-        return (mm * PIXELS_PER_INCH) / Decimal(25.4)
+        return (mm * __pixels_per_inch__) / Decimal(25.4)
 

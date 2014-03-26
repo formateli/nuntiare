@@ -55,13 +55,13 @@
 
             <Columns>
                 <Column>
-                    <Width>10mm</Width>
-                </Column>
-                <Column>
-                    <Width>20mm</Width>
-                </Column>
-                <Column>
                     <Width>30mm</Width>
+                </Column>
+                <Column>
+                    <Width>40mm</Width>
+                </Column>
+                <Column>
+                    <Width>50mm</Width>
                 </Column>
             </Columns>
 
@@ -71,22 +71,239 @@
                     <Cells>
                         <Cell>
                             <ReportItems>
-
                                 <Textbox>
-                                    <Name>TextBox1</Name>
-                                    <Value>Tb1 on Cell1</Value>
+                                    <Name>title1</Name>
+                                    <Value>Title 1</Value>
+                                    <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <FontSize>12pt</FontSize>
+                                        <TextAlign>Center</TextAlign>
+                                        <VerticalAlign>Middle</VerticalAlign>
+                                        <BorderStyle>
+                                            <Default>Solid</Default>
+                                        </BorderStyle>
+                                    </Style>
                                 </Textbox>
-
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>title2</Name>
+                                    <Value>Title 2</Value>
+                                    <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <FontSize>12pt</FontSize>
+                                        <TextAlign>Center</TextAlign>
+                                        <VerticalAlign>Middle</VerticalAlign>
+                                        <BorderStyle>
+                                            <Default>Solid</Default>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>title3</Name>
+                                    <Value>Title 3</Value>
+                                    <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <FontSize>12pt</FontSize>
+                                        <TextAlign>Center</TextAlign>
+                                        <VerticalAlign>Middle</VerticalAlign>
+                                        <BorderStyle>
+                                            <Default>Solid</Default>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
                             </ReportItems>
                         </Cell>
                     </Cells>
                 </Row>
+
                 <Row>
-                    <Height>20mm</Height>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r1.1</Name>
+                                    <Value>Row1.1</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r1.2</Name>
+                                    <Value>Row1.2</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r1.3</Name>
+                                    <Value>Row1.3</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
                 </Row>
+
                 <Row>
-                    <Height>30mm</Height>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r2.1</Name>
+                                    <Value>Row2.1</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r2.2</Name>
+                                    <Value>Row2.2</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r2.3</Name>
+                                    <Value>Row2.3</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
                 </Row>
+
+                <Row>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r3.1</Name>
+                                    <Value>Row3.1</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r3.2</Name>
+                                    <CanGrow>True</CanGrow>
+                                    <Value>Row3.2 CanGrow, Row3.2 CanGrow, Row3.2 CanGrow, Row3.2 CanGrow</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r3.3</Name>
+                                    <Value>Row3.3</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
+                </Row>
+
+                <Row>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r4.1</Name>
+                                    <Value>Row4.1</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r4.2</Name>
+                                    <Value>Row4.2</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>r4.3</Name>
+                                    <Value>Row4.3</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
+                </Row>
+
             </Rows>
 
         </Grid>

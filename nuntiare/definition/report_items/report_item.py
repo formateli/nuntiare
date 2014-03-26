@@ -4,6 +4,7 @@
 
 from nuntiare.definition.element import Element
 from nuntiare.definition.expression import verify_expression_constant_and_required
+from nuntiare.tools import raise_error_with_log
 
 class ReportItems(Element):
     def __init__(self, node, lnk):
@@ -57,7 +58,10 @@ class ReportItem(Element):
         self.zindex=0
         zindex = self.get_element("ZIndex")
         if zindex:
-            self.zindex = zindex.value()  
+            try:
+                self.zindex = int(zindex.value())
+            except ValueError: 
+                raise_error_with_log("Invalid ZIndex value for ReportItem '{0}'".format(self.name))
 
 
 class Line(ReportItem):
