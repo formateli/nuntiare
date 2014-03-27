@@ -54,6 +54,7 @@ class Pages(object):
                 page.add_page_item(page_item)
             if isinstance(it, Rectangle):
                 page_item = PageRectangle(it, top, left)
+                result['item_list'].append(page_item)
                 page.add_page_item(page_item)
             if isinstance(it, Textbox):
                 page_item = PageText(it, top, left, height, width)
@@ -69,8 +70,17 @@ class Pages(object):
                 page_item = PageGrid(it, top, left)
                 page.add_page_item(page_item)
                 grid_top = get_expression_value_or_default(it, "Top", 0)
-                grid_left = get_expression_value_or_default(it, "Left", 0)  
+                grid_left = get_expression_value_or_default(it, "Left", 0)
+  
                 columns = it.get_element("Columns")
+                total_columns = len (columns.column_list)
+                column_list=[]
+                column_data = {}
+                for col in columns.column_list: 
+                     column_data['Width'] = get_expression_value_or_default(col, "Width", 0)
+                     column_data['Visibility'] = get_expression_value_or_default(col, "Visibility", True)
+                     column_list.append(column_data)
+
                 rows = it.get_element("Rows")
                 sum_height = 0
                 for row in rows.row_list:
@@ -78,9 +88,7 @@ class Pages(object):
                     cells = row.get_element("Cells")
                     if not cells:
                         raise_error_with_log("Cells not found in grid Row. Grid name: '{0}'".format(it.name))
-                    if len (columns.column_list) != len (cells.cell_list):
-                        raise_error_with_log("Row cells quantity and Columns quantity must be equal. Grid name: '{0}'".format(it.name))
-
+                    total_cells = len(cells.cell_list)
                     row_height = get_expression_value_or_default(row, "Height", 0)
                     can_grow = False 
                     can_shrink = False 
@@ -89,13 +97,37 @@ class Pages(object):
                     item_list = []
 
                     i=0
-                    for cell in cells.cell_list:
-                        col_width = get_expression_value_or_default(columns.column_list[i], "Width", 0) 
+                    jump=0
+                    for col in columns.column_list:
+                        if jump > 0: # ColSpan
+                            jump = jump - 1
+                            sum_width = sum_width + column_list[i]['Width']
+                            i = i + 1
+                            continue
+
+                        if i > total_cells - 1:
+                            raise_error_with_log("Incongruent number of columns and cells. Grid name: '{0}'".format(it.name))
+                        cell = cells.cell_list[i]
+
+                        col_span = int(get_expression_value_or_default(cell, "ColSpan", 1))
+                        cell_Width = column_list[i]['Width']  
+                        if col_span <= 0:
+                            raise_error_with_log("Cell ColSpan must be greater than '0'. Grid name: '{0}'".format(it.name))
+                        if col_span > 1:
+                            remain = (total_columns - i) - col_span
+                            if remain < 0:
+                                raise_error_with_log("Incongruent number of columns and cells. Grid name: '{0}'".format(it.name))
+
+                            x = 1
+                            while x < col_span:
+                              cell_Width = cell_Width + column_list[i + x]['Width']
+                              x = x + 1
+
                         data = self.run_reportitems(page, cell, 
                             top + grid_top + sum_height,
                             left + grid_left + sum_width, 
                             row_height,
-                            col_width)
+                            cell_Width)
  
                         if data['can_grow']:
                             can_grow = True 
@@ -109,18 +141,26 @@ class Pages(object):
                         for item in data['item_list']:
                             item_list.append(item)
 
-                        sum_width = sum_width + col_width
-                        i=i+1
+                        sum_width = sum_width + column_list[i]['Width']
+                        i = i + 1
+                        jump = col_span - 1
 
+                    height_changed = False 
                     if can_grow and max_height > row_height:
                         row_height = max_height
+                        height_changed = True
+                    if can_shrink and min_height < row_height:
+                        row_height = min_height
+                        height_changed = True
+                    if height_changed:
                         for item in item_list:
-                            item.height = max_height
+                            item.height = row_height
 
                     sum_height = sum_height + row_height
 
                 page_item.width = sum_width
-
+                page_item.height = sum_height
+        
         return result
 
 

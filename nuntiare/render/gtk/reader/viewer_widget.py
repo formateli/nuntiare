@@ -8,7 +8,7 @@ import pango
 import pangocairo
 from decimal import Decimal
 from nuntiare import __pixels_per_inch__
-from nuntiare.pages.page_item import PageLine, PageRectangle, PageText
+from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid
 from nuntiare.pages.style import StyleItem
 from nuntiare.tools import get_size_in_unit, raise_error_with_log
 
@@ -150,7 +150,7 @@ class ViewerWidget(gtk.ScrolledWindow):
             curr_info = self.draw_rectangle(it.style, top, left, rec_height, width, curr_info, cr)
 
             # Draw text
-            curr_info['color'] = self.set_curr_color(curr_info['color'], it.style.text.color, cr)
+            curr_info['color'] = self.set_curr_color(None, it.style.text.color, cr)
             cr.move_to(x, y)
             pc.show_layout(layout)
 
@@ -159,19 +159,18 @@ class ViewerWidget(gtk.ScrolledWindow):
             curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
                      self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
 
-        #if isinstance(it, PageGrid):
-        #    pass
-        #    curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
-        #             self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
+        if isinstance(it, PageGrid):
+            curr_info = self.draw_rectangle(it.style, self.Mm2Dot(it.top), self.Mm2Dot(it.left), 
+                     self.Mm2Dot(it.height), self.Mm2Dot(it.width), curr_info, cr)
 
-        return curr_info    
+        return curr_info
 
     def draw_rectangle(self, style, top, left, height, width, 
                         curr_info, cr):
         cr.set_line_width(0.0)
         curr_info['border_width'] = 0.0
         curr_info['border_style'] = None
-        curr_info['background_color'] = self.set_curr_color(curr_info['background_color'], style.background_color, cr)
+        curr_info['background_color'] = self.set_curr_color(None, style.background_color, cr)
         if curr_info['background_color']: # if not, background color is Transparent, nothing to draw
             cr.rectangle(left, top, width, height)
             cr.fill()
