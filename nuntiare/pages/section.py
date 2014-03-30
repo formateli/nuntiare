@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from style import StyleInfo
-from nuntiare.tools import raise_error_with_log, get_expression_value_or_default, get_element_from_parent, inch_2_mm
+from ..tools import raise_error_with_log, get_expression_value_or_default, get_element_from_parent, inch_2_mm
 
 ''' 
     Page sections info: Header, Footer and Body

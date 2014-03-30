@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.tools import raise_error_with_log
+from ..tools import raise_error_with_log
 
 class Expression(object):
     def __init__(self, expression):

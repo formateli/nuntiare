@@ -2,10 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.render.render import Render
+from ....render.render import Render
 import cairo
-from nuntiare.render.gtk.context import Context
-from nuntiare.tools import get_size_in_unit
+from ....render.gtk.context import Context
+from ....tools import get_size_in_unit
 
 class GtkSvgRender(Render):
     def __init__(self):

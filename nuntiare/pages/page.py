@@ -2,11 +2,11 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.report_items.report_item import Line, Rectangle, Textbox
-from nuntiare.definition.report_items.grid import Grid
-from nuntiare.pages.section import HeaderInfo, FooterInfo, BodyInfo
-from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid
-from nuntiare.tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
+from ..definition.report_items.report_item import Line, Rectangle, Textbox
+from ..definition.report_items.grid import Grid
+from ..pages.section import HeaderInfo, FooterInfo, BodyInfo
+from ..pages.page_item import PageLine, PageRectangle, PageText, PageGrid
+from ..tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
     def __init__(self, report):

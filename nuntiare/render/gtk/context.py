@@ -122,10 +122,6 @@ class Context(object):
 
             rec_height = height
 
-            #if it.can_grow and max_height < text_h / pango.SCALE:
-            #    rec_height = (text_h / pango.SCALE) + padding_top + padding_bottom
-            #elif it.can_shrink and max_height > text_h / pango.SCALE:
-            #    rec_height = (text_h / pango.SCALE) + padding_top + padding_bottom
             if not it.can_grow and not it.can_shrink and max_height < text_h / pango.SCALE:
                 #TODO There must be a better way to do this.. Ex. Text clipping           
                 while text_h / pango.SCALE > max_height:

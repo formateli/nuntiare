@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from expression import Expression
-from nuntiare.tools import raise_error_with_log
+from ..tools import raise_error_with_log
 
 class Size(Expression):
     size_6 = float(6)

@@ -2,8 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.report_items.report_item import ReportItem
-from nuntiare.definition.element import Element
+from ...definition.report_items.report_item import ReportItem
+from ...definition.element import Element
 
 class Grid(ReportItem):
     def __init__(self, node, lnk):

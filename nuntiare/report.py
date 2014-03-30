@@ -4,8 +4,8 @@
 
 import uuid
 import datetime
-from nuntiare import logger, __reports__
-from nuntiare.tools import raise_error_with_log
+from . import logger, __reports__
+from .tools import raise_error_with_log
 from definition.link import Link
 from definition.element import Element
 from xml.dom.minidom import parse, parseString

@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.enum import Enum
+from ...definition.enum import Enum
 
 class FontStyle(Enum):
     enum_list={'normal': 'Normal',

@@ -2,10 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.size import Size
-from nuntiare.definition.string import String
-from nuntiare.definition.color import Color
-from nuntiare.tools import get_element_from_parent, get_expression_value_or_default
+from ..definition.size import Size
+from ..definition.string import String
+from ..definition.color import Color
+from ..tools import get_element_from_parent, get_expression_value_or_default
 
 # Cache of objects
 color_list = {}

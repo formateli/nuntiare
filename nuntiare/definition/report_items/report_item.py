@@ -2,9 +2,9 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.element import Element
-from nuntiare.definition.expression import verify_expression_constant_and_required
-from nuntiare.tools import raise_error_with_log
+from ...definition.element import Element
+from ...definition.expression import verify_expression_constant_and_required
+from ...tools import raise_error_with_log
 
 class ReportItems(Element):
     def __init__(self, node, lnk):

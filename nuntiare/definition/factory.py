@@ -2,8 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import logger
-from nuntiare.tools import get_xml_tag_value 
+from .. import logger
+from ..tools import get_xml_tag_value 
 from color import Color
 from size import Size
 from string import String

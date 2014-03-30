@@ -7,7 +7,7 @@ import pango
 import pangocairo
 from style import StyleInfo
 from decimal import Decimal
-from nuntiare.tools import raise_error_with_log, get_element_from_parent, \
+from ..tools import raise_error_with_log, get_element_from_parent, \
     get_expression_value_or_default, get_size_in_unit, dot_2_mm, point_2_mm
 
 class PageItem(object):

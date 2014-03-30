@@ -2,8 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import logger
-from nuntiare.tools import raise_error_with_log
+from .. import logger
+from ..tools import raise_error_with_log
 from link import Link
 
 class Element(object):

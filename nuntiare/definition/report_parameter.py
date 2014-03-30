@@ -34,8 +34,8 @@ class ReportParameter(Element):
 
 class ValidValues(Element):
     def __init__(self, node, lnk):
-        elements={'DataSetReference ': [Element.ELEMENT],
-                  'ParameterValues ': [Element.ELEMENT],
+        elements={'DataSetReference': [Element.ELEMENT],
+                  'ParameterValues': [Element.ELEMENT],
                  }
 
         super(ValidValues, self).__init__(node, elements, lnk)
@@ -43,9 +43,9 @@ class ValidValues(Element):
 
 class DataSetReference(Element):
     def __init__(self, node, lnk):
-        elements={'DataSetName  ': [Element.STRING],
-                  'ValueField  ': [Element.STRING],
-                  'LabelField   ': [Element.STRING],
+        elements={'DataSetName': [Element.STRING],
+                  'ValueField': [Element.STRING],
+                  'LabelField': [Element.STRING],
                  }
 
         super(DataSetReference, self).__init__(node, elements, lnk)
@@ -53,15 +53,15 @@ class DataSetReference(Element):
 
 class ParameterValues(Element):
     def __init__(self, node, lnk):
-        elements={'ParameterValue  ': [Element.ELEMENT]}
+        elements={'ParameterValue': [Element.ELEMENT]}
 
         super(ParameterValues, self).__init__(node, elements, lnk)
 
 
 class ParameterValue(Element):
     def __init__(self, node, lnk):
-        elements={'Value ': [Element.VARIANT],
-                  'Label ': [Element.STRING],
+        elements={'Value': [Element.VARIANT],
+                  'Label': [Element.STRING],
                  }
 
         super(ParameterValue, self).__init__(node, elements, lnk)
@@ -69,7 +69,7 @@ class ParameterValue(Element):
 
 class DefaultValue(Element):
     def __init__(self, node, lnk):
-        elements={'DataSetReference   ': [Element.ELEMENT],
+        elements={'DataSetReference': [Element.ELEMENT],
                   'Values  ': [Element.ELEMENT],
                  }
 
@@ -78,7 +78,7 @@ class DefaultValue(Element):
 
 class Values(Element):
     def __init__(self, node, lnk):
-        elements={'Value  ': [Element.VARIANT]}
+        elements={'Value': [Element.VARIANT]}
 
         super(Values, self).__init__(node, elements, lnk)
 

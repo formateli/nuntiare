@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import __config__
+from .. import __config__
 
 def get_render(render_name):
     '''

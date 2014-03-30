@@ -3,8 +3,8 @@
 # contains the full copyright notices and license terms.
 
 import gtk
-from nuntiare.tools import get_size_in_unit, get_float_rgba
-from nuntiare.render.gtk.context import Context
+from ....tools import get_size_in_unit, get_float_rgba
+from ....render.gtk.context import Context
 
 class ViewerWidget(gtk.ScrolledWindow):
 

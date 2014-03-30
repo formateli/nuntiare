@@ -2,8 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare.definition.element import Element
-from nuntiare.definition.enum import Enum
+from ...definition.element import Element
+from ...definition.enum import Enum
 
 class BackgroudImage(Element):
     def __init__(self, node, lnk):

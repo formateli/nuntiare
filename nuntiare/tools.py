@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import logger, __pixels_per_inch__
+from . import logger, __pixels_per_inch__
 
 size_6 = float(6)
 size_10 = float(10)
