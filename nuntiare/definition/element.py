@@ -31,7 +31,7 @@ class Element(object):
 
         for n in node.childNodes:
             if not elements.has_key(n.nodeName):
-                if n.nodeName != '#text':
+                if n.nodeName not in ('#text', '#comment'):
                     logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
                 continue
             if elements[n.nodeName][0] == Element.ELEMENT:

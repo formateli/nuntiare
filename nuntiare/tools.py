@@ -2,13 +2,12 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from nuntiare import logger
-from decimal import Decimal
+from nuntiare import logger, __pixels_per_inch__
 
-size_6 = Decimal(6)
-size_10 = Decimal(10)
-size_25_4 = Decimal(25.4)
-size_72 = Decimal(72)
+size_6 = float(6)
+size_10 = float(10)
+size_25_4 = float(25.4)
+size_72 = float(72)
 
 
 def get_xml_tag_value(node):
@@ -91,23 +90,35 @@ def inch_2_mm(inch):
     '''
     Converts inches to millimeters
     '''
-    return Decimal(inch * 25.4)
+    return float(inch * 25.4)
 
+#def mm_2_dot(mm, pixels_per_inch=__pixels_per_inch__):
+#    return int((mm * pixels_per_inch) / size_25_4)
+
+def dot_2_mm(dots, pixels_per_inch=__pixels_per_inch__):
+    return (dots * size_25_4) / pixels_per_inch
+
+def point_2_mm(points):
+    return float((points * size_25_4) / size_72)
 
 def get_size_in_unit(size, unit):
     unit = unit.strip().lower()
     if unit=='mm':
-        return size    
+        return size
 
     if unit=="in":
         return size / size_25_4
     elif unit=="cm":
         return size / size_10
     elif unit=="pt":
-        return (size / size_25_4) * size_72;
+        return int((size / size_25_4) * size_72)
     elif unit=="pc":
-        return (size / size_25_4) * size_6;
+        return int((size / size_25_4) * size_6)
+    elif unit=="dot":
+        return int((size * __pixels_per_inch__) / size_25_4)
 
     raise_error_with_log("Unknown unit '{0}'".format(unit))
 
+def get_float_rgba(c):
+    return float(c) / float(65535) 
 

@@ -21,7 +21,7 @@
         <Default>Solid</Default>
       </BorderStyle>
       <BorderColor>
-        <Default>Blach</Default>
+        <Default>Black</Default>
       </BorderColor>
       <BorderWidth>
         <Default>1pt</Default>
@@ -48,7 +48,6 @@
   <Body>
     <Height>250pt</Height>
     <ReportItems>
-
       <Textbox>
         <Name>TextBox1</Name>
         <Value>Hola bello Mundo!</Value>
@@ -93,12 +92,6 @@
         <Height>-42.15pt</Height>
         <Width>144.55pt</Width>
         <Style>
-
-<!-- If none, default BorderStyle must be Solid
-          <BorderStyle>
-            <Default>Solid</Default>
-          </BorderStyle>
--->
           <BorderColor>
             <Default>Green</Default>
           </BorderColor>
@@ -117,11 +110,6 @@
           <BorderStyle>
             <Default>Dotted</Default>
           </BorderStyle>
-<!-- If none, default BorderColor must be black
-          <BorderColor>
-            <Default>Black</Default>
-          </BorderColor>
--->
           <BorderWidth>
             <Default>3pt</Default>
           </BorderWidth>
@@ -161,7 +149,6 @@
         </Style>
         <ZIndex>1</ZIndex>
       </Rectangle>
-
     </ReportItems>
     <Columns>1</Columns>
 
@@ -177,7 +164,7 @@
         <Default>Solid</Default>
       </BorderStyle>
       <BorderColor>
-        <Default>Blach</Default>
+        <Default>Black</Default>
       </BorderColor>
       <BorderWidth>
         <Default>1pt</Default>

@@ -6,10 +6,9 @@ import cairo
 import pango
 import pangocairo
 from style import StyleInfo
-from nuntiare import __pixels_per_inch__
 from decimal import Decimal
 from nuntiare.tools import raise_error_with_log, get_element_from_parent, \
-    get_expression_value_or_default, get_size_in_unit
+    get_expression_value_or_default, get_size_in_unit, dot_2_mm, point_2_mm
 
 class PageItem(object):
     def __init__(self, report_item, parent_top, parent_left):
@@ -38,28 +37,28 @@ class PageText(PageItem):
         self.can_grow = get_expression_value_or_default(report_item, "CanGrow", False)
         self.can_shrink = get_expression_value_or_default(report_item, "CanShrink", False)
 
-        # If it is a cell item
+        # If it is in a cell item
         if height:
             self.height = height
         if width:
             self.width = width
 
-        if self.can_grow or self.can_shrink: # We need to calculate new height
+        if self.can_grow or self.can_shrink: # We need to recalculate height
             self.height = self.get_height()
 
     def get_height(self):
         text = self.value
         if not text or text=="":
             return self.height
-        top = self.Mm2Dot(self.top)
-        left = self.Mm2Dot(self.left)
-        height = self.Mm2Dot(self.height)
-        width = self.Mm2Dot(self.width)
+        top = get_size_in_unit(self.top, 'pt')
+        left = get_size_in_unit(self.left, 'pt')
+        height = get_size_in_unit(self.height, 'pt')
+        width = get_size_in_unit(self.width, 'pt')
 
-        padding_top = self.Mm2Dot(self.style.text.padding_top.value)
-        padding_left = self.Mm2Dot(self.style.text.padding_left.value)
-        padding_right = self.Mm2Dot(self.style.text.padding_right.value)
-        padding_bottom = self.Mm2Dot(self.style.text.padding_bottom.value)
+        padding_top = get_size_in_unit(self.style.text.padding_top.value, 'pt')
+        padding_left = get_size_in_unit(self.style.text.padding_left.value, 'pt')
+        padding_right = get_size_in_unit(self.style.text.padding_right.value, 'pt')
+        padding_bottom = get_size_in_unit(self.style.text.padding_bottom.value, 'pt')
         max_height = height - padding_top - padding_bottom
 
         if max_height <= 0:
@@ -124,14 +123,7 @@ class PageText(PageItem):
         elif self.can_shrink and max_height > text_h / pango.SCALE:
             rec_height = (text_h / pango.SCALE) + padding_top + padding_bottom
 
-        return self.Dot2Mm(rec_height) 
-
-
-    def Mm2Dot(self, mm):
-        return (mm * __pixels_per_inch__) / Decimal(25.4)
-
-    def Dot2Mm(self, dot):
-        return (dot * Decimal(25.4)) / __pixels_per_inch__
+        return point_2_mm(rec_height) 
 
 
 class PageGrid(PageItem):

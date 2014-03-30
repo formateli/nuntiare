@@ -2,11 +2,19 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-import gtk
+from nuntiare.render.render import Render
 from gtk_reader import GtkReader
 
-def render(report):
-    GtkReader(report)
+def get_render_object():
+    return GtkReaderRender()
 
-def get_help():
-    return 'Here the module help'
+class GtkReaderRender(Render):
+    def __init__(self):
+        super(GtkReaderRender, self).__init__()
+
+    def render(self, report):
+        GtkReader(report)
+
+    def help(self):
+        "GtkReaderRender help"
+

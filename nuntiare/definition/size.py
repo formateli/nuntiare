@@ -3,14 +3,13 @@
 # contains the full copyright notices and license terms.
 
 from expression import Expression
-from decimal import Decimal
 from nuntiare.tools import raise_error_with_log
 
 class Size(Expression):
-    size_6 = Decimal(6)
-    size_10 = Decimal(10)
-    size_25_4 = Decimal(25.4)
-    size_72 = Decimal(72)
+    size_6 = float(6)
+    size_10 = float(10)
+    size_25_4 = float(25.4)
+    size_72 = float(72)
 
     def __init__(self, string_size):
         super(Size, self).__init__(string_size)
@@ -47,7 +46,7 @@ class Size(Expression):
         # Decimal convertion
         size=string_size[:len(string_size)-2]
         size=size.strip()
-        self.size = Decimal(size) 
+        self.size = float(size) 
         
         # Milimeter convertion
         if unit=="in":
@@ -76,9 +75,9 @@ class Size(Expression):
         elif unit=="cm":
             return self.size / Size.size_10
         elif unit=="pt":
-            return (self.size / Size.size_25_4) * Size.size_72;
+            return int((self.size / Size.size_25_4) * Size.size_72)
         elif unit=="pc":
-            return (self.size / Size.size_25_4) * Size.size_6;
+            return int((self.size / Size.size_25_4) * Size.size_6)
 
         raise_error_with_log("Unknown unit '{0}'".format(unit))
 
