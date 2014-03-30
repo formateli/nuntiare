@@ -67,18 +67,21 @@ class Pages(object):
                 result['item_list'].append(page_item)
                 page.add_page_item(page_item)
             if isinstance(it, Grid):
-                page_item = PageGrid(it, top, left)
+                page_item = PageGrid(it, top, left, width)
+                result['can_grow'] = True
+                result['item_list'].append(page_item)
                 page.add_page_item(page_item)
+
                 grid_top = get_expression_value_or_default(it, "Top", 0)
                 grid_left = get_expression_value_or_default(it, "Left", 0)
   
                 columns = it.get_element("Columns")
                 total_columns = len (columns.column_list)
                 column_list=[]
-                column_data = {}
-                for col in columns.column_list: 
-                     column_data['Width'] = get_expression_value_or_default(col, "Width", 0)
-                     column_data['Visibility'] = get_expression_value_or_default(col, "Visibility", True)
+                for c in columns.column_list:
+                     column_data = {} 
+                     column_data['Width'] = get_expression_value_or_default(c, "Width", 0)
+                     column_data['Visibility'] = get_expression_value_or_default(c, "Visibility", True)
                      column_list.append(column_data)
 
                 rows = it.get_element("Rows")
@@ -89,7 +92,7 @@ class Pages(object):
                     if not cells:
                         raise_error_with_log("Cells not found in grid Row. Grid name: '{0}'".format(it.name))
                     total_cells = len(cells.cell_list)
-                    row_height = get_expression_value_or_default(row, "Height", 0)
+                    row_height = get_expression_value_or_default(row, "Height", 8) #Default 8 mm
                     can_grow = False 
                     can_shrink = False 
                     min_height = 30000
@@ -110,7 +113,7 @@ class Pages(object):
                         cell = cells.cell_list[i]
 
                         col_span = int(get_expression_value_or_default(cell, "ColSpan", 1))
-                        cell_Width = column_list[i]['Width']  
+                        cell_Width = column_list[i]['Width']
                         if col_span <= 0:
                             raise_error_with_log("Cell ColSpan must be greater than '0'. Grid name: '{0}'".format(it.name))
                         if col_span > 1:
@@ -121,7 +124,7 @@ class Pages(object):
                             x = 1
                             while x < col_span:
                               cell_Width = cell_Width + column_list[i + x]['Width']
-                              x = x + 1
+                              x = x + 1  
 
                         data = self.run_reportitems(page, cell, 
                             top + grid_top + sum_height,
@@ -160,6 +163,11 @@ class Pages(object):
 
                 page_item.width = sum_width
                 page_item.height = sum_height
+
+                if page_item.height < result['min_height']:
+                    result['min_height'] = page_item.height
+                if page_item.height > result['max_height']:
+                    result['max_height'] = page_item.height
         
         return result
 

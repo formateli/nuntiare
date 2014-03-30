@@ -68,13 +68,13 @@
 
             <Columns>
                 <Column>
-                    <Width>30mm</Width>
-                </Column>
-                <Column>
                     <Width>40mm</Width>
                 </Column>
                 <Column>
                     <Width>50mm</Width>
+                </Column>
+                <Column>
+                    <Width>60mm</Width>
                 </Column>
             </Columns>
 
@@ -454,7 +454,7 @@
                             <ReportItems>
                                 <Textbox>
                                     <Name>r7.1</Name>
-                                    <Value>2 cels span</Value>
+                                    <Value>2 cells span</Value>
                                     <Style>
                                         <TextAlign>Center</TextAlign>
                                         <VerticalAlign>Middle</VerticalAlign>
@@ -541,6 +541,104 @@
                         </Cell>
                     </Cells>
                 </Row>
+
+
+                <Row>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>rgrid1</Name>
+                                    <Value>Grid:</Value>
+                                    <Style>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ColSpan>2</ColSpan>
+
+                            <ReportItems>
+
+                                <Grid>
+
+                                    <Name>grid2</Name>
+
+                                    <Style>
+                                        <BackgroundColor>Pink</BackgroundColor>
+                                        <BorderColor>
+                                            <Default>Red</Default>
+                                        </BorderColor>
+                                        <BorderWidth>
+                                            <Default>3 pt</Default>
+                                        </BorderWidth>
+                                        <BorderStyle>
+                                            <Default>Solid</Default>
+                                        </BorderStyle>
+                                    </Style>
+
+                                    <Columns>
+                                        <Column>
+                                            <Width>110mm</Width>
+                                        </Column>
+                                    </Columns>
+
+                                    <Rows>
+                                        <Row>
+                                            <Height>20mm</Height>
+                                            <Cells>
+                                                <Cell>
+                                                    <ReportItems>
+                                                        <Textbox>
+                                                            <Name>parameter1</Name>
+                                                            <Value>parameter1</Value>
+                                                            <Style>
+                                                                <TextAlign>Center</TextAlign>
+                                                                <VerticalAlign>Middle</VerticalAlign>
+                                                                <BorderStyle>
+                                                                    <Bottom>Solid</Bottom>
+                                                                </BorderStyle>
+                                                            </Style>
+                                                        </Textbox>
+                                                    </ReportItems>                  
+                                                </Cell>
+                                            </Cells>
+                                        </Row>
+
+                                        <Row>
+                                            <Height>20mm</Height>
+                                            <Cells>
+                                                <Cell>
+                                                    <ReportItems>
+                                                        <Textbox>
+                                                            <Name>parameter2</Name>
+                                                            <Value>parameter2</Value>
+                                                            <Style>
+                                                                <TextAlign>Center</TextAlign>
+                                                                <VerticalAlign>Middle</VerticalAlign>
+                                                                <BorderStyle>
+                                                                    <Bottom>Solid</Bottom>
+                                                                </BorderStyle>
+                                                            </Style>
+                                                        </Textbox>
+                                                    </ReportItems>                  
+                                                </Cell>
+                                            </Cells>
+                                        </Row>
+
+                                    </Rows>
+
+                                </Grid>
+
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
+                </Row>
+
 
             </Rows>
 

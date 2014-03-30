@@ -127,7 +127,9 @@ class PageText(PageItem):
 
 
 class PageGrid(PageItem):
-    def __init__(self, report_item, parent_top, parent_left):
+    def __init__(self, report_item, parent_top, parent_left, width=None):
         super(PageGrid, self).__init__(report_item, parent_top, parent_left)
-
+        # If it is in a cell item
+        if width:
+            self.width = width
 
