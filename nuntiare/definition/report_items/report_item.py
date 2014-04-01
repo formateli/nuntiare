@@ -100,4 +100,3 @@ class Textbox(ReportItem):
         super(Textbox, self).__init__(node, lnk, elements)
 
 
-

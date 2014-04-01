@@ -5,5 +5,5 @@
 from expression import Expression
 
 class Integer(Expression):
-    def __init__(self, expression):
-        super(Integer, self).__init__(expression)
+    def __init__(self, report, expression):
+        super(Integer, self).__init__(report, expression)

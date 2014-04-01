@@ -4,6 +4,8 @@
 
 from element import Element
 from expression import verify_expression_constant_and_required
+from .. tools import get_expression_value_or_default, raise_error_with_log
+from decimal import Decimal
 
 class ReportParameters(Element):
     def __init__(self, node, lnk):
@@ -16,11 +18,9 @@ class ReportParameter(Element):
         elements={'Name': [Element.STRING],
                   'DataType': [Element.ENUM, 'DataType'],
                   'CanBeNone': [Element.BOOLEAN],
-                  'DefaultValue': [Element.ELEMENT],
                   'AllowBlank': [Element.BOOLEAN],
+                  'DefaultValue': [Element.VARIANT],
                   'Promt': [Element.STRING],
-                  'ValidValues': [Element.ELEMENT], 
-                  'MultiValue': [Element.BOOLEAN],
                  }
 
         super(ReportParameter, self).__init__(node, elements, lnk)
@@ -28,57 +28,49 @@ class ReportParameter(Element):
         name = verify_expression_constant_and_required('Name', 'ReportParameter', self.get_element('Name'))
         datatype = verify_expression_constant_and_required('DataType', 'ReportParameter', self.get_element('DataType'))
 
+        self.parameter_name = name.value()
+
         # Add to report dictionary
+        if self.lnk.report.parameters.has_key(self.parameter_name):
+            raise_error_with_log("ReportParameter '{0}' already exists.".format(self.parameter_name))
+
         self.lnk.report.parameters[name.value()] = self
 
+    def value(self):
+        can_be_none = get_expression_value_or_default(self, 'CanBeNone', True)
+        allow_blank = get_expression_value_or_default(self, 'AllowBlank', True)
+        data_type = get_expression_value_or_default(self, 'DataType', None)
 
-class ValidValues(Element):
-    def __init__(self, node, lnk):
-        elements={'DataSetReference': [Element.ELEMENT],
-                  'ParameterValues': [Element.ELEMENT],
-                 }
+        result = None
+        dv = self.get_element('DefaultValue')
+        if dv:
+            result = dv.value()
 
-        super(ValidValues, self).__init__(node, elements, lnk)
+        if not result and not can_be_none:
+            raise_error_with_log("Parameter '{0}' value can not be 'None'".format(self.parameter_name))
+        if result and result=="" and not allow_blank and data_type=='String':
+            raise_error_with_log("Parameter '{0}' value can not be an empty string".format(self.parameter_name))
 
+        if not result or not data_type:
+            return result
 
-class DataSetReference(Element):
-    def __init__(self, node, lnk):
-        elements={'DataSetName': [Element.STRING],
-                  'ValueField': [Element.STRING],
-                  'LabelField': [Element.STRING],
-                 }
+        if data_type == "String":
+            result = str(result)
+        if data_type == "Integer":
+            result = int(result)
+        if data_type == "Float":
+            result = float(result)
+        if data_type == "Boolean":
+            result = bool(result)
+        if data_type == "DateTime":
+            pass
+        if data_type == "Decimal":
+            result = Decimal(result)
 
-        super(DataSetReference, self).__init__(node, elements, lnk)
-
-
-class ParameterValues(Element):
-    def __init__(self, node, lnk):
-        elements={'ParameterValue': [Element.ELEMENT]}
-
-        super(ParameterValues, self).__init__(node, elements, lnk)
-
-
-class ParameterValue(Element):
-    def __init__(self, node, lnk):
-        elements={'Value': [Element.VARIANT],
-                  'Label': [Element.STRING],
-                 }
-
-        super(ParameterValue, self).__init__(node, elements, lnk)
+        return result
 
 
-class DefaultValue(Element):
-    def __init__(self, node, lnk):
-        elements={'DataSetReference': [Element.ELEMENT],
-                  'Values  ': [Element.ELEMENT],
-                 }
-
-        super(DefaultValue, self).__init__(node, elements, lnk)
 
 
-class Values(Element):
-    def __init__(self, node, lnk):
-        elements={'Value': [Element.VARIANT]}
 
-        super(Values, self).__init__(node, elements, lnk)
 

@@ -52,11 +52,11 @@ def get_style_item(name, id, obj):
         item_list[id] = obj
     else:
         if name == 'color':
-            item_list[id] = ColorInfo(Color(id))
+            item_list[id] = ColorInfo(Color(None, id))
         elif name == 'style':
-            item_list[id] = StyleItem(String(id))
+            item_list[id] = StyleItem(String(None, id))
         elif name == 'size':
-            item_list[id] = StyleItem(Size(id))
+            item_list[id] = StyleItem(Size(None, id))
     return item_list[id]
 
 def get_color_by_element(el):

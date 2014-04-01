@@ -5,20 +5,23 @@
 from ..tools import raise_error_with_log
 
 class Expression(object):
-    def __init__(self, expression):
+    def __init__(self, report, expression):
+        self.report = report
         self.is_constant=False
         self.expression=expression
         self.original_expression=expression # Expression may change for constant value. Ex. Enum
-        if self.expression==None or not self.expression.startswith('[exp]:'):
+        if self.expression==None or not self.expression.startswith('='):
             self.is_constant=True
 
     def value(self):
         if self.is_constant:
             return self.expression
-        ex = self.expression[6:]
+        ex = self.expression[1:]
         return self.get_eval_value(ex) # Run python code
 
     def get_eval_value(self, code):
+        Parameters = self.report.parameters
+
         #TODO Try exception
         print "Pass code: " + code
         result = eval(code)

@@ -48,9 +48,9 @@ class Element(object):
                 else:
                     self.element_list[n.nodeName] = el
             elif elements[n.nodeName][0]==Element.ENUM:
-                self.element_list[n.nodeName]=factory.get_enum(elements[n.nodeName][1], n)
+                self.element_list[n.nodeName]=factory.get_enum(elements[n.nodeName][1], n, lnk.report)
             else: 
-                self.element_list[n.nodeName]=factory.get_expression(elements[n.nodeName][0], n)
+                self.element_list[n.nodeName]=factory.get_expression(elements[n.nodeName][0], n, lnk.report)
     
         if len(self.reportitems_list) > 0:
             # Sort by ZIndex

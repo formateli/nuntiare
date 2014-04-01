@@ -5,7 +5,7 @@
 from expression import Expression
 
 class Variant(Expression):
-    def __init__(self, expression):
-        super(Variant, self).__init__(expression)
+    def __init__(self, report, expression):
+        super(Variant, self).__init__(report, expression)
 
 

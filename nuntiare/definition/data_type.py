@@ -13,6 +13,6 @@ class DataType(Enum):
                'string': 'String', 
               }
 
-    def __init__(self, expression):
-        super(DataType, self).__init__('DataType', expression, DataType.enum_list)
+    def __init__(self, report, expression):
+        super(DataType, self).__init__('DataType', report, expression, DataType.enum_list)
 

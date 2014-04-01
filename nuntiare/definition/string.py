@@ -5,6 +5,6 @@
 from expression import Expression
 
 class String(Expression):
-    def __init__(self, expression):
-        super(String, self).__init__(expression)
+    def __init__(self, report, expression):
+        super(String, self).__init__(report, expression)
 

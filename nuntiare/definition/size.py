@@ -11,8 +11,8 @@ class Size(Expression):
     size_25_4 = float(25.4)
     size_72 = float(72)
 
-    def __init__(self, string_size):
-        super(Size, self).__init__(string_size)
+    def __init__(self, report, string_size):
+        super(Size, self).__init__(report, string_size)
 
         self.size=None           # Milimeters.
         self.original_size=None  # Original size, ex: 12

@@ -34,6 +34,11 @@ class PageText(PageItem):
     def __init__(self, report_item, parent_top, parent_left, height=None, width=None):
         super(PageText, self).__init__(report_item, parent_top, parent_left)
         self.value = get_expression_value_or_default(report_item, "Value", None)
+        if self.value:
+            if self.style.text.format:
+                self.value = self.style.format.format(self.value)
+            else:
+                self.value = str(self.value)
         self.can_grow = get_expression_value_or_default(report_item, "CanGrow", False)
         self.can_shrink = get_expression_value_or_default(report_item, "CanShrink", False)
 

@@ -51,7 +51,7 @@ class BorderStyleEnum(Enum):
                'outset': 'Outset',
               }
 
-    def __init__(self, expression):
-        super(BorderStyleEnum, self).__init__('BorderStyle', expression, BorderStyleEnum.enum_list)
+    def __init__(self, report, expression):
+        super(BorderStyleEnum, self).__init__(report, 'BorderStyle', expression, BorderStyleEnum.enum_list)
 
 

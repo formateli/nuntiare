@@ -12,6 +12,18 @@
   <RightMargin>1cm</RightMargin>
   <BottomMargin>1cm</BottomMargin>
 
+  <ReportParameters>
+
+      <ReportParameter>
+          <Name>parameter1</Name>
+          <DataType>Integer</DataType>
+          <CanBeNone>false</CanBeNone>
+          <AllowBlank>false</AllowBlank>
+          <DefaultValue>5000</DefaultValue>
+      </ReportParameter>
+
+  </ReportParameters>
+
   <PageHeader>
     <Height>1.5cm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>
@@ -595,7 +607,7 @@
                                                     <ReportItems>
                                                         <Textbox>
                                                             <Name>parameter1</Name>
-                                                            <Value>parameter1</Value>
+                                                            <Value>='Int: ' + str(Parameters['parameter1'].value() + 4200)</Value>
                                                             <Style>
                                                                 <TextAlign>Center</TextAlign>
                                                                 <VerticalAlign>Middle</VerticalAlign>

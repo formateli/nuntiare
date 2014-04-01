@@ -23,7 +23,7 @@ class Report(object):
 #        # Global Colections
         self.globals={}      # page_number, total_pages, execution_time, report_folder, report_name 
 #        self.user={}         # user_id, language
-#        self.parameters={}
+        self.parameters={}
 #        self.data_sources={} # Only data sources and data sets used in the body of the report will be included in 
                              # the DataSources and DataSets collections. Data sets and data sources used only 
                              # in parameter valid values and default values properties will not be included.

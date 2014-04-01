@@ -6,8 +6,8 @@ from .. import logger
 from expression import Expression
 
 class Color(Expression):
-    def __init__(self, string_color=None):
-        super(Color, self).__init__(string_color)
+    def __init__(self, report, string_color=None):
+        super(Color, self).__init__(report, string_color)
 
         self.color={}  # Returned by value() function
 

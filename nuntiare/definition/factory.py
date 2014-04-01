@@ -9,14 +9,14 @@ from size import Size
 from string import String
 from integer import Integer
 from boolean import Boolean
+from variant import Variant
 from data_type import DataType
 from style.style import Style
 from style.font import FontStyle, FontWeight, TextDecoration, \
     TextAlign, VerticalAlign, TextDirection, WritingMode
 from style.border import BorderColor, BorderWidth, BorderStyle, BorderStyleEnum
 from style.background import BackgroudImage, BackgroundRepeat, BackgroundGradientType
-from report_parameter import ReportParameters, ReportParameter, ValidValues, \
-    DataSetReference, ParameterValues, ParameterValue, DefaultValue, Values
+from report_parameter import ReportParameters, ReportParameter
 from header_footer import PageHeader, PageFooter
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
@@ -36,18 +36,6 @@ def get_element(name, node, lnk):
         obj = ReportParameters(node, ln)
     elif name=='ReportParameter':
         obj = ReportParameter(node, ln)
-    elif name=='ValidValues':
-        obj = ValidValues(node, ln)
-    elif name=='DataSetReference':
-        obj = DataSetReference(node, ln)
-    elif name=='ParameterValues':
-        obj = ParameterValues(node, ln)
-    elif name=='ParameterValue':
-        obj = ParameterValue(node, ln)
-    elif name=='DefaultValue':
-        obj = DefaultValue(node, ln)
-    elif name=='Values':
-        obj = Values(node, ln)
     elif name=='BorderColor':
         obj = BorderColor(node, ln)
     elif name=='BorderWidth':
@@ -88,7 +76,7 @@ def get_element(name, node, lnk):
     return obj
 
 
-def get_expression(name, node):
+def get_expression(name, node, report):
     value = get_xml_tag_value(node)
 
     # We need to use integer value avoiding circular reference with element module
@@ -96,53 +84,55 @@ def get_expression(name, node):
     if name==0: # Element.NAME
         return None
     if name==2: # Element.STRING
-        return String(value)
+        return String(report, value)
     if name==3: # Element.INTEGER
-        return Integer(value)
+        return Integer(report, value)
     if name==4: # Element.BOOLEAN
-        return Boolean(value)
+        return Boolean(report, value)
     if name==5: # Element.SIZE
-        return Size(value)
+        return Size(report, value)
     if name==6: # Element.COLOR
-        return Color(value)
+        return Color(report, value)
     if name==8: # Element.URL
         return None
     if name==10: # Element.LANGUAGE
         return None
+    if name==11: # Element.VARIANT
+        return Variant(report, value)
 
     finish_critical("Unknown expression element definition: '{0}'".format(name))
 
 
-def get_enum(name, node):
+def get_enum(name, node, report):
 
     value = get_xml_tag_value(node)
-
+ 
     if name=='BorderStyle':
-        return BorderStyleEnum(value)
+        return BorderStyleEnum(report, value)
     if name=='FontStyle':
-        return FontStyle(value)
+        return FontStyle(report, value)
     if name=='FontWeight':
-        return FontWeight(value)
+        return FontWeight(report, value)
     if name=='TextDecoration':
-        return TextDecoration(value)
+        return TextDecoration(report, value)
     if name=='TextAlign':
-        return TextAlign(value)
+        return TextAlign(report, value)
     if name=='VerticalAlign':
-        return VerticalAlign(value)
+        return VerticalAlign(report, value)
     if name=='TextDirection':
-        return TextDirection(value)
+        return TextDirection(report, value)
     if name=='WritingMode':
-        return WritingMode(value)
+        return WritingMode(report, value)
     if name=='ImageSource':
-        return ImageSourceEnum(value)
+        return ImageSourceEnum(report, value)
     if name=='ImageSizing':
-        return ImageSizingEnum(value)
+        return ImageSizingEnum(report, value)
     if name=='BackgroundRepeat':
-        return BackgroundRepeat(value)
+        return BackgroundRepeat(report, value)
     if name=='BackgroundGradientType':
-        return BackgroundGradientType(value)
+        return BackgroundGradientType(report, value)
     if name=='DataType':
-        return DataType(value)
+        return DataType(report, value)
 
     finish_critical("Unknown Enum: '{0}'".format(name))
 

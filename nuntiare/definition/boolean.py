@@ -5,6 +5,6 @@
 from expression import Expression
 
 class Boolean(Expression):
-    def __init__(self, expression):
-        super(Boolean, self).__init__(expression)
+    def __init__(self, report, expression):
+        super(Boolean, self).__init__(report, expression)
 
