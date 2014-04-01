@@ -7,9 +7,12 @@ from ..tools import raise_error_with_log
 class Expression(object):
     def __init__(self, report, expression):
         self.report = report
+        self.expression=None
         self.is_constant=False
+        self.set_expression(expression)
+
+    def set_expression(self, expression):
         self.expression=expression
-        self.original_expression=expression # Expression may change for constant value. Ex. Enum
         if self.expression==None or not self.expression.startswith('='):
             self.is_constant=True
 
@@ -21,6 +24,7 @@ class Expression(object):
 
     def get_eval_value(self, code):
         Parameters = self.report.parameters
+        Globals = self.report.globals
 
         #TODO Try exception
         print "Pass code: " + code

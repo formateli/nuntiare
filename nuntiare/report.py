@@ -3,9 +3,10 @@
 # contains the full copyright notices and license terms.
 
 import uuid
+import os
 import datetime
 from . import logger, __reports__
-from .tools import raise_error_with_log
+from .tools import raise_error_with_log, get_expression_value_or_default
 from definition.link import Link
 from definition.element import Element
 from xml.dom.minidom import parse, parseString
@@ -20,9 +21,8 @@ class Report(object):
 
         self.definition=None
 
-#        # Global Colections
         self.globals={}      # page_number, total_pages, execution_time, report_folder, report_name 
-#        self.user={}         # user_id, language
+        self.parameters_passed=parameters
         self.parameters={}
 #        self.data_sources={} # Only data sources and data sets used in the body of the report will be included in 
                              # the DataSources and DataSets collections. Data sets and data sources used only 
@@ -33,8 +33,13 @@ class Report(object):
 
         if report_file:
             dom = parse(report_file)
+            self.globals['report_file'] = os.path.basename(report_file)
+            self.globals['report_folder'] = os.path.dirname(os.path.realpath(report_file))
         else:
             dom = parseString(string_xml)
+            self.globals['From xml string']
+
+        self.globals['report_name'] = ''
 
         report_node = dom.getElementsByTagName("Report")
         self.definition = Definition(report_node[0], self)
@@ -45,9 +50,8 @@ class Report(object):
         self.run(parameters) 
 
     def run(self, parameters):
-#        self.globals={}
-#        self.globals['page_number'] = 0
-#        self.globals['total_pages'] = 0       
+        self.globals['page_number'] = -1
+        self.globals['total_pages'] = -1
         self.globals['execution_time'] = datetime.datetime.now()
         logger.info('Execution time: {0}'.format(self.globals['execution_time']))
 
@@ -107,4 +111,7 @@ class Definition(Element):
 
         if not self.get_element("Body"):
             raise_error_with_log("'Body' element is required by report definition.")
+
+        report.globals['report_name'] = get_expression_value_or_default(self, 'Name', 'No name')
+
 

@@ -33,10 +33,12 @@ class ReportParameter(Element):
         # Add to report dictionary
         if self.lnk.report.parameters.has_key(self.parameter_name):
             raise_error_with_log("ReportParameter '{0}' already exists.".format(self.parameter_name))
+        if self.lnk.report.parameters_passed.has_key(self.parameter_name):
+            self.lnk.report.parameters[self.parameter_name] = self.value(self.lnk.report.parameters_passed[self.parameter_name])
+        else:
+            self.lnk.report.parameters[self.parameter_name] = self.value()
 
-        self.lnk.report.parameters[name.value()] = self
-
-    def value(self):
+    def value(self, val=None):
         can_be_none = get_expression_value_or_default(self, 'CanBeNone', True)
         allow_blank = get_expression_value_or_default(self, 'AllowBlank', True)
         data_type = get_expression_value_or_default(self, 'DataType', None)
@@ -44,6 +46,8 @@ class ReportParameter(Element):
         result = None
         dv = self.get_element('DefaultValue')
         if dv:
+            if val:
+                dv.set_expression(val)
             result = dv.value()
 
         if not result and not can_be_none:
@@ -68,9 +72,4 @@ class ReportParameter(Element):
             result = Decimal(result)
 
         return result
-
-
-
-
-
 

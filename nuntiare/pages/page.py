@@ -11,7 +11,7 @@ from ..tools import raise_error_with_log, get_expression_value_or_default, inch_
 class Pages(object):
     def __init__(self, report):
         self.pages = []
-
+        self.report = report
         self.height = get_expression_value_or_default(report, "PageHeight", inch_2_mm(11)) 
         self.width = get_expression_value_or_default(report, "PageWidth", inch_2_mm(8.5)) 
 
@@ -25,11 +25,15 @@ class Pages(object):
         self.body = BodyInfo(report.get_element("Body"))
 
     def build_pages(self):
-
         pg = Page()
-        self.run_reportitems(pg, self.body.definition, self.margin_top + self.header.height, self.margin_left)
-        pg.page_number = len(self.pages) + 1
-        self.pages.append(pg)
+        while True:
+            self.report.globals['page_number'] = len(self.pages) + 1
+            self.run_reportitems(pg, self.body.definition, self.margin_top + self.header.height, self.margin_left)
+            pg.page_number = len(self.pages) + 1
+            self.pages.append(pg)
+            break
+
+        self.report.globals['total_pages'] = len(self.pages)
 
         # Run Header and footer for each page 
         for page in self.pages:

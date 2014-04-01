@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report>
   <Name>Test Grid</Name>
-  <Description>
-  </Description>
+  <Description></Description>
   <Author>Fredy Ramirez</Author>
   <PageWidth>210mm</PageWidth>
   <PageHeight>280mm</PageHeight>
@@ -600,14 +599,40 @@
                                     </Columns>
 
                                     <Rows>
+
                                         <Row>
-                                            <Height>20mm</Height>
+                                            <Height>10mm</Height>
+                                            <Cells>
+                                                <Cell>
+                                                    <ReportItems>
+                                                        <Textbox>
+                                                            <Name>newtabletitle</Name>
+                                                            <Value>New Table</Value>
+                                                            <Style>
+                                                                <TextAlign>Center</TextAlign>
+                                                                <VerticalAlign>Middle</VerticalAlign>
+                                                                <Color>White</Color>
+                                                                <BackgroundColor>Black</BackgroundColor>
+                                                                <FontWeight>Bold</FontWeight>
+                                                                <FontSize>12pt</FontSize>
+                                                                <BorderStyle>
+                                                                    <Bottom>Solid</Bottom>
+                                                                </BorderStyle>
+                                                            </Style>
+                                                        </Textbox>
+                                                    </ReportItems>                  
+                                                </Cell>
+                                            </Cells>
+                                        </Row>
+
+                                        <Row>
+                                            <Height>10mm</Height>
                                             <Cells>
                                                 <Cell>
                                                     <ReportItems>
                                                         <Textbox>
                                                             <Name>parameter1</Name>
-                                                            <Value>='Int: ' + str(Parameters['parameter1'].value() + 4200)</Value>
+                                                            <Value>='Int: ' + str(Parameters['parameter1'] + 4200)</Value>
                                                             <Style>
                                                                 <TextAlign>Center</TextAlign>
                                                                 <VerticalAlign>Middle</VerticalAlign>
@@ -622,16 +647,17 @@
                                         </Row>
 
                                         <Row>
-                                            <Height>20mm</Height>
+                                            <Height>10mm</Height>
                                             <Cells>
                                                 <Cell>
                                                     <ReportItems>
                                                         <Textbox>
                                                             <Name>parameter2</Name>
-                                                            <Value>parameter2</Value>
+                                                            <Value>=Globals['execution_time']</Value>
                                                             <Style>
-                                                                <TextAlign>Center</TextAlign>
+                                                                <TextAlign>Center</TextAlign>                                                                
                                                                 <VerticalAlign>Middle</VerticalAlign>
+                                                                <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
                                                                 <BorderStyle>
                                                                     <Bottom>Solid</Bottom>
                                                                 </BorderStyle>
@@ -678,18 +704,56 @@
     </Style>
     <ReportItems>
       <Textbox>
-        <Name>footer1</Name>
-        <Height>1.5cm</Height>
-        <Width>180mm</Width>
-        <Value></Value>
-        <Left>0.00pt</Left>
-        <Top>3mm</Top>
-        <Style>
-          <FontWeight>Bold</FontWeight>
-          <FontSize>16pt</FontSize>
-          <TextAlign>Center</TextAlign>
-        </Style>
+        <Name>reportname</Name>
+        <Height>8mm</Height>
+        <Width>60mm</Width>
+        <Value>='Report name: ' + Globals['report_name']</Value>
+        <Left>0mm</Left>
+        <Top>2mm</Top>
+        <ZIndex>0</ZIndex>
+      </Textbox>
+      <Textbox>
+        <Name>reportfolder</Name>
+        <Height>8mm</Height>
+        <Width>60mm</Width>
+        <Value>='Folder: ' + Globals['report_folder']</Value>
+        <Left>0mm</Left>
+        <Top>8mm</Top>
         <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox>
+        <Name>reportfile</Name>
+        <Height>8mm</Height>
+        <Width>60mm</Width>
+        <Value>='File: ' + Globals['report_file']</Value>
+        <Left>0mm</Left>
+        <Top>14mm</Top>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox>
+        <Name>reporttime</Name>
+        <Height>8mm</Height>
+        <Width>90mm</Width>
+        <Value>=Globals['execution_time']</Value>
+        <Left>100mm</Left>
+        <Top>2mm</Top>
+        <ZIndex>2</ZIndex>
+        <Style>
+            <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
+            <TextAlign>Right</TextAlign>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Name>reportpage</Name>
+        <Height>8mm</Height>
+        <Width>90mm</Width>
+        <Value>='Page ' + str(Globals['page_number']) + ' of ' + str(Globals['total_pages'])</Value>
+        <Left>100mm</Left>
+        <Top>8mm</Top>
+        <ZIndex>2</ZIndex>
+        <Style>
+            <TextAlign>Right</TextAlign>
+        </Style>
       </Textbox>
     </ReportItems>
   </PageFooter>

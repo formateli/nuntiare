@@ -36,7 +36,7 @@ class PageText(PageItem):
         self.value = get_expression_value_or_default(report_item, "Value", None)
         if self.value:
             if self.style.text.format:
-                self.value = self.style.format.format(self.value)
+                self.value = self.style.text.format.format(self.value)
             else:
                 self.value = str(self.value)
         self.can_grow = get_expression_value_or_default(report_item, "CanGrow", False)
