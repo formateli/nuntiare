@@ -4,7 +4,7 @@
 
 from element import Element
 from expression import verify_expression_constant_and_required
-from .. tools import get_expression_value_or_default, raise_error_with_log
+from ..tools import get_expression_value_or_default, raise_error_with_log
 from decimal import Decimal
 
 class ReportParameters(Element):
@@ -29,26 +29,22 @@ class ReportParameter(Element):
         datatype = verify_expression_constant_and_required('DataType', 'ReportParameter', self.get_element('DataType'))
 
         self.parameter_name = name.value()
+        self.default_value = self.get_element('DefaultValue')
+        if not self.default_value:
+            raise_error_with_log("'DefaultValue' is required for Parameter '{0}'".format(self.parameter_name))
+        self.lnk.report.parameters_obj.append(self)
 
-        # Add to report dictionary
-        if self.lnk.report.parameters.has_key(self.parameter_name):
-            raise_error_with_log("ReportParameter '{0}' already exists.".format(self.parameter_name))
-        if self.lnk.report.parameters_passed.has_key(self.parameter_name):
-            self.lnk.report.parameters[self.parameter_name] = self.value(self.lnk.report.parameters_passed[self.parameter_name])
-        else:
-            self.lnk.report.parameters[self.parameter_name] = self.value()
+    def set_value(self, val):
+        self.default_value.set_expression(val)
 
-    def value(self, val=None):
+    def value(self):
         can_be_none = get_expression_value_or_default(self, 'CanBeNone', True)
         allow_blank = get_expression_value_or_default(self, 'AllowBlank', True)
         data_type = get_expression_value_or_default(self, 'DataType', None)
 
         result = None
-        dv = self.get_element('DefaultValue')
-        if dv:
-            if val:
-                dv.set_expression(val)
-            result = dv.value()
+        if self.default_value:
+            result = self.default_value.value() 
 
         if not result and not can_be_none:
             raise_error_with_log("Parameter '{0}' value can not be 'None'".format(self.parameter_name))

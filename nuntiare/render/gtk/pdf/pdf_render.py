@@ -2,17 +2,18 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ....render.render import Render
 import cairo
+from ....render.render import Render
 from ....render.gtk.context import Context
 from ....tools import get_size_in_unit
 
 class GtkPdfRender(Render):
     def __init__(self):
-        super(GtkPdfRender, self).__init__()
+        super(GtkPdfRender, self).__init__(extension='pdf')
 
     def render(self, report):
-        ps = cairo.PDFSurface("pdffile.pdf", get_size_in_unit(report.pages.width, 'pt'), 
+        super(GtkPdfRender, self).render(report)
+        ps = cairo.PDFSurface(self.result_file, get_size_in_unit(report.pages.width, 'pt'), 
                                 get_size_in_unit(report.pages.height, 'pt'))
         cr = cairo.Context(ps)
 
@@ -28,5 +29,4 @@ class GtkPdfRender(Render):
 
     def help(self):
         "GtkPdfRender help"
-    
 

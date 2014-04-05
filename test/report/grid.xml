@@ -14,11 +14,19 @@
   <ReportParameters>
 
       <ReportParameter>
+          <Name>parameter0</Name>
+          <DataType>Integer</DataType>
+          <CanBeNone>false</CanBeNone>
+          <AllowBlank>false</AllowBlank>
+          <DefaultValue>3000</DefaultValue>
+      </ReportParameter>
+
+      <ReportParameter>
           <Name>parameter1</Name>
           <DataType>Integer</DataType>
           <CanBeNone>false</CanBeNone>
           <AllowBlank>false</AllowBlank>
-          <DefaultValue>5000</DefaultValue>
+          <DefaultValue>=Parameters['parameter0'] + 2000</DefaultValue>
       </ReportParameter>
 
   </ReportParameters>

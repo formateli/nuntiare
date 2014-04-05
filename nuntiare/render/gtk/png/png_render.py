@@ -2,16 +2,18 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ....render.render import Render
 import cairo
+from ....render.render import Render
 from ....render.gtk.context import Context
 from ....tools import get_size_in_unit
 
 class GtkPngRender(Render):
     def __init__(self):
-        super(GtkPngRender, self).__init__()
+        super(GtkPngRender, self).__init__(extension='png')
 
     def render(self, report):
+        super(GtkPngRender, self).render(report)
+
         ps = cairo.ImageSurface(cairo.FORMAT_ARGB32, 
                     get_size_in_unit(report.pages.width, 'dot'), 
                     get_size_in_unit(report.pages.height, 'dot'))
@@ -26,9 +28,8 @@ class GtkPngRender(Render):
             for it in pg.page_items:
                 context.draw_items(it)
 
-        ps.write_to_png("image.png")
+        ps.write_to_png(self.result_file)
 
     def help(self):
         "GtkPngRender help"
     
-

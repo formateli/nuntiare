@@ -40,8 +40,8 @@ def verify_expression_required(name, element, expr):
 
 
 def verify_expression_constant(name, element, expr):
-    if not expr.is_constant:
-        raise_error_with_log("Attribute '{0}' of element '{1}' can not be an expression.".format(name, element))
+    if not expr or not expr.is_constant:
+        raise_error_with_log("Attribute '{0}' of element '{1}' must be a constant value.".format(name, element))
     return expr
 
 

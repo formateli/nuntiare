@@ -2,17 +2,19 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ....render.render import Render
 import cairo
+from ....render.render import Render
 from ....render.gtk.context import Context
 from ....tools import get_size_in_unit
 
 class GtkSvgRender(Render):
     def __init__(self):
-        super(GtkSvgRender, self).__init__()
+        super(GtkSvgRender, self).__init__(extension='svg')
 
     def render(self, report):
-        ps = cairo.SVGSurface("svgfile.svg", 
+        super(GtkSvgRender, self).render(report)
+
+        ps = cairo.SVGSurface(self.result_file, 
                 get_size_in_unit(report.pages.width, 'pt'), 
                 get_size_in_unit(report.pages.height, 'pt'))
         cr = cairo.Context(ps)

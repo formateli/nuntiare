@@ -18,11 +18,14 @@ from style.border import BorderColor, BorderWidth, BorderStyle, BorderStyleEnum
 from style.background import BackgroudImage, BackgroundRepeat, BackgroundGradientType
 from report_parameter import ReportParameters, ReportParameter
 from header_footer import PageHeader, PageFooter
+from data_source import DataSources, DataSource, ConnectionProperties
+from data_set import DataSets, DataSet, Fields, Field, Query, QueryParameters, QueryParameter
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
 from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
+from report_items.data_region.table import Table
 
 def get_element(name, node, lnk):
     ln = Link(lnk.report, lnk.obj)
@@ -70,6 +73,28 @@ def get_element(name, node, lnk):
         obj = Cells(node, ln)
     elif name=='Cell':
         obj = Cell(node, ln)
+    elif name=='DataSources':
+        obj = DataSources(node, ln)
+    elif name=='DataSource':
+        obj = DataSource(node, ln)
+    elif name=='ConnectionProperties':
+        obj = ConnectionProperties(node, ln)
+    elif name=='DataSets':
+        obj = DataSet(node, ln)
+    elif name=='DataSets':
+        obj = DataSet(node, ln)
+    elif name=='Fields':
+        obj = Fields(node, ln)
+    elif name=='Field':
+        obj = Field(node, ln)
+    elif name=='Query':
+        obj = Query(node, ln)
+    elif name=='QueryParameters':
+        obj = QueryParameters(node, ln)
+    elif name=='QueryParameter':
+        obj = QueryParameter(node, ln)
+    elif name=='Table':
+        obj = Table(node, ln)
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
 

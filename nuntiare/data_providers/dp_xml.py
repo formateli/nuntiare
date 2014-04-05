@@ -112,7 +112,3 @@ class XmlCursor(Cursor):
         desc = desc + (column_name,None)
         self.description = self.description + (desc,)
 
-
-
-
-

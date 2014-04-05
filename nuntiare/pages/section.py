@@ -37,8 +37,6 @@ class FooterInfo(HeaderFooterInfo):
 
 class BodyInfo(SectionInfo):
     def __init__(self, element):
-        if not element:
-            raise_error_with_log("Body section is requiered!")
         super(BodyInfo, self).__init__(element)
         self.columns = get_expression_value_or_default(element, "Columns", 1)
         self.column_spacing = get_expression_value_or_default(element, "ColumnSpacing", inch_2_mm(0.5))

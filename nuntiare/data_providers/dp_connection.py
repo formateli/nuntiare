@@ -7,7 +7,7 @@ from dp_exceptions import InterfaceError, OperationalError
 class Connect:
 
     def __init__(self, connection_string, string_format):
- 
+
         con_error = "Connection string not valid!. Its format must be: '" + string_format  + "'"
 
         if connection_string == None or connection_string == "": 
@@ -47,5 +47,4 @@ class Connect:
             para = p.split('=')
             parameters[para[0].strip()] = para[1].strip()
         return parameters        
-
 

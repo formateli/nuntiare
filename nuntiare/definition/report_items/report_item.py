@@ -14,8 +14,8 @@ class ReportItems(Element):
                   'Image': [Element.ELEMENT],
                   'Subreport': [Element.ELEMENT],
                   'CustomReportItem': [Element.ELEMENT],
-                  # DataRegion elements...
                   'Grid': [Element.ELEMENT],
+                  'Table': [Element.ELEMENT],
                  }
 
         super(ReportItems, self).__init__(node, elements, lnk)
