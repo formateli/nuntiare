@@ -13,6 +13,7 @@ class GtkReaderRender(Render):
         super(GtkReaderRender, self).__init__()
 
     def render(self, report):
+        super(GtkReaderRender, self).render(report)
         GtkReader(report)
 
     def help(self):
