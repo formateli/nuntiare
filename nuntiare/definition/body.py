@@ -11,7 +11,6 @@ class Body(Element):
                   'ReportItems': [Element.ELEMENT],
                   'Columns': [Element.INTEGER],
                   'ColumnSpacing': [Element.SIZE],
-                  'Style': [Element.ELEMENT],
                  }
         super(Body, self).__init__(node, elements, lnk)
 

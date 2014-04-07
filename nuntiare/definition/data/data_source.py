@@ -2,10 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from element import Element
-from expression import verify_expression_constant_and_required
-from ..data_providers import get_data_provider
-from ..tools import raise_error_with_log
+from ..element import Element
+from ..expression import verify_expression_constant_and_required
+from ...data_providers import get_data_provider
+from ...tools import raise_error_with_log
 
 class DataSources(Element):
     def __init__(self, node, lnk):

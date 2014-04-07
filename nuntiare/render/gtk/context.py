@@ -5,7 +5,7 @@
 import cairo
 import pango
 import pangocairo
-from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid
+from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid, PageTable
 from nuntiare.pages.style import StyleItem
 from nuntiare.tools import get_size_in_unit, raise_error_with_log, get_float_rgba
 
@@ -148,7 +148,7 @@ class Context(object):
             self.draw_rectangle(it.style, get_size_in_unit(it.top, self.unit), get_size_in_unit(it.left, self.unit), 
                      get_size_in_unit(it.height, self.unit), get_size_in_unit(it.width, self.unit))
 
-        if isinstance(it, PageGrid):
+        if isinstance(it, PageGrid) or isinstance(it, PageTable):
             self.draw_rectangle(it.style, get_size_in_unit(it.top, self.unit), get_size_in_unit(it.left, self.unit), 
                      get_size_in_unit(it.height, self.unit), get_size_in_unit(it.width, self.unit))
 

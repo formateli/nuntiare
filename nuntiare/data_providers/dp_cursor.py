@@ -35,5 +35,3 @@ class Cursor:
         if self.is_closed:
             raise ex.InterfaceError("Cursor is closed!")
 
-
-

@@ -18,14 +18,17 @@ from style.border import BorderColor, BorderWidth, BorderStyle, BorderStyleEnum
 from style.background import BackgroudImage, BackgroundRepeat, BackgroundGradientType
 from report_parameter import ReportParameters, ReportParameter
 from header_footer import PageHeader, PageFooter
-from data_source import DataSources, DataSource, ConnectionProperties
-from data_set import DataSets, DataSet, Fields, Field, Query, QueryParameters, QueryParameter
+from data.data_source import DataSources, DataSource, ConnectionProperties
+from data.data_set import DataSets, DataSet, Fields, Field, Query, \
+    QueryParameters, QueryParameter
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
 from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
-from report_items.data_region.table import Table
+from report_items.data_region.table import Table, TableColumns, TableColumn, \
+    TableHeader, TableFooter, TableDetails, TableRows, TableRow, TableCells, \
+    TableCell, TableGroups, TableGroup
 
 def get_element(name, node, lnk):
     ln = Link(lnk.report, lnk.obj)
@@ -80,8 +83,8 @@ def get_element(name, node, lnk):
     elif name=='ConnectionProperties':
         obj = ConnectionProperties(node, ln)
     elif name=='DataSets':
-        obj = DataSet(node, ln)
-    elif name=='DataSets':
+        obj = DataSets(node, ln)
+    elif name=='DataSet':
         obj = DataSet(node, ln)
     elif name=='Fields':
         obj = Fields(node, ln)
@@ -95,6 +98,30 @@ def get_element(name, node, lnk):
         obj = QueryParameter(node, ln)
     elif name=='Table':
         obj = Table(node, ln)
+    elif name=='TableColumns':
+        obj = TableColumns(node, ln)
+    elif name=='TableColumn':
+        obj = TableColumn(node, ln)
+    elif name=='TableColumn':
+        obj = TableColumn(node, ln)
+    elif name=='TableHeader':
+        obj = TableHeader(node, ln)
+    elif name=='TableFooter':
+        obj = TableFooter(node, ln)
+    elif name=='TableDetails':
+        obj = TableDetails(node, ln)
+    elif name=='TableRows':
+        obj = TableRows(node, ln)
+    elif name=='TableRow':
+        obj = TableRow(node, ln)
+    elif name=='TableCells':
+        obj = TableCells(node, ln)
+    elif name=='TableCell':
+        obj = TableCell(node, ln)
+    elif name=='TableGroups':
+        obj = TableGroups(node, ln)
+    elif name=='TableGroup':
+        obj = TableGroup(node, ln)
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
 

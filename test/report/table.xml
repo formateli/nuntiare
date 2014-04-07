@@ -26,7 +26,7 @@
           <Name>panama</Name>
           <Query>
               <DataSourceName>src1</DataSourceName>
-              <CommandText>SELECT * FROM cities</CommandText>
+              <CommandText>SELECT * FROM city</CommandText>
           </Query>
 
           <Fields>
@@ -138,10 +138,10 @@
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_id</Name>
-                                    <Value>Fields['id']</Value>
+                                    <Value>=Fields['f_id']</Value>
                                     <Style>
                                         <BorderStyle>
-                                            <Default>Solid</Default>
+                                            <Bottom>Solid</Bottom>
                                         </BorderStyle>
                                     </Style>
                                 </Textbox>
@@ -153,10 +153,10 @@
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_name</Name>
-                                    <Value>Fields['name']</Value>
+                                    <Value>=Fields['f_name']</Value>
                                     <Style>
                                         <BorderStyle>
-                                            <Default>Solid</Default>
+                                            <Bottom>Solid</Bottom>
                                         </BorderStyle>
                                     </Style>
                                 </Textbox>
@@ -167,10 +167,10 @@
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_province</Name>
-                                    <Value>Fields['province']</Value>
+                                    <Value>=Fields['f_province']</Value>
                                     <Style>
                                         <BorderStyle>
-                                            <Default>Solid</Default>
+                                            <Bottom>Solid</Bottom>
                                         </BorderStyle>
                                     </Style>
                                 </Textbox>

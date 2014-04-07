@@ -39,6 +39,7 @@ class Report(object):
         self.parameters={}
         self.data_sources={} 
         self.data_sets={}
+        self.current_fields={}
         self.report_items={} # only textboxes
 
         if report_file:
@@ -92,9 +93,9 @@ class Report(object):
         for key, obj in self.data_sources.items():
             obj.connect()
 
-#            # 2.- Build data_sets in parameters
-#            for d in self.data_sets:
-#                d.get_data(self.data_sources)
+        # 2.- Build data_sets
+        for key, obj in self.data_sets.items():
+            obj.execute()
 
 #            # 4.- Accomodate data (Grouping, sorting, filtering, etc...)
 
@@ -116,7 +117,7 @@ class Definition(Element):
                   'Author': [Element.STRING],
                   'AutoRefresh': [Element.INTEGER],
                   'DataSources': [Element.ELEMENT],
-#                  'DataSets': [Element.ELEMENT],
+                  'DataSets': [Element.ELEMENT],
                   'Body': [Element.ELEMENT],
                   'ReportParameters': [Element.ELEMENT],
 #                  'Custom': [Element.ELEMENT],

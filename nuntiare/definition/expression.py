@@ -25,6 +25,7 @@ class Expression(object):
     def get_eval_value(self, code):
         Parameters = self.report.parameters
         Globals = self.report.globals
+        Fields = self.report.current_fields
 
         #TODO Try exception
         print "Pass code: " + code

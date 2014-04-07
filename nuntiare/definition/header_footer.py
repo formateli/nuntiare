@@ -7,10 +7,10 @@ from element import Element
 class PageHeaderFooter(Element):
     def __init__(self, node, lnk):
         elements={'Height': [Element.SIZE], 
-                  'PrintOnFirstPage': [Element.BOOLEAN],
-                  'PrintOnLastPage': [Element.BOOLEAN],
                   'Style': [Element.ELEMENT],
                   'ReportItems': [Element.ELEMENT],
+                  'PrintOnFirstPage': [Element.BOOLEAN],
+                  'PrintOnLastPage': [Element.BOOLEAN],
                  }
         super(PageHeaderFooter, self).__init__(node, elements, lnk)
 
