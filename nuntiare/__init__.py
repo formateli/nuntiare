@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import logging
+import sys
 import os
 from ConfigParser import ConfigParser
 from version import VERSION, get_version
@@ -12,6 +13,8 @@ __copyright__='(C) 2013-2014 Fredy Ramirez <http://www.pescaoylimon.com>'
 __version__ = get_version()
 __license__ = 'GNU GENERAL PUBLIC LICENSE Version 3'
 __directory__ = os.path.dirname(os.path.realpath(__file__))
+
+sys.path.insert(0, os.path.dirname(__directory__))
 
 cfg = os.path.join(__directory__, "nuntiare.cfg")
 __config__ = ConfigParser()

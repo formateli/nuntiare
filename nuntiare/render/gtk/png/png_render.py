@@ -3,8 +3,8 @@
 # contains the full copyright notices and license terms.
 
 import cairo
-from ....render.render import Render
-from ....render.gtk.context import Context
+from ..context import Context
+from ...render import Render
 from ....tools import get_size_in_unit
 
 class GtkPngRender(Render):

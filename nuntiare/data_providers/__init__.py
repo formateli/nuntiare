@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import sys
-from nuntiare import __config__
+from .. import __config__
 
 def get_data_provider(provider_name):
     "Returns an API 2.0 module for the dataprovider name especified in ../nuntiare.cfg"

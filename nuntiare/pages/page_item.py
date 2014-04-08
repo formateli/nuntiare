@@ -11,7 +11,8 @@ from ..tools import raise_error_with_log, get_element_from_parent, \
     get_expression_value_or_default, get_size_in_unit, dot_2_mm, point_2_mm
 
 class PageItem(object):
-    def __init__(self, report_item, parent_top, parent_left):
+    def __init__(self, type, report_item, parent_top, parent_left):
+        self.type=type
         self.report_item = report_item
         self.top = get_expression_value_or_default(report_item, "Top", 0) + parent_top
         self.left = get_expression_value_or_default(report_item, "Left", 0) + parent_left
@@ -22,17 +23,17 @@ class PageItem(object):
 
 class PageLine(PageItem):
     def __init__(self, report_item, parent_top, parent_left):
-        super(PageLine, self).__init__(report_item, parent_top, parent_left)
+        super(PageLine, self).__init__("PageLine", report_item, parent_top, parent_left)
 
 
 class PageRectangle(PageItem):
     def __init__(self, report_item, parent_top, parent_left):
-        super(PageRectangle, self).__init__(report_item, parent_top, parent_left)
+        super(PageRectangle, self).__init__("PageRectangle", report_item, parent_top, parent_left)
 
 
 class PageText(PageItem):
     def __init__(self, report_item, parent_top, parent_left, height=None, width=None):
-        super(PageText, self).__init__(report_item, parent_top, parent_left)
+        super(PageText, self).__init__("PageText", report_item, parent_top, parent_left)
         self.value = get_expression_value_or_default(report_item, "Value", None)
         if self.value:
             if self.style.text.format:
@@ -133,7 +134,7 @@ class PageText(PageItem):
 
 class PageGrid(PageItem):
     def __init__(self, report_item, parent_top, parent_left, width=None):
-        super(PageGrid, self).__init__(report_item, parent_top, parent_left)
+        super(PageGrid, self).__init__("PageGrid", report_item, parent_top, parent_left)
         # If it is in a cell item
         if width:
             self.width = width
@@ -141,7 +142,7 @@ class PageGrid(PageItem):
 
 class PageTable(PageItem):
     def __init__(self, report_item, parent_top, parent_left, width=None):
-        super(PageTable, self).__init__(report_item, parent_top, parent_left)
+        super(PageTable, self).__init__("PageTable", report_item, parent_top, parent_left)
         # If it is in a cell item
         if width:
             self.width = width

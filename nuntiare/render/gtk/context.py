@@ -5,9 +5,9 @@
 import cairo
 import pango
 import pangocairo
-from nuntiare.pages.page_item import PageLine, PageRectangle, PageText, PageGrid, PageTable
-from nuntiare.pages.style import StyleItem
-from nuntiare.tools import get_size_in_unit, raise_error_with_log, get_float_rgba
+from ...tools import get_size_in_unit, raise_error_with_log, get_float_rgba
+from ...pages.page_item import PageLine, PageRectangle, PageText, PageGrid, PageTable
+from ...pages.style import StyleItem
 
 class Context(object):
 
@@ -38,17 +38,15 @@ class Context(object):
                 get_size_in_unit(self.pages.footer.height, self.unit),
                 get_size_in_unit(self.pages.width - self.pages.margin_left - self.pages.margin_right, self.unit))
 
-
     def draw_items(self, it):
-
-        if isinstance(it, PageLine):
+        if it.type == "PageLine":
             self.draw_line( it.style.border_color.default, 
                             it.style.border_style.default, 
                             it.style.border_width.default, 
                             get_size_in_unit(it.top, self.unit), get_size_in_unit(it.left, self.unit), 
                             get_size_in_unit(it.height, self.unit), get_size_in_unit(it.width, self.unit))
 
-        if isinstance(it, PageText):
+        if it.type == "PageText":
             text = it.value
             top = get_size_in_unit(it.top, self.unit)
             left = get_size_in_unit(it.left, self.unit)
@@ -144,11 +142,11 @@ class Context(object):
             self.cr.move_to(x, y)
             pc.show_layout(layout)
 
-        if isinstance(it, PageRectangle):
+        if it.type == "PageRectangle":
             self.draw_rectangle(it.style, get_size_in_unit(it.top, self.unit), get_size_in_unit(it.left, self.unit), 
                      get_size_in_unit(it.height, self.unit), get_size_in_unit(it.width, self.unit))
 
-        if isinstance(it, PageGrid) or isinstance(it, PageTable):
+        if (it.type == "PageGrid") or (it.type == "PageTable"):
             self.draw_rectangle(it.style, get_size_in_unit(it.top, self.unit), get_size_in_unit(it.left, self.unit), 
                      get_size_in_unit(it.height, self.unit), get_size_in_unit(it.width, self.unit))
 
