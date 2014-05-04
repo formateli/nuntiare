@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report Name="PCW">
+  <Name>Line Test</Name>
   <Description>
   </Description>
   <Author>Fredy Ramirez</Author>
@@ -66,9 +67,9 @@
           </BorderWidth>
         </Style>
         <Left>5pt</Left>
-        <Top>400pt</Top>
+        <Top>20cm</Top>
       </Textbox>
-
+<!--
       <Line>
         <Name>Line2</Name>
         <Height>17.31pt</Height>
@@ -117,13 +118,107 @@
         <Left>132.50pt</Left>
         <Top>122.88pt</Top>
       </Line>
+-->
+      <Rectangle>
+        <Name>RectContainer</Name>
+        <Height>10cm</Height>
+        <Width>10cm</Width>
+        <Left>5mm</Left>
+        <Top>5mm</Top>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+
+          <BorderColor>
+            <Default>Blue</Default>
+          </BorderColor>
+
+          <BorderWidth>
+            <Default>2pt</Default>
+          </BorderWidth>
+        </Style>
+
+        <ReportItems>
+
+            <Textbox>
+              <Name>TextContainer</Name>
+              <Value>Container rectangle</Value>
+              <Height>5mm</Height>
+              <Width>2cm</Width>
+              <Style>
+                  <BorderStyle>
+                    <Default>Solid</Default>
+                  </BorderStyle>
+                  <BorderColor>
+                    <Default>Black</Default>
+                  </BorderColor>
+                  <BorderWidth>
+                    <Default>2pt</Default>
+                  </BorderWidth>
+              </Style>
+              <Left>1mm</Left>
+              <Top>1mm</Top>
+            </Textbox>
+
+            <Rectangle>
+                <Name>Rec1</Name>
+                <Height>2cm</Height>
+                <Width>3cm</Width>
+                <Left>2mm</Left>
+                <Top>2cm</Top>
+                <Style>
+                    <BorderStyle>
+                        <Default>Solid</Default>
+                    </BorderStyle>
+
+                    <BorderColor>
+                        <Default>Red</Default>
+                    </BorderColor>
+
+                    <BorderWidth>
+                        <Default>2pt</Default>
+                    </BorderWidth>
+                    <BackgroundColor>Yellow</BackgroundColor>
+                </Style>
+                <ZIndex>1</ZIndex>
+            </Rectangle>
+
+            <Rectangle>
+                <Name>Rec2</Name>
+                <Height>2cm</Height>
+                <Width>30cm</Width>
+                <Left>2mm</Left>
+                <Top>5cm</Top>
+                <Style>
+                    <BorderStyle>
+                        <Default>Solid</Default>
+                    </BorderStyle>
+
+                    <BorderColor>
+                        <Default>Red</Default>
+                    </BorderColor>
+
+                    <BorderWidth>
+                        <Default>2pt</Default>
+                    </BorderWidth>
+                    <BackgroundColor>Green</BackgroundColor>
+                </Style>
+                <ZIndex>1</ZIndex>
+            </Rectangle>
+
+
+        </ReportItems>
+
+        <ZIndex>1</ZIndex>
+      </Rectangle>
 
       <Rectangle>
         <Name>Rectangle1</Name>
         <Height>108.41pt</Height>
         <Width>108.41pt</Width>
         <Left>50mm</Left>
-        <Top>50mm</Top>
+        <Top>15cm</Top>
         <Style>
           <BorderStyle>
             <Default>Solid</Default>
@@ -147,9 +242,11 @@
           </BorderWidth>
           <BackgroundColor>Pink</BackgroundColor>
         </Style>
-        <ZIndex>1</ZIndex>
+        <ZIndex>2</ZIndex>
       </Rectangle>
+
     </ReportItems>
+
     <Columns>1</Columns>
 
   </Body>

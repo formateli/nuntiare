@@ -2,6 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
+from expression_eval import get_expression_eval
 from ..tools import raise_error_with_log
 
 class Expression(object):
@@ -20,18 +21,7 @@ class Expression(object):
         if self.is_constant:
             return self.expression
         ex = self.expression[1:]
-        return self.get_eval_value(ex) # Run python code
-
-    def get_eval_value(self, code):
-        Parameters = self.report.parameters
-        Globals = self.report.globals
-        Fields = self.report.current_fields
-
-        #TODO Try exception
-        print "Pass code: " + code
-        result = eval(code)
-        print "Pass code result: " + str(result)
-        return result  
+        return get_expression_eval(self.report, ex) # Run python code
 
 
 def verify_expression_required(name, element, expr):
@@ -50,4 +40,10 @@ def verify_expression_constant_and_required(name, element, expr):
     verify_expression_required(name, element, expr)
     verify_expression_constant(name, element, expr)
     return expr
+
+
+
+
+
+
 

@@ -8,3 +8,8 @@ class Boolean(Expression):
     def __init__(self, report, expression):
         super(Boolean, self).__init__(report, expression)
 
+    def value(self):
+        val = super(Boolean, self).value()
+        if val != None:
+            return bool(val)
+

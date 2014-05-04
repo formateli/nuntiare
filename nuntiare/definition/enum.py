@@ -10,8 +10,10 @@ class Enum(Expression):
         self.name = enum_name 
         self.enum_list = enum_list
         super(Enum, self).__init__(report, expression)
-        if self.is_constant:
-            self.expression = self.get_enum_by_name(self.expression)
+
+    def value(self):
+        name = super(Enum, self).value()
+        return self.get_enum_by_name(name)
 
     def get_enum_by_name(self, name):
         if not name or name == '':

@@ -19,24 +19,24 @@ class Context(object):
 
     def draw_header_style(self, header):
         self.draw_section_style(header, 
-                get_size_in_unit(self.pages.margin_top, self.unit), 
-                get_size_in_unit(self.pages.margin_left, self.unit), 
+                get_size_in_unit(self.pages.page_margin_top, self.unit), 
+                get_size_in_unit(self.pages.page_margin_left, self.unit), 
                 get_size_in_unit(self.pages.header.height, self.unit),
-                get_size_in_unit(self.pages.width - self.pages.margin_left - self.pages.margin_right, self.unit))
+                get_size_in_unit(self.pages.page_width - self.pages.page_margin_left - self.pages.page_margin_right, self.unit))
 
     def draw_body_style(self, body):
         self.draw_section_style(body, 
-                get_size_in_unit(self.pages.margin_top + self.pages.header.height, self.unit), 
-                get_size_in_unit(self.pages.margin_left, self.unit), 
+                get_size_in_unit(self.pages.page_margin_top + self.pages.header.height, self.unit), 
+                get_size_in_unit(self.pages.page_margin_left, self.unit), 
                 get_size_in_unit(self.pages.body.height, self.unit),
-                get_size_in_unit(self.pages.width - self.pages.margin_left - self.pages.margin_right, self.unit))
+                get_size_in_unit(self.pages.page_width - self.pages.page_margin_left - self.pages.page_margin_right, self.unit))
 
     def draw_footer_style(self, footer):
         self.draw_section_style(footer, 
-                get_size_in_unit(self.pages.height - self.pages.margin_bottom - self.pages.footer.height, self.unit), 
-                get_size_in_unit(self.pages.margin_left, self.unit), 
+                get_size_in_unit(self.pages.page_height - self.pages.page_margin_bottom - self.pages.footer.height, self.unit), 
+                get_size_in_unit(self.pages.page_margin_left, self.unit), 
                 get_size_in_unit(self.pages.footer.height, self.unit),
-                get_size_in_unit(self.pages.width - self.pages.margin_left - self.pages.margin_right, self.unit))
+                get_size_in_unit(self.pages.page_width - self.pages.page_margin_left - self.pages.page_margin_right, self.unit))
 
     def draw_items(self, it):
         if it.type == "PageLine":

@@ -8,3 +8,8 @@ class String(Expression):
     def __init__(self, report, expression):
         super(String, self).__init__(report, expression)
 
+    def value(self):
+        val = super(String, self).value()
+        if val != None:
+            return str(val)
+

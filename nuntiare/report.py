@@ -10,7 +10,7 @@ from definition.expression import verify_expression_constant
 from definition.link import Link
 from definition.element import Element
 from xml.dom.minidom import parse, parseString
-from pages import get_pages
+from pages import get_pages, Pages
 
 class Report(object):
     def __init__(self, report_file=None, string_xml=None, parameters=None, 
@@ -34,12 +34,16 @@ class Report(object):
         self.compress=compress
 
         self.globals={}      # page_number, total_pages, execution_time, report_folder, report_name 
-        self.parameters_passed=parameters
+        self.parameters_passed={}
+        if parameters:
+            self.parameters_passed=parameters
         self.parameters_obj=[]
         self.parameters={}
         self.data_sources={} 
         self.data_sets={}
-        self.current_fields={}
+        self.data_groups={}
+        self.fields={}
+        self.current_scope=None
         self.report_items={} # only textboxes
 
         if report_file:
@@ -71,6 +75,7 @@ class Report(object):
 
         report_node = dom.getElementsByTagName("Report")
         self.definition = Definition(report_node[0], self)
+        self.run()
 
     def run(self):
         self.globals['page_number'] = -1
@@ -93,14 +98,12 @@ class Report(object):
         for key, obj in self.data_sources.items():
             obj.connect()
 
-        # 2.- Build data_sets
+        # 3.- Build data_sets
         for key, obj in self.data_sets.items():
             obj.execute()
 
-#            # 4.- Accomodate data (Grouping, sorting, filtering, etc...)
-
         # 5.- Build pages
-        self.pages = get_pages(self) # Return a collection of page() objects
+        self.pages = Pages(self)      
 
     def get_element(self, name):
         return self.definition.get_element(name)
@@ -120,7 +123,7 @@ class Definition(Element):
                   'DataSets': [Element.ELEMENT],
                   'Body': [Element.ELEMENT],
                   'ReportParameters': [Element.ELEMENT],
-#                  'Custom': [Element.ELEMENT],
+                  'Custom': [Element.ELEMENT],
                   'Width': [Element.SIZE],
                   'PageHeader': [Element.ELEMENT],
                   'PageFooter': [Element.ELEMENT],
@@ -131,7 +134,6 @@ class Definition(Element):
                   'TopMargin': [Element.SIZE],
                   'BottomMargin': [Element.SIZE],
                   'EmbeddedImages': [Element.ELEMENT],
-                  'Language': [Element.LANGUAGE],
                   'CodeModules': [Element.ELEMENT],
                  }
 
@@ -142,7 +144,8 @@ class Definition(Element):
             raise_error_with_log("'Body' element is required by report definition.")
 
         name = verify_expression_constant("Name", "Report", self.get_element('Name'))
-        report.globals['report_name'] = name.value()
+        self.name = name.value()
+        report.globals['report_name'] = self.name
         if not report.output_name:
-            report.output_name=report.globals['report_name']
+            report.output_name = self.name
 

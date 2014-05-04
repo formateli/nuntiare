@@ -7,3 +7,8 @@ from expression import Expression
 class Integer(Expression):
     def __init__(self, report, expression):
         super(Integer, self).__init__(report, expression)
+
+    def value(self):
+        val = super(Integer, self).value()
+        if val != None:
+            return int(val)

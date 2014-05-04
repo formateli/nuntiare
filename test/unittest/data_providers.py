@@ -11,8 +11,8 @@ class DataProvidersTest(unittest.TestCase):
         dp = get_data_provider("no_name")
         self.assertEqual(dp, None, "DataProvider must be 'None'")
 
-        providers = {'xml':'file=data/Panama.xml',
-                     'postgresql':"dbname=nuntiare_test host=localhost port=5433 user=postgres password=h12345678 client_encoding=UNICODE connect_timeout=0",
+        providers = {'xml':'file=../data/panama.xml',
+                     #'postgresql':"dbname=nuntiare_test host=localhost port=5433 user=postgres password= client_encoding=UNICODE connect_timeout=0",
                     }
         print "\n"
 

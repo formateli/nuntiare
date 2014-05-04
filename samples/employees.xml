@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ This file is part of Nuntiare project. 
+ The COPYRIGHT file at the top level of this repository 
+ contains the full copyright notices and license terms.
+-->
+
+<Report>
+  <Name>Employees</Name>
+  <Description>Simple employee report</Description>
+  <Author>Fredy Ramirez</Author>
+  <PageHeight>11in</PageHeight>
+  <PageWidth>8.5in</PageWidth>
+  <Width>8.5in</Width>
+  <TopMargin>1cm</TopMargin>
+  <LeftMargin>1cm</LeftMargin>
+  <RightMargin>1cm</RightMargin>
+  <BottomMargin>1cm</BottomMargin>
+
+  <ReportParameters>
+      <ReportParameter>
+          <Name>data_source</Name>
+          <DataType>String</DataType>
+          <CanBeNone>false</CanBeNone>
+          <AllowBlank>false</AllowBlank>
+          <DefaultValue>PostgreSQL</DefaultValue>
+      </ReportParameter>
+      <ReportParameter>
+          <Name>db_password</Name>
+          <DataType>String</DataType>
+          <CanBeNone>false</CanBeNone>
+          <AllowBlank>false</AllowBlank>
+          <DefaultValue>None</DefaultValue>
+      </ReportParameter>
+      <ReportParameter>
+          <Name>conn_string</Name>
+          <DataType>String</DataType>
+          <CanBeNone>false</CanBeNone>
+          <AllowBlank>false</AllowBlank>
+          <DefaultValue>='dbname=northwind host=localhost port=5432 user=postgres password=' + Parameters['db_password'] + ' client_encoding=UNICODE connect_timeout=0'</DefaultValue>
+      </ReportParameter>
+
+  </ReportParameters>
+
+  <DataSources>
+    <DataSource>
+      <Name>DS1</Name>
+      <ConnectionProperties>
+        <DataProvider>=Parameters['data_source']</DataProvider>
+        <ConnectString>=Parameters['conn_string']</ConnectString>
+        <IntegratedSecurity>false</IntegratedSecurity>
+      </ConnectionProperties>
+    </DataSource>
+  </DataSources>
+
+  <DataSets>
+    <DataSet>
+      <Name>DataEmployee</Name>
+      <Query>
+        <DataSourceName>DS1</DataSourceName>
+        <CommandText>="SELECT employeeid, firstname, lastname, birthdate FROM employees"</CommandText>
+      </Query>
+
+      <Fields>
+        <Field>
+          <Name>id</Name>
+          <DataField>employeeid</DataField>
+        </Field>
+        <Field>
+          <Name>firstname</Name>
+          <DataField>firstname</DataField>
+        </Field>
+        <Field>
+          <Name>lastname</Name>
+          <DataField>lastname</DataField>
+        </Field>
+        <Field>
+          <Name>dob</Name>
+          <DataField>birthdate</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+
+  <PageHeader>
+    <Height>1cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox>
+        <Name>title</Name>
+        <Height>21pt</Height>
+        <Width>490pt</Width>
+        <Value>Employees Report</Value>
+        <Left>0.0pt</Left>
+        <Top>0.0pt</Top>
+        <Style>
+          <BorderStyle />
+          <BorderColor />
+          <BorderWidth />
+          <FontWeight>Bold</FontWeight>
+          <FontSize>16pt</FontSize>
+        </Style>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+
+  <Body>
+    <Height>9in</Height>
+    <Columns>1</Columns>
+    <ReportItems>
+      <Table>
+        <Name>TableEmployees</Name>
+        <DataSetName>DataEmployee</DataSetName>
+        <NoRows>Query returned no rows!</NoRows>
+        <Style>
+          <BorderStyle>
+            <Default>Solid</Default>
+          </BorderStyle>
+        </Style>
+        <Columns>
+          <Column>
+            <Width>1cm</Width>
+          </Column>
+          <Column>
+            <Width>3cm</Width>
+          </Column>
+          <Column>
+            <Width>3cm</Width>
+          </Column>
+          <Column>
+            <Width>2cm</Width>
+          </Column>
+        </Columns>
+
+
+        <Header>
+          <Rows>
+            <Row>
+              <Height>8mm</Height>
+              <Cells>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>titleid</Name>
+                      <Value>ID</Value>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>titlefname</Name>
+                      <Value>FIRST NAME</Value>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>titlelname</Name>
+                      <Value>LAST NAME</Value>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>titledob</Name>
+                      <Value>BIRTHDAY</Value>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                        <BorderStyle>
+                          <Default>Solid</Default>
+                        </BorderStyle>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+              </Cells>
+            </Row>
+          </Rows>
+        </Header>         
+
+        <Details>
+          <Rows>
+            <Row>
+              <Height>12 pt</Height>
+              <Cells>
+
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>txtid</Name>
+                      <Value>=Fields['id']</Value>
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <BorderStyle>
+                          <Default>None</Default>
+                          <Left>None</Left>
+                          <Right>None</Right>
+                          <Top>None</Top>
+                          <Bottom>None</Bottom>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>txtfname</Name>
+                      <Value>=Fields['firstname']</Value>
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <BorderStyle>
+                          <Default>None</Default>
+                          <Left>None</Left>
+                          <Right>None</Right>
+                          <Top>None</Top>
+                          <Bottom>None</Bottom>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>txtlname</Name>
+                      <Value>=Fields['lastname']</Value>
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <BorderStyle>
+                          <Default>None</Default>
+                          <Left>None</Left>
+                          <Right>None</Right>
+                          <Top>None</Top>
+                          <Bottom>None</Bottom>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>txtfdob</Name>
+                      <Value>=Fields['dob']</Value>
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <BorderStyle>
+                          <Default>None</Default>
+                          <Left>None</Left>
+                          <Right>None</Right>
+                          <Top>None</Top>
+                          <Bottom>None</Bottom>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+
+              </Cells>
+            </Row>
+          </Rows>
+        </Details>
+
+      </Table>
+    </ReportItems>
+  </Body>
+
+
+</Report>
+

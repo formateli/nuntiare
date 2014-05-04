@@ -4,7 +4,7 @@
   <Description></Description>
   <Author>Fredy Ramirez</Author>
   <PageWidth>210mm</PageWidth>
-  <PageHeight>280mm</PageHeight>
+  <PageHeight>140mm</PageHeight>
   <Width>8.5in</Width>
   <TopMargin>1cm</TopMargin>
   <LeftMargin>1cm</LeftMargin>
@@ -93,7 +93,10 @@
   </PageHeader>
 
   <Body>
-    <Height>250pt</Height>
+
+    <Height>0mm</Height>
+    <Columns>1</Columns>
+
     <ReportItems>
 
         <Table>
@@ -102,8 +105,18 @@
             <Left>5mm</Left>
 
             <DataSetName>panama</DataSetName>
-
-
+<!--
+            <TableGroups>
+                <TableGroup>
+                    <Grouping>
+                        <Name>provincias</Name>
+                        <GroupExpressions>
+                            <GroupExpression>=fields['f_province']</GroupExpression>
+                        </GroupExpressions>
+                    </Grouping>
+                </TableGroup>
+            </TableGroups>
+-->
             <Style>
                 <BackgroundColor>Yellow</BackgroundColor>
                 <BorderColor>
@@ -117,24 +130,51 @@
                 </BorderStyle>
             </Style>
 
-            <TableColumns>
-                <TableColumn>
+            <Columns>
+                <Column>
                     <Width>40mm</Width>
-                </TableColumn>
-                <TableColumn>
+                </Column>
+                <Column>
                     <Width>50mm</Width>
-                </TableColumn>
-                <TableColumn>
+                </Column>
+                <Column>
                     <Width>60mm</Width>
-                </TableColumn>
-            </TableColumns>
+                </Column>
+            </Columns>
 
-            <TableDetails>
-                <TableRows>
-                    <TableRow>
+            <Header>
+                <Rows>
+                    <Row>
                         <Height>10mm</Height>
-                        <TableCells>
-                            <TableCell>
+                        <Cells>
+                            <Cell>
+                              <ColSpan>3</ColSpan>
+                              <ReportItems>
+                                <Textbox>
+                                    <Name>table_header</Name>
+                                    <Value>Table Header Title</Value>
+                                    <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <FontSize>12pt</FontSize>
+                                        <TextAlign>Center</TextAlign>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                              </ReportItems>
+                            </Cell>
+                        </Cells>
+                    </Row>
+                </Rows>
+            </Header>
+
+            <Details>
+                <Rows>
+                    <Row>
+                        <Height>10mm</Height>
+                        <Cells>
+                            <Cell>
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_id</Name>
@@ -146,10 +186,10 @@
                                     </Style>
                                 </Textbox>
                               </ReportItems>
-                            </TableCell>
+                            </Cell>
 
 
-                            <TableCell>
+                            <Cell>
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_name</Name>
@@ -161,9 +201,9 @@
                                     </Style>
                                 </Textbox>
                               </ReportItems>
-                            </TableCell>
+                            </Cell>
 
-                            <TableCell>
+                            <Cell>
                               <ReportItems>
                                 <Textbox>
                                     <Name>txt_province</Name>
@@ -175,19 +215,16 @@
                                     </Style>
                                 </Textbox>
                               </ReportItems>
-                            </TableCell>
+                            </Cell>
 
-
-                        </TableCells>
-                    </TableRow>
-                </TableRows>
-            </TableDetails>
+                        </Cells>
+                    </Row>
+                </Rows>
+            </Details>
 
         </Table>
 
     </ReportItems>
-
-    <Columns>1</Columns>
 
   </Body>
 

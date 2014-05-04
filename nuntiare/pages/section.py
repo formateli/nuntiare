@@ -21,8 +21,8 @@ class SectionInfo(object):
 class HeaderFooterInfo(SectionInfo):
     def __init__(self, element):
         super(HeaderFooterInfo, self).__init__(element)
-        self.print_on_first_page = get_expression_value_or_default(element, "PrintOnFirstPage", False)
-        self.print_on_first_page = get_expression_value_or_default(element, "PrintOnLastPage", False)
+        self.print_on_first_page = get_expression_value_or_default(element, "PrintOnFirstPage", True)
+        self.print_on_last_page = get_expression_value_or_default(element, "PrintOnLastPage", True)
 
 
 class HeaderInfo(HeaderFooterInfo):

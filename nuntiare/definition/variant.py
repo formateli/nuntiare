@@ -8,4 +8,3 @@ class Variant(Expression):
     def __init__(self, report, expression):
         super(Variant, self).__init__(report, expression)
 
-

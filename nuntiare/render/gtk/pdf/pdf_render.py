@@ -13,13 +13,14 @@ class GtkPdfRender(Render):
 
     def render(self, report):
         super(GtkPdfRender, self).render(report)
-        ps = cairo.PDFSurface(self.result_file, get_size_in_unit(report.pages.width, 'pt'), 
-                                get_size_in_unit(report.pages.height, 'pt'))
+        ps = cairo.PDFSurface(self.result_file, get_size_in_unit(report.pages.page_width, 'pt'), 
+                                get_size_in_unit(report.pages.page_height, 'pt'))
         cr = cairo.Context(ps)
 
         context = Context(report, cr, 'pt')
 
         for pg in report.pages.pages:
+            print "  pdf page: " + str(pg.page_number)
             context.draw_header_style(report.pages.header)
             context.draw_body_style(report.pages.body)
             context.draw_footer_style(report.pages.footer) 

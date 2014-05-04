@@ -4,7 +4,7 @@
 
 from ...definition.element import Element
 from ...definition.expression import verify_expression_constant_and_required
-from ...tools import raise_error_with_log
+from ...tools import raise_error_with_log, get_expression_value_or_default
 
 class ReportItems(Element):
     def __init__(self, node, lnk):
@@ -17,7 +17,7 @@ class ReportItems(Element):
                   'Grid': [Element.ELEMENT],
                   'Table': [Element.ELEMENT],
                  }
-
+        
         super(ReportItems, self).__init__(node, elements, lnk)
 
 
@@ -29,7 +29,7 @@ class ReportItem(Element):
     ReportItem is allowed.
     '''
 
-    def __init__(self, node, lnk, additional_elements):
+    def __init__(self, type, node, lnk, additional_elements):
         elements={'Name': [Element.STRING], 
                   'Style': [Element.ELEMENT],
                   'Action': [Element.ELEMENT],
@@ -51,22 +51,20 @@ class ReportItem(Element):
                 elements[key] = value
 
         super(ReportItem, self).__init__(node, elements, lnk)
+        self.type = type
 
         name = verify_expression_constant_and_required("Name", "ReportItem", self.get_element("Name"))
         self.name = name.value()
-
-        self.zindex=0
-        zindex = self.get_element("ZIndex")
-        if zindex:
-            try:
-                self.zindex = int(zindex.value())
-            except ValueError: 
-                raise_error_with_log("Invalid ZIndex value for ReportItem '{0}'".format(self.name))
+        self.zindex = get_expression_value_or_default(self, "ZIndex", 0)
+        self.top = get_expression_value_or_default(self, "Top", 0)
+        self.left = get_expression_value_or_default(self, "Left", 0)
+        self.height = get_expression_value_or_default(self, "Height", 1)
+        self.width = get_expression_value_or_default(self, "Width", 1)
 
 
 class Line(ReportItem):
     def __init__(self, node, lnk):
-        super(Line, self).__init__(node, lnk, None)
+        super(Line, self).__init__("Line", node, lnk, None)
 
 
 class Rectangle(ReportItem):
@@ -75,7 +73,7 @@ class Rectangle(ReportItem):
                   'PageBreakAtStart': [Element.BOOLEAN],
                   'PageBreakAtEnd': [Element.BOOLEAN],
                  }
-        super(Rectangle, self).__init__(node, lnk, elements)
+        super(Rectangle, self).__init__("Rectangle", node, lnk, elements)
 
 
 class Image(ReportItem):
@@ -85,18 +83,17 @@ class Image(ReportItem):
                   'MIMEType': [Element.STRING],
                   'Sizing': [Element.ENUM, 'ImageSizing'],
                  }
-        super(Image, self).__init__(node, lnk, elements)
+        super(Image, self).__init__("Image", node, lnk, elements)
 
 
 class Textbox(ReportItem):
     def __init__(self, node, lnk):
-        elements={'Value': [Element.STRING],
+        elements={'Value': [Element.VARIANT],
                   'CanGrow': [Element.BOOLEAN],
                   'CanShrink': [Element.BOOLEAN],
                   'HideDuplicates': [Element.STRING],
                   'ToggleImage': [Element.ELEMENT],
                   'UserSort': [Element.ELEMENT],
                  }
-        super(Textbox, self).__init__(node, lnk, elements)
-
+        super(Textbox, self).__init__("Textbox", node, lnk, elements)
 

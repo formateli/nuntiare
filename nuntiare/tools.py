@@ -3,12 +3,12 @@
 # contains the full copyright notices and license terms.
 
 from . import logger, __pixels_per_inch__
+import xml.parsers.expat
 
 size_6 = float(6)
 size_10 = float(10)
 size_25_4 = float(25.4)
 size_72 = float(72)
-
 
 def get_xml_tag_value(node):
     'Returns the valid value of xml node'
@@ -19,7 +19,36 @@ def get_xml_tag_value(node):
     end = xml_str.rfind('<')
     if end < start:
         return ''
-    return xml_str[start + 1:end]
+    res = unescape(xml_str[start + 1:end])
+    print "res: " + res
+    return res
+
+def unescape(s):
+    want_unicode = False
+    if isinstance(s, unicode):
+        s = s.encode("utf-8")
+        want_unicode = True
+
+    # the rest of this assumes that `s` is UTF-8
+    list = []
+   
+    # create and initialize a parser object
+    p = xml.parsers.expat.ParserCreate("utf-8")
+    p.buffer_text = True
+    p.returns_unicode = want_unicode
+    p.CharacterDataHandler = list.append
+   
+    # parse the data wrapped in a dummy element
+    # (needed so the "document" is well-formed)
+    p.Parse("<e>", 0)
+    p.Parse(s, 0)
+    p.Parse("</e>", 1)
+   
+    # join the extracted strings and return
+    es = ""
+    if want_unicode:
+        es = u""
+    return es.join(list)
 
 
 def get_parameters_from_string(string):
@@ -73,15 +102,21 @@ def get_element_from_parent(parent_element, child_name):
         return parent_element.get_element(child_name)
 
 
-def get_expression_value_or_default(element, child_name, default_value):
+def get_expression_value_or_default(element, child_name, default_value, direct_expression=None):
     '''
     Gets the value of a report element of type expression, or its default value 
     '''
+    if direct_expression != None: # child_name is the expression to get value
+        value = direct_expression.value()
+        if value == None:
+            return default_value
+        return value
+
     el = get_element_from_parent(element, child_name) 
     if not el:
         return default_value
     value = el.value()
-    if not value:
+    if value == None:
         return default_value
     return value
 
@@ -92,8 +127,6 @@ def inch_2_mm(inch):
     '''
     return float(inch * 25.4)
 
-#def mm_2_dot(mm, pixels_per_inch=__pixels_per_inch__):
-#    return int((mm * pixels_per_inch) / size_25_4)
 
 def dot_2_mm(dots, pixels_per_inch=__pixels_per_inch__):
     return (dots * size_25_4) / pixels_per_inch
@@ -114,7 +147,7 @@ def get_size_in_unit(size, unit):
         return int((size / size_25_4) * size_72)
     elif unit=="pc":
         return int((size / size_25_4) * size_6)
-    elif unit=="dot":
+    elif unit=="dot" or 'px':
         return int((size * __pixels_per_inch__) / size_25_4)
 
     raise_error_with_log("Unknown unit '{0}'".format(unit))

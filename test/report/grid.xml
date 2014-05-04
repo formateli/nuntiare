@@ -4,7 +4,7 @@
   <Description></Description>
   <Author>Fredy Ramirez</Author>
   <PageWidth>210mm</PageWidth>
-  <PageHeight>280mm</PageHeight>
+  <PageHeight>100mm</PageHeight>
   <Width>8.5in</Width>
   <TopMargin>1cm</TopMargin>
   <LeftMargin>1cm</LeftMargin>
@@ -50,7 +50,7 @@
       <Textbox>
         <Name>header1</Name>
         <Height>1.5cm</Height>
-        <Width>180mm</Width>
+        <Width>140mm</Width>
         <Value>Grid Test</Value>
         <Left>0.00pt</Left>
         <Top>3mm</Top>
@@ -65,7 +65,7 @@
   </PageHeader>
 
   <Body>
-    <Height>250pt</Height>
+    <Height>0pt</Height>
     <ReportItems>
         <Grid>
             <Name>grid1</Name>
@@ -561,7 +561,6 @@
                     </Cells>
                 </Row>
 
-
                 <Row>
                     <Height>8mm</Height>
                     <Cells>
@@ -571,6 +570,8 @@
                                     <Name>rgrid1</Name>
                                     <Value>Grid:</Value>
                                     <Style>
+                                        <TextAlign>Center</TextAlign>
+                                        <VerticalAlign>Middle</VerticalAlign>
                                         <BorderStyle>
                                             <Bottom>Solid</Bottom>
                                         </BorderStyle>
@@ -679,11 +680,63 @@
                                     </Rows>
 
                                 </Grid>
+Row4.1	
+                            </ReportItems>
+                        </Cell>
+                    </Cells>
+                </Row>
+
+
+                <Row>
+                    <Height>8mm</Height>
+                    <Cells>
+                        <Cell>
+                            <ReportItems>
+                                <Textbox>
+                                    <Name>rec1</Name>
+                                    <Value>Rectangle:</Value>
+                                    <Style>
+                                        <TextAlign>Center</TextAlign>
+                                        <VerticalAlign>Middle</VerticalAlign>
+                                        <BorderStyle>
+                                            <Bottom>Solid</Bottom>
+                                        </BorderStyle>
+                                    </Style>
+                                </Textbox>
+                            </ReportItems>
+                        </Cell>
+                        <Cell>
+                            <ColSpan>2</ColSpan>
+
+                            <ReportItems>
+
+                                <Rectangle>
+
+                                    <Name>rectangle1</Name>
+                                    <Height>2cm</Height>
+                                    <Width>2cm</Width>
+                                    <Left>2mm</Left>
+                                    <Top>2mm</Top>
+                                    <Style>
+                                        <BackgroundColor>Green</BackgroundColor>
+                                        <BorderColor>
+                                            <Default>Blue</Default>
+                                        </BorderColor>
+                                        <BorderWidth>
+                                            <Default>3 pt</Default>
+                                        </BorderWidth>
+                                        <BorderStyle>
+                                            <Default>Solid</Default>
+                                        </BorderStyle>
+                                    </Style>
+
+                                </Rectangle>
 
                             </ReportItems>
                         </Cell>
                     </Cells>
                 </Row>
+
 
 
             </Rows>
@@ -710,7 +763,9 @@
         <Top>Solid</Top>
       </BorderStyle>
     </Style>
+
     <ReportItems>
+
       <Textbox>
         <Name>reportname</Name>
         <Height>8mm</Height>
@@ -726,7 +781,7 @@
         <Width>60mm</Width>
         <Value>='Folder: ' + Globals['report_folder']</Value>
         <Left>0mm</Left>
-        <Top>8mm</Top>
+        <Top>12mm</Top>
         <ZIndex>1</ZIndex>
       </Textbox>
       <Textbox>
@@ -735,7 +790,7 @@
         <Width>60mm</Width>
         <Value>='File: ' + Globals['report_file']</Value>
         <Left>0mm</Left>
-        <Top>14mm</Top>
+        <Top>22mm</Top>
         <ZIndex>1</ZIndex>
       </Textbox>
       <Textbox>
@@ -757,12 +812,13 @@
         <Width>90mm</Width>
         <Value>='Page ' + str(Globals['page_number']) + ' of ' + str(Globals['total_pages'])</Value>
         <Left>100mm</Left>
-        <Top>8mm</Top>
+        <Top>12mm</Top>
         <ZIndex>2</ZIndex>
         <Style>
             <TextAlign>Right</TextAlign>
         </Style>
       </Textbox>
+
     </ReportItems>
   </PageFooter>
 

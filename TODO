@@ -3,17 +3,13 @@
 CRITICAL
 --------
 
-- GtkReader:
-   - Textbox 
-   - DataRegions:
-      - List
-      - Table
-   - Body Columns
+- Filter, sorting and grouping test
+- Grouping Sample
+
+
 
 -----
 OTHER
 -----
 
-- Mejorar xml DataProvider
-   - SELECT id, name FROM Raw WHERE id=1 AND | OR ...
 

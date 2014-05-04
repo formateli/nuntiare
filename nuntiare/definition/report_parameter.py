@@ -6,6 +6,7 @@ from element import Element
 from expression import verify_expression_constant_and_required
 from ..tools import get_expression_value_or_default, raise_error_with_log
 from decimal import Decimal
+from dateutil import parser
 
 class ReportParameters(Element):
     def __init__(self, node, lnk):
@@ -63,7 +64,7 @@ class ReportParameter(Element):
         if data_type == "Boolean":
             result = bool(result)
         if data_type == "DateTime":
-            pass
+            result = parser.parse(result)
         if data_type == "Decimal":
             result = Decimal(result)
 

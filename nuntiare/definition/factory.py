@@ -21,14 +21,17 @@ from header_footer import PageHeader, PageFooter
 from data.data_source import DataSources, DataSource, ConnectionProperties
 from data.data_set import DataSets, DataSet, Fields, Field, Query, \
     QueryParameters, QueryParameter
+from data.grouping import Grouping, GroupExpressions
+from data.sorting import Sorting, SortBy, SortDirection
+from data.filter import Operator, Filters, Filter, FilterValues
 from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
 from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
 from link import Link
-from report_items.data_region.table import Table, TableColumns, TableColumn, \
-    TableHeader, TableFooter, TableDetails, TableRows, TableRow, TableCells, \
-    TableCell, TableGroups, TableGroup
+from report_items.data_region.table import Table,  \
+    Header, Footer, Details, TableGroups, TableGroup
+
 
 def get_element(name, node, lnk):
     ln = Link(lnk.report, lnk.obj)
@@ -98,30 +101,26 @@ def get_element(name, node, lnk):
         obj = QueryParameter(node, ln)
     elif name=='Table':
         obj = Table(node, ln)
-    elif name=='TableColumns':
-        obj = TableColumns(node, ln)
-    elif name=='TableColumn':
-        obj = TableColumn(node, ln)
-    elif name=='TableColumn':
-        obj = TableColumn(node, ln)
-    elif name=='TableHeader':
-        obj = TableHeader(node, ln)
-    elif name=='TableFooter':
-        obj = TableFooter(node, ln)
-    elif name=='TableDetails':
-        obj = TableDetails(node, ln)
-    elif name=='TableRows':
-        obj = TableRows(node, ln)
-    elif name=='TableRow':
-        obj = TableRow(node, ln)
-    elif name=='TableCells':
-        obj = TableCells(node, ln)
-    elif name=='TableCell':
-        obj = TableCell(node, ln)
+    elif name=='Header':
+        obj = Header(node, ln)
+    elif name=='Footer':
+        obj = Footer(node, ln)
+    elif name=='Details':
+        obj = Details(node, ln)
     elif name=='TableGroups':
         obj = TableGroups(node, ln)
     elif name=='TableGroup':
         obj = TableGroup(node, ln)
+    elif name=='Grouping':
+        obj = Grouping(node, ln)
+    elif name=='Sorting':
+        obj = Sorting(node, ln)
+    elif name=='SortBy':
+        obj = SortBy(node, ln)
+    elif name=='Filters':
+        obj = Filters(node, ln)
+    elif name=='Filter':
+        obj = Filter(node, ln)
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
 
@@ -133,23 +132,19 @@ def get_expression(name, node, report):
 
     # We need to use integer value avoiding circular reference with element module
 
-    if name==0: # Element.NAME
-        return None
-    if name==2: # Element.STRING
+    if name==1: # Element.STRING
         return String(report, value)
-    if name==3: # Element.INTEGER
+    if name==2: # Element.INTEGER
         return Integer(report, value)
-    if name==4: # Element.BOOLEAN
+    if name==3: # Element.BOOLEAN
         return Boolean(report, value)
-    if name==5: # Element.SIZE
+    if name==4: # Element.SIZE
         return Size(report, value)
-    if name==6: # Element.COLOR
+    if name==5: # Element.COLOR
         return Color(report, value)
-    if name==8: # Element.URL
+    if name==6: # Element.URL
         return None
-    if name==10: # Element.LANGUAGE
-        return None
-    if name==11: # Element.VARIANT
+    if name==90: # Element.VARIANT
         return Variant(report, value)
 
     finish_critical("Unknown expression element definition: '{0}'".format(name))
@@ -185,9 +180,24 @@ def get_enum(name, node, report):
         return BackgroundGradientType(report, value)
     if name=='DataType':
         return DataType(report, value)
+    if name=='SortDirection':
+        return SortDirection(report, value)
+    if name=='Operator':
+        return Operator(report, value)
 
     finish_critical("Unknown Enum: '{0}'".format(name))
 
+
+def get_expression_list(name, node, lnk):
+    ln = Link(lnk.report, lnk.obj)
+    if name=='FilterValues':
+        obj = FilterValues(node, ln)
+    elif name=='GroupExpressions':
+        obj = GroupExpressions(node, ln)
+    else:
+        finish_critical("Unknown Element: '{0}' for ElementList".format(name)) 
+
+    return obj
 
 def finish_critical(error):
     logger.critical(error)

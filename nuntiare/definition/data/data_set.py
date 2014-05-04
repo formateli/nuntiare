@@ -33,8 +33,8 @@ class DataSet(Element):
     def execute(self):
         cursor = self.query.get_data_source().cursor
         cursor.execute(self.query.get_command_text())
-        result = cursor.fetchall()
-        self.data = Data(self.lnk.report, self, cursor, result)
+        self.data = Data(self.lnk.report, self, cursor)
+        self.data.do_filter()
 
 
 class Fields(Element):
@@ -56,6 +56,9 @@ class Field(Element):
             raise_error_with_log("Name is required for 'Field'element.")
         self.data_field = get_expression_value_or_default(self, 'DataField', None)
         self.value = get_expression_value_or_default(self, 'Value', None)
+        if lnk.report.fields.has_key(self.name):
+            raise_error_with_log("Field '{0}' already exists.".format(self.name))
+        lnk.report.fields[self.name] = self
         lnk.parent.field_list.append(self)
 
 

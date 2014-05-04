@@ -10,7 +10,7 @@ class Grid(ReportItem):
         elements={'Columns': [Element.ELEMENT],
                   'Rows': [Element.ELEMENT],
                  }
-        super(Grid, self).__init__(node, lnk, elements)
+        super(Grid, self).__init__("Grid", node, lnk, elements)
 
 
 class Columns(Element):

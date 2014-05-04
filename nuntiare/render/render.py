@@ -6,13 +6,11 @@ import os
 
 class Render(object):
     def __init__(self, extension=None):
-        super(Render, self).__init__()
         self.extension=extension 
         self.result_file=None
 
     def render(self, report):
-        report.run()
-        if self.extension: 
+        if self.extension:
             self.result_file = os.path.join(report.output_directory, 
                 report.output_name + "." + self.extension)
 

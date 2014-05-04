@@ -33,7 +33,6 @@ class ReportTest(unittest.TestCase):
 
         self.assertEqual(len(r.parameters), 2, "len(r.parameters) must be '2'")
 
-        #self.assertEqual(len(r.ReportParameters), 2, "len(r.ReportParameters) must be '2'")
-        #self.assertEqual(r.ReportParameters['parameter_1'].Name, "parameter_1", "Name for first parameter must be 'parameter_1'")
-
+        self.assertEqual(r.parameters['parameter_1'], "parameter_value_1", "Value of 'parameter_1' must be 'parameter_value_1'")
+        self.assertEqual(r.parameters['parameter_2'], "parameter_value_2", "Value of 'parameter_2' must be 'parameter_value_2'")
 

@@ -6,7 +6,7 @@ from ..report_item import ReportItem
 from ...element import Element
 
 class DataRegion(ReportItem):
-    def __init__(self, node, lnk, additional_elements):
+    def __init__(self, type, node, lnk, additional_elements):
         elements={'KeepTogether': [Element.BOOLEAN], 
                   'NoRows': [Element.STRING],
                   'DataSetName': [Element.STRING],
@@ -17,4 +17,4 @@ class DataRegion(ReportItem):
         if additional_elements:
             for key, value in additional_elements.items():
                 elements[key] = value
-        super(DataRegion, self).__init__(node, lnk, elements)
+        super(DataRegion, self).__init__(type, node, lnk, elements)

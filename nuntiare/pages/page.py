@@ -2,34 +2,74 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ..definition.report_items.report_item import Line, Rectangle, Textbox
-from ..definition.report_items.grid import Grid
-from ..definition.report_items.data_region.table import Table
-from ..pages.section import HeaderInfo, FooterInfo, BodyInfo
-from ..pages.page_item import PageLine, PageRectangle, PageText, PageGrid, PageTable
+from section import HeaderInfo, FooterInfo, BodyInfo
+from get_report_items import get_report_items
 from ..tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
     def __init__(self, report):
         self.pages = []
         self.report = report
-        self.height = get_expression_value_or_default(report, "PageHeight", inch_2_mm(11)) 
-        self.width = get_expression_value_or_default(report, "PageWidth", inch_2_mm(8.5)) 
+        self.page_height = get_expression_value_or_default(report, "PageHeight", inch_2_mm(11)) 
+        self.page_width = get_expression_value_or_default(report, "PageWidth", inch_2_mm(8.5)) 
 
-        self.margin_top = get_expression_value_or_default(report, "TopMargin", 0)
-        self.margin_left = get_expression_value_or_default(report, "LeftMargin", 0)
-        self.margin_right = get_expression_value_or_default(report, "RightMargin", 0)
-        self.margin_bottom = get_expression_value_or_default(report, "BottomMargin", 0)
+        self.page_margin_top = get_expression_value_or_default(report, "TopMargin", 0)
+        self.page_margin_left = get_expression_value_or_default(report, "LeftMargin", 0)
+        self.page_margin_right = get_expression_value_or_default(report, "RightMargin", 0)
+        self.page_margin_bottom = get_expression_value_or_default(report, "BottomMargin", 0)
+
+        self.available_width = self.page_width - self.page_margin_left - self.page_margin_right
 
         self.header = HeaderInfo(report.get_element("PageHeader"))
         self.footer = FooterInfo(report.get_element("PageFooter"))
         self.body = BodyInfo(report.get_element("Body"))
 
-    def build_pages(self):
-        pg = Page()
-        while True:
+        self.body_items = get_report_items(self.body.definition, None)
+
+    def get_report_items_BK(self, element, parent):
+        item_list = []
+
+        items = element.get_element("ReportItems")
+        if not items:
+            return item_list
+
+        for it in items.reportitems_list:
+            page_item = None
+            if it.type == "Line":
+                page_item = PageLine(it)
+            if it.type == "Rectangle":
+                page_item = PageRectangle(it)
+            if it.type == "Textbox":
+                page_item = PageText(it)
+            if it.type == "Grid":
+                page_item = PageGrid(it)
+            if it.type == "Table":
+                page_item = PageTable(it)
+
+            if page_item: 
+                page_item.item_list = get_report_items(page_item.report_item_def, page_item)
+                if it.type == "Grid" or it.type == "Table":
+                    for row in page_item.rows:
+                        for cell in row.cells:
+                            cell.item_list =  get_report_items(cell.cell_def, cell)
+
+                page_item.parent = parent
+                item_list.append(page_item)
+
+        return item_list
+
+
+#######################################################
+#######################################################
+
+
+    def build_pages_BK(self):
+        while self.new_page: 
+            pg = Page()
             self.report.globals['page_number'] = len(self.pages) + 1
-            self.run_reportitems(pg, self.body.definition, self.margin_top + self.header.height, self.margin_left)
+            self.run_reportitems(True, pg, self.body.definition, 
+                    self.margin_top + self.header.height, 
+                    self.margin_left)
             pg.page_number = len(self.pages) + 1
             self.pages.append(pg)
             break
@@ -38,10 +78,11 @@ class Pages(object):
 
         # Run Header and footer for each page 
         for page in self.pages:
-            self.run_reportitems(page, self.header.definition, self.margin_top, self.margin_left)
-            self.run_reportitems(page, self.footer.definition, self.height - self.margin_bottom - self.footer.height, self.margin_left)
+            print "self.header.definition: " + str(self.header.definition)
+            self.run_reportitems(False, page, self.header.definition, self.margin_top, self.margin_left)
+            self.run_reportitems(False, page, self.footer.definition, self.height - self.margin_bottom - self.footer.height, self.margin_left)
 
-    def run_reportitems(self, page, element, top, left, height=None, width=None):
+    def run_reportitems_BK(self, is_body, page, element, parent_top, parent_left, height=None, width=None):
         result = {'can_grow' : False,
                   'can_shrink' : False,
                   'min_height' : 30000,
@@ -49,20 +90,36 @@ class Pages(object):
                   'item_list' : [],
                  }
 
-        items = element.get_element("ReportItems")
+        top_less = 0
+        if is_body:
+            top_less = self.header.height +  self.margin_top  
 
-        for name, it in items.reportitems_list.items():
+        items = element.get_element("ReportItems")
+        if not items:
+            self.new_page = False
+            return
+
+        for it in items.reportitems_list:
             page_item = None
 
             if isinstance(it, Line):
-                page_item = PageLine(it, top, left)
-                page.add_page_item(page_item)
-            if isinstance(it, Rectangle):
-                page_item = PageRectangle(it, top, left)
+                page_item = PageLine(it, parent_top, parent_left)
                 result['item_list'].append(page_item)
                 page.add_page_item(page_item)
+
+            if isinstance(it, Rectangle):
+                page_item = PageRectangle(it, parent_top, parent_left)
+                page.add_page_item(page_item)
+                result['item_list'].append(page_item)
+                if ((parent_top - top_less) + (page_item.top - top_less) + page_item.height) > self.body.height:
+                    print  "(parent_top - top_less) + (page_item.top - top_less) + page_item.height: " + \
+                        str((parent_top - top_less) + (page_item.top - top_less) + page_item.height) + " - body.height: " + str(self.body.height)
+                    #page_item.height = self.body.height
+                    #self.new_page = False
+                    #return
+
             if isinstance(it, Textbox):
-                page_item = PageText(it, top, left, height, width)
+                page_item = PageText(it, parent_top, parent_left, height, width)
                 result['can_grow'] = page_item.can_grow
                 result['can_shrink'] = page_item.can_shrink
                 if page_item.height < result['min_height']:
@@ -73,13 +130,14 @@ class Pages(object):
                 page.add_page_item(page_item)
 
             if isinstance(it, Table):
-                page_item = PageTable(it, top, left, width)
+                page_item = PageTable(it, parent_top, parent_left, width)
                 result['can_grow'] = True
                 result['item_list'].append(page_item)
                 page.add_page_item(page_item)
 
                 grid_top = get_expression_value_or_default(it, "Top", 0)
                 grid_left = get_expression_value_or_default(it, "Left", 0)
+                sum_height = 0
   
                 columns = it.get_element("TableColumns")
                 total_columns = len (columns.column_list)
@@ -90,8 +148,7 @@ class Pages(object):
                      column_data['Visibility'] = get_expression_value_or_default(c, "Visibility", True)
                      column_list.append(column_data)
 
-                rows = it.get_element("TableDetails").get_element("TableRows")
-                sum_height = 0
+                rows = it.get_element("TableDetails").get_element("TableRows")               
 
                 data_set_name = get_expression_value_or_default(it, "DataSetName", None)
                 reg = it.lnk.report.data_sets[data_set_name].data
@@ -140,8 +197,8 @@ class Pages(object):
                                   x = x + 1  
 
                             data = self.run_reportitems(page, cell, 
-                                top + grid_top + sum_height,
-                                left + grid_left + sum_width, 
+                                parent_top + grid_top + sum_height,
+                                parent_left + grid_left + sum_width, 
                                 row_height,
                                 cell_Width)
  
@@ -186,14 +243,15 @@ class Pages(object):
 
 
             if isinstance(it, Grid):
-                page_item = PageGrid(it, top, left, width)
+                page_item = PageGrid(it, parent_top, parent_left, width)
                 result['can_grow'] = True
                 result['item_list'].append(page_item)
                 page.add_page_item(page_item)
 
                 grid_top = get_expression_value_or_default(it, "Top", 0)
                 grid_left = get_expression_value_or_default(it, "Left", 0)
-  
+                sum_height = 0
+
                 columns = it.get_element("Columns")
                 total_columns = len (columns.column_list)
                 column_list=[]
@@ -203,8 +261,7 @@ class Pages(object):
                      column_data['Visibility'] = get_expression_value_or_default(c, "Visibility", True)
                      column_list.append(column_data)
 
-                rows = it.get_element("Rows")
-                sum_height = 0
+                rows = it.get_element("Rows")              
                 for row in rows.row_list:
                     sum_width = 0 
                     cells = row.get_element("Cells")
@@ -245,12 +302,12 @@ class Pages(object):
                               cell_Width = cell_Width + column_list[i + x]['Width']
                               x = x + 1  
 
-                        data = self.run_reportitems(page, cell, 
-                            top + grid_top + sum_height,
-                            left + grid_left + sum_width, 
+                        data = self.run_reportitems(is_body, page, cell, 
+                            parent_top + grid_top + sum_height,
+                            parent_left + grid_left + sum_width, 
                             row_height,
-                            cell_Width)
- 
+                            cell_Width) 
+
                         if data['can_grow']:
                             can_grow = True 
                         if data['can_shrink']:
@@ -287,7 +344,8 @@ class Pages(object):
                     result['min_height'] = page_item.height
                 if page_item.height > result['max_height']:
                     result['max_height'] = page_item.height
-        
+
+        self.new_page = False
         return result
 
 

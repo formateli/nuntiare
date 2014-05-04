@@ -1,16 +1,19 @@
 
 <Report>
    <Author>Fredy Ramirez</Author>
+   <Name>Report test</Name>
    <Description>Report test</Description>
 
    <ReportParameters>
       <ReportParameter>
          <Name>parameter_1</Name>
          <DataType>String</DataType>
+         <DefaultValue>parameter_value_1</DefaultValue>
       </ReportParameter>
       <ReportParameter>
          <Name>parameter_2</Name>
          <DataType>String</DataType>
+         <DefaultValue>parameter_value_2</DefaultValue>
       </ReportParameter>
    </ReportParameters>
 
