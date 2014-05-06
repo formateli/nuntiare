@@ -6,20 +6,20 @@ from nuntiare.data_providers import get_data_provider
 import unittest
 
 class DataProvidersTest(unittest.TestCase):
-
     def testDataProviders(self):
         dp = get_data_provider("no_name")
         self.assertEqual(dp, None, "DataProvider must be 'None'")
 
+        f = open("db_test_connection_panama", "r")
+        psql = f.readline()
+        f.close()
+
         providers = {'xml':'file=../data/panama.xml',
-                     #'postgresql':"dbname=nuntiare_test host=localhost port=5433 user=postgres password= client_encoding=UNICODE connect_timeout=0",
+                     'postgresql':psql,
                     }
-        print "\n"
 
         for name, connstr in providers.items():
-            print "Running test for " + name
             self.runTest(name, connstr)
-
 
     def runTest(self, name, connstr):
         dp = get_data_provider(name)

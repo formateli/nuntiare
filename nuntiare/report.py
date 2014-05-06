@@ -43,6 +43,7 @@ class Report(object):
         self.data_sets={}
         self.data_groups={}
         self.fields={}
+        self.modules={}
         self.current_scope=None
         self.report_items={} # only textboxes
 
@@ -64,8 +65,8 @@ class Report(object):
             if not output_directory:
                 output_directory = os.path.dirname(os.path.realpath(__file__))
             dom = parseString(string_xml)
-            self.globals['From xml string']
-            self.globals['From xml string']
+            self.globals['report_file'] = "From XML string."
+            self.globals['report_folder'] = "From XML string."
 
         if not os.path.isdir(output_directory):
             raise_error_with_log("'{0}' is not a valid directory.".format(output_directory))
@@ -91,7 +92,6 @@ class Report(object):
             if self.parameters.has_key(key):
                 raise_error_with_log("ReportParameter '{0}' already exists.".format(key))
             self.parameters[key] = p.value()
-            print "Parameter [" + key + "]=" + str(self.parameters[key])
         self.parameters_obj = None
 
         # 2.- Build data_sources
@@ -119,6 +119,7 @@ class Definition(Element):
                   'Description': [Element.STRING],
                   'Author': [Element.STRING],
                   'AutoRefresh': [Element.INTEGER],
+                  'Imports': [Element.ELEMENT],
                   'DataSources': [Element.ELEMENT],
                   'DataSets': [Element.ELEMENT],
                   'Body': [Element.ELEMENT],

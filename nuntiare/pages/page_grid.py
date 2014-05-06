@@ -17,11 +17,11 @@ class PageGrid(PageItem):
         columns = report_item_def.get_element("Columns")
         sum_width = 0
         for c in columns.column_list:          
-            visible = get_expression_value_or_default(c, "Visibility", True)
+            hidden = get_expression_value_or_default(c.get_element("Visibility"), "Hidden", False)
             width = get_expression_value_or_default(c, "Width", 0)
             if width == 0:
-                visible = False
-            col = GridColumn(visible, width)
+                hidden = True
+            col = GridColumn(hidden, width)
             sum_width = sum_width + width
             self.columns.append(col)
         self.width = sum_width
@@ -93,8 +93,8 @@ class PageGrid(PageItem):
             cells = row.get_element("Cells")
             if not cells:
                 raise_error_with_log("Cells not found in grid Row. {0} name: '{1}'".format(self.grid_type, self.name))
-            visible = get_expression_value_or_default(row, "Visibility", True)
-            r = GridRow(visible, get_expression_value_or_default(row, "Height", 8), cells, self.columns)
+            hidden = get_expression_value_or_default(row.get_element("Visibility"), "Hidden", False)
+            r = GridRow(hidden, get_expression_value_or_default(row, "Height", 8), cells, self.columns)
             self.rows.append(r)
 
 
@@ -104,14 +104,14 @@ class PageTable(PageGrid):
 
 
 class GridColumn(object):
-    def __init__(self, visible, width):
-        self.visible = visible
+    def __init__(self, hidden, width):
+        self.hidden = hidden
         self.width = width
 
 
 class GridRow(object):
-    def __init__(self, visible, height, cells, cols):
-        self.visible = visible
+    def __init__(self, hidden, height, cells, cols):
+        self.hidden = hidden
         self.height = height
         self.cells = []
         i=0

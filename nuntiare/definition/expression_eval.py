@@ -4,22 +4,23 @@
 
 import sys
 import dateutil
+import datetime
+import math
+from decimal import Decimal
 from ..tools import raise_error_with_log
 
-__data__=[None]
+__data__=[None] # 0:report
 
 def get_expression_eval(report, code):
     __data__[0]=report
     Parameters = report.parameters
     Globals = report.globals
-    Fields={}
+    Modules = report.modules
     if report.current_scope:
         Fields = report.data_groups[report.current_scope]
         if Fields.EOF():
             Fields.move_first()
 
-#    print "Pass code: " + code
-        
     try:
         result = eval(code)
     except KeyError as e:
@@ -27,17 +28,13 @@ def get_expression_eval(report, code):
     except:
         raise_error_with_log("Unexpected error evaluating expression: '{0}'. {1}.".format(code, sys.exc_info()[0]))
 
-#    print "Pass code result: " + str(result)
     return result 
-
 
 
 def Data(scope=None):
     if not scope:
-        scope=__data__[0].current_scope
-
+        return __data__[0].data_groups[__data__[0].current_scope]
     if not __data__[0].data_groups.has_key(scope):
         raise KeyError("Data group with name '{0}' not found.".format(scope))
-    data_group = __data__[0].data_groups[scope]
-    return data_group
+    return __data__[0].data_groups[scope]
 

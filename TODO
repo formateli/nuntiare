@@ -3,8 +3,10 @@
 CRITICAL
 --------
 
-- Filter, sorting and grouping test
-- Grouping Sample
+- SubReport
+- Image
+- Chart
+- Matrix
 
 
 
@@ -12,4 +14,5 @@ CRITICAL
 OTHER
 -----
 
+- Implement <NoRows></NoRows>
 

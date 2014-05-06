@@ -4,6 +4,7 @@
 
 from .. import logger
 from ..tools import get_xml_tag_value 
+from module import Imports, Import
 from color import Color
 from size import Size
 from string import String
@@ -28,6 +29,7 @@ from body import Body
 from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
 from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 from report_items.image import ImageSourceEnum, ImageSizingEnum
+from report_items.visibility import Visibility
 from link import Link
 from report_items.data_region.table import Table,  \
     Header, Footer, Details, TableGroups, TableGroup
@@ -121,6 +123,12 @@ def get_element(name, node, lnk):
         obj = Filters(node, ln)
     elif name=='Filter':
         obj = Filter(node, ln)
+    elif name=='Imports':
+        obj = Imports(node, ln)
+    elif name=='Import':
+        obj = Import(node, ln)
+    elif name=='Visibility':
+        obj = Visibility(node, ln)
     else:
         finish_critical("Unknown Element: '{0}'".format(name)) 
 

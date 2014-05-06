@@ -95,7 +95,7 @@ class HtmlRender(Render):
         self.add_style(grid, it, ignore_list=['height',])
 
         for row in it.rows:
-            if not row.visible:
+            if row.hidden:
                 continue
             rw = HtmlElement("tr", None)
             for cell in row.cells:
@@ -168,14 +168,11 @@ class HtmlRender(Render):
         key = "{0}#{1}".format(html_element.tag, html_element.id)
         if self.style_list.has_key(key):
             return
-        self.style_list[key] = self.get_style(it, text, ignore_list)
+        self.style_list[key] = self.get_style(it, ignore_list)
 
-    def get_style(self, it, text=None, ignore_list=[]):
+    def get_style(self, it, ignore_list=[]):
         properties=[] 
         self.add_style_property('overflow', 'hidden', ignore_list,  properties)
-        #self.add_style_property('position', 'absolute', ignore_list,  properties)
-        #self.add_style_property('top',"{0}mm".format(it.top), ignore_list,  properties)
-        #self.add_style_property('left', "{0}mm".format(it.left), ignore_list,  properties)
         self.add_style_property('height', "{0}mm".format(it.height), ignore_list,  properties)
         self.add_style_property('width', "{0}mm".format(it.width), ignore_list,  properties)
         if it.style.background_color:

@@ -20,7 +20,6 @@ def get_xml_tag_value(node):
     if end < start:
         return ''
     res = unescape(xml_str[start + 1:end])
-    print "res: " + res
     return res
 
 def unescape(s):
@@ -106,7 +105,7 @@ def get_expression_value_or_default(element, child_name, default_value, direct_e
     '''
     Gets the value of a report element of type expression, or its default value 
     '''
-    if direct_expression != None: # child_name is the expression to get value
+    if direct_expression != None:
         value = direct_expression.value()
         if value == None:
             return default_value

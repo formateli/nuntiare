@@ -2,3 +2,5 @@ syntax: regexp
 ~
 .pyc
 .log
+db_test_connection_panama
+db_test_connection_northwind

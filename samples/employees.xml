@@ -18,6 +18,14 @@
   <RightMargin>1cm</RightMargin>
   <BottomMargin>1cm</BottomMargin>
 
+  <Imports>
+    <Import>
+      <!-- Example of how to use Modules. See PageFooter -->
+      <Name>my_os</Name>
+      <Module>os</Module>
+    </Import>
+  </Imports>
+
   <ReportParameters>
       <ReportParameter>
           <Name>data_source</Name>
@@ -59,7 +67,7 @@
       <Name>DataEmployee</Name>
       <Query>
         <DataSourceName>DS1</DataSourceName>
-        <CommandText>="SELECT employeeid, firstname, lastname, birthdate FROM employees"</CommandText>
+        <CommandText>="SELECT employeeid, firstname, lastname, birthdate, country, city FROM employees"</CommandText>
       </Query>
 
       <Fields>
@@ -79,6 +87,14 @@
           <Name>dob</Name>
           <DataField>birthdate</DataField>
         </Field>
+        <Field>
+          <Name>country</Name>
+          <DataField>country</DataField>
+        </Field>
+        <Field>
+          <Name>city</Name>
+          <DataField>city</DataField>
+        </Field>
       </Fields>
     </DataSet>
   </DataSets>
@@ -96,9 +112,6 @@
         <Left>0.0pt</Left>
         <Top>0.0pt</Top>
         <Style>
-          <BorderStyle />
-          <BorderColor />
-          <BorderWidth />
           <FontWeight>Bold</FontWeight>
           <FontSize>16pt</FontSize>
         </Style>
@@ -124,13 +137,16 @@
             <Width>1cm</Width>
           </Column>
           <Column>
-            <Width>3cm</Width>
+            <Width>1cm</Width>
+          </Column>
+          <Column>
+            <Width>4cm</Width>
+          </Column>
+          <Column>
+            <Width>4cm</Width>
           </Column>
           <Column>
             <Width>3cm</Width>
-          </Column>
-          <Column>
-            <Width>2cm</Width>
           </Column>
         </Columns>
 
@@ -138,8 +154,24 @@
         <Header>
           <Rows>
             <Row>
-              <Height>8mm</Height>
+              <Height>15mm</Height>
               <Cells>
+
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
+                      <Name>no</Name>
+                      <Value></Value>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                        <BorderStyle>
+                          <Default>None</Default>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+
                 <Cell>
                   <ReportItems>
                     <Textbox>
@@ -203,7 +235,116 @@
               </Cells>
             </Row>
           </Rows>
-        </Header>         
+        </Header>
+
+        <TableGroups>
+
+          <TableGroup>
+            <Grouping>
+              <Name>country</Name>
+              <GroupExpressions>
+                <GroupExpression>=Fields['country']</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtStart>false</PageBreakAtStart>
+              <PageBreakAtEnd>false</PageBreakAtEnd>
+            </Grouping>
+
+            <Sorting>
+                <SortBy>
+                    <SortExpression>=Fields['country']</SortExpression>
+                </SortBy> 
+            </Sorting>
+
+            <Header>
+              <Rows>
+                <Row>
+                  <Height>1cm</Height>
+                  <Cells>
+                    <Cell>
+                      <ReportItems>
+                        <Textbox>
+                          <Name>txtcountry</Name>
+                          <Value>=Fields['country']</Value>
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <BorderStyle>
+                              <Default>None</Default>
+                              <Left>None</Left>
+                              <Right>None</Right>
+                              <Top>None</Top>
+                              <Bottom>None</Bottom>
+                            </BorderStyle>
+                            <BorderColor />
+                            <BorderWidth />
+                            <Color>Blue</Color>
+                            <FontWeight>Bold</FontWeight>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </ReportItems>
+                      <ColSpan>5</ColSpan>
+                    </Cell>
+                  </Cells>
+                </Row>
+              </Rows>
+              <RepeatOnNewPage>false</RepeatOnNewPage>
+            </Header>
+          </TableGroup>
+
+          <TableGroup>
+            <Grouping>
+              <Name>city</Name>
+              <GroupExpressions>
+                <GroupExpression>=Fields['city']</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtStart>false</PageBreakAtStart>
+              <PageBreakAtEnd>false</PageBreakAtEnd>
+            </Grouping>
+
+            <Sorting>
+                <SortBy>
+                    <SortExpression>=Fields['city']</SortExpression>
+                </SortBy> 
+            </Sorting>
+
+            <Header>
+              <Rows>
+                <Row>
+                  <Height>1cm</Height>
+                  <Cells>
+                    <Cell>
+                      <ReportItems>
+                        <Textbox>
+                          <Name>txtcity</Name>
+                          <Value>='-- ' + Fields['city']</Value>
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <BorderStyle>
+                              <Default>None</Default>
+                              <Left>None</Left>
+                              <Right>None</Right>
+                              <Top>None</Top>
+                              <Bottom>None</Bottom>
+                            </BorderStyle>
+                            <BorderColor />
+                            <BorderWidth />
+                            <Color>Red</Color>
+                            <FontWeight>Bold</FontWeight>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                        </Textbox>
+                      </ReportItems>
+                      <ColSpan>5</ColSpan>
+                    </Cell>
+                  </Cells>
+                </Row>
+              </Rows>
+              <RepeatOnNewPage>false</RepeatOnNewPage>
+            </Header>
+          </TableGroup>
+
+
+        </TableGroups>
 
         <Details>
           <Rows>
@@ -214,10 +355,31 @@
                 <Cell>
                   <ReportItems>
                     <Textbox>
+                      <Name>txtno</Name>
+                      <Value>=Data().row_number()</Value>
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BorderStyle>
+                          <Default>None</Default>
+                          <Left>None</Left>
+                          <Right>None</Right>
+                          <Top>None</Top>
+                          <Bottom>None</Bottom>
+                        </BorderStyle>
+                      </Style>
+                    </Textbox>
+                  </ReportItems>
+                </Cell>
+
+                <Cell>
+                  <ReportItems>
+                    <Textbox>
                       <Name>txtid</Name>
                       <Value>=Fields['id']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
+                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -236,6 +398,7 @@
                       <Value>=Fields['firstname']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
+                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -254,6 +417,7 @@
                       <Value>=Fields['lastname']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
+                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -272,6 +436,7 @@
                       <Value>=Fields['dob']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
+                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -279,6 +444,7 @@
                           <Top>None</Top>
                           <Bottom>None</Bottom>
                         </BorderStyle>
+                        <Format>{:%m-%d-%Y}</Format>
                       </Style>
                     </Textbox>
                   </ReportItems>
@@ -287,12 +453,38 @@
               </Cells>
             </Row>
           </Rows>
+
+          <Sorting>
+              <SortBy>
+                  <SortExpression>=Fields['firstname']</SortExpression>
+                  <SortDirection>Descending</SortDirection>
+              </SortBy> 
+          </Sorting>
+
         </Details>
 
       </Table>
     </ReportItems>
   </Body>
 
-
+  <PageFooter>
+    <Height>1cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox>
+        <Name>os_name</Name>
+        <Height>21pt</Height>
+        <Width>490pt</Width>
+        <Value>='OS: ' + Modules['my_os'].name</Value>
+        <Left>0.0pt</Left>
+        <Top>0.0pt</Top>
+        <Style>
+          <FontWeight>Bold</FontWeight>
+          <FontSize>10pt</FontSize>
+        </Style>
+      </Textbox>
+    </ReportItems>
+  </PageFooter>
 </Report>
 

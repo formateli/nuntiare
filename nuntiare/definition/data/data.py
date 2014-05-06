@@ -28,6 +28,9 @@ class DataInterface(object):
         self.report.current_scope = self.name
         return self.is_eof
 
+    def row_number(self):
+        return self.current_index + 1
+
     def sum_fields(self, *args):
         total = 0
         cols=[]

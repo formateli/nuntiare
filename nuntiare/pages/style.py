@@ -61,7 +61,7 @@ def get_style_item(name, id, obj):
 
 def get_color_by_element(el):
     if not el:
-        return None 
+        return None
     c = el.value()
     return get_color_info(c['hex_alpha'], ColorInfo(el))
     

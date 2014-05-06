@@ -22,7 +22,8 @@ __config__.read(cfg)
 
 if not __config__.has_option('general', 'pixels_per_inch'):
     __pixels_per_inch__ = float(72) # use the standard 72dpi
-__pixels_per_inch__ = float(__config__.get('general', 'pixels_per_inch')) # TODO--> should be a function
+__pixels_per_inch__ = float(__config__.get('general', 'pixels_per_inch')) # TODO--> should be a function?
+                                                                          # Only for cairo renders?  
 
 logger = logging.getLogger('Nuntiare')
 

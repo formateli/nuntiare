@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-import sys
+from importlib import import_module
 from .. import __config__
 
 def get_data_provider(provider_name):
@@ -11,7 +11,7 @@ def get_data_provider(provider_name):
     if not __config__.has_option('data_providers', provider_name):
         return None
     module = __config__.get('data_providers', provider_name)
-    provider = __import__(module, fromlist = ["*"])            
+    provider = import_module(module)
 
     return provider
 
