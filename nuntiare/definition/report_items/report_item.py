@@ -17,7 +17,6 @@ class ReportItems(Element):
                   'Grid': [Element.ELEMENT],
                   'Table': [Element.ELEMENT],
                  }
-        
         super(ReportItems, self).__init__(node, elements, lnk)
 
 
@@ -45,7 +44,6 @@ class ReportItem(Element):
                   'RepeatWith': [Element.STRING],
                   'Custom': [Element.ELEMENT],
                  }
-
         if additional_elements:
             for key, value in additional_elements.items():
                 elements[key] = value
@@ -56,10 +54,6 @@ class ReportItem(Element):
         name = verify_expression_constant_and_required("Name", "ReportItem", self.get_element("Name"))
         self.name = name.value()
         self.zindex = get_expression_value_or_default(self, "ZIndex", 0)
-        self.top = get_expression_value_or_default(self, "Top", 0)
-        self.left = get_expression_value_or_default(self, "Left", 0)
-        self.height = get_expression_value_or_default(self, "Height", 1)
-        self.width = get_expression_value_or_default(self, "Width", 1)
 
 
 class Line(ReportItem):
@@ -74,16 +68,6 @@ class Rectangle(ReportItem):
                   'PageBreakAtEnd': [Element.BOOLEAN],
                  }
         super(Rectangle, self).__init__("Rectangle", node, lnk, elements)
-
-
-class Image(ReportItem):
-    def __init__(self, node, lnk):
-        elements={'Source': [Element.ENUM, 'ImageSource'],
-                  'Value': [Element.VARIANT],
-                  'MIMEType': [Element.STRING],
-                  'Sizing': [Element.ENUM, 'ImageSizing'],
-                 }
-        super(Image, self).__init__("Image", node, lnk, elements)
 
 
 class Textbox(ReportItem):

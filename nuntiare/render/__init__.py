@@ -2,6 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
+from importlib import import_module
 from .. import __config__
 
 def get_render(render_name):
@@ -12,6 +13,6 @@ def get_render(render_name):
     if not __config__.has_option('renders', render_name):
         return None
     module = __config__.get('renders', render_name)
-    render = __import__(module, fromlist = ["*"])
+    render = import_module(module)
     return render.get_render_object()
 

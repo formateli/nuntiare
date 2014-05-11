@@ -1,18 +1,23 @@
+===================
+   release 0.1.0
+===================
 
 --------
 CRITICAL
 --------
-
-- SubReport
 - Image
+- SubReport
 - Chart
 - Matrix
 
-
+-------
+RENDERS
+-------
+- pdf
 
 -----
 OTHER
 -----
-
 - Implement <NoRows></NoRows>
+- Visibility.
 

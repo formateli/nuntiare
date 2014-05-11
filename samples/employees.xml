@@ -48,7 +48,6 @@
           <AllowBlank>false</AllowBlank>
           <DefaultValue>='dbname=northwind host=localhost port=5432 user=postgres password=' + Parameters['db_password'] + ' client_encoding=UNICODE connect_timeout=0'</DefaultValue>
       </ReportParameter>
-
   </ReportParameters>
 
   <DataSources>
@@ -118,7 +117,6 @@
       </Textbox>
     </ReportItems>
   </PageHeader>
-
   <Body>
     <Height>9in</Height>
     <Columns>1</Columns>
@@ -149,14 +147,11 @@
             <Width>3cm</Width>
           </Column>
         </Columns>
-
-
         <Header>
           <Rows>
             <Row>
               <Height>15mm</Height>
               <Cells>
-
                 <Cell>
                   <ReportItems>
                     <Textbox>
@@ -171,7 +166,6 @@
                     </Textbox>
                   </ReportItems>
                 </Cell>
-
                 <Cell>
                   <ReportItems>
                     <Textbox>
@@ -236,9 +230,7 @@
             </Row>
           </Rows>
         </Header>
-
         <TableGroups>
-
           <TableGroup>
             <Grouping>
               <Name>country</Name>
@@ -248,13 +240,11 @@
               <PageBreakAtStart>false</PageBreakAtStart>
               <PageBreakAtEnd>false</PageBreakAtEnd>
             </Grouping>
-
             <Sorting>
                 <SortBy>
                     <SortExpression>=Fields['country']</SortExpression>
                 </SortBy> 
             </Sorting>
-
             <Header>
               <Rows>
                 <Row>
@@ -290,7 +280,6 @@
               <RepeatOnNewPage>false</RepeatOnNewPage>
             </Header>
           </TableGroup>
-
           <TableGroup>
             <Grouping>
               <Name>city</Name>
@@ -300,13 +289,11 @@
               <PageBreakAtStart>false</PageBreakAtStart>
               <PageBreakAtEnd>false</PageBreakAtEnd>
             </Grouping>
-
             <Sorting>
                 <SortBy>
                     <SortExpression>=Fields['city']</SortExpression>
                 </SortBy> 
             </Sorting>
-
             <Header>
               <Rows>
                 <Row>
@@ -342,16 +329,12 @@
               <RepeatOnNewPage>false</RepeatOnNewPage>
             </Header>
           </TableGroup>
-
-
         </TableGroups>
-
         <Details>
           <Rows>
             <Row>
               <Height>12 pt</Height>
               <Cells>
-
                 <Cell>
                   <ReportItems>
                     <Textbox>
@@ -371,7 +354,6 @@
                     </Textbox>
                   </ReportItems>
                 </Cell>
-
                 <Cell>
                   <ReportItems>
                     <Textbox>
@@ -449,24 +431,19 @@
                     </Textbox>
                   </ReportItems>
                 </Cell>
-
               </Cells>
             </Row>
           </Rows>
-
           <Sorting>
               <SortBy>
                   <SortExpression>=Fields['firstname']</SortExpression>
                   <SortDirection>Descending</SortDirection>
               </SortBy> 
           </Sorting>
-
         </Details>
-
       </Table>
     </ReportItems>
   </Body>
-
   <PageFooter>
     <Height>1cm</Height>
     <PrintOnFirstPage>true</PrintOnFirstPage>

@@ -10,7 +10,7 @@ from definition.expression import verify_expression_constant
 from definition.link import Link
 from definition.element import Element
 from xml.dom.minidom import parse, parseString
-from pages import get_pages, Pages
+from pages import Pages
 
 class Report(object):
     def __init__(self, report_file=None, string_xml=None, parameters=None, 
@@ -23,7 +23,7 @@ class Report(object):
         logger.info('Initializing report...')
 
         self.definition=None
-
+                  
         self.report_file=None
         self.report_filename=None
         self.report_folder=None
@@ -103,7 +103,7 @@ class Report(object):
             obj.execute()
 
         # 5.- Build pages
-        self.pages = Pages(self)      
+        self.pages = Pages(self)
 
     def get_element(self, name):
         return self.definition.get_element(name)

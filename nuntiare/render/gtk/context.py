@@ -6,7 +6,8 @@ import cairo
 import pango
 import pangocairo
 from ...tools import get_size_in_unit, raise_error_with_log, get_float_rgba
-from ...pages.page_item import PageLine, PageRectangle, PageText, PageGrid, PageTable
+from ...pages.page_item import PageLine, PageRectangle, PageText
+from ...pages.page_grid import PageGrid, PageTable
 from ...pages.style import StyleItem
 
 class Context(object):

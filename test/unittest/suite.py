@@ -17,11 +17,13 @@ logging.basicConfig(filename='nuntiare_test.log',level=logging.DEBUG)
 import unittest
 import data_providers
 import report
+import data
 
 loader = unittest.TestLoader()
 
 suite = loader.loadTestsFromModule(data_providers)
 suite.addTests(loader.loadTestsFromModule(report))
+suite.addTests(loader.loadTestsFromModule(data))
 
 runner = unittest.TextTestRunner(verbosity=2)
 result = runner.run(suite)

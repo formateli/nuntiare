@@ -22,6 +22,8 @@ class DataSource(Element):
         super(DataSource, self).__init__(node, elements, lnk)
         name = verify_expression_constant_and_required("Name", 'DataSource', self.get_element('Name'))
         self.name = name.value()
+        
+        self.data_source_object=None
 
         self.conn_properties = self.get_element('ConnectionProperties')
         if not self.conn_properties:
@@ -30,12 +32,11 @@ class DataSource(Element):
         if lnk.report.data_sources.has_key(self.name):
             raise_error_with_log("Report already has a DataSource with name '{0}'".format(self.name))
         lnk.report.data_sources[self.name] = self
-        self.cursor=None
 
     def connect(self):
-        dp = get_data_provider(self.conn_properties.data_provider.value())
-        conn = dp.connect(self.conn_properties.connection_string.value())
-        self.cursor = conn.cursor()
+        self.data_source_object = DataSourceObject()
+        self.data_source_object.connect(self.conn_properties.data_provider.value(), 
+                            self.conn_properties.connection_string.value())
 
 
 class ConnectionProperties(Element):
@@ -51,4 +52,17 @@ class ConnectionProperties(Element):
         self.connection_string = self.get_element("ConnectString")
         if not self.connection_string:
             raise_error_with_log("ConnectString no defined for ConnectionProperties element.")
+
+
+# We use a separate class for unittest
+class DataSourceObject(object):
+    def __init__(self):
+        self.cursor=None
+    
+    def connect(self, data_provider_name, conn_string):
+        dp = get_data_provider(data_provider_name)
+        conn = dp.connect(conn_string)
+        self.cursor = conn.cursor()
+
+
 

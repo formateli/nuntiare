@@ -3,12 +3,11 @@
 # contains the full copyright notices and license terms.
 
 from section import HeaderInfo, FooterInfo, BodyInfo
-from get_report_items import get_report_items
+from get_report_items import ReportItemsInfo #get_report_items
 from ..tools import raise_error_with_log, get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
     def __init__(self, report):
-        self.pages = []
         self.report = report
         self.page_height = get_expression_value_or_default(report, "PageHeight", inch_2_mm(11)) 
         self.page_width = get_expression_value_or_default(report, "PageWidth", inch_2_mm(8.5)) 
@@ -19,12 +18,24 @@ class Pages(object):
         self.page_margin_bottom = get_expression_value_or_default(report, "BottomMargin", 0)
 
         self.available_width = self.page_width - self.page_margin_left - self.page_margin_right
-
+        self.available_height = self.page_height - self.page_margin_top - self.page_margin_bottom
+        
         self.header = HeaderInfo(report.get_element("PageHeader"))
         self.footer = FooterInfo(report.get_element("PageFooter"))
         self.body = BodyInfo(report.get_element("Body"))
 
-        self.body_items = get_report_items(self.body.definition, None)
+        if self.body.height == 0 or self.body.height > self.available_height:
+            self.body.height = self.available_height
+        if self.body.height < self.available_height:
+            self.available_height = self.body.height
+
+        self.body_items = ReportItemsInfo(self.body.definition, None)
+
+
+#######################################################
+#######################################################
+
+
 
     def get_report_items_BK(self, element, parent):
         item_list = []
@@ -347,13 +358,4 @@ class Pages(object):
 
         self.new_page = False
         return result
-
-
-class Page(object):
-    def __init__(self):
-        self.page_number = None
-        self.page_items=[]
-
-    def add_page_item(self, page_item):
-        self.page_items.append(page_item)
 

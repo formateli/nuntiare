@@ -6,7 +6,6 @@ import unittest
 from nuntiare.report import Report
 
 class ReportTest(unittest.TestCase):
-
     def testReport(self):
         r = Report("report_test.xml")
 

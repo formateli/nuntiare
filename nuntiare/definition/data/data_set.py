@@ -2,10 +2,11 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
+from data import Data
+from filter import FiltersObject
 from ..element import Element
 from ..expression import verify_expression_constant_and_required
 from ...tools import raise_error_with_log, get_expression_value_or_default
-from data import Data
 
 class DataSets(Element):
     def __init__(self, node, lnk):
@@ -22,7 +23,7 @@ class DataSet(Element):
                  }
         super(DataSet, self).__init__(node, elements, lnk)
 
-        self.data = None
+        self.data_set_object = None
         name = verify_expression_constant_and_required("Name", 'DataSet', self.get_element('Name'))
         self.name = name.value()
         self.query = self.get_element('Query')
@@ -31,10 +32,17 @@ class DataSet(Element):
         lnk.report.data_sets[self.name] = self
 
     def execute(self):
-        cursor = self.query.get_data_source().cursor
-        cursor.execute(self.query.get_command_text())
-        self.data = Data(self.lnk.report, self, cursor)
-        self.data.do_filter()
+        field_def = self.get_element('Fields')    
+        if not field_def:
+            raise_error_with_log("DataSet '{0}' does not have 'Fields' element.".format(self.name))
+        fields = FieldsObject(field_def)        
+        self.data_set_object = DataSetObject(self.name,
+                                self.lnk.report, 
+                                self.query.get_data_source().data_source_object.cursor, 
+                                self.query.get_command_text(), 
+                                fields)
+        flt = FiltersObject(self.get_element("Filters"))
+        flt.filter_data(self.data_set_object.data)
 
 
 class Fields(Element):
@@ -100,4 +108,32 @@ class QueryParameter(Element):
                   'Value': [Element.VARIANT],
                  }
         super(QueryParameter, self).__init__(node, elements, lnk)
+
+
+class DataSetObject(object):
+    def __init__(self, name, report, cursor, command_text, fields):
+        cursor.execute(command_text)
+        self.data = Data(report, name, fields, cursor)
+        #self.data.do_filter()
+
+
+class FieldsObject(object):
+    def __init__(self, field_def, test_field_list=None):        
+        self.field_list=[]
+        if test_field_list: # We are unittest
+            for fd in test_field_list:
+                self.add_field(fd[0], fd[1], fd[2])
+        else:
+            for f in field_def.field_list:
+                self.add_field(f.name, f.data_field, f.value)
+        
+    def add_field(self, name, data_field, value):
+        self.field_list.append(FieldObject(name, data_field, value))
+
+
+class FieldObject(object):
+    def __init__(self, name, data_field, value):
+        self.name = name
+        self.data_field = data_field
+        self.value = value
 

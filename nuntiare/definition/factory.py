@@ -26,9 +26,9 @@ from data.grouping import Grouping, GroupExpressions
 from data.sorting import Sorting, SortBy, SortDirection
 from data.filter import Operator, Filters, Filter, FilterValues
 from body import Body
-from report_items.report_item import ReportItems, Line, Rectangle, Textbox, Image
+from report_items.report_item import ReportItems, Line, Rectangle, Textbox
 from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
-from report_items.image import ImageSourceEnum, ImageSizingEnum
+from report_items.image import Image, ImageSourceEnum, ImageSizingEnum
 from report_items.visibility import Visibility
 from link import Link
 from report_items.data_region.table import Table,  \

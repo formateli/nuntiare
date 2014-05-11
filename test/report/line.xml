@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report Name="PCW">
+<Report>
   <Name>Line Test</Name>
   <Description>
   </Description>
@@ -47,7 +47,9 @@
   </PageHeader>
 
   <Body>
+  <!--
     <Height>250pt</Height>
+-->    
     <ReportItems>
       <Textbox>
         <Name>TextBox1</Name>
@@ -69,7 +71,7 @@
         <Left>5pt</Left>
         <Top>20cm</Top>
       </Textbox>
-<!--
+
       <Line>
         <Name>Line2</Name>
         <Height>17.31pt</Height>
@@ -118,7 +120,7 @@
         <Left>132.50pt</Left>
         <Top>122.88pt</Top>
       </Line>
--->
+
       <Rectangle>
         <Name>RectContainer</Name>
         <Height>10cm</Height>

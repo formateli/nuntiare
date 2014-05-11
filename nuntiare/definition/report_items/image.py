@@ -2,6 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
+from report_item import ReportItem
 from ...definition.enum import Enum
 
 class ImageSourceEnum(Enum):
@@ -35,5 +36,14 @@ class ImageSizingEnum(Enum):
 
     def __init__(self, expression):
         super(ImageSizingEnum, self).__init__('ImageSizing', expression, ImageSizingEnum.enum_list)
-
+        
+        
+class Image(ReportItem):
+    def __init__(self, node, lnk):
+        elements={'Source': [Element.ENUM, 'ImageSource'],
+                  'Value': [Element.VARIANT],
+                  'MIMEType': [Element.STRING],
+                  'Sizing': [Element.ENUM, 'ImageSizing'],
+                 }
+        super(Image, self).__init__("Image", node, lnk, elements)
 

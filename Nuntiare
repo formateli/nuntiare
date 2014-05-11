@@ -86,7 +86,6 @@ def do_render(files, render_list, dir_path):
         for key, value in info['parameters'].items() :
             logger.debug("  Parameter '{0}' passed = '{1}'".format(key, value))
         
-        #TODO try exception
         report = Report(filename, parameters=info['parameters'])
 
         for r in render_list:

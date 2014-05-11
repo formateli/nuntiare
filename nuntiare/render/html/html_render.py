@@ -5,7 +5,6 @@
 import sys
 from ..render import Render
 from ...tools import raise_error_with_log
-from ...pages.get_report_items import get_report_items
 from ...pages.page_item import PageRectangle
 
 class HtmlRender(Render):
@@ -60,7 +59,7 @@ class HtmlRender(Render):
     def get_report_header_footer(self, name, report, header_footer, container):
         if not header_footer.definition:
             return
-        rec = PageRectangle(header_footer.definition)
+        rec = PageRectangle(header_footer.definition, None)
         rec.name = "div_" + name 
         rec.width = report.pages.available_width
         items = [rec,]
@@ -76,12 +75,12 @@ class HtmlRender(Render):
         report_body = HtmlElement("div", "body_container")
         report_body.add_attribute("style", "float:left; padding:1mm 1mm 1mm 1mm; width:{0}mm".format(report.pages.available_width)) 
         container.add_element(report_body)
-        items = report.pages.body_items
+        items = report.pages.body_items.item_list
         self.render_items(items, report_body)
 
     def render_items(self, items, container):
         for it in items:
-            if it.type == "PageLine":
+            if it.type == "PageLine" or it.type == "PageBreak":
                 continue
             if it.type == "PageRectangle" or it.type == "PageText":
                 el = self.get_rectangle(it)
@@ -99,7 +98,7 @@ class HtmlRender(Render):
                 continue
             rw = HtmlElement("tr", None)
             for cell in row.cells:
-                self.render_items(cell.item_list, rw)
+                self.render_items(cell.items_info.item_list, rw)
             grid.add_element(rw)
         
         res = self.get_td_parent_element(it, grid)  
@@ -139,7 +138,7 @@ class HtmlRender(Render):
         if txt != "": 
             rec.add_element(HtmlElement("text", None, txt))
 
-        self.render_items(it.item_list, rec)
+        self.render_items(it.get_item_list(), rec)
 
         if is_div and in_cell:
             res = self.get_td_parent_element(it, rec)  
