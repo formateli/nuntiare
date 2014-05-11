@@ -342,7 +342,7 @@
                       <Value>=Data().row_number()</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
-                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BackgroundColor>="White" if not Data().row_number() % 2 else "LightGreen"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -361,7 +361,7 @@
                       <Value>=Fields['id']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
-                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BackgroundColor>="White" if not Data().row_number() % 2 else "LightGreen"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -380,7 +380,7 @@
                       <Value>=Fields['firstname']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
-                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BackgroundColor>="White" if not Data().row_number() % 2 else "LightGreen"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -399,7 +399,7 @@
                       <Value>=Fields['lastname']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
-                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BackgroundColor>="White" if not Data().row_number() % 2 else "LightGreen"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>
@@ -418,7 +418,7 @@
                       <Value>=Fields['dob']</Value>
                       <CanGrow>true</CanGrow>
                       <Style>
-                        <BackgroundColor>="White" if Data().row_number() % 2 else "Green"</BackgroundColor>
+                        <BackgroundColor>="White" if not Data().row_number() % 2 else "LightGreen"</BackgroundColor>
                         <BorderStyle>
                           <Default>None</Default>
                           <Left>None</Left>

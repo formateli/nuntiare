@@ -11,7 +11,8 @@ class HtmlRender(Render):
     def __init__(self):
         super(HtmlRender, self).__init__(extension='html')        
         self.doc = None
-        self.style_list={}
+        self.style_helper = StyleHelper()
+
 
     def render(self, report):
         super(HtmlRender, self).render(report)
@@ -38,7 +39,7 @@ class HtmlRender(Render):
         html.add_element(body)
 
         str_style = ""
-        for key, value in self.style_list.items():
+        for key, value in self.style_helper.style_list.items():
             str_style = str_style + key + "{" + value + "}\n"
 
         if str_style != "":
@@ -164,10 +165,12 @@ class HtmlRender(Render):
     def add_style(self, html_element, it, text=None, ignore_list=[]):
         if not html_element.id:
             return
-        key = "{0}#{1}".format(html_element.tag, html_element.id)
-        if self.style_list.has_key(key):
-            return
-        self.style_list[key] = self.get_style(it, ignore_list)
+                   
+        i = self.style_helper.add_style(html_element.tag, 
+                        html_element.id, 
+                        self.get_style(it, ignore_list))
+        
+        html_element.id = "{0}-{1}".format(html_element.id, i)
 
     def get_style(self, it, ignore_list=[]):
         properties=[] 
@@ -239,6 +242,38 @@ class HtmlRender(Render):
         "HtmlRender help"
 
 
+class StyleHelper(object):
+    def __init__(self):
+        self.style_object_list={}
+        self.style_list={}
+        
+    def add_style(self, tag, id, style):
+        if self.style_object_list.has_key(id):
+            obj = self.style_object_list[id]
+        else:
+            obj = StyleHelperObject(tag, id)
+        i = obj.get_id_enum(style)
+        self.style_object_list[id] = obj
+        
+        key = "{0}#{1}-{2}".format(tag, id, i)
+        if not self.style_list.has_key(key):
+            self.style_list[key] = style
+        
+        return i
+
+        
+class StyleHelperObject(object):
+    def __init__(self, tag, id):
+        self.style_list={}
+    
+    def get_id_enum(self, style):
+        if self.style_list.has_key(style):
+            return self.style_list[style]
+        i = len(self.style_list) + 1
+        self.style_list[style] = i
+        return i
+
+
 class HtmlElement(object):
     def __init__(self, tag, element_id, text=None):
         if element_id:
@@ -248,20 +283,19 @@ class HtmlElement(object):
         self.text=text 
         self.attributes = None
         self.content = []
-        if element_id:
-            self.add_attribute("id", element_id)
 
     def add_attribute(self, key, value):
         if not self.attributes:
-            self.attributes = "{0}='{1}'".format(key, value)        
+            self.attributes = "{0}='{1}'".format(key, value)
         else: 
-            self.attributes = "{0} {1}='{2}'".format(self.attributes, key, value)        
+            self.attributes = "{0} {1}='{2}'".format(self.attributes, key, value)
 
     def add_element(self, el):
         self.content.append(el)
 
     def get_element(self):
         result = []
+        self.add_attribute("id", self.id)
         if self.text and len(self.content) == 0:
             return [self.text,]
         if self.tag == "DOCTYPE":

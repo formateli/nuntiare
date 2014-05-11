@@ -71,6 +71,7 @@ class Color(Expression):
 
 
 def get_color_by_name(name):
+    # See http://www.w3schools.com/html/html_colornames.asp
     if name=="AliceBlue":
         return "#FFF0F8FF"
     if name=="AntiqueWhite":
@@ -334,15 +335,15 @@ def get_color_by_name(name):
     if name=="Thistle":
         return "#FFD8BFD8"
     if name=="Tomato":
-        return "#FFFF6347"				
+        return "#FFFF6347"
     if name=="Turquoise":
-        return "#FF40E0D0"            			
+        return "#FF40E0D0"
     if name=="Violet":
-        return "#FFEE82EE"            
+        return "#FFEE82EE"
     if name=="Wheat":
         return "#FFF5DEB3"
     if name=="White":
-        return "#FFFFFFFF"	
+        return "#FFFFFFFF"
     if name=="WhiteSmoke":
         return "#FFF5F5F5"            
     if name=="Yellow":
