@@ -9,6 +9,8 @@ class Grid(ReportItem):
     def __init__(self, node, lnk):
         elements={'Columns': [Element.ELEMENT],
                   'Rows': [Element.ELEMENT],
+                  'PageBreakAtStart': [Element.BOOLEAN],
+                  'PageBreakAtEnd': [Element.BOOLEAN],                  
                  }
         super(Grid, self).__init__("Grid", node, lnk, elements)
 

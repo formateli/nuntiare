@@ -14,6 +14,10 @@ CRITICAL
 RENDERS
 -------
 - pdf
+- png
+- svg
+- csv
+- xml
 
 -----
 OTHER

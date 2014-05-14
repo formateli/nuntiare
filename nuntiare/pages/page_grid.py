@@ -13,6 +13,8 @@ class PageGrid(PageItem):
         super(PageGrid, self).__init__("PageGrid", report_item_def, parent)
         self.columns = []
         self.rows = []
+        self.page_break_at_start = get_expression_value_or_default(report_item_def, "PageBreakAtStart", False)
+        self.page_break_at_end = get_expression_value_or_default(report_item_def, "PageBreakAtEnd", False)        
         self.grid_type = grid_type
 
         columns = report_item_def.get_element("Columns")
@@ -63,40 +65,6 @@ class PageGrid(PageItem):
                 while not g.EOF():
                     self.run_rows(self.report_item_def.get_element("Details").get_element("Rows"))    
                     g.move_next()
-
-
-    def run_details_bk(self, grouping, grouping_i, idx, data_grp=None):
-        if grouping_i == 0:
-            data = data_grp 
-            data_index = idx[grouping_i][0]
-        else:
-            data_index = idx[grouping_i - 1][1]
-            data = grouping.groupings[grouping_i].groups[data_index]
-
-        if data.has_groups():
-            for group in data.groups:
-                group_index = idx[grouping_i][1]
-                group.move(group_index)
-
-                if grouping.groupings[grouping_i].header:
-                    self.run_rows(grouping.groupings[grouping_i].header.get_element("Rows"))
-
-                self.run_details(grouping, grouping_i + 1, idx)
-
-                group.EOF() # Puts this data as current
-
-                if grouping.groupings[grouping_i].footer:
-                    self.run_rows(grouping.groupings[grouping_i].footer.get_element("Rows"))
-                idx[grouping_i][1] = group_index + 1
-
-        else:
-            detail = grouping.groupings[grouping_i].groups[idx[grouping_i - 1][1]]
-            detail.move_first()
-            while not detail.EOF():
-                self.run_rows(self.report_item_def.get_element("Details").get_element("Rows"))    
-                detail.move_next()
-        
-        idx[grouping_i][0] = data_index + 1 
 
     def run_rows(self, rows):
         if not rows:
