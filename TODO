@@ -5,6 +5,8 @@
 --------
 CRITICAL
 --------
+
+- Grouping recursion
 - Image
 - SubReport
 - Chart
@@ -22,6 +24,7 @@ RENDERS
 -----
 OTHER
 -----
+- HtmlRender escaped chars
 - Implement <NoRows></NoRows>
 - Visibility.
 

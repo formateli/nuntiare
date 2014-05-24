@@ -136,8 +136,6 @@ class DataTest(unittest.TestCase):
         ##################### grouping #####################
         
         grp = GroupingData(data) # Initial data
-        self.assertEqual(grp.has_groups(), False, "grp has_groups = False")        
-                
         
         ########## group by customer
         
@@ -151,7 +149,6 @@ class DataTest(unittest.TestCase):
                 
         grp.grouping_by(group_customer, None, 
                         test_sorting_list=sorting_def)
-        self.assertEqual(grp.has_groups(), True, "grp has_groups = True")
         
         group_list=grp.get_group("customer")
         self.assertEqual(len(group_list), 89, "group customer: len(group_list) = 89")
@@ -174,7 +171,6 @@ class DataTest(unittest.TestCase):
         grp.grouping_by(group_employee, None, 
                         test_sorting_list=sorting_def)
 
-        self.assertEqual(grp.has_groups(), True, "grp has_groups = True")
         
         group_list=grp.get_group("employee")
 #        print "\nlen(group_list): " + str(len(group_list))
@@ -194,8 +190,6 @@ class DataTest(unittest.TestCase):
         
         grp.grouping_by(group_date, None, 
                         test_sorting_list=sorting_def)
-
-        self.assertEqual(grp.has_groups(), True, "grp has_groups = True")
         
         group_list=grp.get_group("date")
 #        print "\nlen(group_list): " + str(len(group_list))

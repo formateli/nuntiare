@@ -20,11 +20,13 @@ def get_expression_eval(report, code):
         Fields = report.data_groups[report.current_scope]
         if Fields.EOF():
             Fields.move_first()
+        if report.report_items_group.has_key(report.current_scope):
+            ReportItems = report.report_items_group[report.current_scope]
 
     try:
         result = eval(code)
     except KeyError as e:
-        raise_error_with_log("Error evaluating expression: '{0}'. <{1}>.".format(code, e.message))
+        raise_error_with_log("Error evaluating expression: '{0}'. Key does not exist in dictionary. <{1}>.".format(code, e.message))
     except:
         raise_error_with_log("Unexpected error evaluating expression: '{0}'. {1}.".format(code, sys.exc_info()[0]))
 

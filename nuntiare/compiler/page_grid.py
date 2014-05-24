@@ -8,14 +8,13 @@ from ..tools import raise_error_with_log, get_expression_value_or_default
 from ..definition.data.data import DataGroup
 from ..definition.data.grouping import GroupingData, GroupingObject
 
-class PageGrid(PageItem):
-    def __init__(self, report_item_def, parent, grid_type="Grid"):
-        super(PageGrid, self).__init__("PageGrid", report_item_def, parent)
+class PageGridDef(PageItem):
+    def __init__(self, type_name, report_item_def, parent):
+        super(PageGridDef, self).__init__(type_name, report_item_def, parent)
         self.columns = []
         self.rows = []
         self.page_break_at_start = get_expression_value_or_default(report_item_def, "PageBreakAtStart", False)
         self.page_break_at_end = get_expression_value_or_default(report_item_def, "PageBreakAtEnd", False)        
-        self.grid_type = grid_type
 
         columns = report_item_def.get_element("Columns")
         sum_width = 0
@@ -29,27 +28,57 @@ class PageGrid(PageItem):
             self.columns.append(col)
         self.width = sum_width
 
-        if grid_type == "Grid": 
-            self.run_rows(report_item_def.get_element("Rows"))
-        elif grid_type == "Table":
-            data_set_name = get_expression_value_or_default(report_item_def, "DataSetName", None)
-            if not report_item_def.lnk.report.data_sets.has_key(data_set_name):
-                raise_error_with_log("DataSetName '{0}' not found for Table '{1}'".format(data_set_name, self.name))
-            grouping = TableGroupings(report_item_def.lnk.report.data_sets[data_set_name].data_set_object.data, 
-                    report_item_def)
+    def run_rows(self, rows):
+        rws = []
+        if not rows:
+            return rws
+        for row in rows.row_list: 
+            cells = row.get_element("Cells")
+            if not cells:
+                raise_error_with_log("Cells not found in grid Row. {0} name: '{1}'".format(self.grid_type, self.name))
+            hidden = get_expression_value_or_default(row.get_element("Visibility"), "Hidden", False)
+            r = GridRow(hidden, get_expression_value_or_default(row, "Height", 8), cells, self.columns)
+            self.height = self.height + r.height 
+            rws. append(r)
+        self.rows.extend(rws)
+        return rws
+
+
+class PageGrid(PageGridDef):
+    def __init__(self, report_item_def, parent):
+        super(PageGrid, self).__init__("PageGrid", report_item_def, parent)
+        self.run_rows(report_item_def.get_element("Rows"))
+
+
+class PageTable(PageGridDef):
+    def __init__(self, report_item_def, parent):
+        super(PageTable, self).__init__("PageTable", report_item_def, parent)       
+        self.header_rows=None # We cached this because of 'RepeatOnNewPage' setting
+        self.footer_rows=None #
+        
+        data_set_name = get_expression_value_or_default(report_item_def, "DataSetName", None)
+        if not report_item_def.lnk.report.data_sets.has_key(data_set_name):
+            raise_error_with_log("DataSetName '{0}' not found for Table '{1}'".format(data_set_name, self.name))
+        table_group = DataGroup(report_item_def.lnk.report.data_sets[data_set_name].data_set_object.data,
+                            self.name, self.page_break_at_start, self.page_break_at_end)
+        table_group.add_rows_by_parent()         
+        report_item_def.lnk.report.data_groups[self.name] = table_group
+        grouping = TableGroupings(table_group, report_item_def)
  
-            header = report_item_def.get_element("Header")
-            footer = report_item_def.get_element("Footer")
+        header = report_item_def.get_element("Header")
+        footer = report_item_def.get_element("Footer")
 
-            grouping.data.set_current_scope() # Puts this data as current
-            if header:
-                self.run_rows(header.get_element("Rows"))
-                    
-            self.run_details(grouping, 0, grouping.groupings[0].groups)
+        grouping.data.set_current_scope() 
+        if header:
+            self.header_rows = self.run_rows(header.get_element("Rows"))
+            
+        self.run_details(grouping, 0, grouping.groupings[0].groups)
 
-            grouping.data.set_current_scope() # Puts this data as current
-            if footer:
-                self.run_rows(footer.get_element("Rows"))
+        grouping.data.set_current_scope() 
+        if footer:
+            self.footer_rows = self.run_rows(footer.get_element("Rows"))
+            
+        report_item_def.lnk.report.current_scope = None
 
     def run_details(self, grouping, grouping_i, groups):
         for g in groups:
@@ -65,24 +94,7 @@ class PageGrid(PageItem):
                 while not g.EOF():
                     self.run_rows(self.report_item_def.get_element("Details").get_element("Rows"))    
                     g.move_next()
-
-    def run_rows(self, rows):
-        if not rows:
-            return
-        for row in rows.row_list: 
-            cells = row.get_element("Cells")
-            if not cells:
-                raise_error_with_log("Cells not found in grid Row. {0} name: '{1}'".format(self.grid_type, self.name))
-            hidden = get_expression_value_or_default(row.get_element("Visibility"), "Hidden", False)
-            r = GridRow(hidden, get_expression_value_or_default(row, "Height", 8), cells, self.columns)
-            self.height = self.height + r.height 
-            self.rows.append(r)
-
-
-class PageTable(PageGrid):
-    def __init__(self, report_item_def, parent):
-        super(PageTable, self).__init__(report_item_def, parent, grid_type="Table")
-
+                                    
 
 class GridColumn(object):
     def __init__(self, hidden, width):
@@ -136,7 +148,7 @@ class TableGroupings(object):
         self.details=None
         self.data = data
         
-        grouping_data=GroupingData(data)
+        grouping_data = GroupingData(data)
 
         element_groups = table_def.get_element("TableGroups")
         if element_groups:

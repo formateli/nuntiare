@@ -2,7 +2,6 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from page import Pages
 from page_item import PageLine, PageRectangle, PageText
 from page_grid import PageGrid, PageTable
 from ..tools import raise_error_with_log

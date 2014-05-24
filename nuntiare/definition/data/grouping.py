@@ -31,13 +31,8 @@ class GroupingData(object):
     def __init__(self, data):
         self.data = data
         self.group_data=None
-        self.groups={} # key: grouping name, value: list of groups that for this grouping
+        self.groups={} # key: grouping name, value: list of groups for this grouping
         self.last_group_name=None
-    
-    def has_groups(self):
-        if self.group_data:
-            return True
-        return False
     
     def grouping_by(self, grouping_object, sorting_def, optional_name=None, test_sorting_list=None):       
         if optional_name:
@@ -49,15 +44,16 @@ class GroupingData(object):
         break_at_end = get_expression_value_or_default(None,None,False, direct_expression=grouping_object.page_break_at_end)
         
         self.groups[name] = []
-        if not self.group_data:
+        if not self.group_data: #First grouping
             self.group_data = DataGroup(self.data, name, break_at_start, break_at_end)
             self.group_data.add_rows_by_parent()
             self.filter(self.group_data, grouping_object.filters)
             self.sort(self.group_data, sorting_def, test_sorting_list=test_sorting_list)
             # Group
             self.group_data.create_groups(grouping_object.expression_list, break_at_start, break_at_end)            
-            for g in self.group_data.groups:         
+            for g in self.group_data.groups:
                 self.groups[name].append(g)
+                self.data.groups.append(g)
         else:
             group_list = self.get_group(self.last_group_name)
             for g in group_list:

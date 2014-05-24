@@ -3,12 +3,13 @@
 # contains the full copyright notices and license terms.
 
 from style import StyleInfo
+from report_items import ReportItemGroup
 from get_report_items import ReportItemsInfo
 from ..tools import get_element_from_parent, get_expression_value_or_default
 
 class PageItem(object):
     def __init__(self, type, report_item_def, parent):
-        self.type=type # Type of PageItem: PageBreak, PageLine. PageRectangle, PageText, PageGrid 
+        self.type=type # Type of PageItem: PageLine. PageRectangle, PageText, etc. 
         self.parent=parent
         self.items_info=None # Only for thoose that can content 'ReportItems' 
         self.report_item_def = report_item_def
@@ -32,11 +33,6 @@ class PageItem(object):
         return result
 
 
-class PageBreak(PageItem):
-    def __init__(self):
-        super(PageBreak, self).__init__("PageBreak", None, None)
-
-
 class PageLine(PageItem):
     def __init__(self, report_item_def, parent):
         super(PageLine, self).__init__("PageLine", report_item_def, parent)
@@ -54,13 +50,20 @@ class PageText(PageItem):
     def __init__(self, report_item_def, parent):
         super(PageText, self).__init__("PageText", report_item_def, parent)
         self.value = get_expression_value_or_default(report_item_def, "Value", None)
-        self.value_formatted = None 
+        self.value_formatted = "" 
         if self.value != None:
             if self.style.text.format:
                 self.value_formatted = self.style.text.format.format(self.value)
             else:
                 self.value_formatted = str(self.value)
-            self.value = str(self.value)
         self.can_grow = get_expression_value_or_default(report_item_def, "CanGrow", False)
         self.can_shrink = get_expression_value_or_default(report_item_def, "CanShrink", False)
+        
+        scope = report_item_def.lnk.report.current_scope
+        if not scope:
+            scope = "-*-alone-*-"
+            
+        if not report_item_def.lnk.report.report_items_group.has_key(scope):
+            report_item_def.lnk.report.report_items_group[scope] = ReportItemGroup(scope, report_item_def.lnk.report)
+        report_item_def.lnk.report.report_items_group[scope].add_item(self.name, self)
 

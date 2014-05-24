@@ -10,7 +10,7 @@ from definition.expression import verify_expression_constant
 from definition.link import Link
 from definition.element import Element
 from xml.dom.minidom import parse, parseString
-from pages import Pages
+from compiler.page import Pages
 
 class Report(object):
     def __init__(self, report_file=None, string_xml=None, parameters=None, 
@@ -46,6 +46,7 @@ class Report(object):
         self.modules={}
         self.current_scope=None
         self.report_items={} # only textboxes
+        self.report_items_group={}
 
         if report_file:
             if not os.path.isfile(report_file):

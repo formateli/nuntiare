@@ -61,7 +61,7 @@ class Element(object):
                 ex=factory.get_expression(elements[n.nodeName][0], n, lnk.report) 
                 self.element_list[n.nodeName]=ex
 
-        # Z Order and overlapping
+        # Z Order
         if len(items_by_name) > 0:
             z_list=[]
             for key, it in items_by_name.items():
@@ -71,7 +71,6 @@ class Element(object):
             for r in res:                
                 self.reportitems_list.append(r[1])
     
-
     def get_element(self, name):
         if self.element_list.has_key(name):
             return self.element_list[name]

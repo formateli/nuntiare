@@ -5,14 +5,13 @@
 import sys
 from ..render import Render
 from ...tools import raise_error_with_log
-from ...pages.page_item import PageRectangle
+from ...compiler.page_item import PageRectangle
 
 class HtmlRender(Render):
     def __init__(self):
         super(HtmlRender, self).__init__(extension='html')        
         self.doc = None
         self.style_helper = StyleHelper()
-
 
     def render(self, report):
         super(HtmlRender, self).render(report)
@@ -85,7 +84,7 @@ class HtmlRender(Render):
                 continue
             if it.type == "PageRectangle" or it.type == "PageText":
                 el = self.get_rectangle(it)
-            if it.type == "PageGrid":
+            if it.type == "PageGrid" or it.type == "PageTable":
                 el = self.get_grid(it)
 
             container.add_element(el)
@@ -295,7 +294,8 @@ class HtmlElement(object):
 
     def get_element(self):
         result = []
-        self.add_attribute("id", self.id)
+        if self.id:
+            self.add_attribute("id", self.id)
         if self.text and len(self.content) == 0:
             return [self.text,]
         if self.tag == "DOCTYPE":

@@ -4,10 +4,10 @@
 
 from filter import get_groups
 from ..expression import Expression
-from ...tools import raise_error_with_log, get_expression_value_or_default
+from ...tools import raise_error_with_log
 
 class DataInterface(object):
-    def __init__(self, report, name):
+    def __init__(self, report, name, parent):
         self.name=name
         self.report = report
         self.columns=[]
@@ -15,29 +15,30 @@ class DataInterface(object):
         self.is_eof = True
         self.current_index = -1
         self.groups=[]
+        self.parent = parent
 
         if report.data_groups.has_key(name):
             raise_error_with_log("DataSet or Grouping with name '{0}' already exists.".format(self.name))            
         report.data_groups[name] = self
 
-    def has_groups(self):
-        return False if len(self.groups)==0 else True
-
     def EOF(self):
         self.set_current_scope()
         return self.is_eof
 
-    def row_number(self):
+    def row_number(self): 
         return self.current_index + 1
 
-    def sum_fields(self, *args):
+    def total_rows(self):
+        return len(self.rows)
+
+    def sum(self, *args):
         total = 0
         cols=[]
 
-        for f in args: 
-            c = self.get_column(f)            
+        for f in args:
+            c = self.get_column(f)
             if not c:
-                raise KeyError("Field '{0}' not found in Data group '{1}'".format(f, self.name))
+                raise KeyError("'sum_fields' Error. Field '{0}' not found in Data group '{1}'".format(f, self.name))
             cols.append(c)
 
         for r in self.rows:
@@ -66,16 +67,16 @@ class DataInterface(object):
         self.move(self.current_index + 1)
 
     def move_last(self):
-        self.move(len(self.rows) - 1)
+        self.move(self.total_rows() - 1)
 
     def move(self, i):
         self.set_current_scope()
-        if len(self.rows) == 0:
+        if self.total_rows() == 0:
             self.set_eof()
             return
         self.is_eof = False
         self.current_index = i    
-        if self.current_index >= len(self.rows):
+        if self.current_index >= self.total_rows():
             self.set_eof()
 
     def set_eof(self):
@@ -87,11 +88,11 @@ class DataInterface(object):
 
     def set_current_scope(self):
         self.report.current_scope = self.name
-            
 
-class Data(DataInterface):
+
+class Data(DataInterface): 
     def __init__(self, report, name, fields, cursor):
-        super(Data, self).__init__(report, name)
+        super(Data, self).__init__(report, name, None)
 
         x=0
         for f in fields.field_list:
@@ -138,18 +139,17 @@ class Field(object):
 
 class DataGroup(DataInterface):
     def __init__(self, data_parent, name, page_break_at_start, page_break_at_end):
-        super(DataGroup, self).__init__(data_parent.report, name)
-        self.data_parent = data_parent
+        super(DataGroup, self).__init__(data_parent.report, name, data_parent)
         self.columns = data_parent.columns
         self.page_break_at_start=page_break_at_start
         self.page_break_at_end=page_break_at_end
 
     def add_rows_by_parent(self):
-        self.data_parent.move_first()
-        while not self.data_parent.EOF():
-            r = self.data_parent.get_current_row()
+        self.parent.move_first()
+        while not self.parent.EOF():
+            r = self.parent.get_current_row()
             self.rows.append(r)
-            self.data_parent.move_next()
+            self.parent.move_next()
             
     def add_row(self, row):
         self.rows.append(row)

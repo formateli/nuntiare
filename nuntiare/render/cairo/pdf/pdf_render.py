@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import cairo
+from ..pages import Pages
 from ..context import Context
 from ...render import Render
 from ....tools import get_size_in_unit
@@ -14,8 +15,11 @@ class GtkPdfRender(Render):
     def render(self, report):
         super(GtkPdfRender, self).render(report)
         
-        ps = cairo.PDFSurface(self.result_file, get_size_in_unit(report.pages.page_width, 'pt'), 
-                                get_size_in_unit(report.pages.page_height, 'pt'))
+        pages = Pages(report, 'pt')        
+        ps = cairo.PDFSurface(self.result_file, pages.width, pages.height)
+        
+        
+        
         cr = cairo.Context(ps)
         context = Context(report, cr, 'pt')
         

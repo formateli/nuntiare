@@ -35,7 +35,7 @@ class DataSet(Element):
         field_def = self.get_element('Fields')    
         if not field_def:
             raise_error_with_log("DataSet '{0}' does not have 'Fields' element.".format(self.name))
-        fields = FieldsObject(field_def)        
+        fields = FieldsObject(field_def)
         self.data_set_object = DataSetObject(self.name,
                                 self.lnk.report, 
                                 self.query.get_data_source().data_source_object.cursor, 
@@ -63,7 +63,10 @@ class Field(Element):
         if not self.name:
             raise_error_with_log("Name is required for 'Field'element.")
         self.data_field = get_expression_value_or_default(self, 'DataField', None)
-        self.value = get_expression_value_or_default(self, 'Value', None)
+        self.value=None
+        value_element = self.get_element("Value")
+        if value_element:
+            self.value = value_element.expression 
         if lnk.report.fields.has_key(self.name):
             raise_error_with_log("Field '{0}' already exists.".format(self.name))
         lnk.report.fields[self.name] = self
@@ -114,7 +117,6 @@ class DataSetObject(object):
     def __init__(self, name, report, cursor, command_text, fields):
         cursor.execute(command_text)
         self.data = Data(report, name, fields, cursor)
-        #self.data.do_filter()
 
 
 class FieldsObject(object):
