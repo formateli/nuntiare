@@ -50,19 +50,25 @@ class PageText(PageItem):
     def __init__(self, report_item_def, parent):
         super(PageText, self).__init__("PageText", report_item_def, parent)
         self.value = get_expression_value_or_default(report_item_def, "Value", None)
-        self.value_formatted = "" 
-        if self.value != None:
+        self.value_formatted = ""
+        if self.value != None:            
             if self.style.text.format:
-                self.value_formatted = self.style.text.format.format(self.value)
+                self.value_formatted = unicode(self.style.text.format.format(self.value), 'utf-8')
             else:
-                self.value_formatted = str(self.value)
+                if isinstance(self.value, unicode):
+                    self.value_formatted = self.value
+                elif isinstance(self.value, str):
+                    self.value_formatted = unicode(self.value, 'utf-8')
+                else:
+                    self.value_formatted = unicode(str(self.value), 'utf-8')
+
         self.can_grow = get_expression_value_or_default(report_item_def, "CanGrow", False)
         self.can_shrink = get_expression_value_or_default(report_item_def, "CanShrink", False)
         
+        # For ReportItems collection...
         scope = report_item_def.lnk.report.current_scope
         if not scope:
-            scope = "-*-alone-*-"
-            
+            scope = "-*-alone-*-"            
         if not report_item_def.lnk.report.report_items_group.has_key(scope):
             report_item_def.lnk.report.report_items_group[scope] = ReportItemGroup(scope, report_item_def.lnk.report)
         report_item_def.lnk.report.report_items_group[scope].add_item(self.name, self)

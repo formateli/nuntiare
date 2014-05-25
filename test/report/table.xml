@@ -54,7 +54,7 @@
           <DataType>String</DataType>
           <CanBeNone>false</CanBeNone>
           <AllowBlank>false</AllowBlank>
-          <DefaultValue>file=test/unittest/data/Panama.xml</DefaultValue>
+          <DefaultValue>file=test/data/panama.xml</DefaultValue>
       </ReportParameter>
 
   </ReportParameters>

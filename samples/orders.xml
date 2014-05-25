@@ -457,9 +457,9 @@
                           <Top>None</Top>
                           <Bottom>None</Bottom>
                         </BorderStyle>
-                        <!--
-                        <Format>{:%m-%d-%Y}</Format>
-                        -->
+
+                        <Format>{:,.2f}</Format>
+
                       </Style>
                     </Textbox>
                   </ReportItems>

@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import sys
+import cgi
 from ..render import Render
 from ...tools import raise_error_with_log
 from ...compiler.page_item import PageRectangle
@@ -112,7 +113,8 @@ class HtmlRender(Render):
         if is_textbox:
             txt = it.value_formatted
             if txt:
-                txt = txt.replace("\n", "<br>")
+                txt = txt.replace("\n", "<br>") # New line
+                txt = cgi.escape(txt).encode('ascii', 'xmlcharrefreplace')
             else:
                 txt = ""
 
@@ -229,7 +231,8 @@ class HtmlRender(Render):
         try:
             f = open(self.result_file, "w")
             try:
-                f.writelines(lines)
+                for l in lines:
+                    f.write(l.encode('utf-8', 'replace'))
             finally:
                 f.close()
         except IOError as e:
