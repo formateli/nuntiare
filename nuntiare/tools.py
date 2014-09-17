@@ -101,12 +101,12 @@ def get_element_from_parent(parent_element, child_name):
         return parent_element.get_element(child_name)
 
 
-def get_expression_value_or_default(element, child_name, default_value, direct_expression=None):
+def get_expression_value_or_default(report, element, child_name, default_value, direct_expression=None):
     '''
     Gets the value of a report element of type expression, or its default value 
     '''
     if direct_expression != None:
-        value = direct_expression.value()
+        value = direct_expression.value(report)
         if value == None:
             return default_value
         return value
@@ -114,7 +114,7 @@ def get_expression_value_or_default(element, child_name, default_value, direct_e
     el = get_element_from_parent(element, child_name) 
     if not el:
         return default_value
-    value = el.value()
+    value = el.value(report)
     if value == None:
         return default_value
     return value

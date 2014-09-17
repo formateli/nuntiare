@@ -2,11 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from element import Element
-from expression import verify_expression_constant_and_required
-from ..tools import get_expression_value_or_default, raise_error_with_log
-from decimal import Decimal
-from dateutil import parser
+from types.element import Element
+from types.expression import verify_expression_required
+from data.data_type import get_data_type_value
+from .. tools import get_expression_value_or_default
 
 class ReportParameters(Element):
     def __init__(self, node, lnk):
@@ -16,57 +15,43 @@ class ReportParameters(Element):
 
 class ReportParameter(Element):
     def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING],
-                  'DataType': [Element.ENUM, 'DataType'],
-                  'CanBeNone': [Element.BOOLEAN],
-                  'AllowBlank': [Element.BOOLEAN],
+        elements={'Name': [Element.STRING, True],
+                  'DataType': [Element.ENUM],
+                  'CanBeNone': [Element.BOOLEAN, True],
+                  'AllowBlank': [Element.BOOLEAN, True],
                   'DefaultValue': [Element.VARIANT],
                   'Promt': [Element.STRING],
                  }
 
         super(ReportParameter, self).__init__(node, elements, lnk)
+        
+        self.parameter_name = get_expression_value_or_default(None, self, 'Name', None)
+        self.can_be_none = get_expression_value_or_default(None, self, 'CanBeNone', True)
+        self.allow_blank = get_expression_value_or_default(None, self, 'AllowBlank', True)
+        self.data_type = get_expression_value_or_default(None, self, 'DataType', None)
+        
+        verify_expression_required('Name', 'ReportParameter', self.parameter_name)
+        verify_expression_required('DataType', 'ReportParameter', self.data_type)
 
-        name = verify_expression_constant_and_required('Name', 'ReportParameter', self.get_element('Name'))
-        datatype = verify_expression_constant_and_required('DataType', 'ReportParameter', self.get_element('DataType'))
-
-        self.parameter_name = name.value()
         self.default_value = self.get_element('DefaultValue')
         if not self.default_value:
             raise_error_with_log("'DefaultValue' is required for Parameter '{0}'".format(self.parameter_name))
-        self.lnk.report.parameters_obj.append(self)
+        self.lnk.report_def.parameters_def.append(self)
 
-    def set_value(self, val):
-        self.default_value.set_expression(val)
-
-    def value(self):
-        can_be_none = get_expression_value_or_default(self, 'CanBeNone', True)
-        allow_blank = get_expression_value_or_default(self, 'AllowBlank', True)
-        data_type = get_expression_value_or_default(self, 'DataType', None)
-
-        result = None
+    def get_default_value(self, report):
         if self.default_value:
-            result = self.default_value.value() 
+            return get_data_type_value(self.data_type, self.default_value.value(report))             
+                        
+    def get_value(self, report, passed_value):
+        if passed_value == None:
+            result = self.get_default_value(report)
+        else:
+            result = get_data_type_value(self.data_type, self.default_value.value(report, passed_value)) 
 
-        if not result and not can_be_none:
+        if not result and not self.can_be_none:
             raise_error_with_log("Parameter '{0}' value can not be 'None'".format(self.parameter_name))
-        if result and result=="" and not allow_blank and data_type=='String':
-            raise_error_with_log("Parameter '{0}' value can not be an empty string".format(self.parameter_name))
-
-        if not result or not data_type:
-            return result
-
-        if data_type == "String":
-            result = str(result)
-        if data_type == "Integer":
-            result = int(result)
-        if data_type == "Float":
-            result = float(result)
-        if data_type == "Boolean":
-            result = bool(result)
-        if data_type == "DateTime":
-            result = parser.parse(result)
-        if data_type == "Decimal":
-            result = Decimal(result)
+        if result and result=="" and not self.allow_blank and data_type=='String':
+            raise_error_with_log("Parameter '{0}' value can not be an empty string.".format(self.parameter_name))
 
         return result
 

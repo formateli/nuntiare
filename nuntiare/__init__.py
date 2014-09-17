@@ -27,5 +27,3 @@ __pixels_per_inch__ = float(__config__.get('general', 'pixels_per_inch')) # TODO
 
 logger = logging.getLogger('Nuntiare')
 
-__reports__={} # Reports cache
-

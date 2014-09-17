@@ -2,10 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ..element import Element
-from ..expression import verify_expression_constant_and_required
-from ...data_providers import get_data_provider
-from ...tools import raise_error_with_log
+from .. types.element import Element
+from .. types.expression import verify_expression_required
+from ... data_providers import get_data_provider
+from ... tools import get_expression_value_or_default
 
 class DataSources(Element):
     def __init__(self, node, lnk):
@@ -15,28 +15,24 @@ class DataSources(Element):
 
 class DataSource(Element):
     def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING],
-                  'Transaction': [Element.BOOLEAN],
+        elements={'Name': [Element.STRING, True],
+                  'Transaction': [Element.BOOLEAN, True],
                   'ConnectionProperties': [Element.ELEMENT],
                  }
         super(DataSource, self).__init__(node, elements, lnk)
-        name = verify_expression_constant_and_required("Name", 'DataSource', self.get_element('Name'))
-        self.name = name.value()
+        self.name = get_expression_value_or_default (None, self, 'Name', None) 
+        self.transaction = get_expression_value_or_default (None, self, 'Transaction', None)
         
-        self.data_source_object=None
-
+        verify_expression_required("Name", 'DataSource', self.name)
+        
         self.conn_properties = self.get_element('ConnectionProperties')
         if not self.conn_properties:
             raise_error_with_log("No 'ConnectionProperties' element defined for DataSource '{0}'".format(self.name))
-         
-        if lnk.report.data_sources.has_key(self.name):
-            raise_error_with_log("Report already has a DataSource with name '{0}'".format(self.name))
-        lnk.report.data_sources[self.name] = self
-
-    def connect(self):
-        self.data_source_object = DataSourceObject()
-        self.data_source_object.connect(self.conn_properties.data_provider.value(), 
-                            self.conn_properties.connection_string.value())
+        
+        for ds in lnk.report_def.data_sources:
+            if ds.name == self.name:
+                raise_error_with_log("Report already has a DataSource with name '{0}'".format(self.name))
+        lnk.report_def.data_sources.append(self)
 
 
 class ConnectionProperties(Element):
@@ -52,17 +48,4 @@ class ConnectionProperties(Element):
         self.connection_string = self.get_element("ConnectString")
         if not self.connection_string:
             raise_error_with_log("ConnectString no defined for ConnectionProperties element.")
-
-
-# We use a separate class for unittest
-class DataSourceObject(object):
-    def __init__(self):
-        self.cursor=None
-    
-    def connect(self, data_provider_name, conn_string):
-        dp = get_data_provider(data_provider_name)
-        conn = dp.connect(conn_string)
-        self.cursor = conn.cursor()
-
-
 

@@ -2,18 +2,19 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ...definition.element import Element
-from ...definition.enum import Enum
+from ..types.element import Element
+from ..types.enum import Enum
 
-class BackgroudImage(Element):
+class BackgroundImage(Element):
     def __init__(self, node, lnk):
         elements={'Source': [Element.ENUM, 'ImageSource'],
                   'Value': [Element.STRING],
                   'MIMEType': [Element.STRING],
-                  'Top': [Element.COLOR],
-                  'BackgroundRepeat': [Element.ENUM, 'BackgroundRepeat'],
+                  'BackgroundRepeat': [Element.ENUM, 'BackgroundRepeat'],                  
+                  'TransparentColor': [Element.COLOR],
+                  'Position': [Element.ENUM], #TODO
                  }
-        super(BackgroudImage, self).__init__(node, elements, lnk)
+        super(BackgroundImage, self).__init__(node, elements, lnk)
 
 
 class BackgroundRepeat(Enum):

@@ -2,11 +2,9 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from data import Data
-from filter import FiltersObject
-from ..element import Element
-from ..expression import verify_expression_constant_and_required
-from ...tools import raise_error_with_log, get_expression_value_or_default
+from .. types.element import Element
+from .. types.expression import verify_expression_required
+from ... tools import get_expression_value_or_default, raise_error_with_log
 
 class DataSets(Element):
     def __init__(self, node, lnk):
@@ -15,88 +13,95 @@ class DataSets(Element):
 
 
 class DataSet(Element):
+    '''
+    The DataSet element contains information about a set of data to display 
+    as a part of the report.
+    Name of the data set Cannot be the same name as any data region or group.
+    '''
+
     def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING],
+        elements={'Name': [Element.STRING, True],
                   'Fields': [Element.ELEMENT],
                   'Query': [Element.ELEMENT],
                   'Filters': [Element.ELEMENT],
+                  'SortExpressions': [Element.ELEMENT],                  
                  }
+
+        self.fields=[]
         super(DataSet, self).__init__(node, elements, lnk)
-
-        self.data_set_object = None
-        name = verify_expression_constant_and_required("Name", 'DataSet', self.get_element('Name'))
-        self.name = name.value()
-        self.query = self.get_element('Query')
-        if lnk.report.data_sets.has_key(self.name):
-            raise_error_with_log("DataSet with name '{0}' already exists.".format(self.name))
-        lnk.report.data_sets[self.name] = self
-
-    def execute(self):
-        field_def = self.get_element('Fields')    
-        if not field_def:
-            raise_error_with_log("DataSet '{0}' does not have 'Fields' element.".format(self.name))
-        fields = FieldsObject(field_def)
-        self.data_set_object = DataSetObject(self.name,
-                                self.lnk.report, 
-                                self.query.get_data_source().data_source_object.cursor, 
-                                self.query.get_command_text(), 
-                                fields)
-        flt = FiltersObject(self.get_element("Filters"))
-        flt.filter_data(self.data_set_object.data)
+        
+        self.name = get_expression_value_or_default (None, self, 'Name', None)         
+        verify_expression_required("Name", 'DataSet', self.name)       
+        
+        self.fields_def = self.get_element('Fields')
+        self.query_def = self.get_element('Query')
+        self.filters_def = self.get_element('Filters')
+        self.sort_def = self.get_element('SortExpressions')
+        if not self.fields_def or not self.query_def: 
+            raise_error_with_log("'Fields' and 'Query' elements are required by DataSet '{0}'.".format(self.name))
+        
+        for ds in lnk.report_def.data_sets:
+            if ds.name == self.name:
+                raise_error_with_log("DataSet with name '{0}' already exists.".format(self.name))
+        lnk.report_def.data_sets.append(self)
 
 
 class Fields(Element):
+    '''
+    The Fields element defines the fields in the data model.
+    '''
+    
     def __init__(self, node, lnk):
         elements={'Field': [Element.ELEMENT],}
-        self.field_list=[]
         super(Fields, self).__init__(node, elements, lnk) 
 
 
 class Field(Element):
+    '''
+    The Field element contains information about a field in the data model of the report.
+    '''
+
     def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING],
-                  'DataField': [Element.STRING],
+        elements={'Name': [Element.STRING, True],
+                  'DataType': [Element.ENUM],
+                  'DataField': [Element.STRING, True],
                   'Value': [Element.VARIANT],
                  }
         super(Field, self).__init__(node, elements, lnk)
-        self.name = get_expression_value_or_default(self, 'Name', None)
-        if not self.name:
-            raise_error_with_log("Name is required for 'Field'element.")
-        self.data_field = get_expression_value_or_default(self, 'DataField', None)
+
+        self.name = get_expression_value_or_default (None, self, 'Name', None)         
+        verify_expression_required("Name", 'Field', self.name)        
+
+        self.data_type = get_expression_value_or_default(None, self, 'DataType', None)        
+        self.data_field = get_expression_value_or_default(None, self, 'DataField', None)
         self.value=None
         value_element = self.get_element("Value")
         if value_element:
-            self.value = value_element.expression 
-        if lnk.report.fields.has_key(self.name):
-            raise_error_with_log("Field '{0}' already exists.".format(self.name))
-        lnk.report.fields[self.name] = self
-        lnk.parent.field_list.append(self)
-
+            self.value = value_element.expression
+        
+        data_set = lnk.parent.lnk.parent # Get Dataset
+        for fd in data_set.fields:
+            if fd.name == self.name:
+                raise_error_with_log("DataSet already has '{0}' Field.".format(self.name))
+        data_set.fields.append(self)
+        
 
 class Query(Element):
     def __init__(self, node, lnk):
-        elements={'DataSourceName': [Element.STRING],
+        elements={'DataSourceName': [Element.STRING, True],
                   'CommandText': [Element.STRING],
                   'QueryParameters': [Element.ELEMENT],
                  }
         super(Query, self).__init__(node, elements, lnk)
+        
+        self.data_source_name = get_expression_value_or_default (None, self, 'DataSourceName', None)
+        verify_expression_required("DataSourceName", 'Query', self.data_source_name)
 
-    def get_data_source(self):
-        ds_name = get_expression_value_or_default(self, "DataSourceName", None)
-        if not ds_name:
-            raise_error_with_log("'DataSourceName' is required for 'Query' element.")
-        if not self.lnk.report.data_sources.has_key(ds_name):
-            raise_error_with_log("Unknown DataSourceName '{0}' in 'Query' element.", format(ds_name))
-        return self.lnk.report.data_sources[ds_name]
-
-    def get_command_text(self):
-        cmd = get_expression_value_or_default(self, "CommandText", None)
+    def get_command_text(self, report):
+        cmd = get_expression_value_or_default(report, self, "CommandText", None)
         if not cmd:
-            raise_error_with_log("'CommandText' is required for 'Query' element.")
+            raise_error_with_log("'CommandText' is required by 'Query' element.")
         return cmd
-
-    def get_query_parameters(self):
-        return self.get_element("QueryParameters")
 
 
 class QueryParameters(Element):
@@ -107,35 +112,11 @@ class QueryParameters(Element):
 
 class QueryParameter(Element):
     def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING],
+        elements={'Name': [Element.STRING, True],
                   'Value': [Element.VARIANT],
                  }
         super(QueryParameter, self).__init__(node, elements, lnk)
 
-
-class DataSetObject(object):
-    def __init__(self, name, report, cursor, command_text, fields):
-        cursor.execute(command_text)
-        self.data = Data(report, name, fields, cursor)
-
-
-class FieldsObject(object):
-    def __init__(self, field_def, test_field_list=None):        
-        self.field_list=[]
-        if test_field_list: # We are unittest
-            for fd in test_field_list:
-                self.add_field(fd[0], fd[1], fd[2])
-        else:
-            for f in field_def.field_list:
-                self.add_field(f.name, f.data_field, f.value)
-        
-    def add_field(self, name, data_field, value):
-        self.field_list.append(FieldObject(name, data_field, value))
-
-
-class FieldObject(object):
-    def __init__(self, name, data_field, value):
-        self.name = name
-        self.data_field = data_field
-        self.value = value
+        self.name = get_expression_value_or_default (None, self, 'Name', None)
+        verify_expression_required("Name", 'QueryParameter', self.name)
 

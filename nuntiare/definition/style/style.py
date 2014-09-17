@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ...definition.element import Element
+from .. types.element import Element
 
 class Style(Element):
     '''
@@ -12,9 +12,11 @@ class Style(Element):
     '''
 
     def __init__(self, node, lnk):
-        elements={'BorderColor': [Element.ELEMENT], 
-                  'BorderStyle': [Element.ELEMENT],
-                  'BorderWidth': [Element.ELEMENT],
+        elements={'Border': [Element.ELEMENT], 
+                  'TopBorder': [Element.ELEMENT],
+                  'BottomBorder': [Element.ELEMENT],
+                  'LeftBorder': [Element.ELEMENT],
+                  'RightBorder': [Element.ELEMENT],
                   'BackgroundColor': [Element.COLOR],
                   'BackgroundGradientType': [Element.ENUM, 'BackgroundGradientType'],
                   'BackgroundGradientEndColor': [Element.COLOR],

@@ -3,8 +3,8 @@
 # contains the full copyright notices and license terms.
 
 class Link(object):
-    def __init__(self, report, parent, obj=None):
-        self.report=report  # Main Report() object
-        self.parent=parent  # Parent element
-        self.obj=obj        # object itself. It is used to assign parent to others
+    def __init__(self, report_def, parent, obj=None):
+        self.report_def=report_def  # Main ReportDef() object
+        self.parent=parent          # Parent element
+        self.obj=obj                # object itself. It is used to assign parent to others
 
