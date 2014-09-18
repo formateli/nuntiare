@@ -20,7 +20,7 @@ class Tablix(DataRegion):
                   'OmitBorderOnPageBreak': [Element.BOOLEAN, True],
                   'KeepTogether': [Element.BOOLEAN, True],
                  }
-        super(Tablix, self).__init__('tablix', node, lnk, elements)
+        super(Tablix, self).__init__('Tablix', node, lnk, elements)
 
 
 class TablixCorner(Element):

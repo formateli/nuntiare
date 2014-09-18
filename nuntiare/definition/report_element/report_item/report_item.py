@@ -19,7 +19,6 @@ class ReportItems(Element):
                   'Textbox': [Element.ELEMENT],
                   'Image': [Element.ELEMENT],
                   'Subreport': [Element.ELEMENT],
-                  'Grid': [Element.ELEMENT],
                   'Tablix': [Element.ELEMENT], 
                   'Chart': [Element.ELEMENT],
                  }

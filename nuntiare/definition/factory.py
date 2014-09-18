@@ -16,10 +16,13 @@ from data.sort import SortExpressions, SortExpression, SortDirection
 from data.filter import Operator, Filters, Filter, FilterValues
 from data.group import Group, GroupExpressions
 
+from report_element.page_section import PageHeader, PageFooter
 from report_element.visibility import Visibility
 from report_element.body import Body
-from report_element.page_section import PageHeader, PageFooter
 from report_element.report_item.report_item import ReportItems
+from report_element.report_item.line import Line
+from report_element.report_item.rectangle import Rectangle
+from report_element.report_item.textbox import Textbox
 from report_element.report_item.data_region.tablix import Tablix, TablixCorner, \
         TablixCornerRows, TablixCornerRow, TablixCornerCell, CellContents, \
         TablixColumnHierarchy, TablixRowHierarchy, TablixMembers, TablixMember, \
@@ -37,22 +40,19 @@ from types.variant import Variant
 from style.style import Style
 from style.font import FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode
-from style.border import Border, TopBorder, BottomBorder, LeftBorder, RightBorder, BorderStyleEnum
+from style.border import Border, TopBorder, BottomBorder, LeftBorder, RightBorder, BorderStyle
 from style.background import BackgroundImage, BackgroundRepeat, BackgroundGradientType
 
-#from report_element.report_item.line import Line
-#from report_element.report_item.rectangle import Rectangle
-#from report_element.report_item.textbox import Textbox
 
-#from report_items.grid import Grid, Columns, Column, Rows, Row, Cells, Cell
 #from report_items.image import Image, ImageSourceEnum, ImageSizingEnum
-#from report_items.data_region.table import Table,  \
-#    Header, Footer, Details, TableGroups, TableGroup
+
 
 
 def get_element(name, node, lnk):
     ln = Link(lnk.report_def, lnk.obj)
-    if name=='PageHeader':
+    if name=='Page':
+        obj = Page(node, ln)    
+    elif name=='PageHeader':
         obj = PageHeader(node, ln)
     elif name=='PageFooter':
        obj = PageFooter(node, ln)
@@ -135,45 +135,15 @@ def get_element(name, node, lnk):
     elif name=='RightBorder':
         obj = RightBorder(node, ln)
     elif name=='BackgroundImage':
-        obj = BackgroundImage(node, ln)
-        
-#    elif name=='Line':
-#        obj = Line(node, ln)
-#    elif name=='Rectangle':
-#        obj = Rectangle(node, ln)
-#    elif name=='Textbox':
-#        obj = Textbox(node, ln)
+        obj = BackgroundImage(node, ln)        
+    elif name=='Line':
+        obj = Line(node, ln)
+    elif name=='Rectangle':
+        obj = Rectangle(node, ln)
+    elif name=='Textbox':
+        obj = Textbox(node, ln)
 #    elif name=='Image':
 #        obj = Image(node, ln)
-#    elif name=='Grid':
-#        obj = Grid(node, ln)
-#    elif name=='Columns':
-#        obj = Columns(node, ln)
-#    elif name=='Column':
-#        obj = Column(node, ln)
-#    elif name=='Rows':
-#        obj = Rows(node, ln)
-#    elif name=='Row':
-#        obj = Row(node, ln)
-#    elif name=='Cells':
-#        obj = Cells(node, ln)
-#    elif name=='Cell':
-#        obj = Cell(node, ln)
-        
-#    elif name=='Table':
-#        obj = Table(node, ln)
-#    elif name=='Header':
-#        obj = Header(node, ln)
-#    elif name=='Footer':
-#        obj = Footer(node, ln)
-#    elif name=='Details':
-#       obj = Details(node, ln)
-#    elif name=='TableGroups':
-#        obj = TableGroups(node, ln)
-#    elif name=='TableGroup':
-#        obj = TableGroup(node, ln)
-        
-
 #    elif name=='Imports':
 #        obj = Imports(node, ln)
 #    elif name=='Import':
@@ -212,7 +182,7 @@ def get_enum(name, node):
     value = get_xml_tag_value(node)
  
     if name=='BorderStyle':
-        return BorderStyleEnum(value)
+        return BorderStyle(value)
     if name=='FontStyle':
         return FontStyle(value)
     if name=='FontWeight':

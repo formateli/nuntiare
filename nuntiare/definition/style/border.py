@@ -5,7 +5,7 @@
 from ..types.element import Element
 from ..types.enum import Enum
 
-class BorderStyleEnum(Enum):
+class BorderStyle(Enum):
     enum_list={'none': 'None', 
                'dotted': 'Dotted', 
                'dashed': 'Dashed', 
@@ -18,8 +18,8 @@ class BorderStyleEnum(Enum):
                'outset': 'Outset',
               }
 
-    def __init__(self, report, expression):
-        super(BorderStyleEnum, self).__init__(report, 'BorderStyle', expression, BorderStyleEnum.enum_list)
+    def __init__(self, expression):
+        super(BorderStyle, self).__init__('BorderStyle', expression, BorderStyle.enum_list)
 
 
 class BorderElement(Element):

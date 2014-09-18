@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from types.element import Element
+from .. tools import get_expression_value_or_default, inch_2_mm
 
 class Page(Element):
     '''

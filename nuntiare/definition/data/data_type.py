@@ -50,7 +50,7 @@ def to_bool(value):
     if str(value).lower() in ("yes", "y", "true",  "t", "1", "-1"): 
         return True
     if str(value).lower() in ("no",  "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"): 
-        return False            
+        return False
     
     logger.warn("Unknown bool expression '{0}'. False assigned.".format(value))
     return False    
