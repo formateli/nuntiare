@@ -4,7 +4,7 @@
 
 from dp_exceptions import InterfaceError, OperationalError
 
-class Connect:
+class Connect(object):
 
     def __init__(self, connection_string, string_format):
 

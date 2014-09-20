@@ -6,7 +6,7 @@ import sys
 import cgi
 from .. render import Render
 from ... tools import raise_error_with_log
-from rectangle import HtmlRectangle
+from ... report.report_items import PageRectangle
 
 class HtmlRender(Render):
     def __init__(self):
@@ -60,7 +60,7 @@ class HtmlRender(Render):
     def get_report_header_footer(self, name, report, header_footer, container):
         if not header_footer.definition:
             return
-        rec = HtmlRectangle(report, header_footer.definition)
+        rec = PageRectangle(report, header_footer.definition, None)
         rec.name = "div_" + name 
         rec.width = report.pages.available_width
         items = [rec,]

@@ -4,7 +4,6 @@
 
 from report_item import ReportItem
 from ... types.element import Element
-from .... tools import get_expression_value_or_default
 
 class Textbox(ReportItem):
     def __init__(self, node, lnk):
@@ -16,11 +15,7 @@ class Textbox(ReportItem):
                   'DataElementStyle': [Element.ENUM],                  
                  }
         super(Textbox, self).__init__("Textbox", node, lnk, elements)
-        self.can_grow = get_expression_value_or_default (None, self, "CanGrow", False)
-        self.can_shrink = get_expression_value_or_default (None, self, "CanShrink", False)
-        self.hide_duplicates = get_expression_value_or_default (None, self, "HideDuplicates", None)
-        
-        
+
 class ToggleImage(Element):
     '''
     Indicates the initial state of a toggle image should such an image be displayed as a part of the

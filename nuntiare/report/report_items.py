@@ -5,7 +5,7 @@
 import sys
 from style import StyleInfo
 from report_item_group import ReportItemGroup
-from .. tools import get_element_from_parent, get_expression_value_or_default
+from .. tools import get_element_from_parent, get_expression_value_or_default, raise_error_with_log
 
 class ReportItemsInfo():
     def __init__(self, report, element, parent):
@@ -26,9 +26,9 @@ class ReportItemsInfo():
                 if page_item.height < self.min_height:
                     self.min_height =  page_item.height
                 if page_item.type == "PageText":
-                    if page_item.report_item_def.can_grow:
+                    if page_item.can_grow:
                         self.can_grow = True
-                    if page_item.report_item_def.can_shrink:
+                    if page_item.can_shrink:
                         self.can_shrink = True
                 self.item_list.append(page_item)
 
@@ -40,6 +40,8 @@ class ReportItemsInfo():
             page_item = PageRectangle(report, it, parent)
         if it.type == "Textbox":
             page_item = PageText(report, it, parent)
+        if it.type == "Tablix":
+            page_item = PageRectangle(report, it, parent) #TODO       
         #if it.type == "Grid":
         #    page_item = PageGrid(report, it, parent)
         #if it.type == "Table":
@@ -57,11 +59,11 @@ class PageItem(object):
         self.parent=parent 
         self.items_info=None # Only for those that can content 'ReportItems'
         self.report_item_def = report_item_def
-        self.name = report_item_def.name
-        self.top = report_item_def.top
-        self.left = report_item_def.left
-        self.height = report_item_def.height
-        self.width = report_item_def.width
+        self.name = get_expression_value_or_default(report, report_item_def, "Name", None)
+        self.top = get_expression_value_or_default(report, report_item_def, "Top", 0.0)
+        self.left = get_expression_value_or_default(report, report_item_def, "Left", 0.0)
+        self.height = get_expression_value_or_default(report, report_item_def, "Height", 0.0)
+        self.width = get_expression_value_or_default(report, report_item_def, "Width", 0.0)
         self.style = StyleInfo(report, get_element_from_parent(report_item_def, "Style"))
 
         if parent and type != "RowCell" and parent.type == "RowCell":            
@@ -93,12 +95,20 @@ class PageLine(PageItem):
 class PageRectangle(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageRectangle, self).__init__("PageRectangle", report, report_item_def, parent)
+        self.keep_together = get_expression_value_or_default (report, report_item_def, "KeepTogether", True)
+        self.omit_border_on_page_break = get_expression_value_or_default (report, report_item_def, "OmitBorderOnPageBreak", True)
+        self.page_break = get_expression_value_or_default (report, report_item_def.get_element("PageBreak"), 
+                    "BreakLocation", None)
         self.items_info = ReportItemsInfo(report, report_item_def, self)
 
 
 class PageText(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageText, self).__init__("PageText", report, report_item_def, parent)        
+        self.can_grow = get_expression_value_or_default (report, report_item_def, "CanGrow", False)
+        self.can_shrink = get_expression_value_or_default (report, report_item_def, "CanShrink", False)
+        self.hide_duplicates = get_expression_value_or_default (report, report_item_def, "HideDuplicates", None)        
+        
         self.value = get_expression_value_or_default(report, report_item_def, "Value", None)
         self.value_formatted = ""
         if self.value != None:

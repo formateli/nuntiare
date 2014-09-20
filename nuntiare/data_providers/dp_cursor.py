@@ -4,7 +4,7 @@
 
 from dp_exceptions import InterfaceError
 
-class Cursor:
+class Cursor(object):
     def __init__(self, connection):
         self.connection = connection
         self.rowcount = -1

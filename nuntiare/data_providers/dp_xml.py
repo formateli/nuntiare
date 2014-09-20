@@ -14,7 +14,7 @@ paramstyle="pyformat"
 
 class connect(Connect):
     def __init__(self, connection_string):
-        Connect.__init__(self, connection_string, "file=[path/xmlFile.xml]")
+        super(connect, self).__init__(connection_string, "file=[path/xmlFile.xml]")
         self.xmlfile = self.parameters_dict['file']
 
     def cursor(self):
@@ -22,13 +22,13 @@ class connect(Connect):
         self.cursors.append(c)
         return c
 
-class XmlCursor(Cursor):
 
+class XmlCursor(Cursor):
     def __init__(self, connection):
-        Cursor.__init__(self, connection)
+        super(XmlCursor, self).__init__(connection)
 
     def execute(self, operation, parameters=None):
-        Cursor.execute(self, operation, parameters)
+        super(XmlCursor, self).execute(operation, parameters)
 
         dom = parse(self.connection.xmlfile)
         if not dom:
