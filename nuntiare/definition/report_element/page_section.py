@@ -4,13 +4,13 @@
 
 from report_element import ReportElement
 from .. types.element import Element
-from ... tools import get_expression_value_or_default, inch_2_mm
+from ... tools import get_expression_value_or_default
 
 class PageSection(ReportElement):
     '''
     The virtual PageSection element defines the layout of report items to appear at the top or bottom
     of every page of the report. The PageSection element itself is not used. Only subtypes of
-    PageSection are used: PageHeader, PageFooter. It inherits from ReportElement
+    PageSection are used: PageHeader, PageFooter. It inherits from ReportElement.
     '''
 
     def __init__(self, node, lnk):
@@ -20,7 +20,10 @@ class PageSection(ReportElement):
                   'PrintOnLastPage': [Element.BOOLEAN, True],
                  }
         super(PageSection, self).__init__(node, elements, lnk)
-
+        self.height = get_expression_value_or_default(None, self, "Height", 0.0)
+        self.print_on_first_page = get_expression_value_or_default(None, self, "PrintOnFirstPage", True)
+        self.print_on_last_page = get_expression_value_or_default(None, self, "PrintOnLastPage", True)
+                
 
 class PageHeader(PageSection):
     '''

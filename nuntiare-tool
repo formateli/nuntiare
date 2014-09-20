@@ -13,7 +13,7 @@ from nuntiare import __version__, __copyright__, __license__
 from nuntiare.definition.report_def import ReportDef
 from nuntiare.report.report import Report
 from nuntiare.tools import get_parameters_from_string
-#from nuntiare.render import get_render
+from nuntiare.render.render import Render
 
 
 logging.basicConfig(filename='nuntiare.log',level=logging.DEBUG)
@@ -93,13 +93,13 @@ def do_render(files, render_list, dir_path):
         report.run(info['parameters'])
         for r in render_list:
             logger.info("Rendering to '{0}'".format(r))
-            #render = get_render(r)
-            #if not render:
-            #    no_render = "Render '{0}' not found. Continue with next render.".format(r)
-            #    logger.warn(no_render)
-            #    print no_render
-            #    continue
-            #render.render(report)
+            render = Render.get_render(r)
+            if not render:
+                no_render = "Render '{0}' not found. Continue with next render.".format(r)
+                logger.warn(no_render)
+                print no_render
+                continue
+            render.render(report)
 
 if len(sys.argv)==1:
     show_help()

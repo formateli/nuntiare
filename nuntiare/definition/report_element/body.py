@@ -4,7 +4,7 @@
 
 from report_element import ReportElement
 from ..types.element import Element
-from ...tools import get_expression_value_or_default, inch_2_mm
+from ...tools import get_expression_value_or_default
 
 class Body(ReportElement):
     '''
@@ -18,4 +18,5 @@ class Body(ReportElement):
                   'Height': [Element.SIZE, True], 
                  }
         super(Body, self).__init__(node, elements, lnk)
+        self.height = get_expression_value_or_default(None, self, "Height", 0.0)
 

@@ -22,6 +22,7 @@ class ReportItems(Element):
                   'Tablix': [Element.ELEMENT], 
                   'Chart': [Element.ELEMENT],
                  }
+        self.reportitems_list=[]         
         super(ReportItems, self).__init__(node, elements, lnk)
 
 
@@ -57,7 +58,13 @@ class ReportItem(ReportElement):
         
         self.name = get_expression_value_or_default (None, self, 'Name', None)         
         verify_expression_required("Name", 'ReportItem ' + self.type, self.name)
-
         self.zindex = get_expression_value_or_default (None, self, "ZIndex", 0)
-
+        self.top = get_expression_value_or_default (None, self, "Top", 0.0)
+        self.bottom = get_expression_value_or_default (None, self, "Bottom", 0.0)
+        self.left = get_expression_value_or_default (None, self, "Left", 0.0)
+        self.right = get_expression_value_or_default (None, self, "Right", 0.0)
+        self.height = get_expression_value_or_default (None, self, "Height", 0.0)
+        self.width = get_expression_value_or_default (None, self, "Width", 0.0)
+        
+        lnk.parent.reportitems_list.append(self)
 

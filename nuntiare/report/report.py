@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import datetime
+from page import Pages
 from data.data_source import DataSourceObject
 from data.data_set import DataSetObject
 from .. import logger
@@ -14,7 +15,8 @@ class Report(object):
         self.data_sources={}
         self.data_sets={}
         self.data_groups={}
-        self.globals={}        
+        self.globals={}
+        self.report_items_group={}
         self.current_scope=None
 
     def run(self, parameters={}):
@@ -52,6 +54,6 @@ class Report(object):
             self.data_sets[ds.name].execute()
             self.data_groups[ds.name] = self.data_sets[ds.name].data
 
-#        # 5.- Build pages
-#        self.pages = Pages(self)
+        # 5.- Build pages
+        self.pages = Pages(self)
 
