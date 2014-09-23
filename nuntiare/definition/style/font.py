@@ -9,8 +9,8 @@ class FontStyle(Enum):
                'italic': 'Italic', 
               }
 
-    def __init__(self, report, expression):
-        super(FontStyle, self).__init__(report, 'FontStyle', expression, FontStyle.enum_list)
+    def __init__(self, expression):
+        super(FontStyle, self).__init__('FontStyle', expression, FontStyle.enum_list)
 
 
 class FontWeight(Enum):
@@ -29,8 +29,8 @@ class FontWeight(Enum):
                '900': '900', 
               }
 
-    def __init__(self, report, expression):
-        super(FontWeight, self).__init__(report, 'FontWeight', expression, FontWeight.enum_list)
+    def __init__(self, expression):
+        super(FontWeight, self).__init__('FontWeight', expression, FontWeight.enum_list)
 
 
 class TextDecoration(Enum):
@@ -40,8 +40,8 @@ class TextDecoration(Enum):
                'linethrough': 'LineThrough', 
               }
 
-    def __init__(self, report, expression):
-        super(TextDecoration, self).__init__(report, 'TextDecoration', expression, TextDecoration.enum_list)
+    def __init__(self, expression):
+        super(TextDecoration, self).__init__('TextDecoration', expression, TextDecoration.enum_list)
 
 
 class TextAlign(Enum):
@@ -52,8 +52,8 @@ class TextAlign(Enum):
                'justify': 'Justify', 
               }
 
-    def __init__(self, report, expression):
-        super(TextAlign, self).__init__(report, 'TextAlign', expression, TextAlign.enum_list)
+    def __init__(self, expression):
+        super(TextAlign, self).__init__('TextAlign', expression, TextAlign.enum_list)
 
 
 class VerticalAlign(Enum):
@@ -62,8 +62,8 @@ class VerticalAlign(Enum):
                'bottom': 'Bottom', 
               }
 
-    def __init__(self, report, expression):
-        super(VerticalAlign, self).__init__(report, 'VerticalAlign', expression, VerticalAlign.enum_list)
+    def __init__(self, expression):
+        super(VerticalAlign, self).__init__('VerticalAlign', expression, VerticalAlign.enum_list)
 
 
 class TextDirection(Enum):
@@ -71,8 +71,8 @@ class TextDirection(Enum):
                'rtl': 'RTL', 
               }
 
-    def __init__(self, report, expression):
-        super(TextDirection, self).__init__(report, 'TextDirection', expression, TextDirection.enum_list)
+    def __init__(self, expression):
+        super(TextDirection, self).__init__('TextDirection', expression, TextDirection.enum_list)
 
 
 class WritingMode(Enum):
@@ -80,6 +80,6 @@ class WritingMode(Enum):
                'tb-rl': 'TB-RL', 
               }
 
-    def __init__(self, report, expression):
-        super(WritingMode, self).__init__(report, 'WritingMode', expression, WritingMode.enum_list)
+    def __init__(self, expression):
+        super(WritingMode, self).__init__('WritingMode', expression, WritingMode.enum_list)
 

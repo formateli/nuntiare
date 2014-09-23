@@ -33,13 +33,20 @@ class HtmlRender(Render):
 
         self.get_report_header_footer("header", report, report.pages.header, container)   
         self.get_report_body(report, container)
-        self.get_report_header_footer("footer", report, report.pages.footer, container)   
+        self.get_report_header_footer("footer", report, report.pages.footer, container)
 
         body.add_element(container)
         html.add_element(body)
 
-        str_style = ""
+        str_style = "div#Middle {display: inline-block;vertical-align: middle;}\n" + \
+                "div#Bottom {display: inline-block;vertical-align: bottom;}\n"
         for key, value in self.style_helper.style_list.items():
+            if value.find("; vertical-align:Middle;") > -1:
+                str_style = str_style + key + \
+                    ":before {content: ''; display: inline-block;height: 100%; vertical-align: middle;margin-right: -0.1em;}\n"
+            if value.find("; vertical-align:Bottom;") > -1:
+                str_style = str_style + key + \
+                    ":before {content: ''; display: inline-block;height: 100%; vertical-align: bottom;margin-right: -0.1em;}\n"
             str_style = str_style + key + "{" + value + "}\n"
 
         if str_style != "":
@@ -58,6 +65,8 @@ class HtmlRender(Render):
         return head
 
     def get_report_header_footer(self, name, report, header_footer, container):
+        if not header_footer: 
+            return
         if not header_footer.definition:
             return
         rec = PageRectangle(report, header_footer.definition, None)
@@ -107,6 +116,7 @@ class HtmlRender(Render):
 
     def get_rectangle(self, it):
         is_textbox = True if it.type == "PageText" else False
+        vertical_align = None
         in_cell = self.is_in_cell(it) 
 
         txt = ""
@@ -129,6 +139,10 @@ class HtmlRender(Render):
             ignore = []
             if it.name == "div_header" or it.name == "div_footer":
                 ignore = ['overflow',]
+            if is_textbox and (it.can_grow or it.can_shrink):
+                ignore.append('height')
+            if it.style.text.vertical_align == "Middle" or it.style.text.vertical_align == "Bottom": 
+                vertical_align = it.style.text.vertical_align
             self.add_style(rec, it, txt, ignore_list=ignore)
         else: 
             rec = HtmlElement("td", it.name)
@@ -137,7 +151,7 @@ class HtmlRender(Render):
             it.width = it.parent.width
             self.add_style(rec, it, txt, ['height',])
  
-        if txt != "": 
+        if txt != "" and not vertical_align:
             rec.add_element(HtmlElement("text", None, txt))
 
         self.render_items(it.get_item_list(), rec)
@@ -146,6 +160,11 @@ class HtmlRender(Render):
             res = self.get_td_parent_element(it, rec)  
         else:
             res = rec
+        
+        if vertical_align and txt != "":
+            div_vertical = HtmlElement("div", vertical_align)
+            div_vertical.add_element(HtmlElement("text", None, txt))
+            rec.add_element(div_vertical)
 
         return res
 
@@ -166,7 +185,7 @@ class HtmlRender(Render):
     def add_style(self, html_element, it, text=None, ignore_list=[]):
         if not html_element.id:
             return
-                   
+        
         i = self.style_helper.add_style(html_element.tag, 
                         html_element.id, 
                         self.get_style(it, ignore_list))
@@ -207,10 +226,10 @@ class HtmlRender(Render):
             self.add_style_property('text-align', it.style.text.text_align, ignore_list,  properties)
             self.add_style_property('text-decoration', it.style.text.text_decoration, ignore_list,  properties)
             self.add_style_property('padding', "{0}mm {1}mm {2}mm {3}mm".format(
-                it.style.text.padding_top.value,
-                it.style.text.padding_right.value,
-                it.style.text.padding_left.value,
-                it.style.text.padding_bottom.value), ignore_list,  properties)
+                                it.style.text.padding_top.value,
+                                it.style.text.padding_right.value,
+                                it.style.text.padding_left.value,
+                                it.style.text.padding_bottom.value), ignore_list,  properties)
 
         res = ""
         for p in properties:
