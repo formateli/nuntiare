@@ -16,6 +16,7 @@ class ReportItemGroup(object):
         # in the current scope
         return self.items[key][len(self.items[key]) - 1].value
         
+    #TODO Remove, use Variable
     def sum(self, *args):
         #print "Looking in '{0}'".format(self.name)
         total = 0        

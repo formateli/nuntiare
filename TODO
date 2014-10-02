@@ -5,6 +5,11 @@
 --------
 CRITICAL
 --------
+- In order to get Aggregate functions (sum, avg, count, etc), we 
+introduce Variable declared for each group in the way that 
+JasperReports does.
+
+
 - Grouping recursion
 - Image
 - SubReport

@@ -86,6 +86,7 @@ class Definition(Element):
                   'DataSets': [Element.ELEMENT],
                   'Body': [Element.ELEMENT],
                   'ReportParameters': [Element.ELEMENT],
+                  'Variables': [Element.ELEMENT],
                   'Width': [Element.SIZE, True],
                   'Imports': [Element.ELEMENT],                  
                   'EmbeddedImages': [Element.ELEMENT],

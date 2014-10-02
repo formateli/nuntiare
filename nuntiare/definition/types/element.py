@@ -24,12 +24,14 @@ class Element(object):
 
         lnk.obj=self
         self.element_list={}        # Here we list elements found for this element
-        self.reportitems_list=[]    # Peers items list. Only if it is a ReportItems element
+        self.reportitems_list=[]    # Peers report items list.
         self.lnk=lnk                # This is the linking object. See link.py
 
         from .. import factory
 
+        # Collect all report items, at the end, order by ZIndex or appears order
         items_by_name={}
+        z_count=0
 
         for n in node.childNodes:
             if not elements.has_key(n.nodeName):
@@ -38,19 +40,18 @@ class Element(object):
                 continue
             if elements[n.nodeName][0] == Element.ELEMENT:
                 el = factory.get_element(n.nodeName, n, lnk)
-                #if n.nodeName in ("Line", "Rectangle", "Textbox", "Image", "Subreport",
-                #            "CustomReportItem", "Grid", "Table"):
-                if n.nodeName in ("Tablix"):                
+                if n.nodeName in ("Line", "Rectangle", "Textbox", "Image", "Subreport",
+                            "CustomReportItem", "Tablix"):
                     if n.nodeName in ("Textbox"): 
                         if lnk.report_def.report_items.has_key(el.name):
                             raise_error_with_log("Report already has a Texbox with name '{0}'".format(el.name))
-                        else:
-                            lnk.report_def.report_items[el.name] = el
+                        lnk.report_def.report_items[el.name] = el
                     if items_by_name.has_key(el.name):
                         raise_error_with_log("The container already has a report item with name '{0}'".format(el.name))
-                    items_by_name[el.name]=el
-                else:
-                    self.element_list[n.nodeName] = el
+                    i=el.zindex if el.zindex>-1 else z_count
+                    items_by_name[el.name]=[el, i]
+                    z_count = z_count + 1
+                self.element_list[n.nodeName] = el
             elif elements[n.nodeName][0]==Element.ENUM:
                 if len(elements[n.nodeName])==1:
                     enum_name = n.nodeName
@@ -62,16 +63,17 @@ class Element(object):
                 self.element_list[n.nodeName]=ex_lst
             else: 
                 must_be_constant = False
-                if len(elements[n.nodeName])>1:
+                if len(elements[n.nodeName]) > 1:
                     must_be_constant = elements[n.nodeName][1]
                 ex=factory.get_expression(elements[n.nodeName][0], n, must_be_constant) 
                 self.element_list[n.nodeName]=ex
 
         # Z Order
+        self.reportitems_list=[]
         if len(items_by_name) > 0:
             z_list=[]
             for key, it in items_by_name.items():
-                l = (it.zindex, it)
+                l = (it[1], it[0]) # zindex, reportitem
                 z_list.append(l)
             res = sorted(z_list, key=lambda z: z[0])
             for r in res:

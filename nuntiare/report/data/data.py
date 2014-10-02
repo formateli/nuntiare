@@ -31,6 +31,7 @@ class DataInterface(object):
     def total_rows(self):
         return len(self.rows)
 
+    #TODO Remove, use Variable
     def sum(self, *args):
         total = 0
         cols=[]

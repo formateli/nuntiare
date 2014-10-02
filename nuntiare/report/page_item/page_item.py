@@ -3,12 +3,13 @@
 # contains the full copyright notices and license terms.
 
 import sys
-from style import StyleInfo
-from report_item_group import ReportItemGroup
-from .. tools import get_element_from_parent, get_expression_value_or_default, raise_error_with_log
+from .. style import StyleInfo
+from .. report_item_group import ReportItemGroup
+from ... tools import get_element_from_parent, \
+        get_expression_value_or_default, raise_error_with_log
 
-class ReportItemsInfo():
-    def __init__(self, report, element, parent):
+class PageItemsInfo():
+    def __init__(self, report, definition, parent):
         self.item_list=[]     
         self.total_height = 0
         self.min_height = sys.float_info.max
@@ -16,10 +17,12 @@ class ReportItemsInfo():
         self.can_grow=False
         self.can_shrink=False
         
-        items = element.get_element("ReportItems")        
+        items = definition.get_element("ReportItems")
+        if not items:
+            items = definition.get_element("ReportItem") # Maybe a cell ReportItem
         if items:
             for it in items.reportitems_list:
-                page_item = self.get_page_item(report, it, parent)
+                page_item = PageItem.page_item_factory(report, it, parent)
                 self.total_height = self.total_height + page_item.height 
                 if page_item.height > self.max_height:
                     self.max_height =  page_item.height
@@ -32,27 +35,7 @@ class ReportItemsInfo():
                         self.can_shrink = True
                 self.item_list.append(page_item)
 
-    def get_page_item(self, report, it, parent):
-        page_item = None
-        if it.type == "Line":
-            page_item = PageLine(report, it, parent)
-        if it.type == "Rectangle":
-            page_item = PageRectangle(report, it, parent)
-        if it.type == "Textbox":
-            page_item = PageText(report, it, parent)
-        if it.type == "Tablix":
-            page_item = PageRectangle(report, it, parent) #TODO       
-        #if it.type == "Grid":
-        #    page_item = PageGrid(report, it, parent)
-        #if it.type == "Table":
-        #    page_item = PageTable(report, it, parent)
-
-        if not page_item:
-            raise_error_with_log("Error trying to get Report item. Invalid definition element '{0}'".format(it))
-
-        return page_item
-        
-        
+                
 class PageItem(object):
     def __init__(self, type, report, report_item_def, parent):
         self.type=type # Type of PageItem: PageLine. PageRectangle, PageText, etc. 
@@ -86,6 +69,28 @@ class PageItem(object):
             result = self.items_info.item_list
         return result
 
+    @staticmethod
+    def page_item_factory(report, it, parent):
+        page_item = None
+        if it.type == "Line":
+            page_item = PageLine(report, it, parent)
+        if it.type == "Rectangle":
+            page_item = PageRectangle(report, it, parent)
+        if it.type == "Textbox":
+            page_item = PageText(report, it, parent)
+        if it.type == "Tablix":
+            from page_grid import PageGrid
+            page_item = PageGrid(report, it, parent) #TODO
+        #if it.type == "Grid":
+        #    page_item = PageGrid(report, it, parent)
+        #if it.type == "Table":
+        #    page_item = PageTable(report, it, parent)
+
+        if not page_item:
+            raise_error_with_log("Error trying to get Report item. Invalid definition element '{0}'".format(it))
+
+        return page_item
+
 
 class PageLine(PageItem):
     def __init__(self, report, report_item_def, parent):
@@ -99,7 +104,7 @@ class PageRectangle(PageItem):
         self.omit_border_on_page_break = get_expression_value_or_default (report, report_item_def, "OmitBorderOnPageBreak", True)
         self.page_break = get_expression_value_or_default (report, report_item_def.get_element("PageBreak"), 
                     "BreakLocation", None)
-        self.items_info = ReportItemsInfo(report, report_item_def, self)
+        self.items_info = PageItemsInfo(report, report_item_def, self)
 
 
 class PageText(PageItem):

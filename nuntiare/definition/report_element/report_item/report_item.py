@@ -37,14 +37,14 @@ class ReportItem(ReportElement):
     def __init__(self, type, node, lnk, additional_elements):
         elements={'Name': [Element.STRING, True],
                   'ActionInfo': [Element.ELEMENT],
-                  'Top': [Element.SIZE, True], 
-                  'Left': [Element.SIZE, True],                   
+                  'Top': [Element.SIZE, True],
+                  'Left': [Element.SIZE, True],
                   'Height': [Element.SIZE, True],
                   'Width': [Element.SIZE, True],
                   'ZIndex': [Element.INTEGER, True],
                   'Visibility': [Element.ELEMENT],
-                  'ToolTip': [Element.STRING],    
-                  'Bookmark': [Element.STRING],                                
+                  'ToolTip': [Element.STRING],
+                  'Bookmark': [Element.STRING],
                   'RepeatWith': [Element.STRING, True],
                   'DataElementName': [Element.STRING, True],
                   'DataElementOutput': [Element.ENUM],
@@ -56,9 +56,9 @@ class ReportItem(ReportElement):
         super(ReportItem, self).__init__(node, elements, lnk)
         self.type = type
         
-        self.name = get_expression_value_or_default (None, self, 'Name', None)         
+        self.name = get_expression_value_or_default (None, self, 'Name', None)
         verify_expression_required("Name", 'ReportItem ' + self.type, self.name)
-        self.zindex = get_expression_value_or_default (None, self, "ZIndex", 0)
+        self.zindex = get_expression_value_or_default (None, self, "ZIndex", -1)
         
         lnk.parent.reportitems_list.append(self)
 

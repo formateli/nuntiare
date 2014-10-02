@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from section import HeaderInfo, FooterInfo, BodyInfo
-from report_items import ReportItemsInfo
+from page_item.page_item import PageItemsInfo
 from .. tools import get_expression_value_or_default, inch_2_mm
 
 class Pages(object):
@@ -38,7 +38,7 @@ class Pages(object):
         if self.body.height < self.available_height:
             self.available_height = self.body.height
 
-        self.body_items = ReportItemsInfo(report, self.body.definition, None)
+        self.body_items = PageItemsInfo(report, self.body.definition, None)
 
     def get_header_footer(self, page_def, element_name):
         if page_def:

@@ -20,6 +20,7 @@ class Group(Element):
                   'PageBreak': [Element.ELEMENT],
                   'Filters': [Element.ELEMENT],
                   'Parent': [Element.VARIANT],
+                  'Variables': [Element.ELEMENT],
                   'DataElementName': [Element.STRING, True],
                   'DataElementOutput': [Element.ENUM],
                  }

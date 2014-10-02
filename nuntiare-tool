@@ -8,16 +8,11 @@ __appname__='Nuntiare command line tool'
 
 import sys
 import os
-import logging
 from nuntiare import __version__, __copyright__, __license__
 from nuntiare.definition.report_def import ReportDef
 from nuntiare.report.report import Report
 from nuntiare.tools import get_parameters_from_string
 from nuntiare.render.render import Render
-
-
-logging.basicConfig(filename='nuntiare.log',level=logging.DEBUG)
-logger = logging.getLogger('App')
 
 def write_help_spacing(s1, s2):
     total_space=35
@@ -27,32 +22,32 @@ def write_help_spacing(s1, s2):
     else:
         space = ' ' * (total_space - len(s1))
         result = s1 + space + s2
-    print result
+    print (result)
 
 def show_head():
-    print "{0} version {1}".format(__appname__, __version__)
-    print " Copyright {0}".format(__copyright__)
-    print " Licensed under {0}".format(__license__)
+    print ("{0} version {1}".format(__appname__, __version__))
+    print (" Copyright {0}".format(__copyright__))
+    print (" Licensed under {0}".format(__license__))
 
 def show_license():
     show_head()
-    print ""
-    print "Nuntiare comes with ABSOLUTELY NO WARRANTY. This is free software,"
-    print "and you are welcome to redistribute it under certain conditions."
-    print ""
-    print "For help, nuntiare-tool -?"
-    print ""
+    print ("")
+    print ("Nuntiare comes with ABSOLUTELY NO WARRANTY. This is free software,")
+    print ("and you are welcome to redistribute it under certain conditions.")
+    print ("")
+    print ("For help, nuntiare-tool -?")
+    print ("")
 
 def show_help():
     show_head()
-    print ""
-    print "Runs a xml report definition file and renders it for each specified type."
-    print "Usage:"
-    print "nuntiare-tool [OPTION...]"
-    print "   Ex: ./nuntiare-tool -f report.xml -r pdf,csv --compress --overwrite-false"
-    print ""
+    print ("")
+    print ("Runs a xml report definition file and renders it for each specified type.")
+    print ("Usage:")
+    print ("nuntiare-tool [OPTION...]")
+    print ("   Ex: ./nuntiare-tool -f report.xml -r pdf,csv --compress --overwrite-false")
+    print ("")
 
-    print "Options:"			
+    print ("Options:")
     write_help_spacing("-f, --file F1[, F2, Fn]", "List of xml report definition files to process. Ex. -f file1.xml,file2.xml")
     write_help_spacing(None, "Report parameters can be passed using '?' after the file.")
     write_help_spacing(None, "Multiple report parameters are separated by '+'.")
@@ -65,12 +60,11 @@ def show_help():
     write_help_spacing("-c, --compress", "Compress resulting files.")
     write_help_spacing("-l, --license", "Shows license and warranty.")
     write_help_spacing("-?, -h, --help", "Shows this help. Others parameters will be ommited.")
-    print ""
+    print ("")
 
 def error_with_log(error):
-    print ""
-    logger.error(error)
-    print error
+    print ("")
+    print (error)
     sys.exit()
 
 def do_render(files, render_list, dir_path):
@@ -80,24 +74,17 @@ def do_render(files, render_list, dir_path):
         filename=os.path.join(dir_path, filename)
         if not os.path.exists(filename):
             no_file = "File '{0}' does not exist. Continue with next file.".format(filename)
-            logger.warn(no_file)
-            print no_file
+            print (no_file)
             continue
-        logger.debug("Processing report definition file '{0}'".format(filename))
-
-        for key, value in info['parameters'].items() :
-            logger.debug("  Parameter '{0}' passed = '{1}'".format(key, value))
         
         report_def = ReportDef(filename)
         report = Report(report_def)
         report.run(info['parameters'])
         for r in render_list:
-            logger.info("Rendering to '{0}'".format(r))
             render = Render.get_render(r)
             if not render:
                 no_render = "Render '{0}' not found. Continue with next render.".format(r)
-                logger.warn(no_render)
-                print no_render
+                print (no_render)
                 continue
             render.render(report)
 

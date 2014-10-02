@@ -12,6 +12,7 @@ class DataRegion(ReportItem):
                   'PageBreak': [Element.ELEMENT],
                   'Filters': [Element.ELEMENT],
                   'SortExpressions': [Element.ELEMENT],
+                  'Variables': [Element.ELEMENT],                  
                  }
         if additional_elements:
             for key, value in additional_elements.items():

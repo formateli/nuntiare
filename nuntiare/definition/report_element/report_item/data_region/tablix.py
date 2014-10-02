@@ -4,6 +4,7 @@
 
 from data_region import DataRegion
 from .... types.element import Element
+from ..... tools import raise_error_with_log
 
 class Tablix(DataRegion):
     def __init__(self, node, lnk):
@@ -20,7 +21,27 @@ class Tablix(DataRegion):
                   'OmitBorderOnPageBreak': [Element.BOOLEAN, True],
                   'KeepTogether': [Element.BOOLEAN, True],
                  }
-        super(Tablix, self).__init__('Tablix', node, lnk, elements)
+        super(Tablix, self).__init__('Tablix', node, lnk, elements)       
+        
+        self.verify_required(["TablixColumnHierarchy","TablixMembers"])
+        self.verify_required(["TablixRowHierarchy","TablixMembers"])
+        self.verify_required(["TablixBody","TablixColumns"])
+        self.verify_required(["TablixBody","TablixRows"])
+        
+    def verify_required(self, elements=[]):
+        el=None
+        str_error = None
+        for e in elements:
+            if not el:
+                el = self.get_element(e)
+                str_error = "'" + e + "'"
+            else:
+                el = el.get_element(e)
+                str_error = str_error + "-->'" + e + "'"
+            if not el:
+                break
+        if not el:
+            raise_error_with_log("{0} element is required in Tablix: '{1}'.".format(str_error, self.name))
 
 
 class TablixCorner(Element):
@@ -75,7 +96,7 @@ class CellContents(Element):
     '''
     
     def __init__(self, node, lnk):
-        elements={'ReportItem': [Element.ELEMENT],
+        elements={'ReportItems': [Element.ELEMENT],
                   'ColSpan': [Element.INTEGER, True],
                   'RowSpan': [Element.INTEGER, True],
                  }
@@ -109,6 +130,7 @@ class TablixMembers(Element):
     
     def __init__(self, node, lnk):
         elements={'TablixMember': [Element.ELEMENT],}
+        self.member_list=[]
         super(TablixMembers, self).__init__(node, elements, lnk)
 
 
@@ -131,7 +153,8 @@ class TablixMember(Element):
                   'DataElementOutput': [Element.ENUM],
                   'KeepTogether': [Element.BOOLEAN, True],                                                         
                  }
-        super(TablixMember, self).__init__(node, elements, lnk)   
+        super(TablixMember, self).__init__(node, elements, lnk)
+        lnk.parent.member_list.append(self)
 
 
 class TablixHeader(Element):
@@ -167,6 +190,7 @@ class TablixColumns(Element):
     
     def __init__(self, node, lnk):
         elements={'TablixColumn': [Element.ELEMENT],}
+        self.column_list=[]
         super(TablixColumns, self).__init__(node, elements, lnk)
         
         
@@ -178,6 +202,7 @@ class TablixColumn(Element):
     def __init__(self, node, lnk):
         elements={'Width': [Element.SIZE],}
         super(TablixColumn, self).__init__(node, elements, lnk)
+        lnk.parent.column_list.append(self)
 
 
 class TablixRows(Element):
@@ -187,6 +212,7 @@ class TablixRows(Element):
     
     def __init__(self, node, lnk):
         elements={'TablixRow': [Element.ELEMENT],}
+        self.row_list=[]
         super(TablixRows, self).__init__(node, elements, lnk)
 
 
@@ -200,7 +226,8 @@ class TablixRow(Element):
                   'TablixCells': [Element.ELEMENT],
                  }
         super(TablixRow, self).__init__(node, elements, lnk)
-
+        lnk.parent.row_list.append(self)
+    
 
 class TablixCells(Element):
     '''
