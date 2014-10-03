@@ -65,7 +65,7 @@ if log_file != '':
     add_logger_handler(logging.handlers.RotatingFileHandler(
               log_file, maxBytes=max_bytes, backupCount=count), 
               level=file_level, 
-              formatter='%(levelname)s - %(message)s')
+              formatter='%(levelname)s: %(message)s')
 
 stdout_level = get_level_from_string(get_config_value('logging', 'stdout_level', None))
 if stdout_level:

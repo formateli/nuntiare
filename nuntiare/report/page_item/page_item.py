@@ -39,6 +39,7 @@ class PageItemsInfo():
 class PageItem(object):
     def __init__(self, type, report, report_item_def, parent):
         self.type=type # Type of PageItem: PageLine. PageRectangle, PageText, etc. 
+        self.report = report
         self.parent=parent 
         self.items_info=None # Only for those that can content 'ReportItems'
         self.report_item_def = report_item_def
@@ -80,7 +81,7 @@ class PageItem(object):
             page_item = PageText(report, it, parent)
         if it.type == "Tablix":
             from page_grid import PageGrid
-            page_item = PageGrid(report, it, parent) #TODO
+            page_item = PageGrid(report, it, parent)
         #if it.type == "Grid":
         #    page_item = PageGrid(report, it, parent)
         #if it.type == "Table":

@@ -23,10 +23,10 @@ class Tablix(DataRegion):
                  }
         super(Tablix, self).__init__('Tablix', node, lnk, elements)       
         
-        self.verify_required(["TablixColumnHierarchy","TablixMembers"])
-        self.verify_required(["TablixRowHierarchy","TablixMembers"])
-        self.verify_required(["TablixBody","TablixColumns"])
-        self.verify_required(["TablixBody","TablixRows"])
+        #self.verify_required(["TablixColumnHierarchy","TablixMembers"])
+        #self.verify_required(["TablixRowHierarchy","TablixMembers"])
+        #self.verify_required(["TablixBody","TablixColumns"])
+        #self.verify_required(["TablixBody","TablixRows"])
         
     def verify_required(self, elements=[]):
         el=None
@@ -237,6 +237,7 @@ class TablixCells(Element):
     
     def __init__(self, node, lnk):
         elements={'TablixCell': [Element.ELEMENT],}
+        self.cell_list=[]
         super(TablixCells, self).__init__(node, elements, lnk)
 
 
@@ -252,4 +253,5 @@ class TablixCell(Element):
                   'DataElementOutput': [Element.ENUM],
                  }
         super(TablixCell, self).__init__(node, elements, lnk)
+        lnk.parent.cell_list.append(self)
 
