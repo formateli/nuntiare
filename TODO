@@ -2,6 +2,11 @@
    release 0.1.0
 ===================
 
+-------------
+nuntiare-tool
+-------------
+- Use argparse for command line options
+
 --------
 CRITICAL
 --------

@@ -3,14 +3,13 @@
 # contains the full copyright notices and license terms.
 
 from data import get_groups
-from ... tools import get_expression_value_or_default
 
 class SortingObject(object):
     def __init__(self, report, sorting_def):
         self.report = report
         self.sortby_list=[]
         for srt in sorting_def.sortby_list:
-            self.sortby_list.append(SortByObject(srt))
+            self.sortby_list.append(SortByObject(srt, report))
 
     def sort_data(self, data):
         if len(self.sortby_list)==0:
@@ -18,10 +17,8 @@ class SortingObject(object):
 
         groups=[]
         i=0
-        for sortby in self.sortby_list:
-            direction = get_expression_value_or_default(self.report, None, None, "Ascending", 
-                                            direct_expression=sortby.sort_direction)
-            reverse = False if direction == "Ascending" else True
+        for sortby in self.sortby_list:            
+            reverse = False if sortby.direction == "Ascending" else True
             if i==0:    
                 groups = get_groups(data, sortby.sort_value, sub_groups=[])
                 groups = sorted(groups, key=lambda z: z[0], reverse=reverse)
@@ -40,11 +37,12 @@ class SortingObject(object):
 
 
 class SortByObject(object):
-    def __init__(self, sortby_def):
+    def __init__(self, sortby_def, report):
         self.sort_expression=None
-        self.sort_direction=None
+        self.direction="Ascending"
 
         if sortby_def:
             self.sort_value = sortby_def.get_element("Value")
-            self.sort_direction = sortby_def.get_element("Direction")
+            self.direction = sortby_def.get_property_value(report, 
+                    "SortDirection", "Ascending")
 

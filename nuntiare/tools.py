@@ -3,7 +3,9 @@
 # contains the full copyright notices and license terms.
 
 from . import logger, __pixels_per_inch__
-import xml.parsers.expat
+from xml.parsers import expat
+from dateutil import parser
+from decimal import Decimal
 
 size_6 = float(6)
 size_10 = float(10)
@@ -15,10 +17,10 @@ def get_xml_tag_value(node):
     xml_str = node.toxml() 
     start = xml_str.find('>')
     if start == -1:
-        return ''
+        return None
     end = xml_str.rfind('<')
     if end < start:
-        return ''
+        return None
     res = unescape(xml_str[start + 1:end])
     return res
 
@@ -32,7 +34,7 @@ def unescape(s):
     list = []
    
     # create and initialize a parser object
-    p = xml.parsers.expat.ParserCreate("utf-8")
+    p = expat.ParserCreate("utf-8")
     p.buffer_text = True
     p.returns_unicode = want_unicode
     p.CharacterDataHandler = list.append
@@ -153,4 +155,41 @@ def get_size_in_unit(size, unit):
 
 def get_float_rgba(c):
     return float(c) / float(65535) 
+    
+    
+def get_data_type_value(data_type, value):
+    if data_type==None or value==None:
+        return value
+    
+    result = None
+    if data_type == "Boolean":
+        result = to_bool(value)
+    if data_type == "DateTime":
+        result = parser.parse(value)
+    if data_type == "Integer":
+        result = int(value)
+    if data_type == "String":
+        result = str(value) # TODO Return unicode ???
+    if data_type == "Float":
+        result = float(value)
+    if data_type == "Decimal":
+        result = Decimal(value)
 
+    return result
+    
+   
+def to_bool(value):
+    if value == None: 
+        return None
+    if value is bool:
+        return value
+    
+    if str(value).lower() in ("yes", "y", "true",  "t", "1", "-1"): 
+        return True
+    if str(value).lower() in ("no",  "n", "false", "f", "0", "0.0", "", "none", "[]", "{}"): 
+        return False
+    
+    logger.warn("Unknown bool expression '{0}'. False assigned.".format(value))
+    return False    
+    
+    

@@ -2,9 +2,9 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from ... definition.data.data_type import get_data_type_value
-from ... definition.types.expression import Expression
-from ... tools import get_expression_value_or_default, raise_error_with_log
+from ... definition.expression import Expression
+#from ... definition.element.data import get_data_type_value
+from ... tools import get_expression_value_or_default, raise_error_with_log, get_data_type_value
 
 class DataInterface(object):
     def __init__(self, report, name, parent):
@@ -131,7 +131,7 @@ class Field(object):
         self.data_field = data_field
         self.is_expression=False
         if value:
-            self.expression = Expression(value, False)
+            self.expression = Expression(value, None, False)
             self.is_expression=True
 
     def get_value(self, row):

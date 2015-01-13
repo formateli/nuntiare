@@ -2,9 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from .. definition.types.size import Size
-from .. definition.types.string import String
-from .. definition.types.color import Color
+from .. definition.expression import Size, Color, String
 from .. tools import get_element_from_parent, get_expression_value_or_default
 
 # Cache of objects
@@ -90,11 +88,11 @@ class BorderInfo(object):
                                     get_element_from_parent(bottom_def, "Color"),
                                     get_element_from_parent(left_def, "Color"),
                                     get_element_from_parent(right_def, "Color"))
-        self.style = BorderStyleInfo(report, get_element_from_parent(default_def, "Style"), 
-                                    get_element_from_parent(top_def, "Style"),
-                                    get_element_from_parent(bottom_def, "Style"),
-                                    get_element_from_parent(left_def, "Style"),
-                                    get_element_from_parent(right_def, "Style"))
+        self.style = BorderStyleInfo(report, get_element_from_parent(default_def, "BorderStyle"), 
+                                    get_element_from_parent(top_def, "BorderStyle"),
+                                    get_element_from_parent(bottom_def, "BorderStyle"),
+                                    get_element_from_parent(left_def, "BorderStyle"),
+                                    get_element_from_parent(right_def, "BorderStyle"))
         self.width = BorderWidthInfo(report, get_element_from_parent(default_def, "Width"), 
                                     get_element_from_parent(top_def, "Width"),
                                     get_element_from_parent(bottom_def, "Width"),

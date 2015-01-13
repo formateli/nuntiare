@@ -4,14 +4,20 @@
 
 import unittest
 from nuntiare.definition.report_def import ReportDef
-from nuntiare.definition.types.string import String
-from nuntiare.definition.types.boolean import Boolean
-from nuntiare.definition.types.integer import Integer
+from nuntiare.definition.expression import String, Boolean, Integer
 from nuntiare.report.report import Report
 
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
-        report_def = ReportDef(string_xml="<Report><Name>Element Type Test</Name><Body></Body></Report>")    
+        report_def = ReportDef(string_xml="""
+        <Nuntiare>
+            <Name>Element Type Test</Name>
+            <Width>21cm</Width>
+            <Page></Page>
+            <Body>
+                <Height>300in</Height>
+            </Body>
+        </Nuntiare>""")
         report = Report(report_def)
         report.run()
     

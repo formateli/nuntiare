@@ -52,8 +52,10 @@ class ParameterTest(unittest.TestCase):
     
     def get_xml_string(self):
         return '''
-            <Report>
-                <Name>Parameter Test</Name>
+            <Nuntiare>
+                <Name>Parameter test</Name>
+                <Width>100in</Width>
+                <Page></Page>
                 <ReportParameters>
                     <ReportParameter>
                         <Name>para_bool</Name>
@@ -91,7 +93,9 @@ class ParameterTest(unittest.TestCase):
                         <DefaultValue>Hello</DefaultValue>
                     </ReportParameter>
                 </ReportParameters>
-                <Body></Body>
-            </Report>
+                <Body>
+                    <Height>300in</Height>
+                </Body>
+            </Nuntiare>
             '''
 

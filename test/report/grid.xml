@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report>
+<Nuntiare>
     <Name>Grid Test</Name>
     <Description>
         A Grid Example. 
-        Note that Tablix has no DataSet assigned, 
-        neither TablixColumnHierarchy nor TablixRowHierarchy, 
-        so it is a Grid.
+        Note that Tablix has no DataSet assigned. 
     </Description>
     <Author>Fredy Ramirez</Author>
     <Width>8.5in</Width>
@@ -40,7 +38,7 @@
             <PrintOnLastPage>true</PrintOnLastPage>
             <Style>
                 <BottomBorder>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                     <Color>Black</Color>
                     <Width>2pt</Width>
                 </BottomBorder>
@@ -72,7 +70,7 @@
                 <TopBorder>
                     <Color>Black</Color>
                     <Width>2 pt</Width>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                 </TopBorder>
             </Style>
             <ReportItems>
@@ -133,9 +131,20 @@
     </Page>
   
     <Body>
+        <Height>230cm</Height> 
         <ReportItems>
             <Tablix>
                 <Name>grid1</Name>
+                <TablixColumnHierarchy>
+                    <TablixMembers>
+                        <TablixMember />
+                    </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                    <TablixMembers>
+                        <TablixMember />
+                    </TablixMembers>                
+                </TablixRowHierarchy>
                 <Top>5mm</Top>
                 <Left>5mm</Left>
                 <Style>
@@ -143,7 +152,7 @@
                     <Border>
                         <Color>Red</Color>
                         <Width>3pt</Width>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                 </Style>                
                 
@@ -179,7 +188,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                         <Color>Blue</Color>
                                                     </Border>
                                                 </Style>
@@ -201,7 +210,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                         <Color>Blue</Color>
                                                     </Border>
                                                 </Style>
@@ -223,7 +232,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                         <Color>Blue</Color>
                                                     </Border>
                                                 </Style>
@@ -245,7 +254,7 @@
                                                 <Value>Row1.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -260,7 +269,7 @@
                                                 <Value>Row1.2</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -275,7 +284,7 @@
                                                 <Value>Row1.3</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -296,7 +305,7 @@
                                                 <Value>Row2.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -311,7 +320,7 @@
                                                 <Value>Row2.2</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -326,7 +335,7 @@
                                                 <Value>Row2.3</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -347,7 +356,7 @@
                                                 <Value>Row3.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>                                        
@@ -364,7 +373,7 @@
                                                 <Value>Row3.2 CanGrow, Row3.2 CanGrow, Row3.2 CanGrow, Row3.2 CanGrow</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -379,7 +388,7 @@
                                                 <Value>Row3.3</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -399,7 +408,7 @@
                                                 <Value>Row4.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>                                        
@@ -414,7 +423,7 @@
                                                 <Value>Row4.2</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -429,7 +438,7 @@
                                                 <Value>Row4.3</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -444,7 +453,7 @@
                                                 <Value>Row4.3 Ignored.</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -465,7 +474,7 @@
                                                 <Value>Row5.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -482,7 +491,7 @@
                                                 <Value>Row5.2 CanShrink</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -498,7 +507,7 @@
                                                 <Value>Row5.3</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -520,7 +529,7 @@
                                                 <Value>Row6.1</Value>
                                                 <Style>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -539,7 +548,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                             </Textbox>
@@ -556,7 +565,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -580,7 +589,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                             </Textbox>                                        
@@ -595,7 +604,7 @@
                                                 <Value>Row7.2</Value>
                                                 <Style>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                             </Textbox>
@@ -604,10 +613,7 @@
                                 </TablixCell>                                
                             </TablixCells>
                         </TablixRow>
-                        
-                        
-                        
-                        
+                                                
                         <TablixRow>
                             <Height>8mm</Height>
                             <TablixCells>
@@ -622,7 +628,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <Border>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                             </Textbox>
@@ -645,7 +651,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>
@@ -658,13 +664,23 @@
                                         <ColSpan>2</ColSpan>
                                         <ReportItems>
                                             <Tablix>
+                                                <TablixColumnHierarchy>
+                                                    <TablixMembers>
+                                                        <TablixMember />
+                                                    </TablixMembers>                                                    
+                                                </TablixColumnHierarchy>
+                                                <TablixRowHierarchy>
+                                                    <TablixMembers>
+                                                        <TablixMember />
+                                                    </TablixMembers>                
+                                                </TablixRowHierarchy>                                                
                                                 <Name>grid2</Name>
                                                 <Style>
                                                     <BackgroundColor>Pink</BackgroundColor>
                                                     <Border>
                                                         <Color>Red</Color>
                                                         <Width>3pt</Width>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                                 
@@ -694,7 +710,7 @@
                                                                                     <FontWeight>Bold</FontWeight>
                                                                                     <FontSize>12pt</FontSize>
                                                                                     <BottomBorder>
-                                                                                        <Style>Solid</Style>
+                                                                                        <BorderStyle>Solid</BorderStyle>
                                                                                     </BottomBorder>
                                                                                 </Style>
                                                                             </Textbox>
@@ -717,7 +733,7 @@
                                                                                     <TextAlign>Center</TextAlign>
                                                                                     <VerticalAlign>Middle</VerticalAlign>
                                                                                     <BottomBorder>
-                                                                                        <Style>Solid</Style>
+                                                                                        <BorderStyle>Solid</BorderStyle>
                                                                                     </BottomBorder>
                                                                                 </Style>
                                                                             </Textbox>
@@ -741,7 +757,7 @@
                                                                                     <VerticalAlign>Middle</VerticalAlign>
                                                                                     <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
                                                                                     <BottomBorder>
-                                                                                        <Style>Solid</Style>
+                                                                                        <BorderStyle>Solid</BorderStyle>
                                                                                     </BottomBorder>
                                                                                 </Style>
                                                                             </Textbox>
@@ -759,7 +775,6 @@
                             </TablixCells>
                         </TablixRow>
                         
-
                         <TablixRow>
                             <Height>8mm</Height>
                             <TablixCells>
@@ -773,7 +788,7 @@
                                                     <TextAlign>Center</TextAlign>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <BottomBorder>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </BottomBorder>
                                                 </Style>
                                             </Textbox>                                        
@@ -796,7 +811,7 @@
                                                     <Border>
                                                         <Color>Blue</Color>
                                                         <Width>3 pt</Width>
-                                                        <Style>Solid</Style>
+                                                        <BorderStyle>Solid</BorderStyle>
                                                     </Border>
                                                 </Style>
                                             </Rectangle>
@@ -810,4 +825,4 @@
             </Tablix>
         </ReportItems>
     </Body>
-</Report>
+</Nuntiare>

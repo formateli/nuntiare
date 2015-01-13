@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report>
+<Nuntiare>
     <Name>Text Test</Name>
     <Description />
     <Author>Fredy Ramirez</Author>
@@ -526,4 +526,4 @@
             
         </ReportItems>        
     </Body>
-</Report>
+</Nuntiare>

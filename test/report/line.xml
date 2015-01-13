@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report>
+<Nuntiare>
     <Name>Line Test</Name>
     <Description />
     <Author>Fredy Ramirez</Author>
-    <Width>8.5in</Width>  
+    <Width>8.5in</Width>
   
     <Page>
         <PageWidth>210mm</PageWidth>
@@ -18,7 +18,7 @@
             <PrintOnLastPage>true</PrintOnLastPage>
             <Style>
                 <Border>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                     <Color>Black</Color>
                     <Width>1pt</Width>
                 </Border>
@@ -32,8 +32,8 @@
                     <Width>10cm</Width>
                     <Style>
                         <Border>
-                            <Style>Solid</Style>
-                        </Border>                    
+                            <BorderStyle>Solid</BorderStyle>
+                        </Border>
                     </Style>
                     <Left>5mm</Left>
                     <Top>5mm</Top>
@@ -48,7 +48,7 @@
 
             <Style>
                 <Border>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                     <Color>Black</Color>
                     <Width>1pt</Width>
                 </Border>
@@ -62,7 +62,7 @@
                     <Width>1in</Width>
                     <Style>
                         <Border>
-                            <Style>Solid</Style>
+                            <BorderStyle>Solid</BorderStyle>
                             <Color>Red</Color>
                             <Width>2pt</Width>
                         </Border>
@@ -77,9 +77,7 @@
 
 
     <Body>
-  <!--
-    <Height>250pt</Height>
--->    
+        <Height>280cm</Height>
         <ReportItems>
             <Textbox>
                 <Name>TextBox1</Name>
@@ -88,7 +86,7 @@
                 <Width>300pt</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Color>Violet</Color>
                         <Width>5pt</Width>
                     </Border>
@@ -106,7 +104,7 @@
                 <Width>288.28pt</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Color>Blue</Color>
                         <Width>5pt</Width>
                     </Border>
@@ -133,7 +131,7 @@
                 <Width>295.93pt</Width>
                 <Style>
                     <Border>
-                        <Style>Dotted</Style>
+                        <BorderStyle>Dotted</BorderStyle>
                         <Width>3pt</Width>
                     </Border>
                 </Style>
@@ -149,7 +147,7 @@
                 <Top>5mm</Top>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Color>Blue</Color>
                         <Width>2pt</Width>
                     </Border>
@@ -162,7 +160,7 @@
                         <Width>2cm</Width>
                         <Style>
                             <Border>
-                                <Style>Solid</Style>
+                                <BorderStyle>Solid</BorderStyle>
                                 <Color>Black</Color>
                                 <Width>2pt</Width>
                             </Border>
@@ -179,7 +177,7 @@
                         <Top>2cm</Top>
                         <Style>
                             <Border>
-                                <Style>Solid</Style>
+                                <BorderStyle>Solid</BorderStyle>
                                 <Color>Red</Color>
                                 <Width>2pt</Width>
                             </Border>
@@ -196,7 +194,7 @@
                         <Top>5cm</Top>
                         <Style>
                             <Border>
-                                <Style>Solid</Style>
+                                <BorderStyle>Solid</BorderStyle>
                                 <Color>Red</Color>
                                 <Width>2pt</Width>
                             </Border>
@@ -216,25 +214,25 @@
                 <Top>15cm</Top>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Color>Yellow</Color>
                         <Width>2pt</Width>
                     </Border>
                     <TopBorder>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Color>Blue</Color>
                         <Width>2pt</Width>
                     </TopBorder>
                     <BottomBorder>
-                        <Style>None</Style>
+                        <BorderStyle>None</BorderStyle>
                         <Width>2pt</Width>
                     </BottomBorder>
                     <LeftBorder>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Width>2pt</Width>
                     </LeftBorder>
                     <RightBorder>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                         <Width>2pt</Width>
                     </RightBorder>
                     <BackgroundColor>Pink</BackgroundColor>
@@ -244,4 +242,4 @@
                         
         </ReportItems>
     </Body>
-</Report>
+</Nuntiare>

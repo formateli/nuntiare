@@ -12,7 +12,7 @@ from ..tools import get_expression_value_or_default, get_element_from_parent
 class SectionInfo(object):
     def __init__(self, report, definition):
         self.definition = definition 
-        self.height = definition.height
+        self.height = definition.get_property_value(report, "Height", 0.0)
         self.style = None
         if definition:
             self.style = StyleInfo(report, get_element_from_parent(definition, "Style"))

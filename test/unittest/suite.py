@@ -13,17 +13,17 @@ except NameError:
 
 import logging
 logging.basicConfig(filename='nuntiare_test.log',level=logging.DEBUG)
-
+    
 import unittest
 import data_providers
-import element_type
-import data
+import expression
 import parameter
+import data
 
 loader = unittest.TestLoader()
 
 suite = loader.loadTestsFromModule(data_providers)
-suite.addTests(loader.loadTestsFromModule(element_type))
+suite.addTests(loader.loadTestsFromModule(expression))
 suite.addTests(loader.loadTestsFromModule(parameter))
 suite.addTests(loader.loadTestsFromModule(data))
 

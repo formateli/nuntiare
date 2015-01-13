@@ -60,7 +60,7 @@ class HtmlRender(Render):
     def get_head(self, report):
         head = HtmlElement("head", None)
         title = HtmlElement("title", None)
-        title.add_element(HtmlElement("text", None, report.report_def.definition.name))
+        title.add_element(HtmlElement("text", None, report.globals['report_name']))
         head.add_element(title)
         return head
 

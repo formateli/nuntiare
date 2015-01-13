@@ -6,8 +6,12 @@ import sys
 import os
 import logging
 import logging.handlers
-from ConfigParser import ConfigParser
-from version import VERSION, get_version
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
+    
+from . version import VERSION, get_version
 
 __author__ = 'Fredy Ramirez'
 __copyright__='(C) 2013-2014 Fredy Ramirez <http://www.pescaoylimon.com>'
@@ -59,7 +63,7 @@ add_logger_handler(logging.NullHandler())
 
 log_file = get_config_value('logging', 'file', '')
 if log_file != '':
-    max_bytes = int(get_config_value('logging', 'size', 1024))
+    max_bytes = int(get_config_value('logging', 'size', 5)) * 1024    
     count = int(get_config_value('logging', 'count', 5))
     file_level = get_level_from_string(get_config_value('logging', 'file_level', 'DEBUG'))
     add_logger_handler(logging.handlers.RotatingFileHandler(

@@ -4,10 +4,9 @@
 
 import os
 from xml.dom.minidom import parse, parseString
-from link import Link
-from types.element import Element
+from . element import Element, Link
 from .. import logger
-from ..tools import raise_error_with_log
+from .. tools import raise_error_with_log
 
 class ReportDef(object):
     def __init__(self, report_file=None, string_xml=None, 
@@ -59,49 +58,52 @@ class ReportDef(object):
             self.globals['report_file'] = "From XML string."
             self.globals['report_folder'] = "From XML string."
 
+        logger.info(" File: {0}".format(self.globals['report_file']))
+        logger.info(" Folder: {0}".format(self.globals['report_folder']))
+
         if not os.path.isdir(output_directory):
             raise_error_with_log("'{0}' is not a valid directory.".format(output_directory))
         self.output_directory=output_directory
 
         self.globals['report_name'] = ''
 
-        report_node = dom.getElementsByTagName("Report")
-        self.definition = Definition(report_node[0], self)
+        report_node = dom.getElementsByTagName("Nuntiare")
+        if not report_node:
+            raise_error_with_log("Not a valid Nuntiare report definition file. " \
+                "Verify 'Nuntiare' root element,")
+        self.definition = Report(report_node[0], self)
 
     def get_element(self, name):
         return self.definition.get_element(name)
 
 
-class Definition(Element):
+class Report(Element):
     '''
     Get xml definition objects hierarchically
     '''
 
     def __init__(self, node, report_def):
-        elements={'Name': [Element.STRING, True],
-                  'Description': [Element.STRING, True],
-                  'Author': [Element.STRING, True],
-                  'AutoRefresh': [Element.INTEGER, True],
-                  'DataSources': [Element.ELEMENT],
-                  'DataSets': [Element.ELEMENT],
-                  'Body': [Element.ELEMENT],
-                  'ReportParameters': [Element.ELEMENT],
-                  'Variables': [Element.ELEMENT],
-                  'Width': [Element.SIZE, True],
-                  'Imports': [Element.ELEMENT],                  
-                  'EmbeddedImages': [Element.ELEMENT],
-                  'Page': [Element.ELEMENT],
-                  'DataElementStyle': [Element.ENUM],                  
+        elements={'Name': [Element.STRING,1,True],
+                  'Description': [Element.STRING,0,True],
+                  'Author': [Element.STRING,0,True],
+                  'AutoRefresh': [Element.INTEGER,0,True],
+                  'DataSources': [],
+                  'DataSets': [],
+                  'Body': [Element.ELEMENT,1],
+                  'ReportParameters': [],
+                  'Variables': [],
+                  'Width': [Element.SIZE,1,True],
+                  'Imports': [],
+                  'EmbeddedImages': [],
+                  'Page': [Element.ELEMENT,1],
+                  'DataElementStyle': [Element.ENUM,0,True],
                  }
 
         lnk = Link(report_def, None, self)
-        super(Definition, self).__init__(node, elements, lnk)
+        super(Report, self).__init__(node, elements, lnk)
 
-        if not self.get_element("Body"):
-            raise_error_with_log("'Body' element is required by report definition.")
-
-        self.name = self.get_element('Name').value(None)
-        report_def.globals['report_name'] = self.name
+        report_def.globals['report_name'] = self.get_property_value(None, "Name", None)
+        logger.info("Report name: {0}".format(report_def.globals['report_name']))
         if not report_def.output_name:
-            report_def.output_name = self.name
+            report_def.output_name = report_def.globals['report_name']
 

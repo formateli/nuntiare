@@ -56,7 +56,7 @@ class DataTest(unittest.TestCase):
             i=i+1
             data.move_next()
 
-
+        
         # Sort by id 'Descending'
         data = report.data_sets['DataSetSort1'].data
         data.move_first()
@@ -66,8 +66,8 @@ class DataTest(unittest.TestCase):
                     "Sorted Descending. Must be '{0}' but was '{1}': ".format(x, data['id']))
             data.move_next()
             x=x-1
-
-
+            
+            
         # Sort by customer 'Descending' and date 'Ascending'
         data = report.data_sets['DataSetSort2'].data
         self.assertEqual(len(data.rows), 830, "Sorting. len(data.rows")
@@ -170,8 +170,10 @@ class DataTest(unittest.TestCase):
 
     def get_xml_string(self):
         return '''
-            <Report>
+            <Nuntiare>
                 <Name>Data Test</Name>
+                <Width>21cm</Width>
+                <Page></Page>
                 <DataSources>
                     <DataSource>
                         <Name>DataSourceTest</Name>
@@ -219,9 +221,7 @@ class DataTest(unittest.TestCase):
                             <DataSourceName>DataSourceTest</DataSourceName>
                             <CommandText>SELECT orderid, orderdate, customerid, employeeid, freight FROM orders ORDER BY orderid</CommandText>
                         </Query>
-                        
-                        <Filters>
-                        </Filters>
+
                     </DataSet>
 
                     <DataSet>
@@ -302,7 +302,7 @@ class DataTest(unittest.TestCase):
                         <SortExpressions>
                             <SortExpression>
                                 <Value>=Fields['id']</Value>
-                                <Direction>Descending</Direction>
+                                <SortDirection>Descending</SortDirection>
                             </SortExpression>
                         </SortExpressions>
                         
@@ -333,7 +333,7 @@ class DataTest(unittest.TestCase):
                         <SortExpressions>                        
                             <SortExpression>
                                 <Value>=Fields['customer']</Value>
-                                <Direction>Descending</Direction>
+                                <SortDirection>Descending</SortDirection>
                             </SortExpression>
                             <SortExpression>
                                 <Value>=Fields['date']</Value>
@@ -346,11 +346,12 @@ class DataTest(unittest.TestCase):
                     <ReportParameter>
                         <Name>conn_string</Name>
                         <DataType>String</DataType>
-                        <DefaultValue></DefaultValue>
+                        <DefaultValue>''</DefaultValue>
                     </ReportParameter>
                 </ReportParameters>
 
                 <Body>
+                    <Height>300in</Height>
                     <ReportItems>
                         <Tablix>
                             <Name>Tablix1</Name>
@@ -395,6 +396,6 @@ class DataTest(unittest.TestCase):
                         </Tablix> 
                      </ReportItems>               
                 </Body>
-            </Report>
+            </Nuntiare>
             '''
  
