@@ -5,13 +5,12 @@
 import os
 from xml.dom.minidom import parse, parseString
 from . element import Element, Link
+from . expression import Expression
 from .. import logger
-from .. tools import raise_error_with_log
 
 class ReportDef(object):
     def __init__(self, report_file=None, string_xml=None, 
-            output_name=None, output_directory=None, 
-            over_write=True, compress=False):
+            output_name=None, output_directory=None):
 
         if (report_file==None and string_xml==None) or (report_file!=None and string_xml!=None):
             raise ValueError('Report must be initialized by a report file or by xml string.')
@@ -26,8 +25,6 @@ class ReportDef(object):
         self.string_xml=None
         self.output_name=output_name
         self.output_directory=None
-        self.over_write=over_write
-        self.compress=compress
 
         self.globals={}      # report_file, report_folder, report_name 
         self.parameters_def=[]
@@ -39,9 +36,9 @@ class ReportDef(object):
 
         if report_file:
             if not os.path.isfile(report_file):
-                raise_error_with_log("'{0}' is not a valid file.".format(report_file))
+                logger.error("'{0}' is not a valid file.".format(report_file), True)
             if not os.access(report_file, os.R_OK):
-                raise_error_with_log("User has not read access for '{0}'.".format(report_file))
+                logger.error("User has not read access for '{0}'.".format(report_file), True)
             self.report_file=report_file
 
             if not output_directory:
@@ -62,15 +59,15 @@ class ReportDef(object):
         logger.info(" Folder: {0}".format(self.globals['report_folder']))
 
         if not os.path.isdir(output_directory):
-            raise_error_with_log("'{0}' is not a valid directory.".format(output_directory))
+            logger.error("'{0}' is not a valid directory.".format(output_directory), True)
         self.output_directory=output_directory
 
         self.globals['report_name'] = ''
 
         report_node = dom.getElementsByTagName("Nuntiare")
         if not report_node:
-            raise_error_with_log("Not a valid Nuntiare report definition file. " \
-                "Verify 'Nuntiare' root element,")
+            logger.error("Not a valid Nuntiare report definition file. " \
+                "Verify 'Report' root element.", True)
         self.definition = Report(report_node[0], self)
 
     def get_element(self, name):
@@ -86,23 +83,20 @@ class Report(Element):
         elements={'Name': [Element.STRING,1,True],
                   'Description': [Element.STRING,0,True],
                   'Author': [Element.STRING,0,True],
-                  'AutoRefresh': [Element.INTEGER,0,True],
+                  'Version': [Element.STRING,0,True],
                   'DataSources': [],
                   'DataSets': [],
                   'Body': [Element.ELEMENT,1],
                   'ReportParameters': [],
-                  'Variables': [],
-                  'Width': [Element.SIZE,1,True],
+                  'Variables': [], #TODO Should be only at group level, ex. Tablix? 
                   'Imports': [],
                   'EmbeddedImages': [],
                   'Page': [Element.ELEMENT,1],
-                  'DataElementStyle': [Element.ENUM,0,True],
                  }
 
         lnk = Link(report_def, None, self)
         super(Report, self).__init__(node, elements, lnk)
-
-        report_def.globals['report_name'] = self.get_property_value(None, "Name", None)
+        report_def.globals['report_name'] = Expression.get_value_or_default(None,self,"Name", None)
         logger.info("Report name: {0}".format(report_def.globals['report_name']))
         if not report_def.output_name:
             report_def.output_name = report_def.globals['report_name']

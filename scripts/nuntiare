@@ -1,0 +1,229 @@
+#!/usr/bin/python
+
+# This file is part of Nuntiare project. 
+# The COPYRIGHT file at the top level of this repository 
+# contains the full copyright notices and license terms.
+
+import os
+import sys
+import logging
+
+try:
+    from nuntiare import __version__, __copyright__, __license__
+except ImportError:
+    DIR = os.path.dirname(os.path.realpath(__file__))
+    DIR = os.path.normpath(os.path.join(DIR, '..', 'nuntiare'))
+    if os.path.isdir(DIR):
+        sys.path.insert(0, os.path.dirname(DIR))    
+    from nuntiare import __version__, __copyright__, __license__    
+
+
+__appname__='Nuntiare command line tool'
+
+import argparse
+from nuntiare import __version__, __copyright__, __license__, logger
+from nuntiare.definition.report_def import ReportDef
+from nuntiare.report.report import Report
+from nuntiare.render.render import Render
+
+def get_info():
+    res = "\n{0} version {1}\nCopyright {2}\nLicensed under {3}".format(
+        __appname__, __version__, __copyright__, __license__)
+    return res
+
+def get_parameters(params):
+    if params==None:
+        return
+    result={}
+    for p in params:
+        i = p.find('=')
+        if i < 1:
+            logger.warning("Parameter in wrong format: '{0}'. Ignored.".format(p))
+            continue
+        name = p[:i]
+        val = p[i+1:]
+        result[name] = val
+    return result    
+
+def do_render(args):
+    if sys.stdout:
+        logger.add_handler(logging.StreamHandler(sys.stdout), args.v)
+
+    f = args.file
+    if not os.path.isfile(f) or not os.access(f, os.R_OK):
+        logger.critical("'{0}' is not a valid file or User has not read/write access for it.".format(f),
+                True, "IOError")
+                
+    f_path, f_file = os.path.split(f)
+    f_name = os.path.splitext(f_file)[0]
+                
+    o_name = f_name
+    if args.o:
+        o_name = args.o
+        
+    renders = args.r
+    if not renders:
+        if args.save:
+            renders=[]
+        else:
+            renders=['html',] # Default render
+
+    report_def = ReportDef(report_file=f, 
+            output_name=o_name, output_directory=args.d)
+    report = Report(report_def)
+    report.run(get_parameters(args.p))
+    for r in renders:
+        render = Render.get_render(r)
+        if not render:
+            logger.warning("Render '{0}' not found. Continue with next render.".format(r))
+            continue
+        render.render(report, not args.no_overwrite)
+        
+    if args.save:   
+        print("Here save!") 
+        report.save_to_file()
+
+
+def do_convert(args):
+    from xml.dom import minidom
+    
+    def get_element(doc, node, base_element):
+        for n in node.childNodes:
+            if n.nodeName in ignore_list:
+                continue
+            if n.nodeName in ('#comment') or n.nodeName.startswith("rd:"):
+                continue
+            if n.nodeName in ('#text'):
+                if len(n.parentNode.childNodes) == 1:
+                    text = doc.createTextNode(n.nodeValue)
+                    base_element.appendChild(text)
+                continue
+                
+            if n.parentNode.nodeName == "TextRun" and n.nodeName != "Value":
+                continue
+            if n.parentNode.nodeName == "Report" and n.nodeName == "Width":
+                continue
+            if n.parentNode.nodeName == "Body" and n.nodeName == "Height":
+                continue
+
+            node_name = n.nodeName
+            if n.nodeName == "Style" and n.parentNode.nodeName in border_list:
+                node_name="BorderStyle"
+            el = doc.createElement(node_name)
+            
+            if n.hasAttributes():
+                if "Name" in n.attributes.keys():
+                    name_element = doc.createElement("Name")
+                    name_text=doc.createTextNode(n.attributes['Name'].value)
+                    if name_text:
+                        name_element.appendChild(name_text)
+                        el.appendChild(name_element)
+                        
+            element_to_append=el
+            if n.nodeName in report_item_list and n.parentNode.nodeName == "CellContents":
+                item_element = doc.createElement("ReportItems")
+                item_element.appendChild(el)
+                element_to_append=item_element
+
+            if n.nodeName in textbox_list or \
+                (n.parentNode.nodeName in textbox_list and n.nodeName != "Value") or \
+                (n.parentNode.parentNode.nodeName in textbox_list and n.nodeName != "Value"):
+                el=base_element
+            else:
+                base_element.appendChild(element_to_append) 
+
+            get_element(doc, n, el)    
+    
+
+    rdlc = args.rdl
+    if not os.path.isfile(rdlc) or not os.access(rdlc, os.R_OK):
+        print ("'{0}' is not a valid file or User has not read access for it.".format(rdlc))
+        sys.exit()
+
+    report_item_list=["Line", "Rectangle", "Textbox", "Image", "Subreport", "CustomReportItem", "Tablix"]
+    border_list=["Border", "TopBorder", "BottomBorder", "LeftBorder", "RightBorder"]
+    textbox_list=["Paragraphs", "Paragraph", "TextRuns", "TextRun"]
+    ignore_list=["KeepTogether", "KeepWithGroup", "ConsumeContainerWhitespace", 
+                "AutoRefresh", "IntegratedSecurity", "Code", "CodeModules", "Classes", 
+                "DataElementName", "DataElementStyle"]
+    
+    rdlc_path, rdlc_file = os.path.split(rdlc)
+    rdlc_name = os.path.splitext(rdlc_file)[0]
+        
+    nuntiare = os.path.join(rdlc_path, rdlc_name + ".xml")
+
+    dom = minidom.parse(rdlc)
+    node = dom.getElementsByTagName("Report")
+    if not node:
+        print("Not a valid Rdlc report definition file.")
+        sys.exit()
+        
+    doc = minidom.Document()
+    root_element = doc.createElement("Report")
+    name_element = doc.createElement("Name")
+    name_element.appendChild(doc.createTextNode(rdlc_name))
+    root_element.appendChild(name_element)
+    
+    get_element(doc, node[0], root_element)
+    
+    doc.appendChild(root_element)
+
+    f = open(nuntiare, "wb")
+    try:
+        f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
+    finally:
+        f.close()
+
+
+def run():
+    #####################
+    #      Parser
+    #####################
+
+    parser = argparse.ArgumentParser(description='Nuntiare command line tool', 
+        formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument("-i","--info", action="version", version=get_info(),
+            help='Show version, copyright and license.')
+
+    subparsers = parser.add_subparsers()
+
+    # ======== render ==================
+    parser_render = subparsers.add_parser('render', 
+            formatter_class=argparse.RawTextHelpFormatter,
+            description='Performs a rendering process for a nuntiare xml definition file.')
+
+    parser_render.add_argument("file", help='Nuntiare xml definition file to process.')
+    parser_render.add_argument("-p", metavar="parameters", nargs='+',
+           help="List of parameters in 'name=value' form.\nEx: -p param1=2 'param2=a b c' param3=value3.")
+    parser_render.add_argument("-r", metavar="render", nargs='+',
+           help='List of rendering types. Ex: pdf html csv.\nSee nuntiare.cfg for definitions.\n' + \
+                "Default: 'html'")
+    parser_render.add_argument("-o", metavar="output", 
+           help="Output file name without extension.\nDefault: xml report definition file name.")
+    parser_render.add_argument("-d", metavar="directory", 
+           help="Where output file will be located.\nDefault: xml report definition file directory.")
+    parser_render.add_argument("--no-overwrite", action='store_true', 
+           help="No overwrites resulting file, if it exists.")
+    parser_render.add_argument("--save", action='store_true', 
+           help="Saves the nuntiare report file.")
+    parser_render.add_argument("-v", choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"], 
+           default="WARNING", help="Output verbosity. Default: 'WARNING'")
+           
+
+    # ======== convert ==================
+    parser_convert = subparsers.add_parser('convert', 
+            formatter_class=argparse.RawTextHelpFormatter,
+            description='Converts a Rdl 2008 file to Nuntiare xml definition file.')
+
+    parser_convert.add_argument("rdl", help='The Rdl 2008 report file.')
+
+    args = parser.parse_args()
+
+    if hasattr(args, "file"):
+        do_render(args)
+    else:
+        do_convert(args)
+
+if __name__ == "__main__":
+    run()

@@ -2,14 +2,11 @@
    release 0.1.0
 ===================
 
--------------
-nuntiare-tool
--------------
-- Use argparse for command line options
 
---------
-CRITICAL
---------
+- Save and load nuntiare report file
+- Fix log file location
+
+- unittest: Grouping
 - In order to get Aggregate functions (sum, avg, count, etc), we 
 introduce Variable declared for each group in the way that 
 JasperReports does.

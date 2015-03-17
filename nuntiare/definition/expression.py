@@ -2,8 +2,9 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
+from . data_type import DataType
 from . expression_eval import get_expression_eval
-from .. tools import raise_error_with_log, get_data_type_value
+from .. import logger
 
 class Expression(object):
     def __init__(self, expression, lnk, must_be_constant):
@@ -16,9 +17,9 @@ class Expression(object):
         if expression==None or not expression.startswith('='):
             is_constant=True
         if self.must_be_constant and not is_constant:
-            raise_error_with_log("Invalid expression '{0}' for '{1}' in '{2}' element. " \
+            logger.error("Invalid expression '{0}' for '{1}' in '{2}' element. " \
                     "It must be a constant expression.".format(expression, self.lnk.data, 
-                    self.lnk.parent.__class__.__name__))
+                    self.lnk.parent.__class__.__name__), True)
         return [expression, is_constant]
 
     def value(self, report, new_expression=None):
@@ -32,6 +33,31 @@ class Expression(object):
             return expression
         ex = expression[1:]
         return get_expression_eval(report, ex) # Run python code
+        
+    @staticmethod
+    def get_value_or_default(report, element, 
+                    expression_name, default_value, 
+                    direct_expression=None):
+        '''
+        Gets the value of a report element of type expression, or its default value 
+        '''
+        if direct_expression != None:
+            value = direct_expression.value(report)
+            if value == None:
+                return default_value
+            return value
+
+        el=None
+        if element:
+            el = element.get_element(expression_name)
+        
+        if not el:
+            return default_value
+            
+        value = el.value(report)
+        if value == None:
+            return default_value
+        return value        
 
 
 class Color(Expression):
@@ -235,8 +261,8 @@ class Color(Expression):
             return "#FFE0FFFF"
         if name=="LightGoldenrodYellow":
             return "#FFFAFAD2"				
-        if name=="LightGray":
-            return "#FFD3D3D3"            			
+        if name=="LightGrey":
+            return "#FFD3D3D3"
         if name=="LightGreen":
             return "#FF90EE90"
         if name=="LightPink":
@@ -419,11 +445,11 @@ class Size(Expression):
 
         string_size=string_size.strip()
         if len(string_size) < 3:
-            raise_error_with_log("Bad format for size: {0}".format(string_size))
+            logger.error("Bad format for size: {0}".format(string_size), True)
 
         unit=string_size[len(string_size)-2:]
         if not unit in units:
-            raise_error_with_log("Invalid unit value: '{0}' for size '{1}'".format(unit, string_size))
+            logger.error("Invalid unit value: '{0}' for size '{1}'".format(unit, string_size), True)
 
         size=string_size[:len(string_size)-2]
         size=size.strip()
@@ -439,7 +465,7 @@ class Size(Expression):
         elif unit=="pc":
             self.size = (self.size * Size.size_25_4) / Size.size_6;
         elif unit != "mm":
-            raise_error_with_log("Unknown unit '{0}'".format(unit))
+            logger.error("Unknown unit '{0}'".format(unit), True)
 
         self.original_size=size
         self.original_unit=unit
@@ -460,7 +486,7 @@ class Size(Expression):
         elif unit=="pc":
             return int((self.size / Size.size_25_4) * Size.size_6)
 
-        raise_error_with_log("Unknown unit '{0}'".format(unit))
+        logger.error("Unknown unit '{0}'".format(unit), True)
 
 
 class Boolean(Expression):
@@ -469,7 +495,7 @@ class Boolean(Expression):
 
     def value(self, report):
         val = super(Boolean, self).value(report)
-        return get_data_type_value('Boolean', val)
+        return DataType.get_value('Boolean', val)
         
         
 class Float(Expression):
@@ -478,7 +504,7 @@ class Float(Expression):
 
     def value(self, report):
         val = super(Float, self).value(report)
-        return get_data_type_value('Float', val)
+        return DataType.get_value('Float', val)
         
         
 class Integer(Expression):
@@ -487,7 +513,7 @@ class Integer(Expression):
 
     def value(self, report):
         val = super(Integer, self).value(report)
-        return get_data_type_value('Integer', val)                  
+        return DataType.get_value('Integer', val)                  
 
 
 class String(Expression):
@@ -496,16 +522,10 @@ class String(Expression):
 
     def value(self, report):
         val = super(String, self).value(report)
-        return get_data_type_value('String', val)
+        return DataType.get_value('String', val)
         
         
 class Variant(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
         super(Variant, self).__init__(expression, lnk, must_be_constant)
-        
-                
-#def verify_expression_required(name, element, expr):
-#    if not expr or expr.strip()=='':
-#        raise_error_with_log("Element '{0}' is required for element '{1}'.".format(name, element))    
-
-    
+           

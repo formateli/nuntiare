@@ -9,7 +9,7 @@ try:
     if os.path.isdir(DIR):
         sys.path.insert(0, os.path.dirname(DIR))
 except NameError:
-    pass
+    pass   
 
 import logging
 logging.basicConfig(filename='nuntiare_test.log',level=logging.DEBUG)

@@ -2,8 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from .. definition.expression import Size, Color, String
-from .. tools import get_element_from_parent, get_expression_value_or_default
+from .. definition.expression import Expression, Size, Color, String
 
 # Cache of objects
 color_list = {}
@@ -43,7 +42,7 @@ def get_style_item(report, name, id, obj):
     elif name == 'size':
         item_list = size_list
 
-    if item_list.has_key(id):
+    if id in item_list:
         return item_list[id] 
 
     if obj:
@@ -72,32 +71,35 @@ def get_style_size_by_element(report, name, el):
 
 class StyleInfo(object):
     def __init__(self, report, style_def):
-        self.border = BorderInfo(report, get_element_from_parent(style_def, "Border"), 
-                                get_element_from_parent(style_def, "TopBorder"), 
-                                get_element_from_parent(style_def, "BottomBorder"), 
-                                get_element_from_parent(style_def, "LeftBorder"), 
-                                get_element_from_parent(style_def, "RightBorder"))
-        self.background_color = get_color_by_element(report, get_element_from_parent(style_def, "BackgroundColor"))
+        self.border = BorderInfo(report, style_def.get_element("Border"), 
+                                style_def.get_element("TopBorder"), 
+                                style_def.get_element("BottomBorder"), 
+                                style_def.get_element("LeftBorder"), 
+                                style_def.get_element("RightBorder"))
+        self.background_color = get_color_by_element(report, style_def.get_element("BackgroundColor"))
         self.text = TextInfo(report, style_def)
 
 
 class BorderInfo(object):
     def __init__(self, report, default_def, top_def, bottom_def, left_def, right_def):
-        self.color = BorderColorInfo(report, get_element_from_parent(default_def, "Color"), 
-                                    get_element_from_parent(top_def, "Color"),
-                                    get_element_from_parent(bottom_def, "Color"),
-                                    get_element_from_parent(left_def, "Color"),
-                                    get_element_from_parent(right_def, "Color"))
-        self.style = BorderStyleInfo(report, get_element_from_parent(default_def, "BorderStyle"), 
-                                    get_element_from_parent(top_def, "BorderStyle"),
-                                    get_element_from_parent(bottom_def, "BorderStyle"),
-                                    get_element_from_parent(left_def, "BorderStyle"),
-                                    get_element_from_parent(right_def, "BorderStyle"))
-        self.width = BorderWidthInfo(report, get_element_from_parent(default_def, "Width"), 
-                                    get_element_from_parent(top_def, "Width"),
-                                    get_element_from_parent(bottom_def, "Width"),
-                                    get_element_from_parent(left_def, "Width"),
-                                    get_element_from_parent(right_def, "Width"))
+        self.color = BorderColorInfo(report, 
+                                    default_def.get_element("Color") if default_def else None, 
+                                    top_def.get_element("Color") if top_def else None,
+                                    bottom_def.get_element("Color") if bottom_def else None,
+                                    left_def.get_element("Color") if left_def else None,
+                                    right_def.get_element("Color") if right_def else None)
+        self.style = BorderStyleInfo(report, 
+                                    default_def.get_element("BorderStyle") if default_def else None, 
+                                    top_def.get_element("BorderStyle") if top_def else None,
+                                    bottom_def.get_element("BorderStyle") if bottom_def else None,
+                                    left_def.get_element("BorderStyle") if left_def else None,
+                                    right_def.get_element("BorderStyle") if right_def else None)
+        self.width = BorderWidthInfo(report, 
+                                    default_def.get_element("Width") if default_def else None, 
+                                    top_def.get_element("Width") if top_def else None,
+                                    bottom_def.get_element("Width") if bottom_def else None,
+                                    left_def.get_element("Width") if left_def else None,
+                                    right_def.get_element("Width") if right_def else None)
         
 
 class BorderInfoDet(object):
@@ -199,23 +201,23 @@ class ColorInfo(object):
 
 class TextInfo(object):
     def __init__(self, report, element):
-        self.font_family = get_expression_value_or_default(report, element, 'FontFamily', 'Arial')
+        self.font_family = Expression.get_value_or_default(report, element, 'FontFamily', 'Arial')
 
         # Normal | Italic
-        self.font_style = get_expression_value_or_default(report, element, 'FontStyle', 'Normal')
+        self.font_style = Expression.get_value_or_default(report, element, 'FontStyle', 'Normal')
         self.font_size = self.get_size(report, 'FontSize', element, '10 pt') 
         # Lighter | Normal | Bold | Bolder | 100 | 200 | 300 | 400 | 500 | 600 |700 | 800 | 900
-        self.font_weight = get_expression_value_or_default(report, element, 'FontWeight', 'Normal')
-        self.format = get_expression_value_or_default(report, element, 'Format', None)
+        self.font_weight = Expression.get_value_or_default(report, element, 'FontWeight', 'Normal')
+        self.format = Expression.get_value_or_default(report, element, 'Format', None)
         # Underline | Overline | LineThrough | None
-        self.text_decoration = get_expression_value_or_default(report, element, 'TextDecoration', 'None') 
+        self.text_decoration = Expression.get_value_or_default(report, element, 'TextDecoration', 'None') 
         # General | Left | Right | Center | Justify
-        self.text_align = get_expression_value_or_default(report, element, 'TextAlign', 'General') 
+        self.text_align = Expression.get_value_or_default(report, element, 'TextAlign', 'General') 
         # Top | Middle | Bottom
-        self.vertical_align = get_expression_value_or_default(report, element, 'VerticalAlign', 'Top') 
+        self.vertical_align = Expression.get_value_or_default(report, element, 'VerticalAlign', 'Top') 
 
         # Foreground color. Default Black
-        self.color = get_color_by_element(report, get_element_from_parent(element, "Color"))
+        self.color = get_color_by_element(report, element.get_element("Color"))
         if not self.color:
             self.color =  get_color_info(report, '#FF000000', None)
 
@@ -225,7 +227,7 @@ class TextInfo(object):
         self.padding_bottom = self.get_size(report, 'PaddingBottom', element) 
 
     def get_size(self, report, name, element, default='0 pt'):
-        sz = get_style_size_by_element(report, 'size', get_element_from_parent(element, name))
+        sz = get_style_size_by_element(report, 'size', element.get_element(name))
         if not sz:  
             sz = get_size_info(report, default, None) 
         return sz

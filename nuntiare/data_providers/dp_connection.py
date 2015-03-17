@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from dp_exceptions import InterfaceError, OperationalError
+from . dp_exceptions import InterfaceError, OperationalError
 
 class Connect(object):
 
@@ -20,7 +20,7 @@ class Connect(object):
             raise OperationalError(con_error)
 
         self.parameters_dict = self.get_parameters(connection_string)
-        if not self.parameters_dict.has_key('file'):
+        if not 'file' in self.parameters_dict:
             raise OperationalError("Parameter 'file' must be defined in connection string.")
         #TODO: verificar que el archivo existe
         self.is_closed = False

@@ -2,14 +2,15 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from . expression import String, Boolean, Integer, Variant, Size, Color
+
+from . data_type import DataType as dt
+from . expression import Expression, String, Boolean, Integer, Variant, Size, Color
 from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode, \
         BackgroundRepeat, BackgroundGradientType, \
         DataType, SortDirection, Operator
 from .. import logger
-from .. tools import raise_error_with_log, get_xml_tag_value, \
-            get_data_type_value
+from .. tools import get_xml_tag_value
 
 class Element(object):
     ELEMENT=0
@@ -48,8 +49,8 @@ class Element(object):
         items_by_name={}
         z_count=0        
 
-        for n in node.childNodes:            
-            if not elements.has_key(n.nodeName):
+        for n in node.childNodes:
+            if not n.nodeName in elements:
                 if n.nodeName not in ('#text', '#comment'):
                     logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
                 continue
@@ -65,11 +66,11 @@ class Element(object):
                 if n.nodeName in ("Line", "Rectangle", "Textbox", "Image", "Subreport",
                             "CustomReportItem", "Tablix"):
                     if n.nodeName in ("Textbox"): 
-                        if lnk.report_def.report_items.has_key(el.name):
-                            raise_error_with_log("Report already has a Texbox with name '{0}'".format(el.name))
+                        if el.name in lnk.report_def.report_items:
+                            logger.error("Report already has a Texbox with name '{0}'".format(el.name), True)
                         lnk.report_def.report_items[el.name] = el
-                    if items_by_name.has_key(el.name):
-                        raise_error_with_log("The container already has a report item with name '{0}'".format(el.name))
+                    if el.name in items_by_name:
+                        logger.error("The container already has a report item with name '{0}'".format(el.name), True)
                     i = el.zindex if el.zindex > -1 else z_count
                     items_by_name[el.name]=[el, i]
                     z_count = z_count + 1
@@ -89,11 +90,10 @@ class Element(object):
         for key, el in elements.items():
             if len(el) < 4: # Not verified in the node loop above
                 element_type, card, must_be_constant = Element.get_element_def(
-                            el, key
-                        )
+                            el, key)
                 if card in [1,2]:
-                    raise_error_with_log("'{0}' must be defined for '{1}'.".format(key, 
-                            lnk.obj.__class__.__name__))
+                    logger.error("'{0}' must be defined for '{1}'.".format(key, 
+                            lnk.obj.__class__.__name__), True)
 
         # Z Order
         reportitems_list=[]
@@ -118,7 +118,7 @@ class Element(object):
         elif name=='Body':
             obj = Body(node, ln)
         elif name=='Visibility':
-            obj = Visibility(node, ln)             
+            obj = Visibility(node, ln)
         elif name=='DataSources':
             obj = DataSources(node, ln)
         elif name=='DataSource':
@@ -167,6 +167,8 @@ class Element(object):
             obj = TablixMember(node, ln)
         elif name=='TablixBody':
             obj = TablixBody(node, ln)
+        elif name=='TablixHeader':
+            obj = TablixHeader(node, ln)            
         elif name=='TablixColumns':
             obj = TablixColumns(node, ln)
         elif name=='TablixColumn':
@@ -208,7 +210,7 @@ class Element(object):
     #    elif name=='Import':
     #        obj = Import(node, ln)
         else:
-            raise_error_with_log("Unknown Element: '{0}'".format(name)) 
+            logger.error("Unknown Element: '{0}'".format(name), True) 
 
         return obj
     
@@ -217,9 +219,9 @@ class Element(object):
     def enum_factory(name, node, lnk, card, must_be_constant):
         value = get_xml_tag_value(node)
         if card==1 and value==None:
-            raise_error_with_log("'{0}' is required for '{1}'.".format(
+            logger.error("'{0}' is required for '{1}'.".format(
                     node.nodeName,
-                    lnk.obj.__class__.__name__))
+                    lnk.obj.__class__.__name__), True)
      
         if name=='BorderStyle':
             return BorderStyle(value, lnk, must_be_constant)
@@ -248,16 +250,16 @@ class Element(object):
         if name=='Operator':
             return Operator(value, lnk, must_be_constant)
 
-        raise_error_with_log("Unknown Enum: '{0}'.".format(name))
+        logger.error("Unknown Enum: '{0}'.".format(name), True)
     
     @staticmethod
     def expression_factory(name, node, lnk, card, must_be_constant):
         ln = Link(lnk.report_def, lnk.obj, data=node.nodeName)
         value = get_xml_tag_value(node)
         if card==1 and value==None:
-            raise_error_with_log("'{0}' is required for '{1}'.".format(
+            logger.error("'{0}' is required for '{1}'.".format(
                     node.nodeName,
-                    lnk.obj.__class__.__name__))
+                    lnk.obj.__class__.__name__), True)
 
         if name==Element.STRING:
             return String(value, ln, must_be_constant)
@@ -274,7 +276,7 @@ class Element(object):
         if name==Element.VARIANT:
             return Variant(value, ln, must_be_constant)
      
-        raise_error_with_log("Unknown expression element definition: '{0}'.".format(name))
+        logger.error("Unknown expression element definition: '{0}'.".format(name), True)
 
     @staticmethod
     def expression_list_factory(name, node, lnk):
@@ -284,7 +286,7 @@ class Element(object):
         elif name=='GroupExpressions':
             obj = GroupExpressions(node, ln)
         else:
-            raise_error_with_log("Unknown Element: '{0}' for ExpressionList".format(name))
+            logger.error("Unknown Element: '{0}' for ExpressionList".format(name), True)
 
         return obj
 
@@ -305,25 +307,12 @@ class Element(object):
                     must_be_constant = element[2]
             # len(element)==3 is ignored, it means that element was checked
             if len(element) > 4:
-                raise_error_with_log("Invalid number of values for element. Class: '{0}'".format(class_name))
+                logger.error("Invalid number of values for element. Class: '{0}'".format(class_name), True)
 
         return element_type, card, must_be_constant
-                
-    def get_property_value(self, report, property_name, default_value):
-        el = self.get_element(property_name)
-        if el==None:
-            logger.debug("Property '{0}' not found for '{1}'. " \
-                "Default value '{2}' returned.".format(property_name, 
-                self.lnk.obj.__class__.__name__, default_value))
-                
-            return default_value
-        value = el.value(report)
-        if value == None:
-            return default_value
-        return value
         
     def get_element(self, name):
-        if self.element_list.has_key(name):
+        if name in self.element_list:
             return self.element_list[name]
 
             
@@ -335,18 +324,18 @@ class Link(object):
         self.data=data              # optional extra data
 
 
-class ExpressionList(object):
+class _ExpressionList(object):
     def __init__(self, node, elements, lnk):
 
         if len(elements) == 0 or len(elements) > 1:
-            raise_error_with_log("ElementList only can have one sub element type.")
+            logger.error("ElementList only can have one sub element type.", True)
 
         lnk.obj=self
         self.lnk=lnk
         self.expression_list=[]
 
         for n in node.childNodes:
-            if not elements.has_key(n.nodeName):
+            if not n.nodeName in elements:
                 if n.nodeName not in ('#text', '#comment'):
                     logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
                 continue
@@ -379,35 +368,69 @@ class ReportParameter(Element):
 
         super(ReportParameter, self).__init__(node, elements, lnk)
         
-        self.parameter_name = self.get_property_value(None, 'Name', None)
-        self.can_be_none = self.get_property_value(None, 'CanBeNone', True)
-        self.allow_blank = self.get_property_value(None, 'AllowBlank', True)
-        self.data_type = self.get_property_value(None, 'DataType', None)
-        
-        #verify_expression_required('Name', 'ReportParameter', self.parameter_name)
-        #verify_expression_required('DataType', 'ReportParameter', self.data_type)
+        self.parameter_name=Expression.get_value_or_default(None,self,
+                "Name",None)
+        self.can_be_none=Expression.get_value_or_default(None,self,
+                "CanBeNone",True)
+        self.allow_blank=Expression.get_value_or_default(None,self,
+                "AllowBlank",True)
+        self.data_type=Expression.get_value_or_default(None,self,
+                "DataType",None)
 
         self.default_value = self.get_element('DefaultValue')
-        if not self.default_value:
-            raise_error_with_log("'DefaultValue' is required for Parameter '{0}'".format(self.parameter_name))
         self.lnk.report_def.parameters_def.append(self)
 
     def get_default_value(self, report):
         if self.default_value:
-            return get_data_type_value(self.data_type, self.default_value.value(report))             
+            return dt.get_value(self.data_type, self.default_value.value(report))             
                         
     def get_value(self, report, passed_value):
         if passed_value == None:
             result = self.get_default_value(report)
         else:
-            result = get_data_type_value(self.data_type, self.default_value.value(report, passed_value)) 
+            result = dt.get_value(self.data_type, 
+                    self.default_value.value(report, passed_value)) 
 
         if not result and not self.can_be_none:
-            raise_error_with_log("Parameter '{0}' value can not be 'None'".format(self.parameter_name))
+            logger.error("Parameter '{0}' value can not be 'None'".format(
+                    self.parameter_name), True)
         if result and result=="" and not self.allow_blank and data_type=='String':
-            raise_error_with_log("Parameter '{0}' value can not be an empty string.".format(self.parameter_name))
+            logger.error("Parameter '{0}' value can not be an empty string.".format(
+                    self.parameter_name), True)
 
         return result
+
+
+class Visibility(Element):
+    '''
+    The Visibility element indicates if the ReportItem should be shown in the rendered report. If no
+    Visibility element is present, the item is unconditionally shown.
+    
+    Hidden:
+    Indicates if the item should be hidden at first.    
+        
+    ToggleItem:
+    The name of the text box used to hide/unhide this report
+    item. Clicking on an instance of the ToggleItem will
+    toggle the hidden state of every corresponding instance
+    of this item. If the ToggleItem becomes hidden
+    (because either the item or an ancestor is toggled or
+    conditionally hidden), this item should become hidden.
+    Must be a text box in the same group scope as this item
+    or in any containing (ancestor) group scope.
+    If omitted, no item will toggle the hidden state of this
+    item.
+    Not allowed on and cannot refer to report items
+    contained in a page header or footer.
+    Cannot refer to a report item contained in the current
+    report item unless current group scope has a Parent.
+    '''
+
+    def __init__(self, node, lnk):
+        elements={'Hidden': [Element.BOOLEAN,0],
+                  'ToggleItem': [Element.STRING,0,True],
+                 }
+        super(Visibility, self).__init__(node, elements, lnk)
 
 
 class Page(Element):
@@ -466,9 +489,11 @@ class _PageSection(_ReportElement):
                  }
         super(_PageSection, self).__init__(node, elements, lnk)
         
-        self.height=self.get_property_value(None, "Height", 0.0)
-        self.print_on_first_page=self.get_property_value(None, "PrintOnFirstPage", True)
-        self.print_on_last_page=self.get_property_value(None, "PrintOnLastPage", True)
+        self.height=Expression.get_value_or_default(None,self,"Height",0.0)
+        self.print_on_first_page=Expression.get_value_or_default(None,self,
+                "PrintOnFirstPage",True)
+        self.print_on_last_page=Expression.get_value_or_default(None,self,
+                "PrintOnLastPage",True)
 
 
 class PageHeader(_PageSection):
@@ -500,7 +525,7 @@ class Body(_ReportElement):
 
     def __init__(self, node, lnk):
         elements={'ReportItems': [],
-                  'Height': [Element.SIZE,1,True], 
+                  #'Height': [Element.SIZE,1,True], TODO: Remove, it is not necessary
                  }
         super(Body, self).__init__(node, elements, lnk)
 
@@ -521,11 +546,11 @@ class DataSource(Element):
                   'ConnectionProperties': [],
                  }
         super(DataSource, self).__init__(node, elements, lnk)
-        self.name = self.get_property_value(None, "Name", None)        
+        self.name = Expression.get_value_or_default(None,self,"Name", None)
         self.conn_properties = self.get_element('ConnectionProperties')        
         for ds in lnk.report_def.data_sources:
             if ds.name == self.name:
-                raise_error_with_log("Report already has a DataSource with name '{0}'".format(self.name))
+                logger.error("Report already has a DataSource with name '{0}'".format(self.name), True)
         lnk.report_def.data_sources.append(self)
 
 
@@ -538,10 +563,10 @@ class ConnectionProperties(Element):
         super(ConnectionProperties, self).__init__(node, elements, lnk)
         self.data_provider = self.get_element("DataProvider")
         if not self.data_provider:
-            raise_error_with_log("DataProvider no defined for ConnectionProperties element.")
+            logger.error("DataProvider no defined for ConnectionProperties element.", True)
         self.connection_string = self.get_element("ConnectString")
         if not self.connection_string:
-            raise_error_with_log("ConnectString no defined for ConnectionProperties element.")
+            logger.error("ConnectString no defined for ConnectionProperties element.", True)
 
 
 class DataSets(Element):
@@ -568,17 +593,17 @@ class DataSet(Element):
         self.fields=[]
         super(DataSet, self).__init__(node, elements, lnk)
 
-        self.name = self.get_property_value(None, "Name", None)        
+        self.name = Expression.get_value_or_default(None,self,"Name", None)
         self.fields_def = self.get_element('Fields')
         self.query_def = self.get_element('Query')
         self.filters_def = self.get_element('Filters')
         self.sort_def = self.get_element('SortExpressions')
         if not self.fields_def or not self.query_def: 
-            raise_error_with_log("'Fields' and 'Query' elements are required by DataSet '{0}'.".format(self.name))
+            logger.error("'Fields' and 'Query' elements are required by DataSet '{0}'.".format(self.name), True)
         
         for ds in lnk.report_def.data_sets:
             if ds.name == self.name:
-                raise_error_with_log("DataSet with name '{0}' already exists.".format(self.name))
+                logger.error("DataSet with name '{0}' already exists.".format(self.name), True)
         lnk.report_def.data_sets.append(self)
 
 
@@ -605,9 +630,10 @@ class Field(Element):
                  }
         super(Field, self).__init__(node, elements, lnk)
 
-        self.name = self.get_property_value(None, "Name", None)
-        self.data_type = self.get_property_value(None, "DataType", None)
-        self.data_field = self.get_property_value(None, "DataField", None)
+        self.name = Expression.get_value_or_default(None,self,"Name", None)
+        self.data_type = Expression.get_value_or_default(None,self,"DataType", None)
+        self.data_field = Expression.get_value_or_default(None,self,"DataField", None)
+
         self.value=None
         value_element = self.get_element("Value")
         if value_element:
@@ -616,7 +642,7 @@ class Field(Element):
         data_set = lnk.parent.lnk.parent # Get Dataset
         for fd in data_set.fields:
             if fd.name == self.name:
-                raise_error_with_log("DataSet already has '{0}' Field.".format(self.name))
+                logger.error("DataSet already has '{0}' Field.".format(self.name), True)
         data_set.fields.append(self)
         
 
@@ -627,12 +653,12 @@ class Query(Element):
                   'QueryParameters': [],
                  }
         super(Query, self).__init__(node, elements, lnk)
-        self.data_source_name = self.get_property_value(None, "DataSourceName", None)        
+        self.data_source_name = Expression.get_value_or_default(None,self,"DataSourceName", None)
 
     def get_command_text(self, report):
-        cmd = self.get_property_value(None, "CommandText", None)
+        cmd=Expression.get_value_or_default(None,self,"CommandText",None)
         if not cmd:
-            raise_error_with_log("'CommandText' is required by 'Query' element.")
+            logger.error("'CommandText' is required by 'Query' element.", True)
         return cmd
 
 
@@ -697,7 +723,7 @@ class Filter(Element):
         lnk.parent.filter_list.append(self)
 
 
-class FilterValues(ExpressionList):
+class FilterValues(_ExpressionList):
     def __init__(self, node, lnk):
         elements={'FilterValue': [Element.VARIANT,2],}
         super(FilterValues, self).__init__(node, elements, lnk)        
@@ -715,13 +741,11 @@ class Group(Element):
                   'Filters': [],
                   'Parent': [Element.VARIANT],
                   'Variables': [],
-                  'DataElementName': [Element.STRING,0,True],
-                  'DataElementOutput': [Element.ENUM,0,True],
                  }
         super(Group, self).__init__(node, elements, lnk)
 
 
-class GroupExpressions(ExpressionList):
+class GroupExpressions(_ExpressionList):
     '''
     The GroupExpressions element defines an ordered list of expressions to group the data by.
     '''
@@ -771,7 +795,7 @@ class GroupingData(object):
                 
     def get_group(self, name):
         result = []
-        if self.groups.has_key(name):
+        if name in self.groups:
             result = self.groups[name]
         return result
 
@@ -829,9 +853,9 @@ class SortExpression(Element):
                  }
         super(SortExpression, self).__init__(node, elements, lnk)
         lnk.parent.sortby_list.append(self)
-        
-        
-class Variables(Element):    
+
+
+class Variables(Element):
     def __init__(self, node, lnk):
         elements={'Variable': [Element.ELEMENT, 2],}
         self.variable_list=[]
@@ -892,36 +916,36 @@ class Style(Element):
         super(Style, self).__init__(node, elements, lnk)        
 
 
-class BorderElement(Element):
+class _BorderElement(Element):
     def __init__(self, node, lnk):     
         elements={'Color': [Element.COLOR],
                   'BorderStyle': [Element.ENUM],
                   'Width': [Element.SIZE],
                  }
-        super(BorderElement, self).__init__(node, elements, lnk)
+        super(_BorderElement, self).__init__(node, elements, lnk)
 
 
-class Border(BorderElement):
+class Border(_BorderElement):
     def __init__(self, node, lnk):     
         super(Border, self).__init__(node, lnk)
 
 
-class TopBorder(BorderElement):
-    def __init__(self, node, lnk):     
+class TopBorder(_BorderElement):
+    def __init__(self, node, lnk):
         super(TopBorder, self).__init__(node, lnk)
 
 
-class BottomBorder(BorderElement):
+class BottomBorder(_BorderElement):
     def __init__(self, node, lnk):     
         super(BottomBorder, self).__init__(node, lnk)
 
 
-class LeftBorder(BorderElement):
+class LeftBorder(_BorderElement):
     def __init__(self, node, lnk):     
         super(LeftBorder, self).__init__(node, lnk)
 
 
-class RightBorder(BorderElement):
+class RightBorder(_BorderElement):
     def __init__(self, node, lnk):     
         super(RightBorder, self).__init__(node, lnk)
 
@@ -977,9 +1001,9 @@ class _ReportItem(_ReportElement):
                 elements[key] = value
 
         super(_ReportItem, self).__init__(node, elements, lnk)
-        self.type = type        
-        self.name = self.get_property_value(None, "Name", None)
-        self.zindex = self.get_property_value(None, "ZIndex", -1)        
+        self.type = type
+        self.name = Expression.get_value_or_default(None,self,"Name", None)
+        self.zindex = Expression.get_value_or_default(None,self,"ZIndex",-1)
         lnk.parent.reportitems_list.append(self)
         
         
@@ -999,7 +1023,6 @@ class Rectangle(_ReportItem):
     def __init__(self, node, lnk):
         elements={'ReportItems': [],
                   'PageBreak': [],
-                  'KeepTogether': [Element.BOOLEAN,0,True],
                   'OmitBorderOnPageBreak': [Element.BOOLEAN,0,True],
                  }
         super(Rectangle, self).__init__("Rectangle", node, lnk, elements)
@@ -1011,7 +1034,6 @@ class Subreport(_ReportItem):
                   'Parameters': [],
                   'NoRowsMessage': [Element.STRING],
                   'MergeTransactions': [Element.BOOLEAN,0,True],
-                  'KeepTogether': [Element.BOOLEAN,0,True],
                   'OmitBorderOnPageBreak': [Element.BOOLEAN,0,True],
                  }
         super(Subreport, self).__init__("Subreport", node, lnk, elements)
@@ -1044,12 +1066,11 @@ class Image(_ReportItem):
 
 class Textbox(_ReportItem):
     def __init__(self, node, lnk):
-        elements={'Value': [Element.VARIANT,1],
+        elements={'Value': [Element.VARIANT,0],
                   'CanGrow': [Element.BOOLEAN,0,True],
                   'CanShrink': [Element.BOOLEAN,0,True],
                   'HideDuplicates': [Element.STRING,0,True],
                   'ToggleImage': [],
-                  'DataElementStyle': [Element.ENUM,0,True],
                  }
         super(Textbox, self).__init__("Textbox", node, lnk, elements)
 
@@ -1103,7 +1124,6 @@ class Tablix(_DataRegion):
                   'FixedColumnHeaders': [Element.BOOLEAN,0,True],
                   'FixedRowHeaders': [Element.BOOLEAN,0,True],
                   'OmitBorderOnPageBreak': [Element.BOOLEAN,0,True],
-                  'KeepTogether': [Element.BOOLEAN,0,True],
                  }
         super(Tablix, self).__init__('Tablix', node, lnk, elements)       
                
@@ -1211,11 +1231,7 @@ class TablixMember(Element):
                   'FixedData': [Element.BOOLEAN,0,True],
                   'Visibility': [],
                   'HideIfNoRows': [Element.BOOLEAN,0,True],
-                  'KeepWithGroup': [Element.ENUM,0,True],
                   'RepeatOnNewPage': [Element.BOOLEAN,0,True],
-                  'DataElementName': [Element.STRING,0,True],
-                  'DataElementOutput': [Element.ENUM,0,True],
-                  'KeepTogether': [Element.BOOLEAN,0,True],                                                         
                  }
         super(TablixMember, self).__init__(node, elements, lnk)
         lnk.parent.member_list.append(self)
@@ -1312,10 +1328,7 @@ class TablixCell(Element):
     '''
     
     def __init__(self, node, lnk):
-        elements={'CellContents': [],
-                  'DataElementName': [Element.STRING,0,True],
-                  'DataElementOutput': [Element.ENUM,0,True],
-                 }
+        elements={'CellContents': [],}
         super(TablixCell, self).__init__(node, elements, lnk)
         lnk.parent.cell_list.append(self)        
         

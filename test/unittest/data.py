@@ -182,7 +182,7 @@ class DataTest(unittest.TestCase):
                             <ConnectString>=Parameters['conn_string']</ConnectString>
                         </ConnectionProperties>
                     </DataSource>
-                </DataSources>                
+                </DataSources>
                 <DataSets>
                     <DataSet>
                         <Name>DataSet1</Name>

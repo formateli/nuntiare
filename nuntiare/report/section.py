@@ -2,8 +2,8 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from style import StyleInfo
-from ..tools import get_expression_value_or_default, get_element_from_parent
+from . style import StyleInfo
+from .. definition.expression import Expression
 
 ''' 
     Page sections info: Header, Footer and Body
@@ -12,10 +12,12 @@ from ..tools import get_expression_value_or_default, get_element_from_parent
 class SectionInfo(object):
     def __init__(self, report, definition):
         self.definition = definition 
-        self.height = definition.get_property_value(report, "Height", 0.0)
+        self.height = Expression.get_value_or_default(report,definition,"Height", 0.0)
         self.style = None
         if definition:
-            self.style = StyleInfo(report, get_element_from_parent(definition, "Style"))
+            style_def = definition.get_element("Style")
+            if style_def:
+                self.style = StyleInfo(report, style_def)
 
 
 class HeaderFooterInfo(SectionInfo):

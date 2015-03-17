@@ -4,17 +4,21 @@
 
 import os
 from importlib import import_module
-from .. import __config__
+from .. import __config__, logger
 
 class Render(object):
     def __init__(self, extension=None):
         self.extension=extension 
         self.result_file=None
 
-    def render(self, report):
+    def render(self, report, overwrite=True):
         if self.extension:
             self.result_file = os.path.join(report.report_def.output_directory, 
                 report.report_def.output_name + "." + self.extension)
+            if not overwrite:
+                if os.path.isfile(self.result_file):
+                    logger.error("File '{0}' already exists.".format(self.result_file),
+                        True, "IOError")
 
     def help(self):
         return "No help!"

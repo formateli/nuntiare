@@ -5,8 +5,9 @@
 import sys
 from .. style import StyleInfo
 from .. report_item_group import ReportItemGroup
-from ... tools import get_element_from_parent, \
-        get_expression_value_or_default, raise_error_with_log
+from ... import logger
+from ... definition.data_type import DataType
+from ... definition.expression import Expression
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):
@@ -18,8 +19,6 @@ class PageItemsInfo():
         self.can_shrink=False
         
         items = definition.get_element("ReportItems")
-        if not items:
-            items = definition.get_element("ReportItem") # Maybe a cell ReportItem
         if items:
             for it in items.reportitems_list:
                 page_item = PageItem.page_item_factory(report, it, parent)
@@ -43,12 +42,20 @@ class PageItem(object):
         self.parent=parent 
         self.items_info=None # Only for those that can content 'ReportItems'
         self.report_item_def = report_item_def
-        self.name = get_expression_value_or_default(report, report_item_def, "Name", None)
-        self.top = get_expression_value_or_default(report, report_item_def, "Top", 0.0)
-        self.left = get_expression_value_or_default(report, report_item_def, "Left", 0.0)
-        self.height = get_expression_value_or_default(report, report_item_def, "Height", 0.0)
-        self.width = get_expression_value_or_default(report, report_item_def, "Width", 0.0)
-        self.style = StyleInfo(report, get_element_from_parent(report_item_def, "Style"))
+        self.name = Expression.get_value_or_default(report, 
+                report_item_def, "Name", None)
+        self.top = Expression.get_value_or_default(report, 
+                report_item_def, "Top", 0.0)
+        self.left = Expression.get_value_or_default(report, 
+                report_item_def, "Left", 0.0)
+        self.height = Expression.get_value_or_default(report, 
+                report_item_def, "Height", 0.0)
+        self.width = Expression.get_value_or_default(report, 
+                report_item_def, "Width", 0.0)
+        self.style=None
+        style_def = report_item_def.get_element("Style")
+        if style_def:
+            self.style = StyleInfo(report, style_def)
 
         if parent and type != "RowCell" and parent.type == "RowCell":            
             self.height=0
@@ -80,7 +87,7 @@ class PageItem(object):
         if it.type == "Textbox":
             page_item = PageText(report, it, parent)
         if it.type == "Tablix":
-            from page_grid import PageGrid
+            from . page_grid import PageGrid
             page_item = PageGrid(report, it, parent)
         #if it.type == "Grid":
         #    page_item = PageGrid(report, it, parent)
@@ -88,7 +95,8 @@ class PageItem(object):
         #    page_item = PageTable(report, it, parent)
 
         if not page_item:
-            raise_error_with_log("Error trying to get Report item. Invalid definition element '{0}'".format(it))
+            logger("Error trying to get Report item. " \
+                    "Invalid definition element '{0}'".format(it), True)
 
         return page_item
 
@@ -101,38 +109,40 @@ class PageLine(PageItem):
 class PageRectangle(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageRectangle, self).__init__("PageRectangle", report, report_item_def, parent)
-        self.keep_together = get_expression_value_or_default (report, report_item_def, "KeepTogether", True)
-        self.omit_border_on_page_break = get_expression_value_or_default (report, report_item_def, "OmitBorderOnPageBreak", True)
-        self.page_break = get_expression_value_or_default (report, report_item_def.get_element("PageBreak"), 
-                    "BreakLocation", None)
+        self.keep_together = Expression.get_value_or_default (report, 
+                report_item_def, "KeepTogether", True)
+        self.omit_border_on_page_break = Expression.get_value_or_default (report, 
+                report_item_def, "OmitBorderOnPageBreak", True)
+        self.page_break = Expression.get_value_or_default (report, 
+                report_item_def.get_element("PageBreak"), "BreakLocation", None)
         self.items_info = PageItemsInfo(report, report_item_def, self)
 
 
 class PageText(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageText, self).__init__("PageText", report, report_item_def, parent)        
-        self.can_grow = get_expression_value_or_default (report, report_item_def, "CanGrow", False)
-        self.can_shrink = get_expression_value_or_default (report, report_item_def, "CanShrink", False)
-        self.hide_duplicates = get_expression_value_or_default (report, report_item_def, "HideDuplicates", None)        
+        self.can_grow = Expression.get_value_or_default (report, 
+                report_item_def, "CanGrow", False)
+        self.can_shrink = Expression.get_value_or_default (report, 
+                report_item_def, "CanShrink", False)
+        self.hide_duplicates = Expression.get_value_or_default (report, 
+                report_item_def, "HideDuplicates", None)        
         
-        self.value = get_expression_value_or_default(report, report_item_def, "Value", None)
+        self.value = Expression.get_value_or_default(report, 
+                report_item_def, "Value", None)
         self.value_formatted = ""
         if self.value != None:
             if self.style.text.format:
-                self.value_formatted = unicode(self.style.text.format.format(self.value), 'utf-8')
+                self.value_formatted = DataType.get_value("String", 
+                        self.style.text.format.format(self.value))
             else:
-                if isinstance(self.value, unicode):
-                    self.value_formatted = self.value
-                elif isinstance(self.value, str):
-                    self.value_formatted = unicode(self.value, 'utf-8')
-                else:
-                    self.value_formatted = unicode(str(self.value), 'utf-8')
+                self.value_formatted = DataType.get_value("String", self.value)
         
         # For ReportItems collection...
         scope = report.current_scope
         if not scope:
-            scope = "-*-alone-*-"            
-        if not report.report_items_group.has_key(scope):
+            scope = "-*-alone-*-"
+        if not scope in report.report_items_group:
             report.report_items_group[scope] = ReportItemGroup(scope, report)
         report.report_items_group[scope].add_item(self.name, self)
 

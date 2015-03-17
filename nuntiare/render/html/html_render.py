@@ -5,7 +5,7 @@
 import sys
 import cgi
 from .. render import Render
-from ... tools import raise_error_with_log
+from ... import logger
 from ... report.page_item.page_item import PageRectangle
 
 class HtmlRender(Render):
@@ -14,8 +14,8 @@ class HtmlRender(Render):
         self.doc = None
         self.style_helper = StyleHelper()
 
-    def render(self, report):
-        super(HtmlRender, self).render(report)
+    def render(self, report, overwrite):
+        super(HtmlRender, self).render(report, overwrite)
 
         report.globals['total_pages'] = 1
         report.globals['page_number'] = 1
@@ -123,8 +123,8 @@ class HtmlRender(Render):
         if is_textbox:
             txt = it.value_formatted
             if txt:
-                txt = cgi.escape(txt).encode('ascii', 'xmlcharrefreplace')
-                txt = txt.replace("\n", "<br>") # New line                
+                txt = cgi.escape(txt)
+                txt = txt.replace("\n", "<br>") # New line
             else:
                 txt = ""
 
@@ -251,13 +251,15 @@ class HtmlRender(Render):
             f = open(self.result_file, "w")
             try:
                 for l in lines:
-                    f.write(l.encode('utf-8', 'replace'))
+                    f.write(l)
             finally:
                 f.close()
         except IOError as e:
-            raise_error_with_log("I/O Error trying to write to file '{0}'. {1}.".format(self.result_file, e.strerror))
+            logger.error("I/O Error trying to write to file '{0}'. {1}.".format(self.result_file, e.strerror), 
+                    True, "IOError")
         except:
-            raise_error_with_log("Unexpected error trying to write to file '{0}'. {1}.".format(self.result_file, sys.exc_info()[0]))
+            logger.error("Unexpected error trying to write to file '{0}'. {1}.".format(self.result_file, sys.exc_info()[0]),
+                True, "IOError")
 
     def help(self):
         "HtmlRender help"
@@ -269,7 +271,7 @@ class StyleHelper(object):
         self.style_list={}
         
     def add_style(self, tag, id, style):
-        if self.style_object_list.has_key(id):
+        if id in self.style_object_list:
             obj = self.style_object_list[id]
         else:
             obj = StyleHelperObject(tag, id)
@@ -277,7 +279,7 @@ class StyleHelper(object):
         self.style_object_list[id] = obj
         
         key = "{0}#{1}-{2}".format(tag, id, i)
-        if not self.style_list.has_key(key):
+        if not key in self.style_list:
             self.style_list[key] = style
         
         return i
@@ -288,7 +290,7 @@ class StyleHelperObject(object):
         self.style_list={}
     
     def get_id_enum(self, style):
-        if self.style_list.has_key(style):
+        if style in self.style_list:
             return self.style_list[style]
         i = len(self.style_list) + 1
         self.style_list[style] = i

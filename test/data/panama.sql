@@ -28,7 +28,7 @@ CREATE TABLE city (
 	id integer NOT NULL,
 	name varchar(100) NOT NULL, 
 	province integer NOT NULL,
-        population integer NOT NULL,
+    population integer NOT NULL,
 	is_capital bool NOT NULL,
 
 	CONSTRAINT pk_city PRIMARY KEY (id)

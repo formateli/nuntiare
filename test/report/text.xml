@@ -3,8 +3,7 @@
     <Name>Text Test</Name>
     <Description />
     <Author>Fredy Ramirez</Author>
-    <Width>8.5in</Width>  
-
+    
     <Page>
         <PageWidth>210mm</PageWidth>
         <PageHeight>280mm</PageHeight>
@@ -19,7 +18,7 @@
             <PrintOnLastPage>true</PrintOnLastPage>
             <Style>
                 <BottomBorder>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                     <Color>Red</Color>
                     <Width>2pt</Width>
                 </BottomBorder>
@@ -49,7 +48,7 @@
             <PrintOnLastPage>true</PrintOnLastPage>
             <Style>
                 <TopBorder>
-                    <Style>Solid</Style>
+                    <BorderStyle>Solid</BorderStyle>
                     <Color>Red</Color>
                     <Width>2pt</Width>
                 </TopBorder>
@@ -75,7 +74,6 @@
     </Page>        
 
     <Body>
-        <Height>250pt</Height>
         <ReportItems>
             <Textbox>            
                 <Name>TextBox1</Name>
@@ -88,7 +86,7 @@
                     <PaddingLeft>2 mm</PaddingLeft>
                     <PaddingTop>2 mm</PaddingTop>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <VerticalAlign>Top</VerticalAlign>
                 </Style>        
@@ -103,7 +101,7 @@
                 <Width>5cm</Width>
                 <Style>                
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>          
                     <VerticalAlign>Middle</VerticalAlign>          
                 </Style>
@@ -118,7 +116,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Left</TextAlign>
                     <VerticalAlign>Bottom</VerticalAlign>
@@ -135,7 +133,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Center</TextAlign>
                     <VerticalAlign>Top</VerticalAlign>
@@ -151,7 +149,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Center</TextAlign>
                     <VerticalAlign>Middle</VerticalAlign>
@@ -170,7 +168,7 @@
                     <BackgroundColor>Black</BackgroundColor>
                     <Border>
                         <Color>Blue</Color>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Center</TextAlign>
                     <VerticalAlign>Bottom</VerticalAlign>
@@ -192,7 +190,7 @@
                     <PaddingRight>3 mm</PaddingRight>
                     <PaddingTop>2 mm</PaddingTop>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Right</TextAlign>
                     <VerticalAlign>Top</VerticalAlign>
@@ -208,7 +206,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Right</TextAlign>
                     <VerticalAlign>Middle</VerticalAlign>
@@ -224,7 +222,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <TextAlign>Right</TextAlign>
                     <VerticalAlign>Bottom</VerticalAlign>
@@ -240,7 +238,7 @@
                 <Width>5cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                 <VerticalAlign>Middle</VerticalAlign>
                 </Style>
@@ -255,7 +253,7 @@
                 <Width>4cm</Width>
                 <Style>
                     <Border>
-                        <Style>Solid</Style>
+                        <BorderStyle>Solid</BorderStyle>
                     </Border>
                     <VerticalAlign>Middle</VerticalAlign>
                 </Style>

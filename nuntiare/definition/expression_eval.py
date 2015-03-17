@@ -7,7 +7,8 @@ import dateutil
 import datetime
 import math
 from decimal import Decimal
-from ..tools import raise_error_with_log
+#from ..tools import raise_error_with_log
+from .. import logger
 
 __data__=[None] # 0:report
 
@@ -24,15 +25,17 @@ def get_expression_eval(report, code):
         Fields = report.data_groups[report.current_scope]
         if Fields.EOF():
             Fields.move_first()
-        if report.report_def.report_items_group.has_key(report.current_scope):
+        if report.current_scope in report.report_def.report_items_group:
             ReportItems = report.report_def.report_items_group[report.current_scope]
 
     try:
         result = eval(code)
     except KeyError as e:
-        raise_error_with_log("Error evaluating expression: '{0}'. Key does not exist in dictionary. <{1}>.".format(code, e.message))
+        logger.error("Error evaluating expression: '{0}'. Key does not exist in dictionary. <{1}>.".format(code, e.message),
+            True, "ValueError") #TODO proper error
     except:
-        raise_error_with_log("Unexpected error evaluating expression: '{0}'. {1}.".format(code, sys.exc_info()[0]))
+        logger.error("Unexpected error evaluating expression: '{0}'. {1}.".format(code, sys.exc_info()[0]),
+            True)
 
     return result 
 
@@ -40,7 +43,7 @@ def get_expression_eval(report, code):
 def Data(scope=None):
     if not scope:
         return __data__[0].data_groups[__data__[0].current_scope]
-    if not __data__[0].data_groups.has_key(scope):
+    if not scope in __data__[0].data_groups:
         raise KeyError("Data group with name '{0}' not found.".format(scope))
     return __data__[0].data_groups[scope]
 

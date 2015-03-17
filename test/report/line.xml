@@ -3,7 +3,6 @@
     <Name>Line Test</Name>
     <Description />
     <Author>Fredy Ramirez</Author>
-    <Width>8.5in</Width>
   
     <Page>
         <PageWidth>210mm</PageWidth>
@@ -77,7 +76,6 @@
 
 
     <Body>
-        <Height>280cm</Height>
         <ReportItems>
             <Textbox>
                 <Name>TextBox1</Name>

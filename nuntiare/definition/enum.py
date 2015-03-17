@@ -20,7 +20,7 @@ class _Enum(Expression):
         if not name or name == '':
             return None
         name=name.strip().lower()
-        if self.enum_list.has_key(name):
+        if name in self.enum_list:
             return self.enum_list[name]
 
         logger.warn("Unknown value '{0}' for Enum '{1}'. <None> assigned.".format(name, self.name))
@@ -37,17 +37,6 @@ class DataElementOutput(_Enum):
     def __init__(self, expression, lnk, must_be_constant):
         super(DataElementOutput, self).__init__('DataElementOutput', expression, 
                 DataElementOutput.enum_list, lnk, must_be_constant)
-
-
-class DataElementStyle(_Enum):    
-    enum_list={'auto': 'Auto',
-               'attribute': 'Attribute', 
-               'element': 'Element', 
-              }
-
-    def __init__(self, expression, lnk, must_be_constant):
-        super(DataElementStyle, self).__init__('DataElementStyle', expression, 
-                DataElementStyle.enum_list, lnk, must_be_constant)
 
                 
 class BorderStyle(_Enum):
