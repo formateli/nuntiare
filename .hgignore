@@ -1,7 +1,0 @@
-syntax: regexp
-~
-.pyc
-.log
-MANIFEST
-db_test_connection_panama
-db_test_connection_northwind
