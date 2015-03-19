@@ -1,15 +1,13 @@
-========
 Nuntiare
 ========
 
-Nuntiare (Report in latin) is a report toolkit written in python. 
+*Nuntiare* (Report in latin) is a report toolkit written in python. 
 It is inspired by RDL (report definition language) specifications, 
 but simplified and adapted to Python world.
 
 
-============
 At a glance
-============
+-----------
 
 - Reports are defined using xml files.
 - Xml definition files are processed to generate reports. 
@@ -21,33 +19,50 @@ At a glance
   It can run commands like 'render' (render to especific type), 
   'convert' (converts rdl 2008 to nuntiare), etc.
 
-=====
+
 Usage
-=====
+-----
+
 The better form of knowing nuntiare is trough its command line tool.
-Type 'nuntiare -h' or 'nuntiare render -h' for help.
 
-nuntiare render line.xml -r html pdf
-This commands process line.xml (report definition file) and renders it to 
-line.html and line.pdf
+For help::
 
-nuntiare render line.xml --save
-Process line.xml and saves it as line.nuntiare (report file)
+    nuntiare -h
 
-nuntiare render line.nuntiare -r pdf
-Loads line.nuntiare report file and rendres it to pdf.
+or::
 
-nuntiare render line.xml -p user=framirez city=panama -r html
+    nuntiare render -h
+
+Process line.xml (report definition file) and renders it to 
+line.html and line.pdf::
+
+    nuntiare render line.xml -r html pdf
+
+Process line.xml and saves it as line.nuntiare (report file)::
+
+    nuntiare render line.xml --save
+
+Loads line.nuntiare report file and rendres it to pdf::
+
+    nuntiare render line.nuntiare -r pdf
+
 Process line.xml passing two parameters, user and city, 
-and then renders it to html.
+and then renders it to html.::
 
-nuntiare convert line.rdl
-Converts line.rdl (Rdl 2008) to line.xml (nuntiare report definition)
+    nuntiare render line.xml -p user=framirez city=panama -r html
 
-=====
+Converts line.rdl (Rdl 2008) to line.xml (nuntiare report definition)::
+
+    nuntiare convert line.rdl
+
+
 Setup
-=====
+-----
 
-python setup.py install --record files.txt  --> Install
-sudo bash -c "cat files.txt | xargs rm -rf" --> Uninstall (Ubuntu)
+Install::
+    python setup.py install --record files.txt
+    
+Uninstall (Ubuntu)::
+
+    sudo bash -c "cat files.txt | xargs rm -rf"
 

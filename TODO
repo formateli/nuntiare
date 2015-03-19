@@ -3,6 +3,7 @@
 ===================
 
 
+- README as rst file (README.rst)
 - Save and load nuntiare report file
 - Fix log file location
 
