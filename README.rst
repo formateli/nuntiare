@@ -1,7 +1,7 @@
 Nuntiare
 ========
 
-*Nuntiare* (Report in latin) is a report toolkit written in python. 
+**Nuntiare** (Report in latin) is a report toolkit written in python. 
 It is inspired by RDL (report definition language) specifications, 
 but simplified and adapted to Python world.
 
@@ -15,9 +15,7 @@ At a glance
 - Reports can be saved as nuntiare files for later usage.
 - Nuntiare defines a render API that can be implemented to develop custom ones.
   Nuntiare comes with following renders: pdf, png and svg (based on cairo), html, csv and xml.
-- It comes with a comand line tool (nuntiare). 
-  It can run commands like 'render' (render to especific type), 
-  'convert' (converts rdl 2008 to nuntiare), etc.
+- It comes with a comand line tool *(nuntiare)*. 
 
 
 Usage
@@ -60,6 +58,7 @@ Setup
 -----
 
 Install::
+
     python setup.py install --record files.txt
     
 Uninstall (Ubuntu)::
