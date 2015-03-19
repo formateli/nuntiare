@@ -5,7 +5,7 @@
 import sys
 import os
 import logging
-from . log import NuntiareLog
+from . logger import NuntiareLog
 
 try:
     from ConfigParser import ConfigParser

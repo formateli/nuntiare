@@ -41,5 +41,10 @@ Thumbs.db
 # nuntiare #
 ######################
 MANIFEST
+*.html
+*.pdf
+*.svg
+*.png
+*.csv
 db_test_connection_panama
 db_test_connection_northwind
