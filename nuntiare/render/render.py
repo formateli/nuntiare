@@ -12,9 +12,12 @@ class Render(object):
         self.result_file=None
 
     def render(self, report, overwrite=True):
+        if not report.page:
+            logger.critical("No page in report object.", True)
+            
         if self.extension:
-            self.result_file = os.path.join(report.report_def.output_directory, 
-                report.report_def.output_name + "." + self.extension)
+            self.result_file = os.path.join(report.globals['output_directory'],
+                report.globals['output_name'] + "." + self.extension)
             if not overwrite:
                 if os.path.isfile(self.result_file):
                     logger.error("File '{0}' already exists.".format(self.result_file),

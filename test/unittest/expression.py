@@ -9,6 +9,7 @@ from nuntiare.report.report import Report
 
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
+        report=Report()
         report_def = ReportDef(string_xml="""
         <Nuntiare>
             <Name>Element Type Test</Name>
@@ -17,8 +18,8 @@ class ElementTypeTest(unittest.TestCase):
             <Body>
                 <Height>300in</Height>
             </Body>
-        </Nuntiare>""")
-        report = Report(report_def)
+        </Nuntiare>""")        
+        report.parse_definition(report_def)
         report.run()
     
         # String

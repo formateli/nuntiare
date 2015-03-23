@@ -10,8 +10,9 @@ from nuntiare.report.report import Report
 
 class ParameterTest(unittest.TestCase):
     def testData(self):
+        report=Report()
         report_def = ReportDef(string_xml = self.get_xml_string())        
-        report = Report(report_def)
+        report.parse_definition(report_def)
         
         # Get ReportParameters default values
         report.run() 

@@ -1,9 +1,6 @@
-===================
-   release 0.1.0
-===================
+release 0.1.0
+================
 
-
-- README as rst file (README.rst)
 - Save and load nuntiare report file
 - Fix log file location
 

@@ -3,7 +3,6 @@
 # contains the full copyright notices and license terms.
 
 import sys
-from .. style import StyleInfo
 from .. report_item_group import ReportItemGroup
 from ... import logger
 from ... definition.data_type import DataType
@@ -11,7 +10,7 @@ from ... definition.expression import Expression
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):
-        self.item_list=[]     
+        self.item_list=[]
         self.total_height = 0
         self.min_height = sys.float_info.max
         self.max_height = 0
@@ -55,7 +54,7 @@ class PageItem(object):
         self.style=None
         style_def = report_item_def.get_element("Style")
         if style_def:
-            self.style = StyleInfo(report, style_def)
+            self.style = report.style.get_style_info(style_def)
 
         if parent and type != "RowCell" and parent.type == "RowCell":            
             self.height=0

@@ -29,11 +29,11 @@ class HtmlRender(Render):
         body = HtmlElement("body", None)
 
         container = HtmlElement("div", "container")
-        container.add_attribute("style", "width:{0}mm".format(report.pages.available_width))
+        container.add_attribute("style", "width:{0}mm".format(report.page.available_width))
 
-        self.get_report_header_footer("header", report, report.pages.header, container)   
+        self.get_report_header_footer("header", report, report.page.header, container)   
         self.get_report_body(report, container)
-        self.get_report_header_footer("footer", report, report.pages.footer, container)
+        self.get_report_header_footer("footer", report, report.page.footer, container)
 
         body.add_element(container)
         html.add_element(body)
@@ -69,9 +69,10 @@ class HtmlRender(Render):
             return
         if not header_footer.definition:
             return
+        #TODO it should be report.header.get_items() ???   
         rec = PageRectangle(report, header_footer.definition, None)
-        rec.name = "div_" + name 
-        rec.width = report.pages.available_width
+        rec.name = "div_" + name
+        rec.width = report.page.available_width
         items = [rec,]
         report_header = HtmlElement("div", "{0}_container".format(name))
         if name == "header": 
@@ -83,9 +84,12 @@ class HtmlRender(Render):
 
     def get_report_body(self, report, container):
         report_body = HtmlElement("div", "body_container")
-        report_body.add_attribute("style", "float:left; padding:1mm 1mm 1mm 1mm; width:{0}mm".format(report.pages.available_width)) 
+        report_body.add_attribute(
+                "style", "float:left; padding:1mm 1mm 1mm 1mm; width:{0}mm".format(
+                    report.page.available_width)
+            ) 
         container.add_element(report_body)
-        items = report.pages.body_items.item_list
+        items = report.page.body.items.item_list
         self.render_items(items, report_body)
 
     def render_items(self, items, container):
@@ -217,19 +221,19 @@ class HtmlRender(Render):
                 it.style.border.color.left.hex), ignore_list,  properties)
 
         if it.type == "PageText":
-            self.add_style_property('color', it.style.text.color.hex, ignore_list,  properties)
+            self.add_style_property('color', it.style.text.color, ignore_list,  properties)
             self.add_style_property('vertical-align', it.style.text.vertical_align, ignore_list,  properties)
             self.add_style_property('font-family', it.style.text.font_family, ignore_list,  properties)
             self.add_style_property('font-weight', it.style.text.font_weight, ignore_list,  properties)
             self.add_style_property('font-style', it.style.text.font_style, ignore_list,  properties)
-            self.add_style_property('font-size', "{0}mm".format(it.style.text.font_size.value), ignore_list,  properties)
+            self.add_style_property('font-size', "{0}mm".format(it.style.text.font_size), ignore_list,  properties)
             self.add_style_property('text-align', it.style.text.text_align, ignore_list,  properties)
             self.add_style_property('text-decoration', it.style.text.text_decoration, ignore_list,  properties)
             self.add_style_property('padding', "{0}mm {1}mm {2}mm {3}mm".format(
-                                it.style.text.padding_top.value,
-                                it.style.text.padding_right.value,
-                                it.style.text.padding_left.value,
-                                it.style.text.padding_bottom.value), ignore_list,  properties)
+                                it.style.text.padding_top,
+                                it.style.text.padding_right,
+                                it.style.text.padding_left,
+                                it.style.text.padding_bottom), ignore_list,  properties)
 
         res = ""
         for p in properties:

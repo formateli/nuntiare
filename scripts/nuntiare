@@ -48,15 +48,15 @@ def do_render(args):
         return result
 
     if sys.stdout:
-        logger.add_handler(logging.StreamHandler(sys.stdout), args.v)
+        logger.add_handler(logging.StreamHandler(sys.stdout), args.v) # Default: WARNING
 
     f = args.file
     if not os.path.isfile(f) or not os.access(f, os.R_OK):
         logger.critical("'{0}' is not a valid file or User has not read/write access for it.".format(f),
                 True, "IOError")
-                
+                             
     f_path, f_file = os.path.split(f)
-    f_name = os.path.splitext(f_file)[0]
+    f_name, f_ext = os.path.splitext(f_file)
                 
     o_name = f_name
     if args.o:
@@ -69,10 +69,15 @@ def do_render(args):
         else:
             renders=['html',] # Default render
 
-    report_def = ReportDef(report_file=f, 
-            output_name=o_name, output_directory=args.d)
-    report = Report(report_def)
-    report.run(get_parameters(args.p))
+    report = Report()
+    if f_ext != ".nuntiare":
+        report_def = ReportDef(report_file=f, 
+                output_name=o_name, output_directory=args.d)
+        report.parse_definition(report_def)
+        report.run(get_parameters(args.p))
+    else:
+        report.parse_report(f)
+        
     for r in renders:
         render = Render.get_render(r)
         if not render:
@@ -80,9 +85,8 @@ def do_render(args):
             continue
         render.render(report, not args.no_overwrite)
         
-    if args.save:   
-        print("Here save!") 
-        report.save_to_file()
+    if args.save and f_ext != ".nuntiare":
+        report.save(not args.no_overwrite)
 
 
 def do_convert(args):

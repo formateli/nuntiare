@@ -9,8 +9,9 @@ from nuntiare.report.report import Report
 
 class DataTest(unittest.TestCase):
     def testData(self):
+        report = Report()
         report_def = ReportDef(string_xml = self.get_xml_string())        
-        report = Report(report_def)
+        report.parse_definition(report_def)
     
         f = open("db_test_connection_northwind", "r")
         conn_str = f.readline()

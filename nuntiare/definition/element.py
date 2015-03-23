@@ -29,7 +29,7 @@ class Element(object):
 
     def __init__(self, node, elements, lnk):
         '''
-        node: Xml node with the element definition.        
+        node: Xml node with the element definition.
         elements: A dictionary with the elements belonging to this element.
          key: Element name
          value: A list [] with the following values:
@@ -39,11 +39,16 @@ class Element(object):
                 Ignore if type is Element.ELEMENT. Default value: False
         lnk: The linking object
         '''
+        
+        super(Element, self).__init__()
 
         self.element_list={}        # Here we list elements found for this element
-        #self.reportitems_list=[]    # Peers report items list.
         lnk.obj=self
         self.lnk=lnk                # This is the linking object. See link.py
+        
+        self.element_name = self.__class__.__name__
+        self.expression_list={}
+        self.non_expression_list={}
 
         # Collect all report items, at the end, order by ZIndex or appears order
         items_by_name={}
@@ -52,7 +57,8 @@ class Element(object):
         for n in node.childNodes:
             if not n.nodeName in elements:
                 if n.nodeName not in ('#text', '#comment'):
-                    logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
+                    logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(
+                            n.nodeName, lnk.obj.__class__.__name__))
                 continue
             
             element_type, card, must_be_constant = Element.get_element_def(
@@ -75,15 +81,19 @@ class Element(object):
                     items_by_name[el.name]=[el, i]
                     z_count = z_count + 1
                 self.element_list[n.nodeName] = el
+                self.non_expression_list[n.nodeName] = self.element_list[n.nodeName]
             elif element_type == Element.ENUM:
                 self.element_list[n.nodeName]=Element.enum_factory(
                         n.nodeName, n, lnk, card, must_be_constant)
+                self.expression_list[n.nodeName] = self.element_list[n.nodeName]                
             elif element_type == Element.EXPRESSION_LIST:
                 self.element_list[n.nodeName]=Element.expression_list_factory(
                         n.nodeName, n, lnk)
+                self.non_expression_list[n.nodeName] = self.element_list[n.nodeName]
             else: 
                 self.element_list[n.nodeName]=Element.expression_factory(
                         elements[n.nodeName][0], n, lnk, card, must_be_constant)
+                self.expression_list[n.nodeName] = self.element_list[n.nodeName]
 
 
         # Validate elements not used
@@ -315,7 +325,13 @@ class Element(object):
         if name in self.element_list:
             return self.element_list[name]
 
-            
+    def has_element(self, name):
+        el = self.get_element(name)
+        if el:
+            return True
+        return False
+
+
 class Link(object):
     def __init__(self, report_def, parent, obj=None, data=None):
         self.report_def=report_def  # Main ReportDef() object
@@ -488,12 +504,6 @@ class _PageSection(_ReportElement):
                   'PrintOnLastPage': [Element.BOOLEAN,0,True],
                  }
         super(_PageSection, self).__init__(node, elements, lnk)
-        
-        self.height=Expression.get_value_or_default(None,self,"Height",0.0)
-        self.print_on_first_page=Expression.get_value_or_default(None,self,
-                "PrintOnFirstPage",True)
-        self.print_on_last_page=Expression.get_value_or_default(None,self,
-                "PrintOnLastPage",True)
 
 
 class PageHeader(_PageSection):
@@ -913,7 +923,7 @@ class Style(Element):
                   'WritingMode': [Element.ENUM],
                  }
 
-        super(Style, self).__init__(node, elements, lnk)        
+        super(Style, self).__init__(node, elements, lnk)
 
 
 class _BorderElement(Element):
@@ -969,7 +979,7 @@ class ReportItems(Element):
                   'Tablix': [Element.ELEMENT,3], 
                   'Chart': [Element.ELEMENT,3],
                  }
-        self.reportitems_list=[]         
+        self.reportitems_list=[]
         super(ReportItems, self).__init__(node, elements, lnk)
 
 
@@ -993,8 +1003,6 @@ class _ReportItem(_ReportElement):
                   'ToolTip': [Element.STRING],
                   'Bookmark': [Element.STRING],
                   'RepeatWith': [Element.STRING,0,True],
-                  'DataElementName': [Element.STRING,0,True],
-                  'DataElementOutput': [Element.ENUM,0,True],
                  }
         if additional_elements:
             for key, value in additional_elements.items():

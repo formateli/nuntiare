@@ -18,15 +18,19 @@ class ReportDef(object):
         logger.info('Initializing report definition...')
 
         self.definition=None
-                  
-        self.report_file=None
-        self.report_filename=None
-        self.report_folder=None
-        self.string_xml=None
-        self.output_name=output_name
-        self.output_directory=None
 
-        self.globals={}      # report_file, report_folder, report_name 
+        self.globals={
+                'author': None,
+                'description': None,
+                'version': None,                                
+                'report_name':None,        
+                'report_file':None,
+                'report_file_name':None,
+                'report_folder':None,
+                'output_name':None,
+                'output_directory':None,
+            }
+        
         self.parameters_def=[]
         self.data_sources=[] 
         self.data_sets=[]
@@ -36,33 +40,36 @@ class ReportDef(object):
 
         if report_file:
             if not os.path.isfile(report_file):
-                logger.error("'{0}' is not a valid file.".format(report_file), True)
+                logger.error("'{0}' is not a valid file.".format(report_file), True, "IOError")
             if not os.access(report_file, os.R_OK):
-                logger.error("User has not read access for '{0}'.".format(report_file), True)
-            self.report_file=report_file
-
-            if not output_directory:
-                output_directory = os.path.dirname(os.path.realpath(report_file))
+                logger.error("User has not read access for '{0}'.".format(report_file), True, "IOError")
 
             dom = parse(report_file)
-
-            self.globals['report_file'] = os.path.basename(report_file)
+            self.globals['report_file'] = report_file
+            self.globals['report_file_name'] = os.path.basename(report_file)
             self.globals['report_folder'] = os.path.dirname(os.path.realpath(report_file))
-        else:
             if not output_directory:
-                output_directory = os.path.dirname(os.path.realpath(__file__))
+                output_directory = os.path.dirname(os.path.realpath(report_file))
+            if not output_name:
+                output_name = os.path.splitext(self.globals['report_file_name'])[0]
+        else:
             dom = parseString(string_xml)
             self.globals['report_file'] = "From XML string."
-            self.globals['report_folder'] = "From XML string."
+            self.globals['report_file_name'] = "From XML string."
+            self.globals['report_folder'] = "From XML string."            
+            if not output_directory:
+                output_directory = os.path.dirname(os.path.realpath(__file__))
+                            
 
         logger.info(" File: {0}".format(self.globals['report_file']))
+        logger.info(" File Name: {0}".format(self.globals['report_file_name']))
         logger.info(" Folder: {0}".format(self.globals['report_folder']))
 
         if not os.path.isdir(output_directory):
-            logger.error("'{0}' is not a valid directory.".format(output_directory), True)
-        self.output_directory=output_directory
-
-        self.globals['report_name'] = ''
+            logger.error("'{0}' is not a valid directory.".format(output_directory), True, "IOError")
+            
+        self.globals['output_directory'] = output_directory
+        self.globals['output_name'] = output_name
 
         report_node = dom.getElementsByTagName("Nuntiare")
         if not report_node:
@@ -72,6 +79,9 @@ class ReportDef(object):
 
     def get_element(self, name):
         return self.definition.get_element(name)
+
+    def has_element(self, name):
+        return self.definition.has_element(name)
 
 
 class Report(Element):
@@ -97,7 +107,12 @@ class Report(Element):
         lnk = Link(report_def, None, self)
         super(Report, self).__init__(node, elements, lnk)
         report_def.globals['report_name'] = Expression.get_value_or_default(None,self,"Name", None)
-        logger.info("Report name: {0}".format(report_def.globals['report_name']))
-        if not report_def.output_name:
-            report_def.output_name = report_def.globals['report_name']
+        logger.info(" report name: {0}".format(report_def.globals['report_name']))
+        if not report_def.globals['output_name']:
+            report_def.globals['output_name'] = report_def.globals['report_name']
+        logger.info(" output name: {0}".format(report_def.globals['output_name']))
+        report_def.globals['author'] = Expression.get_value_or_default(None,self,"Author", None)
+        report_def.globals['description'] = Expression.get_value_or_default(None,self,"Description", None)
+        report_def.globals['version'] = Expression.get_value_or_default(None,self,"Version", None)
+        
 
