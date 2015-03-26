@@ -3,23 +3,23 @@
 # contains the full copyright notices and license terms.
 
 import unittest
-from nuntiare.definition.report_def import ReportDef
-from nuntiare.definition.expression import String, Boolean, Integer
-from nuntiare.report.report import Report
+from nuntiare.template.expression import String, Boolean, Integer
+from nuntiare.report import Report
 
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
-        report=Report()
-        report_def = ReportDef(string_xml="""
-        <Nuntiare>
-            <Name>Element Type Test</Name>
-            <Width>21cm</Width>
-            <Page></Page>
-            <Body>
-                <Height>300in</Height>
-            </Body>
-        </Nuntiare>""")        
-        report.parse_definition(report_def)
+    
+        string_xml="""
+            <Report>
+                <Name>Element Type Test</Name>
+                <Width>21cm</Width>
+                <Page></Page>
+                <Body>
+                    <Height>300in</Height>
+                </Body>
+            </Report>"""
+    
+        report = Report(string_xml)        
         report.run()
     
         # String

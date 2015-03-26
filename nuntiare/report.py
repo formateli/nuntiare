@@ -5,14 +5,16 @@
 import os
 import datetime
 from xml.dom import minidom
-from . page import Page
-from . data import DataSourceObject, DataSetObject
-from . style import Style
-from .. import logger
+from . parser import Parser
+from . outcome.page import Page
+from . outcome.style import Style
+from . import logger
 
 class Report(object):
-    def __init__(self):            
-        self.report_def = None
+    def __init__(self, definition, 
+            output_name=None, output_directory=None):
+                    
+        self.parser = None
         self.page=None
         self.parameters={}
         self.data_sources={}
@@ -23,63 +25,45 @@ class Report(object):
         self.current_scope=None
         self.style = Style(self)
         
-    def parse_definition(self, report_def):
-        self.report_def = report_def
+        self._parse(definition, output_name, output_directory)
         
-    def parse_report(self, report_file):
-        # 5.- Build pages
-        logger.info('Building Page...')
-        self.page = Page(self)
+    def _parse(self, definition, output_name, output_directory):
+        '''
+        Parse the definition for this report.
+        definition can be a xml definition file, 
+        a nuntiare report file or a simple xml string.
+        Run() must be executed in order to get the report.
+        '''
 
+        if not definition:
+            logger.critical("Error in definition '{0}'. " \
+                "definition must be a xml definition file, " \
+                "a simple xml string or a nuntiare report file.".format(definition), True)
+                
+        self.parser = Parser(definition, output_name, output_directory).parser
+        
     def run(self, parameters={}):
-        if not self.report_def:
-            logger.critical("No ReportDef found. Run parse_definition() first.", True)
+        if not self.parser:
+            logger.critical("No definition found in report.", True)
     
-        self.globals={}
-        if self.report_def.globals: # report_file, report_folder, report_name
-            for key, value in self.report_def.globals.items():
-                self.globals[key] = value       
+        self.globals=self.parser.get_globals()
         self.globals['page_number'] = -1
         self.globals['total_pages'] = -1
         self.globals['execution_time'] = datetime.datetime.now()
         logger.info('Execution time: {0}'.format(self.globals['execution_time']))
 
-        # 1.- Resolve parameters values in declared order and log ivalid ones.
-        self.parameters = {}
-        for p in self.report_def.parameters_def:
-            key=p.parameter_name
-            if key in self.parameters:
-                logger.error("ReportParameter '{0}' already assigned.".format(key), True)
-            if key in parameters:
-                self.parameters[key] = p.get_value(self, parameters[key])
-            else:
-                self.parameters[key] = p.get_default_value(self)
-        if parameters:
-            for key, value in parameters.items():
-                if not key in self.report_def.parameters_def:
-                    logger.warn("Unknown Parameter '{0}'. Ignored.".format(key))
 
-        # 2.- Build data_sources
+        logger.info('Running Parameters...')
+        self.parser.get_parameters(self, parameters)
+
         logger.info('Running DataSources...')
-        self.data_sources={}
-        for ds in self.report_def.data_sources:
-            self.data_sources[ds.name] = DataSourceObject(self, ds)
-            self.data_sources[ds.name].connect()
+        self.data_sources=self.parser.get_data_sources(self)
 
-        # 3.- Build data_sets
         logger.info('Running DataSets...')
-        self.data_sets={}
-        self.data_groups={}
-        for ds in self.report_def.data_sets:
-            logger.info("  Running DataSet '{0}'".format(ds.name))
-            self.data_sets[ds.name] = DataSetObject(self, ds)
-            self.data_sets[ds.name].execute()
-            self.data_groups[ds.name] = self.data_sets[ds.name].data
+        self.data_sets, self.data_groups=self.parser.get_data_sets(self)
 
-        # 5.- Build pages
         logger.info('Building Page...')
-        self.page = Page(self)
-        
+        self.page = Page(self)        
 
     def save(self, overwrite):
         '''
@@ -219,8 +203,8 @@ class Report(object):
             _add_style(doc, styles, st)
 
         page = _add_element(doc, root_element, "Page")
-        _add_element(doc, page, "Height", str(self.page.height))
-        _add_element(doc, page, "Width", str(self.page.width))
+        _add_element(doc, page, "PageHeight", str(self.page.height))
+        _add_element(doc, page, "PageWidth", str(self.page.width))
         _add_element(doc, page, "TopMargin", str(self.page.margin_top))
         _add_element(doc, page, "BottomMargin", str(self.page.margin_bottom))
         _add_element(doc, page, "LeftMargin", str(self.page.margin_left))
@@ -246,4 +230,5 @@ class Report(object):
             f.close()
         
         logger.info("Report '{0}' saved.".format(result_file))
-        
+
+

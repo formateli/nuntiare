@@ -5,8 +5,8 @@
 import sys
 from .. report_item_group import ReportItemGroup
 from ... import logger
-from ... definition.data_type import DataType
-from ... definition.expression import Expression
+from ... template.data_type import DataType
+from ... template.expression import Expression
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):

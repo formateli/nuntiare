@@ -4,8 +4,8 @@
 
 from .. import logger
 from .. data_providers import get_data_provider
-from .. definition.expression import Expression
-from .. definition.data_type import DataType
+from .. template.expression import Expression
+from .. template.data_type import DataType
 
 class DataInterface(object):
     def __init__(self, report, name, parent):
@@ -214,12 +214,12 @@ class DataSourceObject(object):
         self.cursor=None
     
     def connect(self):
-        data_provider_name=Expression.get_value_or_default(self.report, 
-                self.data_source_def.conn_properties, 
+        data_provider_name = Expression.get_value_or_default(
+                self.report, self.data_source_def.conn_properties, 
                 "DataProvider", None)
-        conn_string=Expression.get_value_or_default(self.report, 
-                self.data_source_def.conn_properties, 
-                "ConnectString", None)    
+        conn_string = Expression.get_value_or_default(
+                self.report, self.data_source_def.conn_properties, 
+                "ConnectString", None)
 
         dp = get_data_provider(data_provider_name) 
         if not dp:

@@ -4,7 +4,7 @@
 
 from . page_item import PageItem, PageItemsInfo
 from ... import logger
-from ... definition.expression import Expression
+from ... template.expression import Expression
 
 class PageGrid(PageItem):
     def __init__(self, report, grid_def, parent):

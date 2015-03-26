@@ -13,7 +13,7 @@ class Render(object):
 
     def render(self, report, overwrite=True):
         if not report.page:
-            logger.critical("No page in report object.", True)
+            logger.critical("No Page object in report. Have you executed run() in report object?", True)
             
         if self.extension:
             self.result_file = os.path.join(report.globals['output_directory'],
@@ -27,9 +27,9 @@ class Render(object):
         return "No help!"
         
     @staticmethod
-    def get_render(render_name):       
+    def get_render(render_name):
         '''
-        Returns a derived Render object that corresponds to render_name. Ex: html
+        Returns a derived Render object that corresponds to 'render_name'. Ex: html
         '''
         if not __config__.has_option('renders', render_name):
             return None

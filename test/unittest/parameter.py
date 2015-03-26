@@ -5,14 +5,11 @@
 import unittest
 import dateutil
 from decimal import Decimal
-from nuntiare.definition.report_def import ReportDef
-from nuntiare.report.report import Report
+from nuntiare.report import Report
 
 class ParameterTest(unittest.TestCase):
     def testData(self):
-        report=Report()
-        report_def = ReportDef(string_xml = self.get_xml_string())        
-        report.parse_definition(report_def)
+        report = Report(self.get_xml_string())
         
         # Get ReportParameters default values
         report.run() 
@@ -53,7 +50,7 @@ class ParameterTest(unittest.TestCase):
     
     def get_xml_string(self):
         return '''
-            <Nuntiare>
+            <Report>
                 <Name>Parameter test</Name>
                 <Width>100in</Width>
                 <Page></Page>
@@ -97,6 +94,6 @@ class ParameterTest(unittest.TestCase):
                 <Body>
                     <Height>300in</Height>
                 </Body>
-            </Nuntiare>
+            </Report>
             '''
 

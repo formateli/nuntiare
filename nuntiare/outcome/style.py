@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from .. definition.expression import Expression, Size, String
+from .. template.expression import Expression, Size, String
 
 class Style(object):
     '''

@@ -419,33 +419,33 @@ class Size(Expression):
     def __init__(self, string_size, lnk, must_be_constant=False):
         super(Size, self).__init__(string_size, lnk, must_be_constant)
 
-        self.size=None           # Milimeters.
+        self._size=None           # Milimeters.
         self.original_size=None  # Original size, ex: 12
         self.original_unit=None  # Original unit, ex: in
 
         if not self.is_constant:
             return
 
-        self.get_value(string_size)
+        self._get_value(string_size)
 
     def value(self, report):
         if self.is_constant:
-            return self.size
+            return self._size
         result = super(Size, self).value(report)
         if not result:
             return None
-        return self.get_value(result) 
+        return self._get_value(result) 
 
-    def get_value(self, string_size):
+    def _get_value(self, string_size):
         if not string_size:
-            self.size = 0.0
-            return self.size
+            self._size = 0.0
+            return self._size
         
         units=('in','cm','mm','pt','pc')
 
         string_size=string_size.strip()
         if len(string_size) < 3:
-            logger.error("Bad format for size: {0}".format(string_size), True)
+            logger.error("Invalid format for size: {0}".format(string_size), True)
 
         unit=string_size[len(string_size)-2:]
         if not unit in units:
@@ -453,40 +453,58 @@ class Size(Expression):
 
         size=string_size[:len(string_size)-2]
         size=size.strip()
-        self.size = float(size) 
-        
-        # Milimeter convertion
-        if unit=="in":
-            self.size = self.size * Size.size_25_4
-        elif unit=="cm":
-            self.size = self.size * Size.size_10
-        elif unit=="pt":
-            self.size = (self.size * Size.size_25_4) / Size.size_72;
-        elif unit=="pc":
-            self.size = (self.size * Size.size_25_4) / Size.size_6;
-        elif unit != "mm":
-            logger.error("Unknown unit '{0}'".format(unit), True)
+
+        self._size = Size.convert_to_mm(unit, float(size))
 
         self.original_size=size
         self.original_unit=unit
 
-        return self.size
-
-    def get_value_in_unit(self, unit):
+        return self._size
+    
+    @staticmethod
+    def convert_to_mm(unit, value):
         unit = unit.strip().lower()
-        if unit=='mm':
-            return self.size
-
+        if unit == 'mm':
+            return value
+        result=None
         if unit=="in":
-            return self.size / Size.size_25_4
+            result = value * Size.size_25_4
         elif unit=="cm":
-            return self.size / Size.size_10
+            result = value * Size.size_10
         elif unit=="pt":
-            return int((self.size / Size.size_25_4) * Size.size_72)
+            result = (value * Size.size_25_4) / Size.size_72;
         elif unit=="pc":
-            return int((self.size / Size.size_25_4) * Size.size_6)
+            result = (value * Size.size_25_4) / Size.size_6;
+        else:
+            logger.error("Unknown unit '{0}'".format(unit), True)
+            
+        return result
 
-        logger.error("Unknown unit '{0}'".format(unit), True)
+    @staticmethod
+    def convert(from_unit, to_unit, value):
+        from_unit = from_unit.strip().lower()
+        to_unit = to_unit.strip().lower()
+        
+        if from_unit==to_unit:
+            return value
+
+        result = None
+        value = Size.convert_to_mm(from_unit, value)
+        
+        if to_unit=="mm":
+            result = value
+        elif to_unit=="in":
+            result = value / Size.size_25_4
+        elif to_unit=="cm":
+            result = value / Size.size_10
+        elif to_unit=="pt":
+            result = int((value / Size.size_25_4) * Size.size_72)
+        elif to_unit=="pc":
+            result = int((value / Size.size_25_4) * Size.size_6)
+        else:
+            logger.error("Can not convert from 'mm'. Unknown unit '{0}'".format(to_unit), True)
+        
+        return result
 
 
 class Boolean(Expression):

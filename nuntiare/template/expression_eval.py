@@ -7,7 +7,6 @@ import dateutil
 import datetime
 import math
 from decimal import Decimal
-#from ..tools import raise_error_with_log
 from .. import logger
 
 __data__=[None] # 0:report
@@ -20,19 +19,21 @@ def get_expression_eval(report, code):
     if report:
         Parameters = report.parameters
         Globals = report.globals
-        Modules = report.report_def.modules
+        Modules = report.parser.object.modules
     if report.current_scope:
         Fields = report.data_groups[report.current_scope]
         if Fields.EOF():
             Fields.move_first()
-        if report.current_scope in report.report_def.report_items_group:
+        if report.current_scope in report.parser.object.report_items_group:
             ReportItems = report.report_def.report_items_group[report.current_scope]
 
     try:
         result = eval(code)
     except KeyError as e:
-        logger.error("Error evaluating expression: '{0}'. Key does not exist in dictionary. <{1}>.".format(code, e.message),
-            True, "ValueError") #TODO proper error
+        logger.error(
+            "Error evaluating expression: '{0}'. Key does not exist in dictionary. <{1}>.".format(
+                code, e.message),
+            True, "ValueError")
     except:
         logger.error("Unexpected error evaluating expression: '{0}'. {1}.".format(code, sys.exc_info()[0]),
             True)

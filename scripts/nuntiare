@@ -11,6 +11,7 @@ import argparse
 try:
     from nuntiare import __version__, __copyright__, __license__, logger
 except ImportError:
+    print("Running uninstalled mode...")
     DIR = os.path.dirname(os.path.realpath(__file__))
     DIR = os.path.normpath(os.path.join(DIR, '..', 'nuntiare'))
     if os.path.isdir(DIR):
@@ -29,8 +30,7 @@ def get_info():
 
 def do_render(args):
     import logging
-    from nuntiare.definition.report_def import ReportDef
-    from nuntiare.report.report import Report
+    from nuntiare.report import Report
     from nuntiare.render.render import Render
 
     def get_parameters(params):
@@ -50,18 +50,6 @@ def do_render(args):
     if sys.stdout:
         logger.add_handler(logging.StreamHandler(sys.stdout), args.v) # Default: WARNING
 
-    f = args.file
-    if not os.path.isfile(f) or not os.access(f, os.R_OK):
-        logger.critical("'{0}' is not a valid file or User has not read/write access for it.".format(f),
-                True, "IOError")
-                             
-    f_path, f_file = os.path.split(f)
-    f_name, f_ext = os.path.splitext(f_file)
-                
-    o_name = f_name
-    if args.o:
-        o_name = args.o
-        
     renders = args.r
     if not renders:
         if args.save:
@@ -69,14 +57,10 @@ def do_render(args):
         else:
             renders=['html',] # Default render
 
-    report = Report()
-    if f_ext != ".nuntiare":
-        report_def = ReportDef(report_file=f, 
-                output_name=o_name, output_directory=args.d)
-        report.parse_definition(report_def)
-        report.run(get_parameters(args.p))
-    else:
-        report.parse_report(f)
+    report = Report(args.file, output_name=args.o, 
+            output_directory=args.d)
+
+    report.run(get_parameters(args.p))
         
     for r in renders:
         render = Render.get_render(r)
@@ -85,7 +69,7 @@ def do_render(args):
             continue
         render.render(report, not args.no_overwrite)
         
-    if args.save and f_ext != ".nuntiare":
+    if args.save and report.parser.type == "xml_template":
         report.save(not args.no_overwrite)
 
 

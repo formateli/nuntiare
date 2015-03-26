@@ -4,14 +4,11 @@
 
 import unittest
 import dateutil
-from nuntiare.definition.report_def import ReportDef
-from nuntiare.report.report import Report
+from nuntiare.report import Report
 
 class DataTest(unittest.TestCase):
     def testData(self):
-        report = Report()
-        report_def = ReportDef(string_xml = self.get_xml_string())        
-        report.parse_definition(report_def)
+        report = Report(self.get_xml_string())
     
         f = open("db_test_connection_northwind", "r")
         conn_str = f.readline()
@@ -171,7 +168,7 @@ class DataTest(unittest.TestCase):
 
     def get_xml_string(self):
         return '''
-            <Nuntiare>
+            <Report>
                 <Name>Data Test</Name>
                 <Width>21cm</Width>
                 <Page></Page>
@@ -397,6 +394,6 @@ class DataTest(unittest.TestCase):
                         </Tablix> 
                      </ReportItems>               
                 </Body>
-            </Nuntiare>
+            </Report>
             '''
  

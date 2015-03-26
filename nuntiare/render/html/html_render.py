@@ -6,7 +6,7 @@ import sys
 import cgi
 from .. render import Render
 from ... import logger
-from ... report.page_item.page_item import PageRectangle
+from ... outcome.page_item.page_item import PageRectangle
 
 class HtmlRender(Render):
     def __init__(self):
