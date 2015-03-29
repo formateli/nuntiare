@@ -198,13 +198,13 @@ class Element(object):
         elif name=='Border':
             obj = Border(node, ln)
         elif name=='TopBorder':
-            obj = TopBorder(node, ln)
+            obj = Border(node, ln)
         elif name=='BottomBorder':
-            obj = BottomBorder(node, ln)
+            obj = Border(node, ln)
         elif name=='LeftBorder':
-            obj = LeftBorder(node, ln)
+            obj = Border(node, ln)
         elif name=='RightBorder':
-            obj = RightBorder(node, ln)
+            obj = Border(node, ln)
         elif name=='BackgroundImage':
             obj = BackgroundImage(node, ln)        
         elif name=='Line':
@@ -384,14 +384,14 @@ class ReportParameter(Element):
 
         super(ReportParameter, self).__init__(node, elements, lnk)
         
-        self.parameter_name=Expression.get_value_or_default(None,self,
-                "Name",None)
-        self.can_be_none=Expression.get_value_or_default(None,self,
-                "CanBeNone",True)
-        self.allow_blank=Expression.get_value_or_default(None,self,
-                "AllowBlank",True)
-        self.data_type=Expression.get_value_or_default(None,self,
-                "DataType",None)
+        self.parameter_name=Expression.get_value_or_default(
+                None, self, "Name", None)
+        self.can_be_none=Expression.get_value_or_default(
+                None, self, "CanBeNone",True)
+        self.allow_blank=Expression.get_value_or_default(
+                None, self, "AllowBlank", True)
+        self.data_type=Expression.get_value_or_default(
+                None, self, "DataType",None)
 
         self.default_value = self.get_element('DefaultValue')
         self.lnk.report_def.parameters_def.append(self)
@@ -399,7 +399,7 @@ class ReportParameter(Element):
     def get_default_value(self, report):
         if self.default_value:
             return dt.get_value(self.data_type, self.default_value.value(report))             
-                        
+
     def get_value(self, report, passed_value):
         if passed_value == None:
             result = self.get_default_value(report)
@@ -459,8 +459,6 @@ class Page(Element):
                   'PageFooter': [],
                   'PageHeight': [Element.SIZE,0,True],
                   'PageWidth': [Element.SIZE,0,True],
-                  'InteractiveHeight': [Element.SIZE,0,True],
-                  'InteractiveWidth': [Element.SIZE,0,True],
                   'LeftMargin': [Element.SIZE,0,True],
                   'RightMargin': [Element.SIZE,0,True],
                   'TopMargin': [Element.SIZE,0,True],
@@ -470,7 +468,7 @@ class Page(Element):
                   'Style': [],
                  }
         super(Page, self).__init__(node, elements, lnk)
-        
+
 
 #------------------------------------------
 #   ReportElement
@@ -926,38 +924,13 @@ class Style(Element):
         super(Style, self).__init__(node, elements, lnk)
 
 
-class _BorderElement(Element):
+class Border(Element):
     def __init__(self, node, lnk):     
         elements={'Color': [Element.COLOR],
                   'BorderStyle': [Element.ENUM],
                   'Width': [Element.SIZE],
                  }
-        super(_BorderElement, self).__init__(node, elements, lnk)
-
-
-class Border(_BorderElement):
-    def __init__(self, node, lnk):     
-        super(Border, self).__init__(node, lnk)
-
-
-class TopBorder(_BorderElement):
-    def __init__(self, node, lnk):
-        super(TopBorder, self).__init__(node, lnk)
-
-
-class BottomBorder(_BorderElement):
-    def __init__(self, node, lnk):     
-        super(BottomBorder, self).__init__(node, lnk)
-
-
-class LeftBorder(_BorderElement):
-    def __init__(self, node, lnk):     
-        super(LeftBorder, self).__init__(node, lnk)
-
-
-class RightBorder(_BorderElement):
-    def __init__(self, node, lnk):     
-        super(RightBorder, self).__init__(node, lnk)
+        super(Border, self).__init__(node, elements, lnk)
 
 
 #------------------------------------------

@@ -5,32 +5,33 @@
 import os
 from xml.dom import minidom
 from . import logger
-from . template.template import Template
 from . template.expression import Expression
+from . template.template import Template
 from . outcome.outcome import Outcome
 from . outcome.data import DataSourceObject, DataSetObject
+from . outcome.style import Style
 
 class Parser(object):
-    def __init__(self, definition, output_name, output_directory):
-    
+    def __init__(self, report, definition, output_name, output_directory):
+        super(Parser, self).__init__()
+        
         self.parser = None
         
+        is_file=False
         if os.path.isfile(definition):
             if not os.access(definition, os.R_OK):
                 logger.error(
-                    "User has not read access for '{0}'.".format(definition), 
+                    "User has not read access for '{0}'.".format(definition),
                     True, "IOError")
             is_file=True
-        else:
-            is_file=False
         root = self._get_root(definition, is_file)
         
         if root.nodeName == "Report":
             self.parser = TemplateParser(
-                definition, is_file, root, output_name, output_directory)
+                report, definition, is_file, root, output_name, output_directory)
         else:
             self.parser = OutcomeParser(
-                definition, is_file, root, output_name, output_directory)
+                report, definition, is_file, root, output_name, output_directory)
 
     def _get_root(self, definition, is_file):
         dom = None
@@ -56,8 +57,11 @@ class Parser(object):
 
 
 class _Parser(object):
-    def __init__(self, definition, is_file, root_node, 
+    def __init__(self, report, definition, is_file, root_node, 
             output_name, output_directory):
+        super(_Parser, self).__init__()    
+            
+        self.report = report    
         self.object = None                # Result definition object
         self.definition = None            # A file or a xml string
         self.root_node = root_node        # A xml root node
@@ -65,6 +69,7 @@ class _Parser(object):
         self.output_directory = output_directory
         self.globals = {}
         self.type = None
+        self.style = Style(report)        
 
         if is_file:
             self.globals['report_file'] = definition
@@ -100,94 +105,122 @@ class _Parser(object):
             for key, value in self.object.globals.items():
                 result[key] = value
         if not result['output_name']:
-            result['output_name'] = result['report_name']                
+            result['output_name'] = result['report_name']
         return result
 
-    def get_parameters(self, report, parameters=None):
+    def get_parameters(self, parameters):
         report.parameters = {}
         
-    def get_data_sources(self, report):
+    def get_data_sources(self):
         return {}
 
-    def get_data_sets(self, report):
+    def get_data_sets(self):
         return {}, {}
 
-    @staticmethod
-    def get_value(report, element, element_name, default):
-        pass
+    def get_style(self, element):
+        return None
+
+    def get_item_list(self, element):
+        return
+
+    def get_value(self, element, element_name, default):
+        return None
 
 
 class TemplateParser(_Parser):
-    def __init__(self, definition, is_file, root_node, 
+    def __init__(self, report, definition, is_file, root_node, 
             output_name, output_directory):
                 
         super(TemplateParser, self).__init__(
-                definition, is_file, root_node, 
+                report, definition, is_file, root_node, 
                 output_name, output_directory)
         
         self.type="xml_template"
         self.object = Template(root_node)
 
-    def get_parameters(self, report, parameters):
-        report.parameters = {}
+    def get_parameters(self, parameters):
+        self.report.parameters = {}
         for p in self.object.parameters_def:
             key = p.parameter_name
-            if key in report.parameters:
+            if key in self.report.parameters:
                 logger.error(
                     "ReportParameter '{0}' already assigned.".format(key), True)
             if key in parameters:
-                report.parameters[key] = p.get_value(report, parameters[key])
+                self.report.parameters[key] = p.get_value(self.report, parameters[key])
             else:
-                report.parameters[key] = p.get_default_value(report)
+                self.report.parameters[key] = p.get_default_value(self.report)
         if parameters:
             for key, value in parameters.items():
                 if not key in self.object.parameters_def:
                     logger.warn("Unknown Parameter '{0}'. Ignored.".format(key))
         
-    def get_data_sources(self, report):
+    def get_data_sources(self):
         result = {}
         for ds in self.object.data_sources:
-            result[ds.name] = DataSourceObject(report, ds)
+            result[ds.name] = DataSourceObject(self.report, ds)
             result[ds.name].connect()
         return result
 
-    def get_data_sets(self, report):
+    def get_data_sets(self):
         data_sets = {}
         data_groups = {}
         for ds in self.object.data_sets:
             logger.info("  Running DataSet '{0}'".format(ds.name))
-            data_sets[ds.name] = DataSetObject(report, ds)
+            data_sets[ds.name] = DataSetObject(self.report, ds)
             data_sets[ds.name].execute()
             data_groups[ds.name] = data_sets[ds.name].data
         return data_sets, data_groups
 
-    @staticmethod
-    def get_value(report, element, element_name, default):
+    def get_style(self, element):
+        el = element.get_element("Style")
+        if el:
+            return self.style.get_style(el)
+
+    def get_item_list(self, element):
+        el = element.get_element("ReportItems")        
+        if el:
+            return el.reportitems_list
+
+    def get_value(self, element, element_name, default):
         return Expression.get_value_or_default(
-                report, element, element_name, default)
+                self.report, element, element_name, default)
         
 
 class OutcomeParser(_Parser):
-    def __init__(self, definition, is_file, root_node, 
+    def __init__(self, report, definition, is_file, root_node, 
             output_name, output_directory):
                 
         super(OutcomeParser, self).__init__(
-                definition, is_file, root_node, 
+                report, definition, is_file, root_node, 
                 output_name, output_directory)
         
-        self.type="xml_outcome"
+        self.type = "xml_outcome"
         self.object = Outcome(root_node)
 
-    def get_parameters(self, report, parameters):
-        #TODO
-        result = {}
-        return result        
+    def get_parameters(self, parameters):
+        self.report.parameters = {}
+        prms = self.object.get_element("ReportParameters")
+        if prms:
+            for p in prms.parameter_list:
+                self.report.parameters[p.name] = p.value()
 
+    def get_style(self, element):
+        style_id = self.get_value(element, "StyleId", None)
+        if style_id == None:
+            return
+        st = self.object.get_element("Styles").style_list[style_id]
+        return self.style.get_style(st)
 
-    @staticmethod
-    def get_value(report, element, element_name, default):
+    def get_item_list(self, element):
+        return
+        el = element.get_element("PageItems")        
+        if el:
+            return el.pageitem_list
+
+    def get_value(self, element, element_name, default):
+        if not element:
+            return default
         el = element.get_element(element_name)
-        print(el)
         if el:
             return el.value
         return default

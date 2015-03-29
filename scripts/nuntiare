@@ -40,7 +40,7 @@ def do_render(args):
         for p in params:
             i = p.find('=')
             if i < 1:
-                logger.warning("Parameter in wrong format: '{0}'. Ignored.".format(p))
+                logger.warn("Parameter in wrong format: '{0}'. Ignored.".format(p))
                 continue
             name = p[:i]
             val = p[i+1:]
@@ -49,6 +49,11 @@ def do_render(args):
 
     if sys.stdout:
         logger.add_handler(logging.StreamHandler(sys.stdout), args.v) # Default: WARNING
+
+    if not os.path.isfile(args.file):
+        logger.critical(
+            "File '{0}' not found.".format(args.file), 
+            True, "IOError")
 
     renders = args.r
     if not renders:
@@ -65,7 +70,7 @@ def do_render(args):
     for r in renders:
         render = Render.get_render(r)
         if not render:
-            logger.warning("Render '{0}' not found. Continue with next render.".format(r))
+            logger.warn("Render '{0}' not found. Continue with next render.".format(r))
             continue
         render.render(report, not args.no_overwrite)
         

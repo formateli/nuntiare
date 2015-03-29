@@ -6,26 +6,27 @@ import os
 import datetime
 from xml.dom import minidom
 from . parser import Parser
-from . outcome.page import Page
-from . outcome.style import Style
+from . result import Result
 from . import logger
 
 class Report(object):
     def __init__(self, definition, 
             output_name=None, output_directory=None):
-                    
+
+        super(Report, self).__init__()
+
         self.parser = None
-        self.page=None
-        self.parameters={}
-        self.data_sources={}
-        self.data_sets={}
-        self.data_groups={}
-        self.globals={}
-        self.report_items_group={}
-        self.current_scope=None
-        self.style = Style(self)
+        self.result = None
+        self.parameters = {}
+        self.data_sources = {}
+        self.data_sets = {}
+        self.data_groups = {}
+        self.globals = {}
+        self.report_items_group = {}
+        self.current_scope = None
         
         self._parse(definition, output_name, output_directory)
+        self.parser.style.get_style(None)
         
     def _parse(self, definition, output_name, output_directory):
         '''
@@ -40,7 +41,7 @@ class Report(object):
                 "definition must be a xml definition file, " \
                 "a simple xml string or a nuntiare report file.".format(definition), True)
                 
-        self.parser = Parser(definition, output_name, output_directory).parser
+        self.parser = Parser(self, definition, output_name, output_directory).parser        
         
     def run(self, parameters={}):
         if not self.parser:
@@ -52,18 +53,17 @@ class Report(object):
         self.globals['execution_time'] = datetime.datetime.now()
         logger.info('Execution time: {0}'.format(self.globals['execution_time']))
 
-
         logger.info('Running Parameters...')
-        self.parser.get_parameters(self, parameters)
+        self.parser.get_parameters(parameters)
 
         logger.info('Running DataSources...')
-        self.data_sources=self.parser.get_data_sources(self)
+        self.data_sources = self.parser.get_data_sources()
 
         logger.info('Running DataSets...')
-        self.data_sets, self.data_groups=self.parser.get_data_sets(self)
+        self.data_sets, self.data_groups = self.parser.get_data_sets()
 
-        logger.info('Building Page...')
-        self.page = Page(self)        
+        logger.info('Building result...')
+        self.result = Result(self)
 
     def save(self, overwrite):
         '''
@@ -82,44 +82,35 @@ class Report(object):
             st = _add_element(doc, styles_el, "Style")
             _add_element(doc, st, "Id", str(style.id))
             
-            bd = _add_element(doc, st, "Border")
-            if style.border:
-                b = _add_element(doc, bd, "Top")
-                _add_element(doc, b, "BorderStyle", style.border.style.top.value)
-                _add_element(doc, b, "Color", style.border.color.top.value)
-                _add_element(doc, b, "Width", str(style.border.width.top.value))
-                b = _add_element(doc, bd, "Bottom")
-                _add_element(doc, b, "BorderStyle", style.border.style.bottom.value)
-                _add_element(doc, b, "Color", style.border.color.bottom.value)
-                _add_element(doc, b, "Width", str(style.border.width.bottom.value))
-                b = _add_element(doc, bd, "Left")
-                _add_element(doc, b, "BorderStyle", style.border.style.left.value)
-                _add_element(doc, b, "Color", style.border.color.left.value)
-                _add_element(doc, b, "Width", str(style.border.width.left.value))
-                b = _add_element(doc, bd, "Right")
-                _add_element(doc, b, "BorderStyle", style.border.style.right.value)
-                _add_element(doc, b, "Color", style.border.color.right.value)
-                _add_element(doc, b, "Width", str(style.border.width.right.value))
+            _add_style_border(doc, st, style.top_border, "TopBorder")
+            _add_style_border(doc, st, style.bottom_border, "BottomBorder")
+            _add_style_border(doc, st, style.left_border, "LeftBorder")
+            _add_style_border(doc, st, style.right_border, "RightBorder")
                         
             if style.background_color:
-                _add_element(doc, st, "BackgroundColor", style.background_color.value)
+                _add_element(doc, st, "BackgroundColor", style.background_color)
 
-            if style.text:
-                t = _add_element(doc, st, "Text")
-                _add_element(doc, t, "FontFamily", style.text.font_family)
-                _add_element(doc, t, "FontStyle", style.text.font_style)
-                _add_element(doc, t, "FontSize", str(style.text.font_size))
-                _add_element(doc, t, "FontWeight", str(style.text.font_weight))
-                if style.text.format:
-                    _add_element(doc, t, "Format", style.text.format)
-                _add_element(doc, t, "TextDecoration", style.text.text_decoration)
-                _add_element(doc, t, "TextAlign", style.text.text_align)
-                _add_element(doc, t, "VerticalAlign", style.text.vertical_align)
-                _add_element(doc, t, "Color", style.text.color)
-                _add_element(doc, t, "PaddingTop", str(style.text.padding_top))
-                _add_element(doc, t, "PaddingBottom", str(style.text.padding_bottom))
-                _add_element(doc, t, "PaddingLeft", str(style.text.padding_left))
-                _add_element(doc, t, "PaddingRight", str(style.text.padding_right))
+            _add_element(doc, st, "FontFamily", style.font_family)
+            _add_element(doc, st, "FontStyle", style.font_style)
+            _add_element(doc, st, "FontSize", str(style.font_size))
+            _add_element(doc, st, "FontWeight", str(style.font_weight))
+            if style.format:
+                _add_element(doc, st, "Format", style.format)
+            _add_element(doc, st, "TextDecoration", style.text_decoration)
+            _add_element(doc, st, "TextAlign", style.text_align)
+            _add_element(doc, st, "VerticalAlign", style.vertical_align)
+            _add_element(doc, st, "Color", style.color)
+            _add_element(doc, st, "PaddingTop", str(style.padding_top))
+            _add_element(doc, st, "PaddingBottom", str(style.padding_bottom))
+            _add_element(doc, st, "PaddingLeft", str(style.padding_left))
+            _add_element(doc, st, "PaddingRight", str(style.padding_right))
+
+        def _add_style_border(doc, parent, border_def, border_name):
+            bd = _add_element(doc, parent, border_name)            
+            if border_def:
+                _add_element(doc, bd, "Color", border_def.color)
+                _add_element(doc, bd, "BorderStyle", border_def.border_style)
+                _add_element(doc, bd, "Width", str(border_def.width))
                                 
         def _add_header_footer(doc, parent, page_member, member_name):
             if not page_member:
@@ -163,8 +154,7 @@ class Report(object):
                 _add_element(doc, it_type, "Height", str(it.height))
                 _add_element(doc, it_type, "Width", str(it.width))
                 if it.style:
-                    st = _add_element(doc, it_type, "Style")
-                    _add_element(doc, st, "StyleId", str(it.style.id))
+                    _add_element(doc, it_type, "StyleId", str(it.style.id))
                     
                 if it.type=="PageText":
                     _add_element(doc, it_type, "Value", it.value_formatted)
@@ -173,7 +163,6 @@ class Report(object):
                 
                 if it.items_info:
                     _add_report_items(doc, it_type, it.items_info)
-                    
 
         result_file = os.path.join(self.globals['output_directory'], 
                 self.globals['output_name'] + ".nuntiare")
@@ -193,33 +182,42 @@ class Report(object):
             else:
                 _add_element(doc, gb, key)
 
-        parameters = _add_element(doc, root_element, "Parameters")
+        parameters = _add_element(doc, root_element, "ReportParameters")
         for key, p in self.parameters:
-            pe = _add_element(doc, paraameters, "Parameter")
-            _add_element(doc, pe, "Value", str(p))
+            pe = _add_element(doc, parameters, "ReportParameter")
+            _add_element(doc, pe, "Name", key)
+            if self.parser.objetc.parameters_def[key].data_type:
+                _add_element(
+                    doc, pe, "DataType", 
+                    self.parser.objetc.parameters_def[key].data_type)
+            if p == None:
+                _add_element(doc, pe, "Value")
+            else:        
+                _add_element(doc, pe, "Value", str(p))
 
         styles = _add_element(doc, root_element, "Styles")
-        for key, st in self.style.styles.items():
+        for key, st in self.parser.style.styles.items():
             _add_style(doc, styles, st)
 
         page = _add_element(doc, root_element, "Page")
-        _add_element(doc, page, "PageHeight", str(self.page.height))
-        _add_element(doc, page, "PageWidth", str(self.page.width))
-        _add_element(doc, page, "TopMargin", str(self.page.margin_top))
-        _add_element(doc, page, "BottomMargin", str(self.page.margin_bottom))
-        _add_element(doc, page, "LeftMargin", str(self.page.margin_left))
-        _add_element(doc, page, "RightMargin", str(self.page.margin_right))
-        _add_element(doc, page, "Columns", str(self.page.columns))
-        _add_element(doc, page, "ColumnSpacing", str(self.page.column_spacing))
-        _add_element(doc, page, "StyleId", str(self.page.style.id))
+        _add_element(doc, page, "PageHeight", str(self.result.height))
+        _add_element(doc, page, "PageWidth", str(self.result.width))
+        _add_element(doc, page, "TopMargin", str(self.result.margin_top))
+        _add_element(doc, page, "BottomMargin", str(self.result.margin_bottom))
+        _add_element(doc, page, "LeftMargin", str(self.result.margin_left))
+        _add_element(doc, page, "RightMargin", str(self.result.margin_right))
+        _add_element(doc, page, "Columns", str(self.result.columns))
+        _add_element(doc, page, "ColumnSpacing", str(self.result.column_spacing))
+        if self.result.style:
+            _add_element(doc, page, "StyleId", str(self.result.style.id))
 
-        _add_header_footer(doc, page, self.page.header, "PageHeader")
-        _add_header_footer(doc, page, self.page.footer, "PageFooter")        
+        _add_header_footer(doc, page, self.result.header, "PageHeader")
+        _add_header_footer(doc, page, self.result.footer, "PageFooter")        
         
         body = _add_element(doc, root_element, "Body")
-        if self.page.body.style:
-            _add_element(doc, page, "StyleId", str(self.page.body.style.id))
-        _add_report_items(doc, body, self.page.body.items)
+        if self.result.body.style:
+            _add_element(doc, page, "StyleId", str(self.result.body.style.id))
+        _add_report_items(doc, body, self.result.body.items)
         
         doc.appendChild(root_element)
         
@@ -230,5 +228,4 @@ class Report(object):
             f.close()
         
         logger.info("Report '{0}' saved.".format(result_file))
-
 
