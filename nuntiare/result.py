@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from . outcome.page_item.page_item import PageItemsInfo
+from . outcome.page_item import PageItemsInfo
 from . template.expression import Size
 from . import logger
 
@@ -35,8 +35,8 @@ class Result(object):
         
         self.style = report.parser.get_style(self.page_def)
         
-        self.header = self.get_header_footer(self.page_def, "PageHeader")
-        self.footer = self.get_header_footer(self.page_def, "PageFooter")
+        self.header = self._get_header_footer(self.page_def, "PageHeader")
+        self.footer = self._get_header_footer(self.page_def, "PageFooter")
         self.body = BodyInfo(report, report.parser.object.get_element("Body"))
 
         if self.body.height == 0 or self.body.height > self.available_height:
@@ -46,7 +46,7 @@ class Result(object):
 
         self.body.run_items()
 
-    def get_header_footer(self, page_def, element_name):
+    def _get_header_footer(self, page_def, element_name):
         if page_def:
             el_def = page_def.get_element(element_name)
             if el_def:
@@ -59,15 +59,18 @@ class Result(object):
 class _SectionInfo(object):
     def __init__(self, report, definition):
         self.report = report
-        self.definition = definition 
+        self.definition = definition
         self.height = report.parser.get_value(
                 definition, "Height", 0.0)
         self.items = None
         self.style = report.parser.get_style(definition)
         
-    def run_items(self):
-        self.items = PageItemsInfo(
-            self.report, self.definition, parent=None)
+    def run_items(self, definition=None):
+        def_passed = self.definition
+        if definition:
+            def_passed = definition
+        self.items = PageItemsInfo(self.report, 
+                def_passed, parent=None)
 
 
 class _HeaderFooterInfo(_SectionInfo):
@@ -77,6 +80,9 @@ class _HeaderFooterInfo(_SectionInfo):
             definition, "PrintOnFirstPage", True)
         self.print_on_last_page = report.parser.get_value(
             definition, "PrintOnLastPage", True)
+
+    def run_items(self):
+        super(_HeaderFooterInfo, self).run_items(self.xml_definition)
 
 
 class HeaderInfo(_HeaderFooterInfo):

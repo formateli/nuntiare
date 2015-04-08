@@ -32,6 +32,11 @@ class Template(object):
 
     def has_element(self, name):
         return self.definition.has_element(name)
+        
+    def get_parameter_def(self, parameter_name):
+        for p in self.parameters_def:
+            if p.parameter_name ==  parameter_name:
+                return p
 
 
 class Report(Element):

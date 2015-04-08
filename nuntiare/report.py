@@ -45,12 +45,14 @@ class Report(object):
         
     def run(self, parameters={}):
         if not self.parser:
-            logger.critical("No definition found in report.", True)
+            logger.critical("No definition found in report.", True)            
     
-        self.globals=self.parser.get_globals()
+        self.globals = self.parser.get_globals()
         self.globals['page_number'] = -1
         self.globals['total_pages'] = -1
         self.globals['execution_time'] = datetime.datetime.now()
+        if not self.globals['output_name']:
+            self.globals['output_name'] = self.globals['report_name']
         logger.info('Execution time: {0}'.format(self.globals['execution_time']))
 
         logger.info('Running Parameters...')
@@ -70,8 +72,11 @@ class Report(object):
         Save report to nuntiare file
         '''
 
-        def _add_element(doc, parent, element_name, text=None):
-            el = doc.createElement(element_name)
+        def _add_element(doc, parent, element_name, text=None, cdata=None):
+            if cdata: 
+                el = doc.createCDATASection(cdata)
+            else:
+                el = doc.createElement(element_name)
             if text !=None:
                 text_el = doc.createTextNode(text)
                 el.appendChild(text_el)
@@ -115,39 +120,24 @@ class Report(object):
         def _add_header_footer(doc, parent, page_member, member_name):
             if not page_member:
                 return
-            el = _add_element(doc, parent, member_name)
-            _add_element(doc, el, "Height", str(page_member.height))
-            _add_element(doc, el, "PrintOnFirstPage", 
-                    str(page_member.print_on_first_page))
-            _add_element(doc, el, "PrintOnLastPage", 
-                    str(page_member.print_on_last_page))
-            if page_member.style:
-                _add_element(doc, el, "StyleId", str(page_member.style.id))
-            _add_report_items_definition(doc, el, page_member.definition)                
-
-        def _add_report_items_definition(doc, parent, definition):
-            items = definition.get_element("ReportItems")
-            if not items:
-                return
-            items_el = _add_element(doc, parent, "ReportItems")            
-            for it in items.reportitems_list:
-                _add_literal(doc, items_el, it) # Works recursively
+            _add_literal(doc, parent, page_member.definition)
 
         def _add_literal(doc, parent, definition):
             if not definition:
                 return
-            l_parent = _add_element(doc, parent, definition.element_name)        
+            l_parent = _add_element(doc, parent, definition.element_name)
             for key, ex in definition.expression_list.items():
                 _add_element(doc, l_parent, key, ex.expression)
             for key, ex in definition.non_expression_list.items():
                 _add_literal(doc, l_parent, ex)
-                
+
         def _add_report_items(doc, parent, body_items):
             if not body_items or not body_items.item_list:
                 return
             pit = _add_element(doc, parent, "PageItems")
             for it in body_items.item_list:
                 it_type = _add_element(doc, pit, it.type)
+                _add_element(doc, it_type, "Type", it.report_item_def.element_name)
                 _add_element(doc, it_type, "Name", it.name)
                 _add_element(doc, it_type, "Top", str(it.top))
                 _add_element(doc, it_type, "Left", str(it.left))
@@ -166,7 +156,7 @@ class Report(object):
 
         result_file = os.path.join(self.globals['output_directory'], 
                 self.globals['output_name'] + ".nuntiare")
-                
+
         if not overwrite:
             if os.path.isfile(result_file):
                 logger.error("File '{0}' already exists.".format(result_file),
@@ -183,13 +173,12 @@ class Report(object):
                 _add_element(doc, gb, key)
 
         parameters = _add_element(doc, root_element, "ReportParameters")
-        for key, p in self.parameters:
+        for key, p in self.parameters.items():
             pe = _add_element(doc, parameters, "ReportParameter")
             _add_element(doc, pe, "Name", key)
-            if self.parser.objetc.parameters_def[key].data_type:
-                _add_element(
-                    doc, pe, "DataType", 
-                    self.parser.objetc.parameters_def[key].data_type)
+            para_def = self.parser.object.get_parameter_def(key)
+            if para_def.data_type:
+                _add_element(doc, pe, "DataType", para_def.data_type)
             if p == None:
                 _add_element(doc, pe, "Value")
             else:        
@@ -216,7 +205,7 @@ class Report(object):
         
         body = _add_element(doc, root_element, "Body")
         if self.result.body.style:
-            _add_element(doc, page, "StyleId", str(self.result.body.style.id))
+            _add_element(doc, body, "StyleId", str(self.result.body.style.id))
         _add_report_items(doc, body, self.result.body.items)
         
         doc.appendChild(root_element)

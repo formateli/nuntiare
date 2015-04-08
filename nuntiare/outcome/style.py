@@ -4,7 +4,7 @@
 
 from .. template.expression import Size
 
-class Style(object):
+class OutcomeStyle(object):
     '''
     Style cache. Must be one instance per report.
     See: nuntiare.report.Report
@@ -73,12 +73,12 @@ class Style(object):
         str_id = style.get_id()
         if str_id in self.styles:
             return self.styles[str_id]
-        if str_id in Style._styles:
-            self.styles[str_id] = Style._styles[str_id]
-            return Style._styles[str_id]
-        style.id = Style._count
-        Style._count = Style._count + 1
-        Style._styles[str_id] = style
+        if str_id in OutcomeStyle._styles:
+            self.styles[str_id] = OutcomeStyle._styles[str_id]
+            return OutcomeStyle._styles[str_id]
+        style.id = OutcomeStyle._count
+        OutcomeStyle._count = OutcomeStyle._count + 1
+        OutcomeStyle._styles[str_id] = style
         self.styles[str_id] = style
         if not self.first_key:
             self.first_key = str_id

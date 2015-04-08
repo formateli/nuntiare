@@ -108,10 +108,10 @@ class DataTest(unittest.TestCase):
         ########## group by customer
         
         sorting_def=[]
-        sorting_def.append([Expression(report,"=Fields['customer']", False),
+        sorting_def.append([Expression(report,"=['customer']", False),
                         Expression(report,"Descending", False)])
         grouping_def=[Expression(report,"customer", False), None, None, None, None, 
-                        [Expression(report, "=Fields['customer']", False), ]]
+                        [Expression(report, "=F['customer']", False), ]]
                         
         group_customer = GroupingObject(None, test_grouping_list=grouping_def)
                 
@@ -131,10 +131,10 @@ class DataTest(unittest.TestCase):
         ########## group by employee
 
         sorting_def=[]
-        sorting_def.append([Expression(report,"=Fields['employee']", False),
+        sorting_def.append([Expression(report,"=F['employee']", False),
                         Expression(report,"Ascending", False)])
         grouping_def=[Expression(report,"employee", False), None, None, None, None, 
-                        [Expression(report, "=Fields['employee']", False), ]]
+                        [Expression(report, "=F['employee']", False), ]]
         group_employee = GroupingObject(None, test_grouping_list=grouping_def)
         
         grp.grouping_by(group_employee, None, 
@@ -151,10 +151,10 @@ class DataTest(unittest.TestCase):
         ################# group by date
 
         sorting_def=[]
-        sorting_def.append([Expression(report,"=Fields['date']", False),
+        sorting_def.append([Expression(report,"=F['date']", False),
                         Expression(report,"Descending", False)])
         grouping_def=[Expression(report,"date", False), None, None, None, None, 
-                        [Expression(report, "=Fields['date']", False), ]]
+                        [Expression(report, "=F['date']", False), ]]
         group_date = GroupingObject(None, test_grouping_list=grouping_def)
         
         grp.grouping_by(group_date, None, 
@@ -177,7 +177,7 @@ class DataTest(unittest.TestCase):
                         <Name>DataSourceTest</Name>
                         <ConnectionProperties>
                             <DataProvider>postgresql</DataProvider>
-                            <ConnectString>=Parameters['conn_string']</ConnectString>
+                            <ConnectString>=P['conn_string']</ConnectString>
                         </ConnectionProperties>
                     </DataSource>
                 </DataSources>
@@ -211,7 +211,7 @@ class DataTest(unittest.TestCase):
                             </Field>
                             <Field>
                                 <Name>dummy_2</Name>
-                                <Value>='Dummy id ' + str(Fields['id'])</Value>
+                                <Value>='Dummy id ' + str(F['id'])</Value>
                             </Field>
                         </Fields>
                         
@@ -251,7 +251,7 @@ class DataTest(unittest.TestCase):
                             </Field>
                             <Field>
                                 <Name>dummy_22</Name>
-                                <Value>='Dummy id ' + str(Fields['id'])</Value>
+                                <Value>='Dummy id ' + str(F['id'])</Value>
                             </Field>
                         </Fields>
                         
@@ -262,14 +262,14 @@ class DataTest(unittest.TestCase):
                         
                         <Filters>
                             <Filter>
-                                <FilterExpression>=Fields['id']</FilterExpression>
+                                <FilterExpression>=F['id']</FilterExpression>
                                 <Operator>NotEqual</Operator>
                                 <FilterValues>
                                     <FilterValue>=int(10248)</FilterValue>
                                 </FilterValues>
                             </Filter>
                             <Filter>
-                                <FilterExpression>=Fields['id']</FilterExpression>
+                                <FilterExpression>=F['id']</FilterExpression>
                                 <Operator>Between</Operator>
                                 <FilterValues>
                                     <FilterValue>=int(10250)</FilterValue>
@@ -299,7 +299,7 @@ class DataTest(unittest.TestCase):
                         
                         <SortExpressions>
                             <SortExpression>
-                                <Value>=Fields['id']</Value>
+                                <Value>=F['id']</Value>
                                 <SortDirection>Descending</SortDirection>
                             </SortExpression>
                         </SortExpressions>
@@ -330,11 +330,11 @@ class DataTest(unittest.TestCase):
                         
                         <SortExpressions>                        
                             <SortExpression>
-                                <Value>=Fields['customer']</Value>
+                                <Value>=F['customer']</Value>
                                 <SortDirection>Descending</SortDirection>
                             </SortExpression>
                             <SortExpression>
-                                <Value>=Fields['date']</Value>
+                                <Value>=F['date']</Value>
                            </SortExpression>
                         </SortExpressions>
                     </DataSet>

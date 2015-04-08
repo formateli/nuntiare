@@ -5,6 +5,7 @@
 
 from .. import logger
 from .. tools import get_xml_tag_value
+from .. template.element import Link, PageHeader, PageFooter
 from .. template.data_type import DataType
 
 class Outcome(object):
@@ -52,9 +53,11 @@ class _OutcomeElement(object):
                 elif n.nodeName=="Page":
                     self.element_list[n.nodeName]=Page(n, self)
                 elif n.nodeName=="PageHeader":
-                    self.element_list[n.nodeName]=PageHeader(n, self)
+                    lnk = Link(parent, None, self)
+                    self.element_list[n.nodeName]=PageHeader(n, lnk)
                 elif n.nodeName=="PageFooter":
-                    self.element_list[n.nodeName]=PageFooter(n, self)
+                    lnk = Link(parent, None, self)
+                    self.element_list[n.nodeName]=PageFooter(n, lnk)
                 elif n.nodeName=="ReportParameters":
                     self.element_list[n.nodeName]=ReportParameters(n, self)
                 elif n.nodeName=="ReportParameter":
@@ -70,7 +73,17 @@ class _OutcomeElement(object):
                 elif n.nodeName=="LeftBorder":
                     self.element_list[n.nodeName]=Border(n, self)
                 elif n.nodeName=="RightBorder":
-                    self.element_list[n.nodeName]=Border(n, self)                                                            
+                    self.element_list[n.nodeName]=Border(n, self)
+                elif n.nodeName=="Body":
+                    self.element_list[n.nodeName]=Body(n, self)
+                elif n.nodeName=="PageItems":
+                    self.element_list[n.nodeName]=PageItems(n, self)
+                elif n.nodeName=="PageLine":
+                    self.element_list[n.nodeName]=PageItem(n, self)
+                elif n.nodeName=="PageRectangle":
+                    self.element_list[n.nodeName]=PageItem(n, self)
+                elif n.nodeName=="PageText":
+                    self.element_list[n.nodeName]=PageItem(n, self)
             else:
                 self.element_list[n.nodeName]=ElementValue(n, elements[n.nodeName])
 
@@ -88,7 +101,7 @@ class _OutcomeElement(object):
 class ElementValue(object):
     def __init__(self, node, type):
         super(ElementValue, self).__init__()
-        self.value=self._set_value(node, type)
+        self.value = self._set_value(node, type)
         
     def _set_value(self, node, type):
         str_value=get_xml_tag_value(node)
@@ -97,12 +110,8 @@ class ElementValue(object):
 
 class Report(_OutcomeElement):
     def __init__(self, node):
-        elements={'Name': "String",
-                  'Description': "String",
-                  'Author': "String",
-                  'Version': "String",
+        elements={'Globals': "Element",
                   'Body': "Element",
-                  'Globals': "Element",
                   'ReportParameters': "Element",
                   'Imports': "Element",
                   'EmbeddedImages': "Element",
@@ -110,6 +119,7 @@ class Report(_OutcomeElement):
                   'Styles': "Element",
                  }
 
+        self.report_items = {}
         super(Report, self).__init__(node, elements, None)
         
 
@@ -120,9 +130,8 @@ class Globals(_OutcomeElement):
                   'description': "String",
                   'version': "String",
                  }
-
         super(Globals, self).__init__(node, elements, parent)
-
+        
 
 class ReportParameters(_OutcomeElement):
     def __init__(self, node, parent):
@@ -167,26 +176,42 @@ class Page(_OutcomeElement):
         super(Page, self).__init__(node, elements, parent)
 
 
-class _PageSection(_OutcomeElement):
+class Body(_OutcomeElement):
     def __init__(self, node, parent):
-        elements={'ReportItems': "Element",
-                  'Height': "Float", 
-                  'PrintOnFirstPage': "Boolean",
-                  'PrintOnLastPage': "Boolean",
+        elements={'PageItems': "Element",
                   'StyleId': "Integer",
-                  'ReportItems': "Element",
                  }
-        super(_PageSection, self).__init__(node, elements, parent)
-        
+        super(Body, self).__init__(node, elements, parent)
 
-class PageHeader(_PageSection):
+
+class PageItems(_OutcomeElement):
     def __init__(self, node, parent):
-        super(PageHeader, self).__init__(node, parent)
+        elements={'PageLine': "Element",
+                  'PageRectangle': "Element",
+                  'PageText': "Element",
+                  'StyleId': "Integer",
+                 }
+        self.pageitem_list = []
+        super(PageItems, self).__init__(node, elements, parent)
 
 
-class PageFooter(_PageSection):
+class PageItem(_OutcomeElement):
     def __init__(self, node, parent):
-        super(PageFooter, self).__init__(node, parent)
+        elements={'Name': "String",
+                  'Type': "String",
+                  'Top': "Float",
+                  'Left': "Float",
+                  'Height': "Float",
+                  'Width': "Float",
+                  'Value': "String",
+                  'CanGrow': "Boolean",
+                  'CanShrink': "Boolean",
+                  'StyleId': "Integer",
+                  'PageItems': "Element",
+                 }
+        super(PageItem, self).__init__(node, elements, parent)
+        parent.pageitem_list.append(self)
+        self.type = self.get_element("Type").value 
 
 
 class Styles(_OutcomeElement):

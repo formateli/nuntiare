@@ -12,7 +12,7 @@
         <RightMargin>2cm</RightMargin>
         <BottomMargin>2cm</BottomMargin>
         <PageHeader>
-            <Height>30mm</Height>
+            <Height>2cm</Height>
             <PrintOnFirstPage>true</PrintOnFirstPage>
             <PrintOnLastPage>true</PrintOnLastPage>
             <Style>
@@ -25,6 +25,19 @@
             </Style>
 
             <ReportItems>
+                <Textbox>
+                    <Name>TextHeader</Name>
+                    <Left>0mm</Left>
+                    <Top>0mm</Top>
+                    <Height>5mm</Height>
+                    <Width>170mm</Width>
+                    <Value>=G['report_name']</Value>
+                    <Style>
+                        <FontSize>14pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                        <TextAlign>Center</TextAlign>
+                    </Style>
+                </Textbox>
                 <Line>
                     <Name>Line1</Name>
                     <Height>0.00pt</Height>
@@ -34,14 +47,14 @@
                             <BorderStyle>Solid</BorderStyle>
                         </Border>
                     </Style>
-                    <Left>5mm</Left>
-                    <Top>5mm</Top>
+                    <Left>1mm</Left>
+                    <Top>10mm</Top>
                 </Line>
             </ReportItems>
         </PageHeader>      
         
         <PageFooter>
-            <Height>30mm</Height>
+            <Height>2cm</Height>
             <PrintOnFirstPage>true</PrintOnFirstPage>
             <PrintOnLastPage>true</PrintOnLastPage>
 
@@ -70,8 +83,7 @@
                     <Top>27.5pt</Top>
                 </Line>
             </ReportItems>
-        </PageFooter>        
-        
+        </PageFooter>
     </Page>
 
 
@@ -155,10 +167,9 @@
                         <Name>TextContainer</Name>
                         <Value>Container rectangle</Value>
                         <Height>5mm</Height>
-                        <Width>2cm</Width>
+                        <Width>5cm</Width>
                         <Style>
                             <Border>
-                                <BorderStyle>Solid</BorderStyle>
                                 <Color>Black</Color>
                                 <Width>2pt</Width>
                             </Border>

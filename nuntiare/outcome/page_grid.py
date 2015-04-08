@@ -3,8 +3,8 @@
 # contains the full copyright notices and license terms.
 
 from . page_item import PageItem, PageItemsInfo
-from ... import logger
-from ... template.expression import Expression
+from .. import logger
+from .. template.expression import Expression
 
 class PageGrid(PageItem):
     def __init__(self, report, grid_def, parent):

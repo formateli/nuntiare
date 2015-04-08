@@ -13,17 +13,17 @@ __data__=[None] # 0:report
 
 def get_expression_eval(report, code):
     __data__[0]=report
-    Parameters = {}
-    Globals = {}
-    Modules = {}
+    P = {} # Parameters
+    G = {} # Globals
+    M = {} # Modules
     if report:
-        Parameters = report.parameters
-        Globals = report.globals
-        Modules = report.parser.object.modules
+        P = report.parameters
+        G = report.globals
+        M = report.parser.object.modules
     if report.current_scope:
-        Fields = report.data_groups[report.current_scope]
-        if Fields.EOF():
-            Fields.move_first()
+        F = report.data_groups[report.current_scope] # Fields
+        if F.EOF():
+            F.move_first()
         if report.current_scope in report.parser.object.report_items_group:
             ReportItems = report.report_def.report_items_group[report.current_scope]
 

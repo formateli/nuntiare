@@ -58,32 +58,32 @@ class ParameterTest(unittest.TestCase):
                     <ReportParameter>
                         <Name>para_bool</Name>
                         <DataType>Boolean</DataType>
-                        <DefaultValue>True</DefaultValue>                        
+                        <DefaultValue>True</DefaultValue>
                     </ReportParameter>
                     <ReportParameter>
                         <Name>para_date</Name>
                         <DataType>DateTime</DataType>
-                        <DefaultValue>2014-09-05</DefaultValue>                        
+                        <DefaultValue>2014-09-05</DefaultValue>
                     </ReportParameter>
                     <ReportParameter>
                         <Name>para_integer</Name>
                         <DataType>Integer</DataType>
-                        <DefaultValue>-1</DefaultValue>                        
-                    </ReportParameter>                    
+                        <DefaultValue>-1</DefaultValue>
+                    </ReportParameter>
                     <ReportParameter>
                         <Name>para_integer_exp</Name>
                         <DataType>Integer</DataType>
-                        <DefaultValue>=Parameters['para_integer'] + 100</DefaultValue>                        
-                    </ReportParameter>                    
+                        <DefaultValue>=P['para_integer'] + 100</DefaultValue>
+                    </ReportParameter>
                     <ReportParameter>
                         <Name>para_float</Name>
                         <DataType>Float</DataType>
-                        <DefaultValue>0.01</DefaultValue>                        
+                        <DefaultValue>0.01</DefaultValue>
                     </ReportParameter>
                     <ReportParameter>
                         <Name>para_decimal</Name>
                         <DataType>Decimal</DataType>
-                        <DefaultValue>0.09</DefaultValue>                        
+                        <DefaultValue>0.09</DefaultValue>
                     </ReportParameter>
                     <ReportParameter>
                         <Name>para_string</Name>

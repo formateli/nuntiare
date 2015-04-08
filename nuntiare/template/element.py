@@ -384,13 +384,13 @@ class ReportParameter(Element):
 
         super(ReportParameter, self).__init__(node, elements, lnk)
         
-        self.parameter_name=Expression.get_value_or_default(
+        self.parameter_name = Expression.get_value_or_default(
                 None, self, "Name", None)
-        self.can_be_none=Expression.get_value_or_default(
+        self.can_be_none = Expression.get_value_or_default(
                 None, self, "CanBeNone",True)
-        self.allow_blank=Expression.get_value_or_default(
+        self.allow_blank = Expression.get_value_or_default(
                 None, self, "AllowBlank", True)
-        self.data_type=Expression.get_value_or_default(
+        self.data_type = Expression.get_value_or_default(
                 None, self, "DataType",None)
 
         self.default_value = self.get_element('DefaultValue')
@@ -506,7 +506,7 @@ class _PageSection(_ReportElement):
 
 class PageHeader(_PageSection):
     '''
-    The PageHeader element defines the layout of report items to appear at the top of every page of
+    The PageFooter element defines the layout of report items to appear at the bottom of every page of
     the report. It has no properties beyond those it inherits from PageSection.
     '''
     

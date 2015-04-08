@@ -83,21 +83,21 @@ class ElementTypeTest(unittest.TestCase):
         s = Color('IndianRed', True)
         self.assertEqual(s.value(report), '#CD5C5C', "Color 'IndianRed'") 
         
-        er = None
+        err_message = None
         try:
             rgb = Color.to_rgb('#FFCD5C5C')
         except Exception as e:
-            er = e.message
-        self.assertEqual(er, "Color '#FFCD5C5C' not in correct format.")
-        
+            err_message = e.args[0]
+        self.assertEqual(err_message, "Color '#FFCD5C5C' not in correct format.")
+
         rgb = Color.to_rgb('#CD5C5C')
         self.assertEqual(rgb[0], 205) 
         self.assertEqual(rgb[1], 92) 
         self.assertEqual(rgb[2], 92)
-        
+
         s = Color("SlateBlue", True)
         rgb = Color.to_rgb(s.value(report))
         self.assertEqual(rgb[0], 106) 
         self.assertEqual(rgb[1], 90) 
         self.assertEqual(rgb[2], 205)
-        
+

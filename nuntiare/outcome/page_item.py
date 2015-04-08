@@ -3,9 +3,9 @@
 # contains the full copyright notices and license terms.
 
 import sys
-from .. report_item_group import ReportItemGroup
-from ... import logger
-from ... template.data_type import DataType
+from . report_item_group import ReportItemGroup
+from .. import logger
+from .. template.data_type import DataType
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):
@@ -17,6 +17,7 @@ class PageItemsInfo():
         self.can_shrink = False
         
         items = report.parser.get_item_list(definition)
+        
         if items:
             for it in items:
                 page_item = PageItem.page_item_factory(report, it, parent)
@@ -34,7 +35,8 @@ class PageItemsInfo():
 
 
 class PageItem(object):
-    def __init__(self, type, report, report_item_def, parent):
+    def __init__(self, type, report, 
+                 report_item_def, parent):
         self.type=type # Type of PageItem: PageLine. PageRectangle, PageText, etc.
         self.report = report
         self.parent=parent 
@@ -67,10 +69,8 @@ class PageItem(object):
                 self.width = self.parent.width - self.parent.left                
 
     def get_item_list(self):
-        result=[]
         if self.items_info:
-            result = self.items_info.item_list
-        return result
+            return self.items_info.item_list
 
     @staticmethod
     def page_item_factory(report, it, parent):
@@ -81,7 +81,7 @@ class PageItem(object):
             page_item = PageRectangle(report, it, parent)
         if it.type == "Textbox":
             page_item = PageText(report, it, parent)
-        if it.type == "Tablix":
+        if it.type == "Tablix":            
             from . page_grid import PageGrid
             page_item = PageGrid(report, it, parent)
         #if it.type == "Grid":
@@ -90,7 +90,7 @@ class PageItem(object):
         #    page_item = PageTable(report, it, parent)
 
         if not page_item:
-            logger("Error trying to get Report item. " \
+            logger.error("Error trying to get Report item. " \
                     "Invalid definition element '{0}'".format(it), True)
 
         return page_item

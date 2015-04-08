@@ -1,12 +1,12 @@
 release 0.1.0
-================
+=============
 
 - Save and load nuntiare report file
 - Fix log file location
 
 - unittest: Grouping
 - In order to get Aggregate functions (sum, avg, count, etc), we 
-introduce Variable declared for each group in the way that 
+introduce Variable declared for each group in the way like 
 JasperReports does.
 
 
@@ -14,7 +14,7 @@ JasperReports does.
 - Image
 - SubReport
 - Chart
-- Matrix
+- Tablix
 
 -------
 RENDERS

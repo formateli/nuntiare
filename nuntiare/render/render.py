@@ -45,7 +45,7 @@ class Render(object):
         except Exception as e:
             logger.error(
                 "Error loading '{0}' render module. {1}".format(
-                    render_name, e.message))
+                    render_name, e.message), True)
             return 
         if render_class:
             return render_class()

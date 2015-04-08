@@ -1,7 +1,7 @@
 Nuntiare
 ========
 
-**Nuntiare** (Report in latin) is a report toolkit written in python. 
+**Nuntiare** (*Report* in latin) is a report toolkit written in python.
 It is inspired by RDL (report definition language) specifications, 
 but simplified and adapted to Python world.
 
@@ -9,8 +9,8 @@ but simplified and adapted to Python world.
 At a glance
 -----------
 
-- Reports are defined using xml files.
-- Xml definition files are processed to generate reports. 
+- Reports are defined using xml files as templates.
+- Templates are processed to generate reports according to data (database, parameters, etc). 
   Nuntiare can connect to any database (modules implementing API 2.0) for data gathering.
 - Reports can be saved as nuntiare files for later usage.
 - Nuntiare defines a render API that can be implemented to develop custom ones.
@@ -21,7 +21,7 @@ At a glance
 Usage
 -----
 
-The better form of knowing nuntiare is trough its command line tool.
+The best way of knowing nuntiare is trough its command line tool.
 
 For help::
 
@@ -31,27 +31,27 @@ or::
 
     nuntiare render -h
 
-Process line.xml (report definition file) and renders it to 
-line.html and line.pdf::
+Process myreport.xml (report definition file) and renders it to 
+myreport.html and myreport.pdf::
 
-    nuntiare render line.xml -r html pdf
+    nuntiare render myreport.xml -r html pdf
 
-Process line.xml and saves it as line.nuntiare (report file)::
+Process myreport.xml and saves it as myreport.nuntiare (report file)::
 
-    nuntiare render line.xml --save
+    nuntiare render myreport.xml --save
 
-Loads line.nuntiare report file and rendres it to pdf::
+Loads myreport.nuntiare report file and rendres it to pdf::
 
-    nuntiare render line.nuntiare -r pdf
+    nuntiare render myreport.nuntiare -r pdf
 
-Process line.xml passing two parameters, user and city, 
+Process myreport.xml passing two parameters, user and city, 
 and then renders it to html.::
 
-    nuntiare render line.xml -p user=framirez city=panama -r html
+    nuntiare render myreport.xml -p user=framirez city=panama -r html
 
-Converts line.rdl (Rdl 2008) to line.xml (nuntiare report definition)::
+Converts myreport.rdl (Rdl 2008) to myreport.xml (nuntiare report definition)::
 
-    nuntiare convert line.rdl
+    nuntiare convert myreport.rdl
 
 
 Setup

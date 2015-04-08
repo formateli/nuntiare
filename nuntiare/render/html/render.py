@@ -6,7 +6,7 @@ import sys
 import cgi
 from .. render import Render
 from ... import logger
-from ... outcome.page_item.page_item import PageRectangle
+from ... outcome.page_item import PageRectangle
 
 class RenderObject(Render):
     def __init__(self):
@@ -31,9 +31,11 @@ class RenderObject(Render):
         container = _HtmlElement("div", "container")
         container.add_attribute("style", "width:{0}mm".format(report.result.available_width))
 
-        self._get_report_header_footer("header", report, report.result.header, container)
+        self._get_report_header_footer("header", report, 
+                report.result.header, container)
         self._get_report_body(report, container)
-        self._get_report_header_footer("footer", report, report.result.footer, container)
+        self._get_report_header_footer("footer", report, 
+                report.result.footer, container)
 
         body.add_element(container)
         html.add_element(body)
@@ -65,20 +67,19 @@ class RenderObject(Render):
         return head
 
     def _get_report_header_footer(self, name, report, header_footer, container):
-        if not header_footer: 
+        if not header_footer or not header_footer.definition: 
             return
-        if not header_footer.definition:
-            return
-        #TODO it should be report.header.items() ???
         rec = PageRectangle(report, header_footer.definition, None)
         rec.name = "div_" + name
         rec.width = report.result.available_width
         items = [rec,]
         report_header = _HtmlElement("div", "{0}_container".format(name))
-        if name == "header": 
-            report_header.add_attribute("style", "height:{0}mm".format(header_footer.height)) 
+        if name == "header":
+            report_header.add_attribute(
+                "style", "height:{0}mm".format(header_footer.height)) 
         else:
-            report_header.add_attribute("style", "clear:both; height:{0}mm".format(header_footer.height))
+            report_header.add_attribute(
+                "style", "clear:both; height:{0}mm".format(header_footer.height))
         container.add_element(report_header)
         self._render_items(items, report_header)
 
@@ -87,14 +88,16 @@ class RenderObject(Render):
         report_body.add_attribute(
                 "style", "float:left; padding:1mm 1mm 1mm 1mm; width:{0}mm".format(
                     report.result.available_width)
-            ) 
+                ) 
         container.add_element(report_body)
-        items = report.result.body.items.item_list
-        self._render_items(items, report_body)
+        self._render_items(report.result.body.items.item_list, 
+                           report_body)
 
     def _render_items(self, items, container):
+        if not items:
+            return
         for it in items:
-            if it.type == "PageLine" or it.type == "PageBreak":
+            if it.type == "PageLine":
                 continue
             if it.type == "PageRectangle" or it.type == "PageText":
                 el = self._get_rectangle(it)
@@ -145,7 +148,7 @@ class RenderObject(Render):
                 ignore = ['overflow',]
             if is_textbox and (it.can_grow or it.can_shrink):
                 ignore.append('height')
-            if it.style.vertical_align == "Middle" or it.style.vertical_align == "Bottom": 
+            if it.style.vertical_align == "Middle" or it.style.vertical_align == "Bottom":                 
                 vertical_align = it.style.vertical_align
             self._add_style(rec, it, txt, ignore_list=ignore)
         else: 
@@ -175,7 +178,6 @@ class RenderObject(Render):
     def _is_in_cell(self, it): 
         if it.parent and it.parent.type == "RowCell":
             return True
-        return False
 
     def _get_td_parent_element(self, it, element):
         if not self._is_in_cell(it):

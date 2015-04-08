@@ -9,7 +9,7 @@ from .. import logger
 class Expression(object):
     def __init__(self, expression, lnk, must_be_constant):
         self.lnk=lnk
-        self.must_be_constant=must_be_constant
+        self.must_be_constant = must_be_constant
         self.expression, self.is_constant = self.set_expression(expression)        
 
     def set_expression(self, expression):
