@@ -40,15 +40,16 @@ def do_render(args):
         for p in params:
             i = p.find('=')
             if i < 1:
-                logger.warn("Parameter in wrong format: '{0}'. Ignored.".format(p))
+                logger.warn(
+                    "Parameter in wrong format: '{0}'. Ignored.".format(p))
                 continue
             name = p[:i]
             val = p[i+1:]
             result[name] = val
         return result
 
-    if sys.stdout:
-        logger.add_handler(logging.StreamHandler(sys.stdout), args.v) # Default: WARNING
+    if sys.stdout: # Default: WARNING
+        logger.add_handler(logging.StreamHandler(sys.stdout), args.v)
 
     if not os.path.isfile(args.file):
         logger.critical(
@@ -66,7 +67,7 @@ def do_render(args):
             output_directory=args.d)
 
     report.run(get_parameters(args.p))
-        
+
     for r in renders:
         render = Render.get_render(r)
         if not render:
@@ -74,7 +75,7 @@ def do_render(args):
             continue
         render.render(report, not args.no_overwrite)
         
-    if args.save and report.parser.type == "xml_template":
+    if args.save:
         report.save(not args.no_overwrite)
 
 
@@ -87,13 +88,15 @@ def do_convert(args):
                 continue
             if n.nodeName in ('#comment') or n.nodeName.startswith("rd:"):
                 continue
-            if n.nodeName in ('#text'):
+            if n.nodeName in ('#text'):            
                 if len(n.parentNode.childNodes) == 1:
                     text = doc.createTextNode(n.nodeValue)
                     base_element.appendChild(text)
                 continue
                 
             if n.parentNode.nodeName == "TextRun" and n.nodeName != "Value":
+                continue
+            if n.parentNode.nodeName == "Paragraph" and n.nodeName != "TextRuns":
                 continue
             if n.parentNode.nodeName == "Report" and n.nodeName == "Width":
                 continue
@@ -102,44 +105,77 @@ def do_convert(args):
 
             node_name = n.nodeName
             if n.nodeName == "Style" and n.parentNode.nodeName in border_list:
-                node_name="BorderStyle"
+                node_name = "BorderStyle"
             el = doc.createElement(node_name)
             
             if n.hasAttributes():
                 if "Name" in n.attributes.keys():
                     name_element = doc.createElement("Name")
-                    name_text=doc.createTextNode(n.attributes['Name'].value)
+                    name_text = doc.createTextNode(n.attributes['Name'].value)
                     if name_text:
                         name_element.appendChild(name_text)
                         el.appendChild(name_element)
                         
-            element_to_append=el
+            element_to_append = el
             if n.nodeName in report_item_list and n.parentNode.nodeName == "CellContents":
                 item_element = doc.createElement("ReportItems")
                 item_element.appendChild(el)
-                element_to_append=item_element
+                element_to_append = item_element
 
             if n.nodeName in textbox_list or \
                 (n.parentNode.nodeName in textbox_list and n.nodeName != "Value") or \
-                (n.parentNode.parentNode.nodeName in textbox_list and n.nodeName != "Value"):
-                el=base_element
+                (n.parentNode.parentNode.nodeName in textbox_list and n.nodeName != "Value"):                
+                el = base_element
             else:
                 base_element.appendChild(element_to_append) 
 
-            get_element(doc, n, el)    
+            get_element(doc, n, el)
     
 
     rdlc = args.rdl
     if not os.path.isfile(rdlc) or not os.access(rdlc, os.R_OK):
-        print ("'{0}' is not a valid file or User has not read access for it.".format(rdlc))
-        sys.exit()
+        logger.error(
+            "'{0}' is not a valid file or User has not read access for it.".format(rdlc), 
+            True, "IOError")            
 
-    report_item_list=["Line", "Rectangle", "Textbox", "Image", "Subreport", "CustomReportItem", "Tablix"]
-    border_list=["Border", "TopBorder", "BottomBorder", "LeftBorder", "RightBorder"]
-    textbox_list=["Paragraphs", "Paragraph", "TextRuns", "TextRun"]
-    ignore_list=["KeepTogether", "KeepWithGroup", "ConsumeContainerWhitespace", 
-                "AutoRefresh", "IntegratedSecurity", "Code", "CodeModules", "Classes", 
-                "DataElementName", "DataElementStyle"]
+    logger.info("Converting '{0}' to nuntiare template file.".format(rdlc))
+
+    report_item_list = [
+                         "Line", 
+                         "Rectangle", 
+                         "Textbox", 
+                         "Image", 
+                         "Subreport", 
+                         "CustomReportItem", 
+                         "Tablix"
+                       ]
+    border_list = [
+                    "Border", 
+                    "TopBorder", 
+                    "BottomBorder", 
+                    "LeftBorder", 
+                    "RightBorder"
+                  ]
+    textbox_list = [
+                     "Paragraphs", 
+                     "Paragraph", 
+                     "TextRuns", 
+                     "TextRun"
+                   ]
+    ignore_list = [
+                    "KeepTogether", 
+                    "KeepWithGroup", 
+                    "ConsumeContainerWhitespace", 
+                    "AutoRefresh", 
+                    "IntegratedSecurity", 
+                    "Code", 
+                    "CodeModules", 
+                    "Classes", 
+                    "DataElementName", 
+                    "DataElementStyle",
+                    "InteractiveHeight",
+                    "InteractiveWidth",
+                  ]
     
     rdlc_path, rdlc_file = os.path.split(rdlc)
     rdlc_name = os.path.splitext(rdlc_file)[0]
@@ -149,8 +185,7 @@ def do_convert(args):
     dom = minidom.parse(rdlc)
     node = dom.getElementsByTagName("Report")
     if not node:
-        print("Not a valid Rdlc report definition file.")
-        sys.exit()
+        logger.critical("Not a valid Rdlc report definition file.", True)
         
     doc = minidom.Document()
     root_element = doc.createElement("Report")
@@ -167,6 +202,7 @@ def do_convert(args):
         f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
     finally:
         f.close()
+    logger.info("'{0}' created.".format(nuntiare))
 
 
 def run():
@@ -197,7 +233,7 @@ def run():
     parser_render.add_argument("--no-overwrite", action='store_true', 
            help="No overwrites resulting file, if it exists.")
     parser_render.add_argument("--save", action='store_true', 
-           help="Saves the nuntiare report file.")
+           help="Append dataset records to definition \nand saves it in a new file with .nuntiare extension.")
     parser_render.add_argument("-v", choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"], 
            default="WARNING", help="Output verbosity. Default: 'WARNING'")
            
@@ -213,7 +249,7 @@ def run():
 
     if hasattr(args, "file"):
         do_render(args)
-    elif hasattr(args, "rdl"):
+    elif hasattr(args, "rdl"):        
         do_convert(args)
 
 if __name__ == "__main__":

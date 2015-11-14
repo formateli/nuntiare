@@ -12,7 +12,7 @@ def run():
         version=get_version(),
         url="http://www.pescaoylimon.com/dev/nuntiare/",
         download_url="", #TODO 
-        description="Python report engine.",
+        description="Python report toolkit.",
         author="Fredy Ramirez",
         author_email="", #TODO
         maintainer_email="", #TODO
@@ -28,11 +28,10 @@ def run():
         ],
         license="GNU General Public License v3",
         platforms=["OS Independent"],
-        packages=["nuntiare", "nuntiare.data_providers", "nuntiare.definition", 
-            "nuntiare.report", "nuntiare.report.page_item", 
-            "nuntiare.render", "nuntiare.render.html"],
+        packages=["nuntiare", "nuntiare.data_providers", "nuntiare.outcome", 
+            "nuntiare.template", "nuntiare.render", "nuntiare.render.html"],
         package_data={'nuntiare':['nuntiare.cfg']},
-        scripts=['scripts/nuntiare'],        
+        scripts=['scripts/nuntiare'],
         data_files=[("docs", ["README", "LICENSE", "COPYRIGHT"])],
     )
 

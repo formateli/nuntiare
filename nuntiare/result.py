@@ -3,41 +3,41 @@
 # contains the full copyright notices and license terms.
 
 from . outcome.page_item import PageItemsInfo
-from . template.expression import Size
+from . definition.expression import Size
 from . import logger
 
 class Result(object):
     def __init__(self, report):
         self.report = report
-        self.page_def = report.parser.object.get_element('Page')
+        self.page_def = report.definition.Page
 
-        self.height = report.parser.get_value(self.page_def,
-            "PageHeight", Size.convert(11, "in"))
-        self.width = report.parser.get_value(self.page_def,
-            "PageWidth", Size.convert(8.5, "in"))
+        self.height = self.page_def.get_value(
+            report, "PageHeight", Size.convert(11, "in"))
+        self.width = self.page_def.get_value(
+            report, "PageWidth", Size.convert(8.5, "in"))
 
         if self.height <= 0:
             logger.error("Report 'PageHeight' must be greater than 0.", True)
         if self.width <= 0:
             logger.error("Report 'PageWidth' must be greater than 0.", True)
 
-        self.margin_top = report.parser.get_value(self.page_def, "TopMargin", 0.0)
-        self.margin_left = report.parser.get_value(self.page_def, "LeftMargin", 0.0)
-        self.margin_right = report.parser.get_value(self.page_def, "RightMargin", 0.0)
-        self.margin_bottom = report.parser.get_value(self.page_def, "BottomMargin", 0.0)
+        self.margin_top = self.page_def.get_value(report, "TopMargin", 0.0)
+        self.margin_left = self.page_def.get_value(report, "LeftMargin", 0.0)
+        self.margin_right = self.page_def.get_value(report, "RightMargin", 0.0)
+        self.margin_bottom = self.page_def.get_value(report, "BottomMargin", 0.0)
 
-        self.columns = report.parser.get_value(self.page_def, "Columns", 1)
-        self.column_spacing = report.parser.get_value(self.page_def,
-            "ColumnSpacing", Size.convert(0.5, "in"))
+        self.columns = self.page_def.get_value(report, "Columns", 1)
+        self.column_spacing = self.page_def.get_value(
+            report, "ColumnSpacing", Size.convert(0.5, "in"))
 
         self.available_width = self.width - self.margin_left - self.margin_right
         self.available_height = self.height - self.margin_top - self.margin_bottom
         
-        self.style = report.parser.get_style(self.page_def)
+        self.style = report.get_style(self.page_def)
         
         self.header = self._get_header_footer(self.page_def, "PageHeader")
         self.footer = self._get_header_footer(self.page_def, "PageFooter")
-        self.body = BodyInfo(report, report.parser.object.get_element("Body"))
+        self.body = BodyInfo(report, report.definition.Body)
 
         if self.body.height == 0 or self.body.height > self.available_height:
             self.body.height = self.available_height
@@ -60,10 +60,10 @@ class _SectionInfo(object):
     def __init__(self, report, definition):
         self.report = report
         self.definition = definition
-        self.height = report.parser.get_value(
+        self.height = report.get_value(
                 definition, "Height", 0.0)
         self.items = None
-        self.style = report.parser.get_style(definition)
+        self.style = report.get_style(definition)
         
     def run_items(self, definition=None):
         def_passed = self.definition
@@ -76,9 +76,9 @@ class _SectionInfo(object):
 class _HeaderFooterInfo(_SectionInfo):
     def __init__(self, report, definition):
         super(_HeaderFooterInfo, self).__init__(report, definition)
-        self.print_on_first_page = report.parser.get_value(
+        self.print_on_first_page = report.get_value(
             definition, "PrintOnFirstPage", True)
-        self.print_on_last_page = report.parser.get_value(
+        self.print_on_last_page = report.get_value(
             definition, "PrintOnLastPage", True)
 
     def run_items(self):

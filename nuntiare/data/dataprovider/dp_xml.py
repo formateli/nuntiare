@@ -2,12 +2,10 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from . dp_connection import Connect
-from . dp_cursor import Cursor
-from . dp_exceptions import InterfaceError
 from xml.dom.minidom import parse
 from nuntiare import logger
 from nuntiare.tools import get_xml_tag_value
+from . definition import Connect, Cursor, InterfaceError
 
 apilevel="2.0"
 paramstyle="pyformat"

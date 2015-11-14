@@ -1,7 +1,9 @@
 release 0.1.0
 =============
 
-- Save and load nuntiare report file
+- nuntiare script: --save option append dataset records to 
+    definition and saves it in a new file with .nuntiare extension.
+    
 - Fix log file location
 
 - unittest: Grouping

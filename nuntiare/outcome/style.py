@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from .. template.expression import Size
+from .. definition.expression import Size
 
 class OutcomeStyle(object):
     '''
@@ -21,54 +21,53 @@ class OutcomeStyle(object):
     def get_style(self, style_def):
         if not style_def and self.first_key:
             return self.styles[self.first_key]
-        parser = self._report.parser
         style = _StyleInfo()
-        style.background_color = parser.get_value(
+        style.background_color = self._report.get_value(
                 style_def, "BackgroundColor", None)
-        style.background_gradient_type = parser.get_value(
+        style.background_gradient_type = self._report.get_value(
                 style_def, "BackgroundGradientType", 'None')
-        style.background_gradient_end_color = parser.get_value(
+        style.background_gradient_end_color = self._report.get_value(
                 style_def, "BackgroundGradientEndColor", None)
         style.background_image = None # TODO
-        style.font_style = parser.get_value(
+        style.font_style = self._report.get_value(
                 style_def, "FontStyle", 'Normal')
-        style.font_family = parser.get_value(
+        style.font_family = self._report.get_value(
                 style_def, "FontFamily", 'Arial')
-        style.font_size = parser.get_value(
+        style.font_size = self._report.get_value(
                 style_def, "FontSize", Size.convert(10, 'pt'))
-        style.font_weight = parser.get_value(
+        style.font_weight = self._report.get_value(
                 style_def, "FontWeight", 'Normal')
-        style.format = parser.get_value(
+        style.format = self._report.get_value(
                 style_def, "Format", None)
-        style.text_decoration = parser.get_value(
+        style.text_decoration = self._report.get_value(
                 style_def, "TextDecoration", 'None')
-        style.text_align = parser.get_value(
+        style.text_align = self._report.get_value(
                 style_def, "TextAlign", 'General')
-        style.vertical_align = parser.get_value(
+        style.vertical_align = self._report.get_value(
                 style_def, "VerticalAlign", 'Top')
-        style.color = parser.get_value(
+        style.color = self._report.get_value(
                 style_def, "Color", '#000000')
-        style.padding_left = parser.get_value(
+        style.padding_left = self._report.get_value(
                 style_def, "PaddingLeft", 0.0)
-        style.padding_right = parser.get_value(
+        style.padding_right = self._report.get_value(
                 style_def, "PaddingRight", 0.0)
-        style.padding_top = parser.get_value(
+        style.padding_top = self._report.get_value(
                 style_def, "PaddingTop", 0.0)
-        style.padding_bottom = parser.get_value(
+        style.padding_bottom = self._report.get_value(
                 style_def, "PaddingBottom", 0.0)
-        style.line_height = parser.get_value(
+        style.line_height = self._report.get_value(
                 style_def, "LineHeight", Size.convert(1, 'pt'))
-        style.direction = parser.get_value(
+        style.direction = self._report.get_value(
                 style_def, "Direction", 'LTR')
-        style.writing_mode = parser.get_value(
+        style.writing_mode = self._report.get_value(
                 style_def, "WritingMode", 'Horizontal')
         
         if style_def:
-            self._get_border(parser, style._border, style_def.get_element("Border"))
-            self._get_border(parser, style.top_border, style_def.get_element("TopBorder"))
-            self._get_border(parser, style.bottom_border, style_def.get_element("BottomBorder"))
-            self._get_border(parser, style.left_border, style_def.get_element("LeftBorder"))
-            self._get_border(parser, style.right_border, style_def.get_element("RightBorder"))
+            self._get_border(style._border, style_def.get_element("Border"))
+            self._get_border(style.top_border, style_def.get_element("TopBorder"))
+            self._get_border(style.bottom_border, style_def.get_element("BottomBorder"))
+            self._get_border(style.left_border, style_def.get_element("LeftBorder"))
+            self._get_border(style.right_border, style_def.get_element("RightBorder"))
         
         str_id = style.get_id()
         if str_id in self.styles:
@@ -84,14 +83,14 @@ class OutcomeStyle(object):
             self.first_key = str_id
         return style
         
-    def _get_border(self, parser, border, border_def):
+    def _get_border(self, border, border_def):
         if not border_def:
             return
-        border.color = parser.get_value(
+        border.color = self._report.get_value(
                 border_def, "Color", None)
-        border.border_style = parser.get_value(
+        border.border_style = self._report.get_value(
                 border_def, "BorderStyle", None)
-        border.Width = parser.get_value(
+        border.Width = self._report.get_value(
                 border_def, "Width", None)
 
 

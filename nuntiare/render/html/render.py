@@ -17,8 +17,8 @@ class RenderObject(Render):
     def render(self, report, overwrite):
         super(RenderObject, self).render(report, overwrite)
 
-        report.globals['total_pages'] = 1
-        report.globals['page_number'] = 1
+        report.globals.TotalPages = 1
+        report.globals.PageNumber = 1
 
         self.doc = _HtmlElement("DOCTYPE", None)
         html = _HtmlElement("html", None)
@@ -40,8 +40,8 @@ class RenderObject(Render):
         body.add_element(container)
         html.add_element(body)
 
-        str_style = "div#Middle {display: inline-block;vertical-align: middle;}\n" + \
-                "div#Bottom {display: inline-block;vertical-align: bottom;}\n"
+        str_style = ".div_Middle {display: inline-block;vertical-align: middle;}\n" + \
+                ".div_Bottom {display: inline-block;vertical-align: bottom;}\n"
         for key, value in self.style_helper.style_list.items():
             if value.find("; vertical-align:Middle;") > -1:
                 str_style = str_style + key + \
@@ -62,7 +62,7 @@ class RenderObject(Render):
     def _get_head(self, report):
         head = _HtmlElement("head", None)
         title = _HtmlElement("title", None)
-        title.add_element(_HtmlElement("text", None, report.globals['report_name']))
+        title.add_element(_HtmlElement("text", None, report.globals.ReportName))
         head.add_element(title)
         return head
 
@@ -98,33 +98,35 @@ class RenderObject(Render):
             return
         for it in items:
             if it.type == "PageLine":
-                continue
+                continue # Not supported
             if it.type == "PageRectangle" or it.type == "PageText":
                 el = self._get_rectangle(it)
-            if it.type == "PageGrid" or it.type == "PageTable":
-                el = self.get_grid(it)
+            if it.type == "PageTablix":
+                el = self._get_grid(it)
 
             container.add_element(el)
 
     def _get_grid(self, it):
         grid = _HtmlElement("table", it.name)
         self._add_style(grid, it, ignore_list=['height',])
-
-        for row in it.rows:
-            if row.hidden:
-                continue
+    
+        for row in it.grid_body.rows:
+            #if row.hidden: TODO
+            #    continue
             rw = _HtmlElement("tr", None)
             for cell in row.cells:
-                self._render_items(cell.items_info.item_list, rw)
+                if not cell.object:
+                    continue
+                self._render_items(cell.object.item_list, rw)
             grid.add_element(rw)
         
-        res = self.get_td_parent_element(it, grid)  
+        res = self._get_td_parent_element(it, grid)  
         return res
 
     def _get_rectangle(self, it):
-        is_textbox = True if it.type == "PageText" else False
+        in_cell = self._is_in_cell(it)
+        is_textbox = True if it.type == "PageText" else False        
         vertical_align = None
-        in_cell = self._is_in_cell(it) 
 
         txt = ""
         if is_textbox:
@@ -135,36 +137,55 @@ class RenderObject(Render):
             else:
                 txt = ""
 
-        if not is_textbox or not it.parent or it.parent.type == "PageRectangle":
+        if not it.parent or it.parent.type == "PageRectangle":
             # It is just a rectangle or a Textbox belonging to a rectangle.
             is_div = True
         else: # It is a Textbox belonging to a cell.
             is_div = False
 
+        ignore = []
+        rec = None
+        sub_rec = None
         if is_div:
-            rec = _HtmlElement("div", it.name)
-            ignore = []
+            rec = _HtmlElement("div", it.name)            
             if it.name == "div_header" or it.name == "div_footer":
-                ignore = ['overflow',]
+                ignore.append('overflow')
             if is_textbox and (it.can_grow or it.can_shrink):
                 ignore.append('height')
-            if it.style.vertical_align == "Middle" or it.style.vertical_align == "Bottom":                 
+            if it.style.vertical_align in ('Middle', 'Bottom'):
                 vertical_align = it.style.vertical_align
-            self._add_style(rec, it, txt, ignore_list=ignore)
-        else: 
+            self._add_style(rec, it, ignore_list=ignore)
+        else:
             rec = _HtmlElement("td", it.name)
+            it.height = it.parent.height
+            it.width = it.parent.width
             if it.parent.col_span > 1:
                 rec.add_attribute("colspan", it.parent.col_span)
-            it.width = it.parent.width
-            self._add_style(rec, it, txt, ['height',])
+            if it.parent.row_span > 1:
+                rec.add_attribute("rowspan", it.parent.row_span)
+            if is_textbox and not it.can_grow:
+                sub_rec = _HtmlElement("div", "div_" + it.name)
+                rec.add_element(sub_rec)            
+            if sub_rec:                
+                self._add_style(sub_rec, it, ['width', 'border-collapse', 
+                        'border-style', 'border-width', 'border-color', 
+                        'color', 'vertical-align', 'font-family', 
+                        'font-weight', 'font-style', 'font-size', 
+                        'text-align', 'text-decoration', 'padding'])
+                self._add_style(rec, it, ['height',])
+            else:
+                self._add_style(rec, it, [])
  
         if txt != "" and not vertical_align:
-            rec.add_element(_HtmlElement("text", None, txt))
+            if sub_rec:
+                sub_rec.add_element(_HtmlElement("text", None, txt))
+            else:
+                rec.add_element(_HtmlElement("text", None, txt))
 
         self._render_items(it.get_item_list(), rec)
 
         if is_div and in_cell:
-            res = self.get_td_parent_element(it, rec)  
+            res = self._get_td_parent_element(it, rec)
         else:
             res = rec
         
@@ -185,10 +206,10 @@ class RenderObject(Render):
         td = _HtmlElement("td", None)
         if it.parent.col_span > 1:
             td.add_attribute("colspan", it.parent.col_span)
-        td.add_element(element) 
+        td.add_element(element)
         return td
 
-    def _add_style(self, html_element, it, text=None, ignore_list=[]):
+    def _add_style(self, html_element, it, ignore_list=[]):
         if not html_element.id:
             return
         
@@ -200,12 +221,17 @@ class RenderObject(Render):
 
     def _get_style(self, it, ignore_list=[]):
         properties=[] 
-        self._add_style_property('overflow', 'hidden', ignore_list,  properties)
-        self._add_style_property('height', "{0}mm".format(it.height), ignore_list,  properties)
-        self._add_style_property('width', "{0}mm".format(it.width), ignore_list,  properties)
+        self._add_style_property(
+            'overflow', 'hidden', ignore_list,  properties)
+        self._add_style_property(
+            'height', "{0}mm".format(it.height), ignore_list,  properties)
+        self._add_style_property(
+            'width', "{0}mm".format(it.width), ignore_list,  properties)
         if it.style.background_color:
-            self._add_style_property('background-color', it.style.background_color, ignore_list, properties) 
-        self._add_style_property('border-collapse', 'collapse', ignore_list, properties)
+            self._add_style_property(
+                'background-color', it.style.background_color, ignore_list, properties) 
+        self._add_style_property(
+            'border-collapse', 'collapse', ignore_list, properties)
         self._add_style_property('border-style', "{0} {1} {2} {3}".format(
                 self._get_border_style_width(it.style.top_border.border_style), 
                 self._get_border_style_width(it.style.right_border.border_style),
@@ -223,15 +249,24 @@ class RenderObject(Render):
                 it.style.left_border.color), ignore_list,  properties)
 
         if it.type == "PageText":
-            self._add_style_property('color', it.style.color, ignore_list,  properties)
-            self._add_style_property('vertical-align', it.style.vertical_align, ignore_list,  properties)
-            self._add_style_property('font-family', it.style.font_family, ignore_list,  properties)
-            self._add_style_property('font-weight', it.style.font_weight, ignore_list,  properties)
-            self._add_style_property('font-style', it.style.font_style, ignore_list,  properties)
-            self._add_style_property('font-size', "{0}mm".format(it.style.font_size), ignore_list,  properties)
-            self._add_style_property('text-align', it.style.text_align, ignore_list,  properties)
-            self._add_style_property('text-decoration', it.style.text_decoration, ignore_list,  properties)
-            self._add_style_property('padding', "{0}mm {1}mm {2}mm {3}mm".format(
+            self._add_style_property(
+                'color', it.style.color, ignore_list,  properties)
+            self._add_style_property(
+                'vertical-align', it.style.vertical_align, ignore_list,  properties)
+            self._add_style_property(
+                'font-family', it.style.font_family, ignore_list,  properties)
+            self._add_style_property(
+                'font-weight', it.style.font_weight, ignore_list,  properties)
+            self._add_style_property(
+                'font-style', it.style.font_style, ignore_list,  properties)
+            self._add_style_property(
+                'font-size', "{0}mm".format(it.style.font_size), ignore_list,  properties)
+            self._add_style_property(
+                'text-align', it.style.text_align, ignore_list,  properties)
+            self._add_style_property(
+                'text-decoration', it.style.text_decoration, ignore_list,  properties)
+            self._add_style_property(
+                'padding', "{0}mm {1}mm {2}mm {3}mm".format(
                                 it.style.padding_top,
                                 it.style.padding_right,
                                 it.style.padding_left,
@@ -261,11 +296,14 @@ class RenderObject(Render):
             finally:
                 f.close()
         except IOError as e:
-            logger.error("I/O Error trying to write to file '{0}'. {1}.".format(self.result_file, e.strerror), 
+            logger.error("I/O Error trying to write to file '{0}'. {1}.".format(
+                self.result_file, e.strerror), 
                     True, "IOError")
         except:
-            logger.error("Unexpected error trying to write to file '{0}'. {1}.".format(self.result_file, sys.exc_info()[0]),
-                True, "IOError")
+            logger.error(
+                "Unexpected error trying to write to file '{0}'. {1}.".format(
+                    self.result_file, sys.exc_info()[0]),
+                        True, "IOError")
 
     def help(self):
         "HtmlRender help"
@@ -284,7 +322,7 @@ class _StyleHelper(object):
         i = obj.get_id_enum(style)
         self.style_object_list[id] = obj
         
-        key = "{0}#{1}-{2}".format(tag, id, i)
+        key = ".{0}_{1}-{2}".format(tag, id, i)
         if not key in self.style_list:
             self.style_list[key] = style
         
@@ -309,15 +347,17 @@ class _HtmlElement(object):
             element_id = element_id.replace(".","_")
         self.id = element_id
         self.tag = tag
-        self.text=text 
+        self.text = text 
         self.attributes = None
         self.content = []
 
     def add_attribute(self, key, value):
         if not self.attributes:
-            self.attributes = "{0}='{1}'".format(key, value)
+            self.attributes = "{0}='{1}'".format(
+                key, value)
         else: 
-            self.attributes = "{0} {1}='{2}'".format(self.attributes, key, value)
+            self.attributes = "{0} {1}='{2}'".format(
+                self.attributes, key, value)
 
     def add_element(self, el):
         self.content.append(el)
@@ -325,7 +365,7 @@ class _HtmlElement(object):
     def get_element(self):
         result = []
         if self.id:
-            self.add_attribute("id", self.id)
+            self.add_attribute("class", self.tag + "_" + self.id)
         if self.text and len(self.content) == 0:
             return [self.text,]
         if self.tag == "DOCTYPE":

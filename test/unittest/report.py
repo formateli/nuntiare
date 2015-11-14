@@ -11,6 +11,7 @@ class ReportTest(unittest.TestCase):
         report1 = Report(self._get_xml_report())
         self.assertEqual(report1.parser.type, "xml_template")
         self._verify(report1)
+        
         report1.save(True)
 
         f_result = os.path.join(report1.globals['output_directory'], 

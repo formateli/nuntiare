@@ -12,13 +12,13 @@ size_72 = float(72)
 
 def get_xml_tag_value(node):
     'Returns the valid value of xml node'
-    xml_str = node.toxml() 
+    xml_str = node.toxml()
     start = xml_str.find('>')
     if start == -1:
-        return None
+        return
     end = xml_str.rfind('<')
     if end < start:
-        return None
+        return
     res = unescape(xml_str[start + 1:end])
     return res
 

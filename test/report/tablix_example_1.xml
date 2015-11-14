@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report>
+  <Name>tablix_example_1</Name>
+  <Description>Tablix example 1</Description>
+  <Author>Fredy Ramirez</Author>  
+
+  <Page/>
+  
+  <ReportParameters>
+    <ReportParameter>
+      <Name>conn_string</Name>
+      <DataType>String</DataType>
+      <DefaultValue>dbname=xxx host=localhost port=5432 user=xxx password=xxx client_encoding=UNICODE connect_timeout=0</DefaultValue>
+    </ReportParameter>
+  </ReportParameters>
+  
+  <Body>
+    <ReportItems>
+      <Tablix>
+        <Name>Tablix1</Name>
+        <DataSetName>AddressDataSet</DataSetName>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember/>
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <Group>
+                <Name>Details</Name>
+              </Group>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>5.5in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.42in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Rectangle>
+                        <Name>Rectangle1</Name>
+                        <ReportItems>
+                          <Textbox>
+                            <Name>Address</Name>
+                            <CanGrow>true</CanGrow>
+                            <Value>=F.AddressLine1</Value>
+<!--                            
+                            <Value>=Fields!City.Value</Value>
+-->                            
+                            <Height>0.23958in</Height>
+                            <Width>2.5625in</Width>
+                          </Textbox>
+                          <Textbox>
+                            <Name>StateProvince</Name>
+                            <CanGrow>true</CanGrow>
+                            <Value>=F.StateProvince</Value>
+<!--                            
+                            <Value>=Fields!CountryRegion.Value</Value>
+                            <Value>=Fields!PostalCode.Value</Value>
+-->                            
+                            <Left>3in</Left>
+                            <Height>0.22in</Height>
+                            <Width>2.6in</Width>
+                            <ZIndex>1</ZIndex>
+                          </Textbox>
+                          <Line>
+                            <Name>Line1</Name>
+                            <Top>0.35in</Top>
+                            <Left>0.15in</Left>
+                            <Height>0in</Height>
+                            <Width>5.2in</Width>
+                            <ZIndex>2</ZIndex>
+                            <Style>
+                              <Border>
+                                <BorderStyle>Solid</BorderStyle>
+                              </Border>
+                            </Style>
+                          </Line>
+                        </ReportItems>
+                      </Rectangle>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+      </Tablix>
+    </ReportItems>
+    <Style/>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Name>src1</Name>
+      <ConnectionProperties>
+        <DataProvider>postgresql</DataProvider>
+        <ConnectObject>=P.conn_string</ConnectObject>
+      </ConnectionProperties>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet>
+      <Name>AddressDataSet</Name>
+      <Query>
+        <DataSourceName>src1</DataSourceName>
+        <CommandText>SELECT address.addressline1, address.city, address.postalcode, 
+stateprovince.name as stateprovince, countryregion.name as countryregion 
+FROM address 
+INNER JOIN stateprovince ON address.stateprovinceid = stateprovince.stateprovinceid 
+INNER JOIN countryregion ON countryregion.countryregioncode = stateprovince.countryregioncode</CommandText>
+      </Query>
+      <Fields>
+        <Field>
+          <Name>AddressLine1</Name>
+          <DataField>addressline1</DataField>
+        </Field>
+        <Field>
+          <Name>City</Name>
+          <DataField>city</DataField>
+        </Field>
+        <Field>
+          <Name>StateProvince</Name>
+          <DataField>stateprovince</DataField>
+        </Field>
+        <Field>
+          <Name>PostalCode</Name>
+          <DataField>postalcode</DataField>
+        </Field>
+        <Field>
+          <Name>CountryRegion</Name>
+          <DataField>countryregion</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+</Report>

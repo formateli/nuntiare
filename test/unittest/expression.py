@@ -3,8 +3,8 @@
 # contains the full copyright notices and license terms.
 
 import unittest
-from nuntiare.template.expression import String, Boolean, Integer, \
-        Color, Size
+from nuntiare.definition.expression import String, Boolean, \
+        Integer, Color, Size
 from nuntiare.report import Report
 
 class ElementTypeTest(unittest.TestCase):
@@ -20,68 +20,68 @@ class ElementTypeTest(unittest.TestCase):
                 </Body>
             </Report>"""
     
-        report = Report(string_xml)        
+        report = Report(string_xml)
         report.run()
     
         # String
-        s = String(None, True)
-        self.assertEqual(s.value(report), None, "string 0")
+        s = String(None, lnk=None, must_be_constant=True)
+        self.assertEqual(s.value(report), None)
         s = String("Hello world!", True)
-        self.assertEqual(s.value(report), "Hello world!", "string 1")
+        self.assertEqual(s.value(report), "Hello world!", )
         s = String("= 'abc' + 'def'", False) # Eval Expression
-        self.assertEqual(s.value(report), "abcdef", "string 2")
+        self.assertEqual(s.value(report), "abcdef")
 
         # Boolean
         s = Boolean(None, True)
-        self.assertEqual(s.value(report), None, "Boolean 0")
+        self.assertEqual(s.value(report), None)
         s = Boolean("true", True)
-        self.assertEqual(s.value(report), True, "Boolean 1")
+        self.assertEqual(s.value(report), True)
         s = Boolean("false", True)
-        self.assertEqual(s.value(report), False, "Boolean 2")
+        self.assertEqual(s.value(report), False)
         s = Boolean("=False", False)
-        self.assertEqual(s.value(report), False, "Boolean 3")
+        self.assertEqual(s.value(report), False)
         s = Boolean("Y", True)
-        self.assertEqual(s.value(report), True, "Boolean 4")        
+        self.assertEqual(s.value(report), True)
         s = Boolean("", True)
-        self.assertEqual(s.value(report), False, "Boolean 5")
+        self.assertEqual(s.value(report), False)
         s = Boolean("Xxs", True)
-        self.assertEqual(s.value(report), False, "Boolean 6")
+        self.assertEqual(s.value(report), False)
         s = Boolean("='true'", False)
-        self.assertEqual(s.value(report), True, "Boolean 7")        
+        self.assertEqual(s.value(report), True)
         s = Boolean("=True", False)
-        self.assertEqual(s.value(report), True, "Boolean 8")                
+        self.assertEqual(s.value(report), True)
         
         # Integer
         s = Integer(None, True)
-        self.assertEqual(s.value(report), None, "Integer 0")
+        self.assertEqual(s.value(report), None)
         s = Integer("0", True)
-        self.assertEqual(s.value(report), 0, "Integer 1") 
+        self.assertEqual(s.value(report), 0)
         s = Integer("=3.2", False)
-        self.assertEqual(s.value(report), 3, "Integer 2")
+        self.assertEqual(s.value(report), 3)
         s = Integer("-1", True)
-        self.assertEqual(s.value(report), -1, "Integer 3")
+        self.assertEqual(s.value(report), -1)
 
         # Size
         s = Size(None, True)
-        self.assertEqual(s.value(report), 0.0, "Size None")
+        self.assertEqual(s.value(report), 0.0)
         s = Size('10mm', True)
-        self.assertEqual(s.value(report), 10.0, "Size '10mm'")
+        self.assertEqual(s.value(report), 10.0)
         s = Size('10 mm', True)
-        self.assertEqual(s.value(report), 10.0, "Size '10 mm'")
+        self.assertEqual(s.value(report), 10.0)
         s = Size('1in', True)
-        self.assertEqual(s.value(report), 25.4, "Size '1in'")
+        self.assertEqual(s.value(report), 25.4)
         s = Size.convert(25.4, 'mm', 'in')
-        self.assertEqual(s, 1, "Size.convert((25.4,'mm','in'))")
+        self.assertEqual(s, 1)
 
         # Color
         s = Color(None, True)
-        self.assertEqual(s.value(report), '#000000', "Color None")
+        self.assertEqual(s.value(report), '#000000')
         s = Color('Black', True)
-        self.assertEqual(s.value(report), '#000000', "Color 'Black'")
+        self.assertEqual(s.value(report), '#000000')
         s = Color('Blue', True)
-        self.assertEqual(s.value(report), '#0000FF', "Color 'Blue'") 
+        self.assertEqual(s.value(report), '#0000FF')
         s = Color('IndianRed', True)
-        self.assertEqual(s.value(report), '#CD5C5C', "Color 'IndianRed'") 
+        self.assertEqual(s.value(report), '#CD5C5C')
         
         err_message = None
         try:

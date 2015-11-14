@@ -6,27 +6,33 @@ from . expression import Expression
 from .. import logger
 
 class _Enum(Expression):
-    def __init__(self, enum_name, expression, enum_list, 
+    def __init__(self, expression, enum_list, 
             lnk, must_be_constant):
-        self.name = enum_name 
-        self.enum_list = enum_list
+        self._enum_list = enum_list
         super(_Enum, self).__init__(expression, lnk, must_be_constant)
 
     def value(self, report):
         name = super(_Enum, self).value(report)
-        return self.get_enum_by_name(name)
+        return self._get_enum_by_name(name)
 
-    def get_enum_by_name(self, name):
+    def _get_enum_by_name(self, name):
         if not name or name == '':
             return None
-        name=name.strip().lower()
-        if name in self.enum_list:
-            return self.enum_list[name]
+        l_name = name.strip().lower()
+        if l_name in self._enum_list:
+            return self._enum_list[l_name]
 
-        logger.warn("Unknown value '{0}' for Enum '{1}'. <None> assigned.".format(name, self.name))
-        return None
+        logger.error(
+            "Invalid value '{0}' for Enum '{1}'. Valid values are: {2}".format(
+                name, self.__class__.__name__, self.get_values_list()), True)
 
-        
+    def get_values_list(self):
+        result = []
+        for key, value in self._enum_list.items():
+            result.append(value)
+        return result
+
+
 class DataElementOutput(_Enum):
     enum_list={'auto': 'Auto',
                'output': 'Output', 
@@ -35,8 +41,8 @@ class DataElementOutput(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(DataElementOutput, self).__init__('DataElementOutput', expression, 
-                DataElementOutput.enum_list, lnk, must_be_constant)
+        super(DataElementOutput, self).__init__(
+            expression, DataElementOutput.enum_list, lnk, must_be_constant)
 
                 
 class BorderStyle(_Enum):
@@ -53,17 +59,18 @@ class BorderStyle(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(BorderStyle, self).__init__('BorderStyle', expression, 
-                BorderStyle.enum_list, lnk, must_be_constant)
-                
+        super(BorderStyle, self).__init__(
+            expression, BorderStyle.enum_list, lnk, must_be_constant)
+
+
 class FontStyle(_Enum):
     enum_list={'normal': 'Normal',
                'italic': 'Italic', 
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(FontStyle, self).__init__('FontStyle', expression, 
-            FontStyle.enum_list, lnk, must_be_constant)
+        super(FontStyle, self).__init__(
+            expression, FontStyle.enum_list, lnk, must_be_constant)
 
 
 class FontWeight(_Enum):
@@ -83,8 +90,8 @@ class FontWeight(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(FontWeight, self).__init__('FontWeight', expression, 
-            FontWeight.enum_list, lnk, must_be_constant)
+        super(FontWeight, self).__init__(
+            expression, FontWeight.enum_list, lnk, must_be_constant)
 
 
 class TextDecoration(_Enum):
@@ -95,8 +102,8 @@ class TextDecoration(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(TextDecoration, self).__init__('TextDecoration', expression, 
-            TextDecoration.enum_list, lnk, must_be_constant)
+        super(TextDecoration, self).__init__(
+            expression, TextDecoration.enum_list, lnk, must_be_constant)
 
 
 class TextAlign(_Enum):
@@ -108,8 +115,8 @@ class TextAlign(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(TextAlign, self).__init__('TextAlign', expression, 
-            TextAlign.enum_list, lnk, must_be_constant)
+        super(TextAlign, self).__init__(
+            expression, TextAlign.enum_list, lnk, must_be_constant)
 
 
 class VerticalAlign(_Enum):
@@ -119,8 +126,8 @@ class VerticalAlign(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(VerticalAlign, self).__init__('VerticalAlign', expression, 
-            VerticalAlign.enum_list, lnk, must_be_constant)
+        super(VerticalAlign, self).__init__(
+            expression, VerticalAlign.enum_list, lnk, must_be_constant)
 
 
 class TextDirection(_Enum):
@@ -129,8 +136,8 @@ class TextDirection(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(TextDirection, self).__init__('TextDirection', expression, 
-            TextDirection.enum_list, lnk, must_be_constant)
+        super(TextDirection, self).__init__(
+            expression, TextDirection.enum_list, lnk, must_be_constant)
 
 
 class WritingMode(_Enum):
@@ -139,8 +146,8 @@ class WritingMode(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(WritingMode, self).__init__('WritingMode', expression, 
-            WritingMode.enum_list, lnk, must_be_constant)
+        super(WritingMode, self).__init__(
+            expression, WritingMode.enum_list, lnk, must_be_constant)
 
 
 class BackgroundRepeat(_Enum):
@@ -157,8 +164,8 @@ class BackgroundRepeat(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(BackgroundRepeat, self).__init__('BackgroundRepeat', expression, 
-                BackgroundRepeat.enum_list, lnk, must_be_constant)
+        super(BackgroundRepeat, self).__init__(
+            expression, BackgroundRepeat.enum_list, lnk, must_be_constant)
 
 
 class BackgroundGradientType(_Enum):
@@ -173,8 +180,8 @@ class BackgroundGradientType(_Enum):
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(BackgroundGradientType, self).__init__('BackgroundGradientType', expression, 
-                BackgroundGradientType.enum_list, lnk, must_be_constant)            
+        super(BackgroundGradientType, self).__init__(
+            expression, BackgroundGradientType.enum_list, lnk, must_be_constant)            
 
 
 class DataType(_Enum):
@@ -184,11 +191,12 @@ class DataType(_Enum):
                'float': 'Float', 
                'decimal': 'Decimal',
                'string': 'String', 
+               'object': 'Object',
               }
 
     def __init__(self, expression, lnk, must_be_constant):
-        super(DataType, self).__init__('DataType', expression, 
-            DataType.enum_list, lnk, must_be_constant)
+        super(DataType, self).__init__(
+            expression, DataType.enum_list, lnk, must_be_constant)
             
             
 class Operator(_Enum):
@@ -207,37 +215,42 @@ class Operator(_Enum):
                'between': 'Between',
               }
     def __init__(self, expression, lnk, must_be_constant):
-        super(Operator, self).__init__('Operator', expression, 
-                Operator.enum_list, lnk, must_be_constant)
-                
-                
+        super(Operator, self).__init__(
+            expression, Operator.enum_list, lnk, must_be_constant)
+
+
 class SortDirection(_Enum):
     enum_list={'ascending': 'Ascending',
                'descending': 'Descending',  
               }
     def __init__(self, expression, lnk, must_be_constant):
-        super(SortDirection, self).__init__('SortDirection', expression, 
-            SortDirection.enum_list, lnk, must_be_constant)
-            
+        super(SortDirection, self).__init__(
+            expression, SortDirection.enum_list, lnk, must_be_constant)
 
-class Function(_Enum):
-    enum_list={'sum': 'Sum',
-               'avg': 'Avg',
-               'max': 'Max',
-               'min': 'Min',
-               'count': 'Count',
-               'countdistinct': 'CountDistinct',
-               'countrows': 'CountRows',
-               'stdev': 'stDev',
-               'stdevp': 'stDevP',
-               'var': 'Var',
-               'varp': 'VarP',
-               'first': 'First',
-               'last': 'Last',
-               'previous': 'Previous',
-               'custom': 'Custom',
+
+class BreakLocation(_Enum):
+    '''
+    BreakLocation enum.
+    Start: There should be a page break
+        before the report item or each
+        instance of the group.
+    End: There should be a page break
+        after the report item or each
+        instance of the group.
+    StartAndEnd: There should be a page break
+        both before and after the report item 
+        or each instance of the group.
+    Between: There should be a page break
+        between each instance of the group 
+        (does not apply to reportitems).
+    '''
+
+    enum_list={'start': 'Start',
+               'end': 'End',
+               'startandend': 'StartAndEnd',
+               'between': 'Between',
               }
     def __init__(self, expression, lnk, must_be_constant):
-        super(Function, self).__init__('VariableFunction', expression, 
-            Function.enum_list, lnk, must_be_constant)
-        
+        super(BreakLocation, self).__init__(
+            expression, BreakLocation.enum_list, lnk, must_be_constant)
+            

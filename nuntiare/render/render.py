@@ -17,8 +17,8 @@ class Render(object):
                 "No Result object in report. Have you executed run()?", True)
             
         if self.extension:
-            self.result_file = os.path.join(report.globals['output_directory'],
-                report.globals['output_name'] + "." + self.extension)
+            self.result_file = os.path.join(report.globals['OutputDirectory'],
+                report.globals['OutputName'] + "." + self.extension)
             if not overwrite:
                 if os.path.isfile(self.result_file):
                     logger.error(

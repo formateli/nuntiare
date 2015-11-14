@@ -15,7 +15,7 @@ except ImportError:
 from . version import VERSION, get_version
 
 __author__ = 'Fredy Ramirez'
-__copyright__='(C) 2013-2015 Fredy Ramirez <http://www.pescaoylimon.com>'
+__copyright__='(C) 2013-2015 Fredy Ramirez <http://www.formateli.com>'
 __version__ = get_version()
 __license__ = 'GNU GENERAL PUBLIC LICENSE Version 3'
 __directory__ = os.path.dirname(os.path.realpath(__file__))
@@ -43,17 +43,17 @@ logger = NuntiareLog(get_config_value('logging', 'logger_level', 'DEBUG'))
 
 log_file = get_config_value('logging', 'file', '')
 if log_file != '':
-    max_bytes = int(get_config_value('logging', 'size', 5)) * 1024    
+    max_bytes = int(get_config_value('logging', 'size', 5)) * 1024
     count = int(get_config_value('logging', 'count', 5))
     file_level = get_config_value('logging', 'file_level', 'DEBUG')
-    
+
     try:    
         rotating_fh=logging.handlers.RotatingFileHandler(
                 log_file, maxBytes=max_bytes, backupCount=count)
-    except IOError:                
+    except IOError:
         rotating_fh=None
         
     if rotating_fh:
         logger.add_handler(rotating_fh, level=file_level, 
                 formatter='%(levelname)s: %(message)s')
-                
+

@@ -2,14 +2,13 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-
-from . data_type import DataType as dt
 from . expression import Expression, String, Boolean, Integer, Variant, Size, Color
 from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode, \
         BackgroundRepeat, BackgroundGradientType, \
-        DataType, SortDirection, Operator
+        DataType, SortDirection, Operator, BreakLocation
 from .. import logger
+from .. data import DataType as dt
 from .. tools import get_xml_tag_value
 
 class Element(object):
@@ -37,14 +36,18 @@ class Element(object):
             Card: Values can be: 0 (0 to 1), 1 (1), 2 (1 to N), 3 (0 to N). Default value: 0
             Must be a constant: If true, this element value can not be an expression.
                 Ignore if type is Element.ELEMENT. Default value: False
+            DefaultValue
+                Ignore if type is Element.ELEMENT. Default value: False
         lnk: The linking object
         '''
         
         super(Element, self).__init__()
+        
+        self._original_element_list = elements
 
-        self.element_list={}        # Here we list elements found for this element
-        lnk.obj=self
-        self.lnk=lnk                # This is the linking object. See link.py
+        self.element_list={}    # Here we list elements found for this element
+        lnk.obj = self
+        self.lnk = lnk          # This is the linking object. See link.py
         
         self.element_name = self.__class__.__name__
         self.expression_list={}
@@ -52,56 +55,65 @@ class Element(object):
 
         # Collect all report items, at the end, order by ZIndex or appears order
         items_by_name={}
-        z_count=0        
+        z_count = 0
 
         for n in node.childNodes:
             if not n.nodeName in elements:
+                if n.nodeName == "DataEmbedded" and \
+                        n.parentNode.nodeName == "Report":
+                    self.set_data()
+                    continue
                 if n.nodeName not in ('#text', '#comment'):
                     logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(
                             n.nodeName, lnk.obj.__class__.__name__))
                 continue
             
-            element_type, card, must_be_constant = Element.get_element_def(
-                            elements[n.nodeName],
-                            n.nodeName
-                        )
-            elements[n.nodeName]=[element_type, card, must_be_constant, True]
+            element_type, card, must_be_constant, default_value = Element.get_element_def(
+                            elements[n.nodeName], n.nodeName)
+
+            elements[n.nodeName] = [element_type, card, must_be_constant, default_value, True]
                 
             if element_type == Element.ELEMENT:
                 el = Element.element_factory(n.nodeName, n, lnk)
                 if n.nodeName in ("Line", "Rectangle", "Textbox", "Image", "Subreport",
                             "CustomReportItem", "Tablix"):
                     if n.nodeName in ("Textbox"): 
-                        if el.name in lnk.report_def.report_items:
-                            logger.error("Report already has a Texbox with name '{0}'".format(el.name), True)
-                        lnk.report_def.report_items[el.name] = el
-                    if el.name in items_by_name:
-                        logger.error("The container already has a report item with name '{0}'".format(el.name), True)
-                    i = el.zindex if el.zindex > -1 else z_count
-                    items_by_name[el.name]=[el, i]
+                        if el.Name in lnk.report_def.report_items:
+                            logger.error(
+                                "Report already has a Texbox with name '{0}'".format(
+                                    el.Name), True)
+                        lnk.report_def.report_items[el.Name] = el
+                    if el.Name in items_by_name:
+                        logger.error(
+                            "The container already has a report item with name '{0}'".format(
+                                el.Name), True)
+                    i = el.ZIndex if el.ZIndex > -1 else z_count
+                    items_by_name[el.Name]=[el, i]
                     z_count = z_count + 1
                 self.element_list[n.nodeName] = el
                 self.non_expression_list[n.nodeName] = self.element_list[n.nodeName]
-            elif element_type == Element.ENUM:
-                self.element_list[n.nodeName]=Element.enum_factory(
-                        n.nodeName, n, lnk, card, must_be_constant)
-                self.expression_list[n.nodeName] = self.element_list[n.nodeName]                
             elif element_type == Element.EXPRESSION_LIST:
                 self.element_list[n.nodeName]=Element.expression_list_factory(
                         n.nodeName, n, lnk)
-                self.non_expression_list[n.nodeName] = self.element_list[n.nodeName]
+                self.non_expression_list[n.nodeName] = self.element_list[n.nodeName]                
+            elif element_type == Element.ENUM:
+                self.element_list[n.nodeName]=Element.enum_factory(
+                        n.nodeName, n, lnk, card, must_be_constant)
+                self.expression_list[n.nodeName] = self.element_list[n.nodeName]
+                self._set_attr(n.nodeName, False, default_value, must_be_constant)
             else: 
                 self.element_list[n.nodeName]=Element.expression_factory(
                         elements[n.nodeName][0], n, lnk, card, must_be_constant)
                 self.expression_list[n.nodeName] = self.element_list[n.nodeName]
+                self._set_attr(n.nodeName, False, default_value, must_be_constant)
 
 
         # Validate elements not used
         for key, el in elements.items():
-            if len(el) < 4: # Not verified in the node loop above
-                element_type, card, must_be_constant = Element.get_element_def(
+            if len(el) < 5: # Not verified in the node loop above
+                element_type, card, must_be_constant, default_value = Element.get_element_def(
                             el, key)
-                if card in [1,2]:
+                if card in [1, 2]:
                     logger.error("'{0}' must be defined for '{1}'.".format(key, 
                             lnk.obj.__class__.__name__), True)
 
@@ -115,12 +127,51 @@ class Element(object):
             res = sorted(z_list, key=lambda z: z[0])
             for r in res:
                 reportitems_list.append(r[1])
-                
+    
+    def _set_attr(self, name, is_element, value, must_be_constant):
+        if is_element:
+            self.__setattr__(name, value)
+        else:
+            if must_be_constant:
+                self.__setattr__(
+                    name, Expression.get_value_or_default(
+                        None, self, name, value))
+
+    def __getattr__(self, name):
+        self._verify_element(name)
+        result = Element.get_element_def(
+                    self._original_element_list[name], name)
+            
+        if result[0] in (Element.ELEMENT, Element.EXPRESSION_LIST, Element.URL):
+            el = self.get_element(name)
+            if el:
+                self._set_attr(name, True, el, False)
+                return self.__dict__[name]
+        else:
+            if not result[2]:
+                logger.error(
+                    "'{0}' is not a constant property for element '{1}'. Use get_value() instead.".format(
+                        name, self.element_name), True)
+            else:
+                self._set_attr(name, False, result[3], result[2])
+                return self.__dict__[name]
+
+    def get_value(self, report, name, default_value=None):
+        self._verify_element(name)
+        return Expression.get_value_or_default(
+            report, self, name, default_value)
+
+    def _verify_element(self, name):
+        if not name in self._original_element_list.keys():
+            logger.error(
+                "'{0}' is not a valid member for element '{1}'. Valid values are: {2}".format(
+                    name, self.element_name, self._original_element_list.keys()), True)
+
     @staticmethod
     def element_factory(name, node, lnk):
         ln = Link(lnk.report_def, lnk.obj)
         if name=='Page':
-            obj = Page(node, ln)    
+            obj = Page(node, ln)
         elif name=='PageHeader':
             obj = PageHeader(node, ln)
         elif name=='PageFooter':
@@ -213,14 +264,16 @@ class Element(object):
             obj = Rectangle(node, ln)
         elif name=='Textbox':
             obj = Textbox(node, ln)
+        elif name=='PageBreak':
+            obj = PageBreak(node, ln)            
     #    elif name=='Image':
     #        obj = Image(node, ln)
-    #    elif name=='Imports':
-    #        obj = Imports(node, ln)
-    #    elif name=='Import':
-    #        obj = Import(node, ln)
+        elif name=='Modules':
+            obj = Modules(node, ln)
+        elif name=='Module':
+            obj = Module(node, ln)
         else:
-            logger.error("Unknown Element: '{0}'".format(name), True) 
+            logger.error("Element '{0}' not implemented.".format(name), True) 
 
         return obj
     
@@ -259,17 +312,18 @@ class Element(object):
             return SortDirection(value, lnk, must_be_constant)
         if name=='Operator':
             return Operator(value, lnk, must_be_constant)
+        if name=='BreakLocation':
+            return BreakLocation(value, lnk, must_be_constant)
 
-        logger.error("Unknown Enum: '{0}'.".format(name), True)
+        logger.error("Enum '{0}' not implemented.".format(name), True)
     
     @staticmethod
     def expression_factory(name, node, lnk, card, must_be_constant):
         ln = Link(lnk.report_def, lnk.obj, data=node.nodeName)
         value = get_xml_tag_value(node)
-        if card==1 and value==None:
+        if card == 1 and value == None:
             logger.error("'{0}' is required for '{1}'.".format(
-                    node.nodeName,
-                    lnk.obj.__class__.__name__), True)
+                    node.nodeName, lnk.obj.__class__.__name__), True)
 
         if name==Element.STRING:
             return String(value, ln, must_be_constant)
@@ -305,6 +359,7 @@ class Element(object):
         element_type = Element.ELEMENT
         card = 0
         must_be_constant = False
+        default_value = None
 
         if len(element) > 0:
             if element[0]:
@@ -315,11 +370,16 @@ class Element(object):
             if len(element) >= 3:
                 if element[2]:
                     must_be_constant = element[2]
-            # len(element)==3 is ignored, it means that element was checked
-            if len(element) > 4:
-                logger.error("Invalid number of values for element. Class: '{0}'".format(class_name), True)
+            if len(element) >= 4:
+                if element[3]:
+                    default_value = element[3]
 
-        return element_type, card, must_be_constant
+            # len(element)==4 is ignored, it means that element was checked
+            if len(element) > 5:
+                logger.error(
+                    "Invalid number of values for element. Class: '{0}'".format(class_name), True)
+
+        return element_type, card, must_be_constant, default_value
         
     def get_element(self, name):
         if name in self.element_list:
@@ -334,10 +394,12 @@ class Element(object):
 
 class Link(object):
     def __init__(self, report_def, parent, obj=None, data=None):
-        self.report_def=report_def  # Main ReportDef() object
-        self.parent=parent          # Parent element
-        self.obj=obj                # object itself. It is used to assign parent to others
-        self.data=data              # optional extra data
+        self.report_def = report_def  # Main Report() object where some collections are stored
+        self.parent = parent          # Parent element
+        self.obj = obj                # object itself. It is used to assign parent to others
+        self.data = data              # optional extra data
+        if not parent:
+            self.report_def = obj
 
 
 class _ExpressionList(object):
@@ -356,12 +418,126 @@ class _ExpressionList(object):
                     logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
                 continue
                 
-            element_type, card, must_be_constant = Element.get_element_def(elements[n.nodeName],
+            element_type, card, must_be_constant, default_value = Element.get_element_def(elements[n.nodeName],
                         lnk.obj.__class__.__name__)
                 
             ex = Element.expression_factory(elements[n.nodeName][0], n, lnk, card, must_be_constant) 
             self.expression_list.append(ex)
+
+
+###########################
+###########################
+
+
+class Report(Element):
+    '''
+    Root definition element
+    '''
+    class Data():
+        def __init__(self):
+            self._loaded = False
+            self.data = {}
             
+        def load(self, report):
+            if self._loaded:
+                return
+            logger.info("Getting data from 'DataEmbedded'")
+            # Loads the Data emmeded in definition file
+            self._curr_data_name = None
+            self._curr_index = 0
+            doc = report._get_xml_document()
+            root = report._get_root(doc)
+            data = doc.getElementsByTagName("DataEmbedded")
+            self._get_data(doc, data[0])            
+            self._loaded = True
+
+        def get_data(self, data_name):
+            if data_name in self.data.keys():
+                return self.data[data_name]
+            logger.warn(
+                "Attempted to get data '{0}' form DataEmbedded, but it does not exist".format(data_name))
+
+        def reset(self):
+            self.data = {}
+            
+        def _get_data(self, doc, node):
+            for n in node.childNodes:
+                if n.nodeName in ('#comment'):
+                    continue
+                if n.nodeName == "Record" and n.parentNode.nodeName == "Records":
+                    self._curr_index = self._curr_index + 1
+                if n.nodeName in ('#text'):
+                    if len(n.parentNode.childNodes) == 1:
+                        if n.parentNode.nodeName == "Name" and \
+                                n.parentNode.parentNode.nodeName == "Data":
+                            self._curr_data_name = n.nodeValue
+                            self.data[self._curr_data_name] = [[], []]
+                            self._curr_index = -1
+                            continue
+                        if n.parentNode.parentNode.nodeName == "Record" and \
+                                n.parentNode.parentNode.parentNode.nodeName == "Records":
+                            if not n.parentNode.nodeName in \
+                                    self.data[self._curr_data_name][0]:
+                                # append to columns
+                                self.data[self._curr_data_name][0].append(n.parentNode.nodeName)
+                            
+                            if len(self.data[self._curr_data_name][1]) == self._curr_index:
+                                self.data[self._curr_data_name][1].append([])
+                            self.data[self._curr_data_name][1][self._curr_index].append(n.nodeValue)
+
+                self._get_data(doc, n)
+        
+    def __init__(self, node):
+        elements={'Name': [Element.STRING,1,True],
+                  'Description': [Element.STRING,0,True],
+                  'Author': [Element.STRING,0,True],
+                  'Version': [Element.STRING,0,True],
+                  'DataSources': [],
+                  'DataSets': [],
+                  'Body': [Element.ELEMENT,1],
+                  'ReportParameters': [],
+                  'Modules': [],
+                  'EmbeddedImages': [],
+                  'Page': [Element.ELEMENT,1],
+                 }
+
+        logger.info('Initializing report definition...')
+
+        self.parameters_def = []
+        self.data_sources = []
+        self.data_sets = []
+        self.modules = []
+        self.report_items = {} # only textboxes
+        self.report_items_group = {}
+        self.data = None
+
+        lnk = Link(None, None, self)
+        super(Report, self).__init__(node, elements, lnk)
+        
+    def get_parameter_def(self, parameter_name):
+        for p in self.parameters_def:
+            if p.Name ==  parameter_name:
+                return p
+
+    def set_data (self):
+        self.data = Report.Data()
+
+
+class Modules(Element):
+    def __init__(self, node, lnk):
+        elements={'Module': [Element.ELEMENT,2],}
+        self.modules=[]
+        super(Modules, self).__init__(node, elements, lnk) 
+
+
+class Module(Element):
+    def __init__(self, node, lnk):
+        elements={'From': [Element.STRING,0,True],
+                  'Import': [Element.STRING,0,True],
+                  'As': [Element.STRING,0,True],
+                 }
+        super(Module, self).__init__(node, elements, lnk)
+        lnk.parent.modules.append(self)
 
 #------------------------------------------
 #   ReportParameter
@@ -376,43 +552,32 @@ class ReportParameter(Element):
     def __init__(self, node, lnk):
         elements={'Name': [Element.STRING,1,True],
                   'DataType': [Element.ENUM,1,True],
-                  'CanBeNone': [Element.BOOLEAN,0,True],
-                  'AllowBlank': [Element.BOOLEAN,0,True],
+                  'CanBeNone': [Element.BOOLEAN,0,True,True],
+                  'AllowBlank': [Element.BOOLEAN,0,True,True],
                   'DefaultValue': [Element.VARIANT,1],
                   'Promt': [Element.STRING],
                  }
-
         super(ReportParameter, self).__init__(node, elements, lnk)
-        
-        self.parameter_name = Expression.get_value_or_default(
-                None, self, "Name", None)
-        self.can_be_none = Expression.get_value_or_default(
-                None, self, "CanBeNone",True)
-        self.allow_blank = Expression.get_value_or_default(
-                None, self, "AllowBlank", True)
-        self.data_type = Expression.get_value_or_default(
-                None, self, "DataType",None)
-
-        self.default_value = self.get_element('DefaultValue')
+        self._default_value = self.get_element('DefaultValue')
         self.lnk.report_def.parameters_def.append(self)
 
     def get_default_value(self, report):
-        if self.default_value:
-            return dt.get_value(self.data_type, self.default_value.value(report))             
+        if self._default_value:
+            return dt.get_value(self.DataType, self._default_value.value(report))
 
     def get_value(self, report, passed_value):
         if passed_value == None:
             result = self.get_default_value(report)
         else:
-            result = dt.get_value(self.data_type, 
-                    self.default_value.value(report, passed_value)) 
+            result = dt.get_value(self.DataType, 
+                    self._default_value.value(report, passed_value)) 
 
-        if not result and not self.can_be_none:
+        if not result and not self.CanBeNone:
             logger.error("Parameter '{0}' value can not be 'None'".format(
-                    self.parameter_name), True)
-        if result and result=="" and not self.allow_blank and data_type=='String':
+                    self.Name), True)
+        if result and result=="" and not self.AllowBlank and DataType=='String':
             logger.error("Parameter '{0}' value can not be an empty string.".format(
-                    self.parameter_name), True)
+                    self.Name), True)
 
         return result
 
@@ -441,7 +606,6 @@ class Visibility(Element):
     Cannot refer to a report item contained in the current
     report item unless current group scope has a Parent.
     '''
-
     def __init__(self, node, lnk):
         elements={'Hidden': [Element.BOOLEAN,0],
                   'ToggleItem': [Element.STRING,0,True],
@@ -453,7 +617,6 @@ class Page(Element):
     '''
     The Page element contains page layout information for the report.
     '''
-
     def __init__(self, node, lnk):
         elements={'PageHeader': [],
                   'PageFooter': [],
@@ -475,13 +638,12 @@ class Page(Element):
 #------------------------------------------
 class _ReportElement(Element):
     '''
-    The virtual ReportElement element defines an element of a report. The ReportElement element
-    itself is not used. Only the subtypes of ReportElement are used: Body, PageSection, ReportItem
+    The virtual ReportElement element defines an element of a report. 
+    The ReportElement element itself is not used. 
+    Only the subtypes of ReportElement are used: Body, PageSection, ReportItem
     '''
-
     def __init__(self, node, additional_elements, lnk):
-        elements={'Style':[],}
-        
+        elements={'Style':[],}        
         if additional_elements:
             for key, value in additional_elements.items():
                 elements[key] = value
@@ -494,7 +656,6 @@ class _PageSection(_ReportElement):
     of every page of the report. The PageSection element itself is not used. Only subtypes of
     PageSection are used: PageHeader, PageFooter. It inherits from ReportElement.
     '''
-
     def __init__(self, node, lnk):
         elements={'ReportItems': [],
                   'Height': [Element.SIZE,1,True], 
@@ -509,7 +670,6 @@ class PageHeader(_PageSection):
     The PageFooter element defines the layout of report items to appear at the bottom of every page of
     the report. It has no properties beyond those it inherits from PageSection.
     '''
-    
     def __init__(self, node, lnk):
         super(PageHeader, self).__init__(node, lnk)
 
@@ -519,7 +679,6 @@ class PageFooter(_PageSection):
     The PageFooter element defines the layout of report items to appear at the bottom of every page of
     the report. It has no properties beyond those it inherits from PageSection.
     '''
-    
     def __init__(self, node, lnk):
         super(PageFooter, self).__init__(node, lnk)
         
@@ -530,7 +689,6 @@ class Body(_ReportElement):
     structured/grouped and binds the visual elements to the data for the report.
     It inherits from ReportElement.
     '''
-
     def __init__(self, node, lnk):
         elements={'ReportItems': [],
                   #'Height': [Element.SIZE,1,True], TODO: Remove, it is not necessary
@@ -554,27 +712,21 @@ class DataSource(Element):
                   'ConnectionProperties': [],
                  }
         super(DataSource, self).__init__(node, elements, lnk)
-        self.name = Expression.get_value_or_default(None,self,"Name", None)
-        self.conn_properties = self.get_element('ConnectionProperties')        
+        self.conn_properties = self.get_element('ConnectionProperties')
         for ds in lnk.report_def.data_sources:
-            if ds.name == self.name:
-                logger.error("Report already has a DataSource with name '{0}'".format(self.name), True)
+            if ds.Name == self.Name:
+                logger.error("Report already has a DataSource with name '{0}'".format(
+                    self.name), True)
         lnk.report_def.data_sources.append(self)
 
 
 class ConnectionProperties(Element):
     def __init__(self, node, lnk):
         elements={'DataProvider': [Element.STRING,1],
-                  'ConnectString': [Element.STRING,1],
+                  'ConnectObject': [Element.STRING,1],
                   'Prompt': [Element.STRING,0,True],
                  }
         super(ConnectionProperties, self).__init__(node, elements, lnk)
-        self.data_provider = self.get_element("DataProvider")
-        if not self.data_provider:
-            logger.error("DataProvider no defined for ConnectionProperties element.", True)
-        self.connection_string = self.get_element("ConnectString")
-        if not self.connection_string:
-            logger.error("ConnectString no defined for ConnectionProperties element.", True)
 
 
 class DataSets(Element):
@@ -589,7 +741,6 @@ class DataSet(Element):
     as a part of the report.
     Name of the data set Cannot be the same name as any data region or group.
     '''
-
     def __init__(self, node, lnk):
         elements={'Name': [Element.STRING,1,True],
                   'Fields': [],
@@ -600,17 +751,13 @@ class DataSet(Element):
 
         self.fields=[]
         super(DataSet, self).__init__(node, elements, lnk)
-
-        self.name = Expression.get_value_or_default(None,self,"Name", None)
         self.fields_def = self.get_element('Fields')
         self.query_def = self.get_element('Query')
         self.filters_def = self.get_element('Filters')
         self.sort_def = self.get_element('SortExpressions')
-        if not self.fields_def or not self.query_def: 
-            logger.error("'Fields' and 'Query' elements are required by DataSet '{0}'.".format(self.name), True)
         
         for ds in lnk.report_def.data_sets:
-            if ds.name == self.name:
+            if ds.Name == self.Name:
                 logger.error("DataSet with name '{0}' already exists.".format(self.name), True)
         lnk.report_def.data_sets.append(self)
 
@@ -619,7 +766,6 @@ class Fields(Element):
     '''
     The Fields element defines the fields in the data model.
     '''
-    
     def __init__(self, node, lnk):
         elements={'Field': [Element.ELEMENT,2],}
         super(Fields, self).__init__(node, elements, lnk) 
@@ -629,7 +775,6 @@ class Field(Element):
     '''
     The Field element contains information about a field in the data model of the report.
     '''
-
     def __init__(self, node, lnk):
         elements={'Name': [Element.STRING,1,True],
                   'DataType': [Element.ENUM,0,True],
@@ -637,19 +782,9 @@ class Field(Element):
                   'Value': [Element.VARIANT],
                  }
         super(Field, self).__init__(node, elements, lnk)
-
-        self.name = Expression.get_value_or_default(None,self,"Name", None)
-        self.data_type = Expression.get_value_or_default(None,self,"DataType", None)
-        self.data_field = Expression.get_value_or_default(None,self,"DataField", None)
-
-        self.value=None
-        value_element = self.get_element("Value")
-        if value_element:
-            self.value = value_element.expression
-        
         data_set = lnk.parent.lnk.parent # Get Dataset
         for fd in data_set.fields:
-            if fd.name == self.name:
+            if fd.Name == self.Name:
                 logger.error("DataSet already has '{0}' Field.".format(self.name), True)
         data_set.fields.append(self)
         
@@ -661,10 +796,9 @@ class Query(Element):
                   'QueryParameters': [],
                  }
         super(Query, self).__init__(node, elements, lnk)
-        self.data_source_name = Expression.get_value_or_default(None,self,"DataSourceName", None)
 
     def get_command_text(self, report):
-        cmd=Expression.get_value_or_default(None,self,"CommandText",None)
+        cmd = Expression.get_value_or_default(None,self,"CommandText",None)
         if not cmd:
             logger.error("'CommandText' is required by 'Query' element.", True)
         return cmd
@@ -682,14 +816,12 @@ class QueryParameter(Element):
                   'Value': [Element.VARIANT,1],
                  }
         super(QueryParameter, self).__init__(node, elements, lnk)
-        self.name = get_expression_value_or_default (None, self, 'Name', None)
         
 
 class Filters(Element):
     '''
     The Filters element is a collection of filters to apply to a data set, data region or group.
-    '''
-    
+    '''    
     def __init__(self, node, lnk):
         elements={'Filter': [Element.ELEMENT,1],}
         self.filter_list=[]
@@ -739,112 +871,111 @@ class FilterValues(_ExpressionList):
 
 class Group(Element):
     '''
-    The Group element defines the expressions to group the data by.
+    The Group element defines the expressions 
+    to group the data by.
     '''
-
     def __init__(self, node, lnk):
         elements={'Name': [Element.STRING,1,True],
                   'GroupExpressions': [Element.EXPRESSION_LIST],
                   'PageBreak': [],
                   'Filters': [],
+                  'SortExpressions': [],
                   'Parent': [Element.VARIANT],
-                  'Variables': [],
                  }
         super(Group, self).__init__(node, elements, lnk)
 
 
 class GroupExpressions(_ExpressionList):
     '''
-    The GroupExpressions element defines an ordered list of expressions to group the data by.
+    The GroupExpressions element defines an ordered list 
+    of expressions to group the data by.
     '''
-
     def __init__(self, node, lnk):
         elements={'GroupExpression': [Element.VARIANT,2],}
         super(GroupExpressions, self).__init__(node, elements, lnk)
-        
 
-class GroupingData(object):
-    def __init__(self, data):
-        self.data = data
-        self.group_data=None
-        self.groups={} # key: grouping name, value: list of groups for this grouping
-        self.last_group_name=None
+#class GroupingData(object):
+#    def __init__(self, data):
+#        self.data = data
+#        self.group_data=None
+#        self.groups={} # key: grouping name, value: list of groups for this grouping
+#        self.last_group_name=None
     
-    def grouping_by(self, grouping_object, sorting_def, optional_name=None):
-        if optional_name:
-            name = optional_name
-        else:
-            name = get_expression_value_or_default(None,None,None, direct_expression=grouping_object.name)
+#    def grouping_by(self, grouping_object, sorting_def, optional_name=None):
+#        if optional_name:
+#            name = optional_name
+#        else:
+#            name = get_expression_value_or_default(None,None,None, direct_expression=grouping_object.name)
 
-        break_at_start = get_expression_value_or_default(None,None,False, direct_expression=grouping_object.page_break_at_start)
-        break_at_end = get_expression_value_or_default(None,None,False, direct_expression=grouping_object.page_break_at_end)
+#        break_at_start = get_expression_value_or_default(None,None,False, direct_expression=grouping_object.page_break_at_start)
+#        break_at_end = get_expression_value_or_default(None,None,False, direct_expression=grouping_object.page_break_at_end)
         
-        self.groups[name] = []
-        if not self.group_data: #First grouping
-            self.group_data = DataGroup(self.data, name, break_at_start, break_at_end)
-            self.group_data.add_rows_by_parent()
-            self.filter(self.group_data, grouping_object.filters)
-            self.sort(self.group_data, sorting_def)
-            # Group
-            self.group_data.create_groups(grouping_object.expression_list, break_at_start, break_at_end)            
-            for g in self.group_data.groups:
-                self.groups[name].append(g)
-                self.data.groups.append(g)
-        else:
-            group_list = self.get_group(self.last_group_name)
-            for g in group_list:
-                g.create_groups(grouping_object.expression_list, break_at_start, break_at_end)
-                for g2 in g.groups:
-                    self.filter(g2, grouping_object.filters)                    
-                    self.sort(g2, sorting_def)
-                    self.groups[name].append(g2)
+#        self.groups[name] = []
+#        if not self.group_data: #First grouping
+#            self.group_data = DataGroup(self.data, name, break_at_start, break_at_end)
+#            self.group_data.add_rows_by_parent()
+#            self.filter(self.group_data, grouping_object.filters)
+#            self.sort(self.group_data, sorting_def)
+#            # Group
+#            self.group_data.create_groups(grouping_object.expression_list, break_at_start, break_at_end)            
+#            for g in self.group_data.groups:
+#                self.groups[name].append(g)
+#                self.data.groups.append(g)
+#        else:
+#            group_list = self.get_group(self.last_group_name)
+#            for g in group_list:
+#                g.create_groups(grouping_object.expression_list, break_at_start, break_at_end)
+#                for g2 in g.groups:
+#                    self.filter(g2, grouping_object.filters)                    
+#                    self.sort(g2, sorting_def)
+#                    self.groups[name].append(g2)
                     
-        self.last_group_name = name
+#        self.last_group_name = name
                 
-    def get_group(self, name):
-        result = []
-        if name in self.groups:
-            result = self.groups[name]
-        return result
+#    def get_group(self, name):
+#        result = []
+#        if name in self.groups:
+#            result = self.groups[name]
+#        return result
 
-    def filter(self, data, filters):
-        if filters:
-            flt = FiltersObject(filters)
-            flt.filter_data(data)
+#    def filter(self, data, filters):
+#        if filters:
+#            flt = FiltersObject(filters)
+#            flt.filter_data(data)
             
-    def sort(self, data, sorting_def):
-        if sorting_def:
-            srt = SortingObject(sorting_def)
-            srt.sort_data(data)
+#    def sort(self, data, sorting_def):
+#        if sorting_def:
+#            srt = SortingObject(sorting_def)
+#            srt.sort_data(data)
 
 
-class GroupingObject(object):
-    def __init__(self, grouping_def, test_grouping_list=None):
-        self.expression_list=[]
-        self.name=None
-        self.page_break_at_start=None
-        self.page_break_at_end=None
-        self.filters=None
-        self.parent=None
+#class GroupingObject(object):
+#    def __init__(self, grouping_def, test_grouping_list=None):
+#        self.expression_list=[]
+#        self.name=None
+#        self.page_break_at_start=None
+#        self.page_break_at_end=None
+#        self.filters=None
+#        self.parent=None
         
-        if test_grouping_list: # unittest
-            self.name = test_grouping_list[0]
-            self.page_break_at_start = test_grouping_list[1]
-            self.page_break_at_end = test_grouping_list[2]
-            self.filters = test_grouping_list[3]
-            self.parent = test_grouping_list[4]
-            for ex in test_grouping_list[5]:
-                self.expression_list.append(ex)
-        else:
-            if grouping_def:
-                self.name = grouping_def.get_element("Name")            
-                self.page_break_at_start = grouping_def.get_element("PageBreakAtStart")
-                self.page_break_at_end = grouping_def.get_element("PageBreakAtEnd")
-                self.filters = grouping_def.get_element("Filters")
-                self.parent = grouping_def.get_element("Parent")
-                exps = grouping_def.get_element("GroupExpressions")
-                for ex in exps.expression_list:
-                    self.expression_list.append(ex)
+#        if test_grouping_list: # unittest
+#            self.name = test_grouping_list[0]
+#            self.page_break_at_start = test_grouping_list[1]
+#            self.page_break_at_end = test_grouping_list[2]
+#            self.filters = test_grouping_list[3]
+#            self.parent = test_grouping_list[4]
+#            for ex in test_grouping_list[5]:
+#                self.expression_list.append(ex)
+#        else:
+#            if grouping_def:
+#                self.name = grouping_def.get_element("Name")            
+#                self.page_break_at_start = grouping_def.get_element("PageBreakAtStart")
+#                self.page_break_at_end = grouping_def.get_element("PageBreakAtEnd")
+#                self.filters = grouping_def.get_element("Filters")
+#                self.parent = grouping_def.get_element("Parent")
+#                exps = grouping_def.get_element("GroupExpressions")
+#                for ex in exps.expression_list:
+#                    self.expression_list.append(ex)
         
         
 class SortExpressions(Element):
@@ -861,26 +992,6 @@ class SortExpression(Element):
                  }
         super(SortExpression, self).__init__(node, elements, lnk)
         lnk.parent.sortby_list.append(self)
-
-
-class Variables(Element):
-    def __init__(self, node, lnk):
-        elements={'Variable': [Element.ELEMENT, 2],}
-        self.variable_list=[]
-        super(Variables, self).__init__(node, elements, lnk)
-
-
-class Variable(Element):
-    def __init__(self, node, lnk):
-        elements={'Name': [Element.STRING,1,True],
-                  'Expression': [Element.VARIANT],
-                  'InitialValue': [Element.VARIANT],
-                  'Function': [Element.ENUM,0,True],
-                  'CustomFunction': [Element.STRING,0,True],
-                 }
-        super(Variable, self).__init__(node, elements, lnk)
-        lnk.parent.variable_list.append(self)
-
 
 #------------------------------------------
 #   Style
@@ -939,8 +1050,8 @@ class Border(Element):
         
 class ReportItems(Element):
     '''
-    The ReportItems element is a collection of report items (used to define the contents of a region
-    of a report).
+    The ReportItems element is a collection of report items 
+    (used to define the contents of a region of a report).
     '''
 
     def __init__(self, node, lnk):
@@ -959,9 +1070,9 @@ class ReportItems(Element):
 class _ReportItem(_ReportElement):
     '''
     A report item is one of the following types of objects: Line, Rectangle, Textbox, Image,
-      Subreport, CustomReportItem or DataRegion. DataRegions are: Tablix and Chart.
+    Subreport, CustomReportItem or DataRegion. DataRegions are: Tablix and Chart.
     The ReportItem element itself is not used. Instead, specific report item element is used wherever
-      ReportItem is allowed.
+    ReportItem is allowed.
     '''
 
     def __init__(self, type, node, lnk, additional_elements):
@@ -971,7 +1082,7 @@ class _ReportItem(_ReportElement):
                   'Left': [Element.SIZE,0,True],
                   'Height': [Element.SIZE,0,True],
                   'Width': [Element.SIZE,0,True],
-                  'ZIndex': [Element.INTEGER,0,True],
+                  'ZIndex': [Element.INTEGER,0,True, -1],
                   'Visibility': [],
                   'ToolTip': [Element.STRING],
                   'Bookmark': [Element.STRING],
@@ -983,11 +1094,9 @@ class _ReportItem(_ReportElement):
 
         super(_ReportItem, self).__init__(node, elements, lnk)
         self.type = type
-        self.name = Expression.get_value_or_default(None,self,"Name", None)
-        self.zindex = Expression.get_value_or_default(None,self,"ZIndex",-1)
         lnk.parent.reportitems_list.append(self)
-        
-        
+
+
 class Line(_ReportItem):
     '''
     The Line element has no additional attributes/elements beyond what it inherits from ReportItem
@@ -995,7 +1104,7 @@ class Line(_ReportItem):
     Although negative Height and Width are allowed, both Top+Height and Left+Width must be
     nonnegative valid sizes.
     '''
-    
+
     def __init__(self, node, lnk):
         super(Line, self).__init__("Line", node, lnk, None)
 
@@ -1007,8 +1116,8 @@ class Rectangle(_ReportItem):
                   'OmitBorderOnPageBreak': [Element.BOOLEAN,0,True],
                  }
         super(Rectangle, self).__init__("Rectangle", node, lnk, elements)
-        
-        
+
+
 class Subreport(_ReportItem):
     def __init__(self, node, lnk):
         elements={'ReportName': [Element.STRING,1,True],
@@ -1084,7 +1193,6 @@ class _DataRegion(_ReportItem):
                   'PageBreak': [],
                   'Filters': [],
                   'SortExpressions': [],
-                  'Variables': [],                  
                  }
         if additional_elements:
             for key, value in additional_elements.items():
@@ -1206,7 +1314,6 @@ class TablixMember(Element):
     
     def __init__(self, node, lnk):
         elements={'Group': [],
-                  'SortExpressions': [],
                   'TablixHeader': [],
                   'TablixMembers': [],
                   'FixedData': [Element.BOOLEAN,0,True],
@@ -1311,5 +1418,15 @@ class TablixCell(Element):
     def __init__(self, node, lnk):
         elements={'CellContents': [],}
         super(TablixCell, self).__init__(node, elements, lnk)
-        lnk.parent.cell_list.append(self)        
+        lnk.parent.cell_list.append(self)
+        
+
+class PageBreak(Element):
+    '''
+    The PageBreak element defines page break behavior for a group or report item.
+    '''
+    
+    def __init__(self, node, lnk):    
+        elements={'BreakLocation': [Element.ENUM,1,True],}
+        super(PageBreak, self).__init__(node, elements, lnk)        
         

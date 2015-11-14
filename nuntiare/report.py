@@ -5,216 +5,283 @@
 import os
 import datetime
 from xml.dom import minidom
-from . parser import Parser
 from . result import Result
 from . import logger
+from . definition.element import Report as ReportDef
+from . definition.expression import Expression
+from . definition.expression_eval import ExpressionEval
+from . data import DataType
+from . data.data import DataSourceObject, DataSetObject
+from . outcome.style import OutcomeStyle
+from . collection import Collection, CollectionItem
+
+class Globals(Collection):
+    def __init__(self):
+        super(Globals, self).__init__()
+
+
+class Parameters(Collection):
+    def __init__(self):
+        super(Parameters, self).__init__()
+
 
 class Report(object):
     def __init__(self, definition, 
             output_name=None, output_directory=None):
 
-        super(Report, self).__init__()
-
-        self.parser = None
+        self._definition_is_file = False
+        self._definition_text_passed = definition
+        self.definition = None
         self.result = None
-        self.parameters = {}
+        self.globals = None
+        self.parameters = None
         self.data_sources = {}
         self.data_sets = {}
         self.data_groups = {}
-        self.globals = {}
-        self.report_items_group = {}
-        self.current_scope = None
-        
-        self._parse(definition, output_name, output_directory)
-        self.parser.style.get_style(None)
-        
-    def _parse(self, definition, output_name, output_directory):
-        '''
-        Parse the definition for this report.
-        definition can be a xml definition file, 
-        a nuntiare report file or a simple xml string.
-        Run() must be executed in order to get the report.
-        '''
-
-        if not definition:
-            logger.critical("Error in definition '{0}'. " \
-                "definition must be a xml definition file, " \
-                "a simple xml string or a nuntiare report file.".format(definition), True)
+        self.data_interfaces = {}
+        self.report_items_group = None
+        self.current_data_scope = [None, None]
+        self.current_data_interface = None
+        self._style = OutcomeStyle(self)
+        self._globals = {
+                'Author': None,
+                'Description': None,
+                'Version': None,
+                'PageNumber': -1,
+                'TotalPages': -1,
+                'ExecutionTime': None,
+                'ReportServerUrl': None,
+                'ReportName': None,
+                'ReportFolder': None,
+                'ReportFile': None,
+                'ReportFileName': None,
+                'OutputDirectory': None,
+                'OutputName': None,
+                }
                 
-        self.parser = Parser(self, definition, output_name, output_directory).parser        
+        self._parse(output_name, output_directory)
+        
+        self.modules = ExpressionEval(self)
+        self.modules.load_modules(self.definition.get_element("Modules"))
         
     def run(self, parameters={}):
-        if not self.parser:
+        if not self.definition:
             logger.critical("No definition found in report.", True)            
     
-        self.globals = self.parser.get_globals()
-        self.globals['page_number'] = -1
-        self.globals['total_pages'] = -1
-        self.globals['execution_time'] = datetime.datetime.now()
-        if not self.globals['output_name']:
-            self.globals['output_name'] = self.globals['report_name']
-        logger.info('Execution time: {0}'.format(self.globals['execution_time']))
+        logger.info("Running Report '{0}'".format(self.definition.Name))
+    
+        logger.info('Running Globals...')
+        self._get_globals()
 
         logger.info('Running Parameters...')
-        self.parser.get_parameters(parameters)
+        self._get_parameters(parameters)
 
         logger.info('Running DataSources...')
-        self.data_sources = self.parser.get_data_sources()
+        self.data_sources = {}
+        self.data_sources = self._get_data_sources()
 
         logger.info('Running DataSets...')
-        self.data_sets, self.data_groups = self.parser.get_data_sets()
+        self.data_sets = {}
+        self.data_groups = {}        
+        self.data_sets = self._get_data_sets()
 
         logger.info('Building result...')
-        self.result = Result(self)
+        self.result = Result(self)       
 
-    def save(self, overwrite):
+    def save(self, overwrite, apply_filters=False):
+        # TODO if apply_filters=True report is saved with filters applied.
         '''
-        Save report to nuntiare file
-        '''
-
-        def _add_element(doc, parent, element_name, text=None, cdata=None):
-            if cdata: 
-                el = doc.createCDATASection(cdata)
-            else:
-                el = doc.createElement(element_name)
-            if text !=None:
+        Append dataset records (without filtering) to definition
+        and saves it in a new file with .nuntiare extension.
+        ''' 
+        def _add_element(doc, parent, element_name, text=None):
+            el = doc.createElement(element_name)
+            if text != None:
                 text_el = doc.createTextNode(text)
                 el.appendChild(text_el)
             parent.appendChild(el)
             return el
 
-        def _add_style(doc, styles_el, style):    
-            st = _add_element(doc, styles_el, "Style")
-            _add_element(doc, st, "Id", str(style.id))
-            
-            _add_style_border(doc, st, style.top_border, "TopBorder")
-            _add_style_border(doc, st, style.bottom_border, "BottomBorder")
-            _add_style_border(doc, st, style.left_border, "LeftBorder")
-            _add_style_border(doc, st, style.right_border, "RightBorder")
-                        
-            if style.background_color:
-                _add_element(doc, st, "BackgroundColor", style.background_color)
-
-            _add_element(doc, st, "FontFamily", style.font_family)
-            _add_element(doc, st, "FontStyle", style.font_style)
-            _add_element(doc, st, "FontSize", str(style.font_size))
-            _add_element(doc, st, "FontWeight", str(style.font_weight))
-            if style.format:
-                _add_element(doc, st, "Format", style.format)
-            _add_element(doc, st, "TextDecoration", style.text_decoration)
-            _add_element(doc, st, "TextAlign", style.text_align)
-            _add_element(doc, st, "VerticalAlign", style.vertical_align)
-            _add_element(doc, st, "Color", style.color)
-            _add_element(doc, st, "PaddingTop", str(style.padding_top))
-            _add_element(doc, st, "PaddingBottom", str(style.padding_bottom))
-            _add_element(doc, st, "PaddingLeft", str(style.padding_left))
-            _add_element(doc, st, "PaddingRight", str(style.padding_right))
-
-        def _add_style_border(doc, parent, border_def, border_name):
-            bd = _add_element(doc, parent, border_name)            
-            if border_def:
-                _add_element(doc, bd, "Color", border_def.color)
-                _add_element(doc, bd, "BorderStyle", border_def.border_style)
-                _add_element(doc, bd, "Width", str(border_def.width))
-                                
-        def _add_header_footer(doc, parent, page_member, member_name):
-            if not page_member:
-                return
-            _add_literal(doc, parent, page_member.definition)
-
-        def _add_literal(doc, parent, definition):
-            if not definition:
-                return
-            l_parent = _add_element(doc, parent, definition.element_name)
-            for key, ex in definition.expression_list.items():
-                _add_element(doc, l_parent, key, ex.expression)
-            for key, ex in definition.non_expression_list.items():
-                _add_literal(doc, l_parent, ex)
-
-        def _add_report_items(doc, parent, body_items):
-            if not body_items or not body_items.item_list:
-                return
-            pit = _add_element(doc, parent, "PageItems")
-            for it in body_items.item_list:
-                it_type = _add_element(doc, pit, it.type)
-                _add_element(doc, it_type, "Type", it.report_item_def.element_name)
-                _add_element(doc, it_type, "Name", it.name)
-                _add_element(doc, it_type, "Top", str(it.top))
-                _add_element(doc, it_type, "Left", str(it.left))
-                _add_element(doc, it_type, "Height", str(it.height))
-                _add_element(doc, it_type, "Width", str(it.width))
-                if it.style:
-                    _add_element(doc, it_type, "StyleId", str(it.style.id))
-                    
-                if it.type=="PageText":
-                    _add_element(doc, it_type, "Value", it.value_formatted)
-                    _add_element(doc, it_type, "CanGrow", str(it.can_grow))
-                    _add_element(doc, it_type, "CanShrink", str(it.can_shrink))
+        def _get_element(doc, node, base_element):
+            for n in node.childNodes:
+                if n.nodeName in ('#comment') or n.nodeName.startswith("rd:"):
+                    continue
+                if n.nodeName in ('#text'):
+                    if len(n.parentNode.childNodes) == 1:
+                        text = doc.createTextNode(n.nodeValue)
+                        base_element.appendChild(text)
+                    continue
                 
-                if it.items_info:
-                    _add_report_items(doc, it_type, it.items_info)
+                el = _add_element(doc, base_element, n.nodeName)
+                _get_element(doc, n, el)
+                
+        def _data_to_string(data_type, value):
+            v = DataType.get_value(data_type, value)
+            if v != None:
+                if data_type == "DateTime":
+                    return "{:%Y-%m-%d %H:%M:%S}".format(v)
+                else:
+                    return str(v)
+                
+        def _add_data(doc, root_element):
+            data_root  = _add_element(doc, root_element, "DataEmbedded")
+            for key, ds in self.data_sets.items():
+                data = _add_element(doc, data_root, "Data")
+                _add_element(doc, data, "Name", key)
+                records = _add_element(doc, data, "Records")            
+                for rw in ds.data.original_rows:
+                    record = _add_element(doc, records, "Record")
+                    i = 0
+                    for c in ds.data.field_list:
+                        if c.data_field:
+                            _add_element(
+                                doc, record, c.data_field, 
+                                _data_to_string(c.DataType, rw[i]))
+                        i = i + 1
 
-        result_file = os.path.join(self.globals['output_directory'], 
-                self.globals['output_name'] + ".nuntiare")
+
+        result_file = os.path.join(self.globals['OutputDirectory'], 
+                self.globals['OutputName'] + ".nuntiare")
 
         if not overwrite:
             if os.path.isfile(result_file):
                 logger.error("File '{0}' already exists.".format(result_file),
                         True, "IOError")
-
+                        
         doc = minidom.Document()
-        root_element = doc.createElement("Nuntiare")
-
-        gb = _add_element(doc, root_element, "Globals")
-        for key, g in self.globals.items():
-            if g:
-                _add_element(doc, gb, key, str(g))
-            else:
-                _add_element(doc, gb, key)
-
-        parameters = _add_element(doc, root_element, "ReportParameters")
-        for key, p in self.parameters.items():
-            pe = _add_element(doc, parameters, "ReportParameter")
-            _add_element(doc, pe, "Name", key)
-            para_def = self.parser.object.get_parameter_def(key)
-            if para_def.data_type:
-                _add_element(doc, pe, "DataType", para_def.data_type)
-            if p == None:
-                _add_element(doc, pe, "Value")
-            else:        
-                _add_element(doc, pe, "Value", str(p))
-
-        styles = _add_element(doc, root_element, "Styles")
-        for key, st in self.parser.style.styles.items():
-            _add_style(doc, styles, st)
-
-        page = _add_element(doc, root_element, "Page")
-        _add_element(doc, page, "PageHeight", str(self.result.height))
-        _add_element(doc, page, "PageWidth", str(self.result.width))
-        _add_element(doc, page, "TopMargin", str(self.result.margin_top))
-        _add_element(doc, page, "BottomMargin", str(self.result.margin_bottom))
-        _add_element(doc, page, "LeftMargin", str(self.result.margin_left))
-        _add_element(doc, page, "RightMargin", str(self.result.margin_right))
-        _add_element(doc, page, "Columns", str(self.result.columns))
-        _add_element(doc, page, "ColumnSpacing", str(self.result.column_spacing))
-        if self.result.style:
-            _add_element(doc, page, "StyleId", str(self.result.style.id))
-
-        _add_header_footer(doc, page, self.result.header, "PageHeader")
-        _add_header_footer(doc, page, self.result.footer, "PageFooter")        
+        root_element = doc.createElement("Report")
+        orig_root = self._get_root(doc = self._get_xml_document())
         
-        body = _add_element(doc, root_element, "Body")
-        if self.result.body.style:
-            _add_element(doc, body, "StyleId", str(self.result.body.style.id))
-        _add_report_items(doc, body, self.result.body.items)
-        
+        _get_element(doc, orig_root, root_element)        
+        _add_data(doc, root_element)
+                
         doc.appendChild(root_element)
         
         f = open(result_file, "wb")
         try:
             f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
         finally:
-            f.close()
-        
+            f.close()        
         logger.info("Report '{0}' saved.".format(result_file))
 
+    def get_value(self, element, element_name, default):
+        return Expression.get_value_or_default(
+                self, element, element_name, default)        
+        
+    def get_style(self, element):
+       el = element.get_element("Style")
+       return self._style.get_style(el)
+
+    def _parse(self, output_name, output_directory):
+        if os.path.isfile(self._definition_text_passed):
+            if not os.access(self._definition_text_passed, os.R_OK):
+                logger.error(
+                    "User has not read access for '{0}'.".format(self._definition_text_passed),
+                    True, "IOError")
+            self._definition_is_file = True
+            
+        root = self._get_root(self._get_xml_document())
+        self.definition = ReportDef(root)
+        
+        self._globals['Author'] = self.definition.Author
+        self._globals['Description'] = self.definition.Description
+        self._globals['Version'] = self.definition.Version
+        self._globals['ReportName'] = self.definition.Name
+        
+        if self._definition_is_file:
+            self._globals['ReportFile'] = self._definition_text_passed
+            self._globals['ReportFileName'] = os.path.basename(self._definition_text_passed)
+            self._globals['ReportFolder'] = os.path.dirname(os.path.realpath(self._definition_text_passed))
+            if not output_directory:
+                output_directory = os.path.dirname(
+                    os.path.realpath(self._definition_text_passed))
+            if not output_name:
+                output_name = os.path.splitext(
+                    self._globals['ReportFileName'])[0]
+        else:
+            self._globals['ReportFile'] = "From XML string."
+            self._globals['ReportFileName'] = "From XML string."
+            self._globals['ReportFolder'] = "From XML string."
+            if not output_directory:
+                output_directory = os.path.dirname(
+                    os.path.realpath(__file__))
+        if not os.path.isdir(output_directory):
+            logger.error(
+                "'{0}' is not a valid directory.".format(
+                    output_directory), 
+                True, "IOError")
+            
+        self._globals['OutputDirectory'] = output_directory
+        self._globals['OutputName'] = output_name
+
+        if not self._globals['OutputName']:
+            self._globals['OutputName'] = self._globals['ReportName']    
+
+    def _get_xml_document(self):
+        doc = None
+        try:
+            if self._definition_is_file:
+                doc = minidom.parse(self._definition_text_passed)
+            else:
+                doc = minidom.parseString(self._definition_text_passed)
+        except Exception as e:
+            err_msg = '''Error getting xml dom from definition '{0}'.
+Is it supposed to be a file?. Verify that it exists.
+If it is a xml string, verify that it is well formed.
+System error: {1}'''
+            logger.critical(
+                err_msg.format(self._definition_text_passed, e.args[0]), True)
+        return doc
+
+    def _get_root(self, doc):
+        root = doc.getElementsByTagName("Report")
+        if not root:
+            logger.critical(
+                "Xml root tag 'Report' not found.", True)
+        return root[0]
+
+    def _get_globals(self):
+        self.globals = Globals()
+        self._globals['PageNumber'] = -1
+        self._globals['TotalPages'] = -1
+        self._globals['ExecutionTime'] = datetime.datetime.now()
+        for key, value in self._globals.items():
+            self.globals.add_item(CollectionItem(key))
+            self.globals[key] = value
+        
+    def _get_parameters(self, parameters):
+        self.parameters = Parameters()
+        for p in self.definition.parameters_def:
+            key = p.Name
+            value = None
+            if parameters:
+                if key in parameters:
+                    value = p.get_value(self, parameters[key])
+                else:
+                    value = p.get_default_value(self)
+            else:
+                value = p.get_default_value(self)
+            self.parameters.add_item(CollectionItem(key))
+            self.parameters[key] = value
+
+        if parameters:
+            # Just for logging ...
+            for key, value in parameters.items():
+                if not self.definition.get_parameter_def(key):
+                    logger.warn("Unknown Parameter '{0}'. Ignored.".format(key))
+
+    def _get_data_sources(self):
+        result = {}
+        for ds in self.definition.data_sources:
+            result[ds.Name] = DataSourceObject(self, ds)
+            result[ds.Name].connect()
+        return result
+
+    def _get_data_sets(self):
+        data_sets = {}
+        for ds in self.definition.data_sets:
+            logger.info("  Running DataSet '{0}'".format(ds.Name))
+            data_sets[ds.Name] = DataSetObject(self, ds)
+            data_sets[ds.Name].execute()
+        return data_sets
+        

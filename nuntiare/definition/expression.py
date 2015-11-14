@@ -2,24 +2,24 @@
 # The COPYRIGHT file at the top level of this repository 
 # contains the full copyright notices and license terms.
 
-from . data_type import DataType
-from . expression_eval import get_expression_eval
 from .. import logger
+from .. data.data_type import DataType
 
 class Expression(object):
     def __init__(self, expression, lnk, must_be_constant):
-        self.lnk=lnk
+        self.lnk = lnk
         self.must_be_constant = must_be_constant
         self.expression, self.is_constant = self.set_expression(expression)        
 
     def set_expression(self, expression):
-        is_constant=False
-        if expression==None or not expression.startswith('='):
-            is_constant=True
+        is_constant = False
+        if expression == None or not expression.startswith('='):
+            is_constant = True
         if self.must_be_constant and not is_constant:
             logger.error("Invalid expression '{0}' for '{1}' in '{2}' element. " \
-                    "It must be a constant expression.".format(expression, self.lnk.data, 
-                    self.lnk.parent.__class__.__name__), True)
+                    "It must be a constant expression.".format(
+                        expression, self.lnk.data, 
+                        self.lnk.parent.__class__.__name__), True)
         return [expression, is_constant]
 
     def value(self, report, new_expression=None):
@@ -32,7 +32,7 @@ class Expression(object):
         if is_constant:
             return expression
         ex = expression[1:]
-        return get_expression_eval(report, ex) # Run python code
+        return report.modules.resolve_expression(ex) # Run python code
         
     @staticmethod
     def get_value_or_default(report, element, 
@@ -47,7 +47,7 @@ class Expression(object):
                 return default_value
             return value
 
-        el=None
+        el = None
         if element:
             el = element.get_element(expression_name)
         
@@ -514,7 +514,7 @@ class Integer(Expression):
 
     def value(self, report):
         val = super(Integer, self).value(report)
-        return DataType.get_value('Integer', val)                  
+        return DataType.get_value('Integer', val)
 
 
 class String(Expression):

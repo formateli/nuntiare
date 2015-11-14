@@ -31,7 +31,7 @@
                     <Top>0mm</Top>
                     <Height>5mm</Height>
                     <Width>170mm</Width>
-                    <Value>=G['report_name']</Value>
+                    <Value>=G.ReportName</Value>
                     <Style>
                         <FontSize>14pt</FontSize>
                         <FontWeight>Bold</FontWeight>

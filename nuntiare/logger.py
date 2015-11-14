@@ -40,14 +40,14 @@ class NuntiareLog(object):
                 raise_error, error_type)
 
     def _raise_error_with_log(self, message, log_type, raise_error, error_type):
-        if log_type==logging.ERROR:
+        if log_type == logging.ERROR:
             self._logger.error(message)
         else:
             self._logger.critical(message)
         if raise_error:    
-            if not error_type or error_type=='ValueError':
+            if not error_type or error_type == 'ValueError':
                 raise ValueError(message)
-            elif error_type=='IOError':
+            elif error_type == 'IOError':
                 raise IOError(message)
             #TODO other types    
             raise ValueError(message)
@@ -63,5 +63,6 @@ class NuntiareLog(object):
             return logging.ERROR
         elif level == "CRITICAL":
             return logging.CRITICAL
-        raise ValueError("Invalid logging type '{0}'. It must be: DEBUG, INFO, WARNING, ERROR or CRITICAL".format(level))
+        raise ValueError(
+            "Invalid logging type '{0}'. It must be: DEBUG, INFO, WARNING, ERROR or CRITICAL".format(level))
 

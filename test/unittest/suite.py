@@ -2,7 +2,9 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-import sys 
+"Nuntiare unittest suite"
+
+import sys
 import os
 
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -10,24 +12,26 @@ DIR = os.path.normpath(os.path.join(DIR, '../..', 'nuntiare'))
 if os.path.isdir(DIR):
     sys.path.insert(0, os.path.dirname(DIR))
 
-import logging    
+import logging
 import unittest
-import data_providers
+import dataprovider
 import expression
 import parameter
+import grid
 import data
-import report
+#import report
 
-logging.basicConfig(filename='nuntiare_test.log',level=logging.DEBUG)
+logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)
 
-loader = unittest.TestLoader()
+LOADER = unittest.TestLoader()
 
-suite = loader.loadTestsFromModule(data_providers)
-suite.addTests(loader.loadTestsFromModule(expression))
-suite.addTests(loader.loadTestsFromModule(parameter))
-suite.addTests(loader.loadTestsFromModule(data))
-suite.addTests(loader.loadTestsFromModule(report))
+SUITE = LOADER.loadTestsFromModule(dataprovider)
+SUITE.addTests(LOADER.loadTestsFromModule(expression))
+SUITE.addTests(LOADER.loadTestsFromModule(parameter))
+SUITE.addTests(LOADER.loadTestsFromModule(grid))
+SUITE.addTests(LOADER.loadTestsFromModule(data))
+#SUITE.addTests(LOADER.loadTestsFromModule(report))
 
-runner = unittest.TextTestRunner(verbosity=2)
-result = runner.run(suite)
+RUNNER = unittest.TextTestRunner(verbosity=2)
+RESULT = RUNNER.run(SUITE)
 
