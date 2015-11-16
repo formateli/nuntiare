@@ -6,10 +6,31 @@ from importlib import import_module
 import sys
 from .. import logger
 
+class Aggregate(object):
+    def __init__(self, report):
+        self.report = report
+
+    def Sum(self, expression, scope=None):
+        result = 0
+        if scope:
+            group = self.report.data_groups[scope]
+        else:
+            group = self.report.data_groups[self.report.current_data_scope[0]]
+
+        data = group.current_instance().data
+        data.move_first()
+        while not data.EOF:
+            result += 1
+            data.move_next()
+
+        print(expression.expression)
+        return result
+
 class ExpressionEval(object):
     def __init__(self, report):
         self.report = report
         self._context = {}
+        self.aggregate = Aggregate(report)
         self._loaded = False
 
     def load_modules(self, modules_def):
@@ -44,6 +65,7 @@ class ExpressionEval(object):
             self._loaded = True
 
         Modules = M = self
+        Aggr = A = self.aggregate
         exp_error = "Error evaluating expression: '{0}'".format(expression)
 
         try:

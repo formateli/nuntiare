@@ -650,7 +650,8 @@ class DataGroupObject(object):
         data.name = name
 
     def _create_one_group(self, data):
-        one_grp = DataGroupInstance(data, data.name + "_" + self.name, None)
+        name = "{0}_{1}".format(data.name, self.name)
+        one_grp = DataGroupInstance(data, name, None)
         one_grp._add_parent_rows()
         return one_grp
 

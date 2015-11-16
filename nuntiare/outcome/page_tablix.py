@@ -52,35 +52,16 @@ class PageTablix(PageItem):
 
         # Validate total columns and rows according to hierarchies.
         self.validate_hierarchy(rows.row_list, columns.column_list)
-        
-        #self.set_cells_width()
-        self.get_body()
 
         # Move all data and instances to its first value.
         self.all_to_first(self.row_hierarchy.members)
-        self.all_to_first(self.column_hierarchy.members)        
-        
+        self.all_to_first(self.column_hierarchy.members)
+
+        #self.set_cells_width()
+        self.get_body()        
+
         self.width = self.grid_body.width
         self.height = self.grid_body.height
-
-
-        return
-
-        self.columns = []
-        self.rows = []
-
-        sum_width = 0
-        for c in columns.column_list:
-            hidden = False
-            width = report.get_value(c, 'Width', 0.0)
-            if width == 0:
-                hidden = True
-            col = GridColumn(hidden, width)
-            sum_width += width
-            self.columns.append(col)
-        self.width = sum_width
-        self.run_rows(rows)
-        
 
     def validate_hierarchy(self, rows, columns):
         err = "There must be as many Columns/Rows elements as there are " \
@@ -96,18 +77,18 @@ class PageTablix(PageItem):
             "Rows", self.row_hierarchy.members, rows, err)
         self._check_hierarchy_index(
             "Rows", index, rows, err, ending=True)
-        
+
     def _check_hierarchy_index(self, type_, index, items, err, ending=False):
         if not ending:
             if index > len(items) - 1:
                 logger.error(
-                    "Number of {0} is lower than its hierarchy definition. {1}".format(
-                        type_, err), True)
+                    "Number of {0} is lower than its hierarchy definition. {1}/{2}. {3}.".format(
+                        type_, len(items), index + 1, err), True)
         else:
             if len(items) - 1 >= index:
                 logger.error(
-                    "Number of {0} is greater than its hierarchy definition. {1}".format(
-                        type_, err), True)
+                    "Number of {0} is greater than its hierarchy definition. {1}/{2}. {3}.".format(
+                        type_, len(items), index + 1, err), True)
 
     def _validate_hierarchy(self, type_, members, items, err, index=0):
         for member in members:
@@ -122,53 +103,41 @@ class PageTablix(PageItem):
         return index
 
     def get_body(self):
-        row_count = 0
-        self._get_body(self.row_hierarchy.members, row_count)
+        self._get_body(self.row_hierarchy.members)
 
-    def _get_body(self, members, row_count):
+    def _get_body(self, members, row_count=0, parent_group=None):
         for member in members:
             if not member.group:
-                self._set_cells_width(member.def_object, row_count)
+                self._do_cells(member.def_object, row_count)
                 row_count += 1
+            elif member.group and not member.group.is_detail_group:
+                i = 0
+                while not member.group.EOF:
+                    row_count = self._get_body(
+                        member.members, row_count, member.group)
+                    member.group.move_next()
+                    i += 1
+                    if parent_group:
+                        if i >= len(parent_group.current_instance().sub_instance):
+                            return row_count
+
             elif member.group.is_detail_group:
-                data = member.group.instance[0].data
+                if parent_group:
+                    member.group.move(parent_group._current_instance_index)
+                else:
+                    member.group.move(0)
+                data = member.group.current_instance().data
                 data.move_first()
                 while not data.EOF:
-                    self._set_cells_width(member.def_object, row_count)
-                    row_count += 1
+                    self._do_cells(member.def_object, row_count)
                     data.move_next()
-            elif not member.group.is_detail_group:
-                member.group.move_first()
-                while not member.group.EOF:
-                    for mb in member.members:
-                        if not mb.group:
-                            self._set_cells_width(mb.def_object, row_count)
-                            row_count += 1                        
-                        elif mb.group.is_detail_group:
-                            mb.group.move(member.group._current_instance_index)
-                            data = mb.group.current_instance().data
-                            data.move_first()
-                            while not data.EOF:
-                                self._set_cells_width(mb.def_object, row_count)
-                                row_count += 1
-                                data.move_next()
-                        elif mb.group == member.group:
-                            data = mb.group.current_instance().data
-                            row_count += 1
-                    member.group.move_next()
-            else:
-                if member.members:
-                    row_count = self._get_body(member.members, row_count)
+                    row_count += 1
+            else: #TODO members of no groups member?
+                pass
 
         return row_count
 
-    def set_cells_width(self):
-        i = 0
-        for row in self.row_hierarchy.rows_columns:
-            self._set_cells_width(row, i)
-            i += 1
-
-    def _set_cells_width(self, row, row_index):
+    def _do_cells(self, row, row_index):
         i = 0
         cols = self.column_hierarchy.rows_columns
         self.report.current_data_scope = [row.member.scope, None]
@@ -182,7 +151,7 @@ class PageTablix(PageItem):
             while x <= cell.col_span:
                 curr_col = cols[i + (x - 1)]
                 if not curr_col.member.is_static:
-                    logger.error("ColSpan only is possible on static members. Tablix '{0}'".format(
+                    logger.error("ColSpan only possible on static members. Tablix '{0}'".format(
                         self.name), True)
                 self.report.current_data_scope[1] = curr_col.member.scope
                 if x == 1:

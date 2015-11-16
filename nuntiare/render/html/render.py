@@ -292,7 +292,7 @@ class RenderObject(Render):
             f = open(self.result_file, "w")
             try:
                 for l in lines:
-                    f.write(l)
+                    f.write(l.encode('utf-8'))
             finally:
                 f.close()
         except IOError as e:
