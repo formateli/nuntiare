@@ -9,7 +9,7 @@ class Expression(object):
     def __init__(self, expression, lnk, must_be_constant):
         self.lnk = lnk
         self.must_be_constant = must_be_constant
-        self.expression, self.is_constant = self.set_expression(expression)        
+        self.expression, self.is_constant = self.set_expression(expression)
 
     def set_expression(self, expression):
         is_constant = False
@@ -18,25 +18,25 @@ class Expression(object):
         if self.must_be_constant and not is_constant:
             logger.error("Invalid expression '{0}' for '{1}' in '{2}' element. " \
                     "It must be a constant expression.".format(
-                        expression, self.lnk.data, 
+                        expression, self.lnk.data,
                         self.lnk.parent.__class__.__name__), True)
         return [expression, is_constant]
 
     def value(self, report, new_expression=None):
         if new_expression:
-            expression, is_constant = self.set_expression(new_expression)        
+            expression, is_constant = self.set_expression(new_expression)
         else:
             expression = self.expression
             is_constant = self.is_constant
-    
+
         if is_constant:
             return expression
         ex = expression[1:]
         return report.modules.resolve_expression(ex) # Run python code
-        
+
     @staticmethod
-    def get_value_or_default(report, element, 
-                    expression_name, default_value, 
+    def get_value_or_default(report, element,
+                    expression_name, default_value,
                     direct_expression=None):
         '''
         Gets the value of a report element of type expression, or its default value 
@@ -53,11 +53,11 @@ class Expression(object):
         
         if not el:
             return default_value
-            
+
         value = el.value(report)
         if value == None:
             return default_value
-        return value        
+        return value
 
 
 class Color(Expression):
@@ -84,7 +84,7 @@ class Color(Expression):
         if str_input == None or str_input.strip() == "":
             self._color = Color._default_color
             return
-	
+
         str_input = str_input.strip()
         if str_input.startswith("#"):
             Color._validate_hex_color(str_input)
@@ -109,7 +109,7 @@ class Color(Expression):
     def to_rgb(hex_color):
         result=[]
         Color._validate_hex_color(hex_color)
-        hex_color = hex_color[1:] # Remove '#'        
+        hex_color = hex_color[1:] # Remove '#'
         result.append(int(hex_color[0:2],16))
         result.append(int(hex_color[2:4],16))
         result.append(int(hex_color[4:],16))
@@ -506,8 +506,8 @@ class Float(Expression):
     def value(self, report):
         val = super(Float, self).value(report)
         return DataType.get_value('Float', val)
-        
-        
+
+
 class Integer(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
         super(Integer, self).__init__(expression, lnk, must_be_constant)
@@ -524,9 +524,9 @@ class String(Expression):
     def value(self, report):
         val = super(String, self).value(report)
         return DataType.get_value('String', val)
-        
-        
+
+
 class Variant(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
         super(Variant, self).__init__(expression, lnk, must_be_constant)
-           
+

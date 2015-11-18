@@ -119,7 +119,7 @@ class PageTablix(PageItem):
                     i += 1
                     if parent_group:
                         if i >= len(parent_group.current_instance().sub_instance):
-                            return row_count
+                            break
 
             elif member.group.is_detail_group:
                 if parent_group:
@@ -133,6 +133,7 @@ class PageTablix(PageItem):
                     data.move_next()
                     row_count += 1
             else: #TODO members of no groups member?
+                print("TODO")
                 pass
 
         return row_count

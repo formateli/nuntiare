@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report>
   <Name>orders</Name>
-  <Description>Northwind orders by date</Description>
+  <Description>Northwind Orders</Description>
   <Author>Fredy Ramirez</Author>
   <Page/>
   <ReportParameters>
@@ -75,7 +75,7 @@
                             <Value>=F.customer</Value>
                           </SortExpression>
                         </SortExpressions>
-                      </Group>                    
+                      </Group>
                       <TablixMembers>
                         <TablixMember>
                           <RepeatOnNewPage>true</RepeatOnNewPage>                      
@@ -107,15 +107,32 @@
                               </Group>
                             </TablixMember>
                             <TablixMember>
+                              <!-- total order -->
                               <RepeatOnNewPage>true</RepeatOnNewPage>
                             </TablixMember>
                           </TablixMembers>
                         </TablixMember>
-                      </TablixMembers>                    
+                        <TablixMember>
+                          <!-- total customer -->
+                          <RepeatOnNewPage>true</RepeatOnNewPage>
+                        </TablixMember>
+                      </TablixMembers>
+                    </TablixMember>
+                    <TablixMember>
+                      <!-- total date -->
+                      <RepeatOnNewPage>true</RepeatOnNewPage>
                     </TablixMember>
                   </TablixMembers>
                 </TablixMember>
+                <TablixMember>
+                  <!-- total country -->
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
               </TablixMembers>
+            </TablixMember>
+            <TablixMember>
+              <!-- Grand Total -->
+              <RepeatOnNewPage>true</RepeatOnNewPage>
             </TablixMember>
           </TablixMembers>
         </TablixRowHierarchy>
@@ -506,7 +523,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>total_order</Name>
-                        <Value>='Total Order' + str(F.orderid)</Value>
+                        <Value>='Total Order ' + str(F.orderid)</Value>
                         <Style>
                           <TextAlign>Right</TextAlign>
                           <Border>
@@ -524,7 +541,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>total_order_amount</Name>
-                        <Value>=Aggr.Sum(F.subtotal1)</Value>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
                         <Style>
                           <TextAlign>Right</TextAlign>
                           <Border>
@@ -534,6 +551,180 @@
                         </Style>
                       </Textbox>
                     </ReportItems>                  
+                  </CellContents>
+                </TablixCell>                
+              </TablixCells>
+            </TablixRow>
+
+            <TablixRow>
+              <Height>10mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>5</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_customer</Name>
+                        <Value>='Total Customer ' + str(F.customer)</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Blue</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>                  
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>2</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_customer_amount</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Blue</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>                  
+                  </CellContents>
+                </TablixCell>                
+              </TablixCells>
+            </TablixRow>
+
+            <TablixRow>
+              <Height>10mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>5</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_date</Name>
+                        <Value>='Total Date ' + str(F.date)</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Red</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>2</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_date_amount</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Red</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>                  
+                  </CellContents>
+                </TablixCell>                
+              </TablixCells>
+            </TablixRow>
+
+            <TablixRow>
+              <Height>10mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>5</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_country</Name>
+                        <Value>='Total Country ' + str(F.country)</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Gray</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>2</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>total_country_amount</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <Color>Gray</Color>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>                
+              </TablixCells>
+            </TablixRow>
+
+            <TablixRow>
+              <Height>10mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>5</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>grand_total</Name>
+                        <Value>Grand Total</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>2</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>grand_total_amount</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
                   </CellContents>
                 </TablixCell>                
               </TablixCells>
