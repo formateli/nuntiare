@@ -544,6 +544,7 @@ class DataGroupObject(object):
         self.name = name
         self.report = report
         self.instance = []      # List of GroupInstance objects.
+        self.top_group = None   # Top group. Normally the data set.
         self.parent = parent    # Parent group. 'None' for Dataset.
         self.sub_group = []     # List of DataGroupObject defining sub groups.
         self.is_detail_group = False
@@ -554,6 +555,10 @@ class DataGroupObject(object):
             logger.error(
                     "DataSet, DataRegion or Group with name '{0}' already exists.".format(name), True)
         report.data_groups[name] = self
+        if not parent:
+            self.top_group = self
+        else:
+            self.top_group = parent.top_group
 
     def create_instances(self, group_def):
         if not group_def:
