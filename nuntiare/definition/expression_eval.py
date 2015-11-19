@@ -98,7 +98,6 @@ class Aggregate(object):
             "RowNumber", None, None, scope)
 
     def _running_value(self, running_name, expression, function, scope):
-        name = None
         if running_name == 'RunningValue':
             valid_fun = ['Sum', 'Avg']
             if function not in valid_fun:
@@ -129,7 +128,7 @@ class Aggregate(object):
         else:
             if result == None:
                 result = [0.0,]
-            val = expression.value(self.report)
+            val = aggr[0].value(self.report)
             if val != None:
                 if function == "Sum":
                     result[0] += val
@@ -293,10 +292,15 @@ class ExpressionEval(object):
         return result
 
     def _get_error_str(self, e):
-        res = ""
+        res = None
         if not e:
             return ""
         for message in e.args:
-            res = "{0} - {1}".format(res, message)
+            if not message:
+                continue
+            if not res:
+                res = message
+            else:
+                res = "{0} - {1}".format(res, message)
         return res
 

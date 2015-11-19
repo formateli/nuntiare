@@ -25,11 +25,14 @@
             <TablixMember/>
             <TablixMember/>
             <TablixMember/>
+            <TablixMember/>
+            <TablixMember/>            
           </TablixMembers>
         </TablixColumnHierarchy>
         <TablixRowHierarchy>
           <TablixMembers>
             <TablixMember>
+              <!-- Tablix header -->
               <RepeatOnNewPage>true</RepeatOnNewPage>
             </TablixMember>
             <TablixMember>
@@ -46,92 +49,73 @@
               </Group>
               <TablixMembers>
                 <TablixMember>
+                  <!-- Country header -->
                   <RepeatOnNewPage>true</RepeatOnNewPage>
                 </TablixMember>
                 <TablixMember>
                   <Group>
-                    <Name>date</Name>
+                    <Name>customer</Name>
                     <GroupExpressions>
-                      <GroupExpression>=F.date</GroupExpression>
+                      <GroupExpression>=F.customer</GroupExpression>
                     </GroupExpressions>
                     <SortExpressions>
                       <SortExpression>
-                        <Value>=F.date</Value>
+                        <Value>=F.customer</Value>
                       </SortExpression>
                     </SortExpressions>
                   </Group>
                   <TablixMembers>
                     <TablixMember>
+                      <!-- Customer header -->
                       <RepeatOnNewPage>true</RepeatOnNewPage>                      
                     </TablixMember>
                     <TablixMember>
                       <Group>
-                        <Name>customer</Name>
+                        <Name>orderid</Name>
                         <GroupExpressions>
-                          <GroupExpression>=F.customer</GroupExpression>
+                          <GroupExpression>=F.orderid</GroupExpression>
                         </GroupExpressions>
                         <SortExpressions>
                           <SortExpression>
-                            <Value>=F.customer</Value>
+                            <Value>=F.orderid</Value>
                           </SortExpression>
                         </SortExpressions>
                       </Group>
                       <TablixMembers>
                         <TablixMember>
-                          <RepeatOnNewPage>true</RepeatOnNewPage>                      
+                          <!-- Order header -->
+                          <RepeatOnNewPage>true</RepeatOnNewPage>
                         </TablixMember>
                         <TablixMember>
                           <Group>
-                            <Name>orderid</Name>
-                            <GroupExpressions>
-                              <GroupExpression>=F.orderid</GroupExpression>
-                            </GroupExpressions>
+                            <Name>details</Name>
                             <SortExpressions>
                               <SortExpression>
-                                <Value>=F.orderid</Value>
+                                <Value>=F.product</Value>
                               </SortExpression>
                             </SortExpressions>
                           </Group>
-                          <TablixMembers>
-                            <TablixMember>
-                              <RepeatOnNewPage>true</RepeatOnNewPage>
-                            </TablixMember>
-                            <TablixMember>
-                              <Group>
-                                <Name>details</Name>
-                                <SortExpressions>
-                                  <SortExpression>
-                                    <Value>=F.product</Value>
-                                  </SortExpression>
-                                </SortExpressions>
-                              </Group>
-                            </TablixMember>
-                            <TablixMember>
-                              <!-- total order -->
-                              <RepeatOnNewPage>true</RepeatOnNewPage>
-                            </TablixMember>
-                          </TablixMembers>
                         </TablixMember>
                         <TablixMember>
-                          <!-- total customer -->
+                          <!-- total order -->
                           <RepeatOnNewPage>true</RepeatOnNewPage>
                         </TablixMember>
                       </TablixMembers>
                     </TablixMember>
                     <TablixMember>
-                      <!-- total date -->
+                      <!-- total customer -->
                       <RepeatOnNewPage>true</RepeatOnNewPage>
                     </TablixMember>
                   </TablixMembers>
                 </TablixMember>
                 <TablixMember>
-                  <!-- total country -->
+                  <!--Country footer - total country -->
                   <RepeatOnNewPage>true</RepeatOnNewPage>
                 </TablixMember>
               </TablixMembers>
             </TablixMember>
             <TablixMember>
-              <!-- Grand Total -->
+              <!-- Tablix footer - Grand Total -->
               <RepeatOnNewPage>true</RepeatOnNewPage>
             </TablixMember>
           </TablixMembers>
@@ -139,8 +123,8 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>2in</Width>
-            </TablixColumn>
+              <Width>2cm</Width>
+            </TablixColumn>          
             <TablixColumn>
               <Width>2in</Width>
             </TablixColumn>
@@ -159,11 +143,27 @@
             <TablixColumn>
               <Width>2in</Width>
             </TablixColumn>
+            <TablixColumn>
+              <Width>2in</Width>              
+            </TablixColumn>
+            <TablixColumn>
+              <Width>5cm</Width>
+            </TablixColumn>            
           </TablixColumns>
           <TablixRows>
             <TablixRow>
               <Height>10mm</Height>
               <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count_header</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -283,6 +283,16 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count_header2</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
               </TablixCells>
             </TablixRow>
             <TablixRow>
@@ -292,8 +302,18 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
+                        <Name>none1</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
                         <Name>country_header_number</Name>
-                        <Value>=Aggr.RowNumber()</Value>
+                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -305,7 +325,7 @@
                       </Textbox>
                     </ReportItems>
                   </CellContents>
-                </TablixCell>              
+                </TablixCell>
                 <TablixCell>
                   <CellContents>
                     <ColSpan>6</ColSpan>
@@ -325,45 +345,12 @@
                     </ReportItems>                  
                   </CellContents>
                 </TablixCell>
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>date_count_header</Name>
-                        <Value>=Aggr.RowNumber('country')</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Red</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>              
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>6</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>date_header</Name>
-                        <Value>=F.date</Value>                    
-                        <Style>
-                          <Format>{:%A, %m-%d-%Y}</Format>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Red</BackgroundColor>
-                        </Style>
+                        <Name>none11</Name>
+                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -377,8 +364,18 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
+                        <Name>none2</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>              
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
                         <Name>customer_count_header</Name>
-                        <Value>=Aggr.RowNumber('date')</Value>
+                        <Value>=Aggr.RowNumber('country')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -410,11 +407,31 @@
                     </ReportItems>                  
                   </CellContents>
                 </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>none21</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
               </TablixCells>
             </TablixRow>
             <TablixRow>
               <Height>10mm</Height>
               <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>none3</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -452,11 +469,31 @@
                     </ReportItems>                  
                   </CellContents>
                 </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>none31</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>                
               </TablixCells>
             </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>line_count</Name>
+                        <Value>=Aggr.RowNumber()</Value>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -583,6 +620,20 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>line_count2</Name>
+                        <Value>='-' + str(
+                            Aggr.RowNumber('details')
+                          ) + '-' + str(
+                            Aggr.RunningValue('F.subtotal1 - F.discount_amount','Sum','country')
+                          )</Value>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
               </TablixCells>
             </TablixRow>
             <TablixRow>
@@ -669,51 +720,6 @@
                 </TablixCell>                
               </TablixCells>
             </TablixRow>
-
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>5</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>total_date</Name>
-                        <Value>='Total Date ' + str(F.date)</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>Red</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>2</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>total_date_amount</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>Red</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>                
-              </TablixCells>
-            </TablixRow>
-
             <TablixRow>
               <Height>10mm</Height>
               <TablixCells>

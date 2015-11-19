@@ -88,7 +88,7 @@ class PageTablix(PageItem):
             if len(items) - 1 >= index:
                 logger.error(
                     "Number of {0} is greater than its hierarchy definition. {1}/{2}. {3}.".format(
-                        type_, len(items), index + 1, err), True)
+                        type_, len(items) - 1, index, err), True)
 
     def _validate_hierarchy(self, type_, members, items, err, index=0):
         for member in members:
