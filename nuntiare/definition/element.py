@@ -787,12 +787,12 @@ class Field(Element):
             if fd.Name == self.Name:
                 logger.error("DataSet already has '{0}' Field.".format(self.name), True)
         data_set.fields.append(self)
-        
+
 
 class Query(Element):
     def __init__(self, node, lnk):
         elements={'DataSourceName': [Element.STRING,1,True],
-                  'CommandText': [Element.STRING,1],
+                  'CommandText': [Element.STRING],
                   'QueryParameters': [],
                  }
         super(Query, self).__init__(node, elements, lnk)

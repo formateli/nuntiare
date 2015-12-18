@@ -139,13 +139,15 @@ class PageTablix(PageItem):
         return row_count
 
     def _do_cells(self, row, row_index):
-        i = 0
         cols = self.column_hierarchy.rows_columns
         self.report.current_data_scope = [row.member.scope, None]
-        for cell in row.cells:
-            if i == len(cols):
-                logger.error(
-                    "Number of cells exceeds number of columns", True)
+        if len(row.cells) != len(cols):
+            logger.error(
+                "Number of cells and columns must be equal. {0}/{1}".format(
+                    len(row.cells), len(cols)), True)
+        i = 0
+        while i < len(row.cells):
+            cell = row.cells[i]
             x = 1
             sum_width = 0
             grid_cell = None

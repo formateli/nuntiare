@@ -148,7 +148,7 @@ class DataInterface(object):
 
     def row_count(self):
         return len(self.rows)
-            
+
     def move_first(self):
         self.move(0)
 
@@ -533,7 +533,8 @@ class SortingObject(object):
 
 class DataGroupObject(object):
     class GroupInstance(object):
-        def __init__(self, data):
+        def __init__(self, group, data):
+            self.group = group
             self.data = data
             self.sub_instance = []
             
@@ -611,7 +612,7 @@ class DataGroupObject(object):
         self.parent.sub_group.append(self)
 
     def add_data_instance(self, data):
-        instance = DataGroupObject.GroupInstance(data)
+        instance = DataGroupObject.GroupInstance(self, data)
         self.instance.append(instance)
         return instance
 

@@ -125,8 +125,14 @@ class PageText(PageItem):
         self.value_formatted = ""
         if self.value != None:
             if self.style.format:
-                self.value_formatted = DataType.get_value("String",
-                        self.style.format.format(self.value))
+                try:
+                    self.value_formatted = DataType.get_value("String",
+                            self.style.format.format(self.value))
+                except Exception:
+                    logger.warn(
+                        "Invalid format operation. Value '{0}' - Format '{1}'. Ignored.".format(
+                            self.value, self.style.format))
+                    self.value_formatted = DataType.get_value("String", self.value)
             else:
                 self.value_formatted = DataType.get_value("String", self.value)
 

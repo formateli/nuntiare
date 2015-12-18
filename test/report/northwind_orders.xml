@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report>
-  <Name>orders</Name>
-  <Description>Northwind Orders</Description>
-  <Author>Fredy Ramirez</Author>
-  <Page/>
-  <ReportParameters>
-    <ReportParameter>
-      <Name>conn_string</Name>
-      <DataType>String</DataType>
-      <DefaultValue>''</DefaultValue>
-    </ReportParameter>
-  </ReportParameters>
+  <Name>northwind_orders</Name>
   <Body>
     <ReportItems>
       <Tablix>
@@ -26,15 +16,16 @@
             <TablixMember/>
             <TablixMember/>
             <TablixMember/>
-            <TablixMember/>            
+            <TablixMember/>
+            <TablixMember/>
+            <TablixMember/>
+            <TablixMember/>
+            <TablixMember/>
           </TablixMembers>
         </TablixColumnHierarchy>
         <TablixRowHierarchy>
           <TablixMembers>
-            <TablixMember>
-              <!-- Tablix header -->
-              <RepeatOnNewPage>true</RepeatOnNewPage>
-            </TablixMember>
+            <TablixMember/>
             <TablixMember>
               <Group>
                 <Name>country</Name>
@@ -48,10 +39,7 @@
                 </SortExpressions>
               </Group>
               <TablixMembers>
-                <TablixMember>
-                  <!-- Country header -->
-                  <RepeatOnNewPage>true</RepeatOnNewPage>
-                </TablixMember>
+                <TablixMember/>
                 <TablixMember>
                   <Group>
                     <Name>customer</Name>
@@ -65,10 +53,7 @@
                     </SortExpressions>
                   </Group>
                   <TablixMembers>
-                    <TablixMember>
-                      <!-- Customer header -->
-                      <RepeatOnNewPage>true</RepeatOnNewPage>                      
-                    </TablixMember>
+                    <TablixMember/>
                     <TablixMember>
                       <Group>
                         <Name>orderid</Name>
@@ -82,10 +67,7 @@
                         </SortExpressions>
                       </Group>
                       <TablixMembers>
-                        <TablixMember>
-                          <!-- Order header -->
-                          <RepeatOnNewPage>true</RepeatOnNewPage>
-                        </TablixMember>
+                        <TablixMember/>
                         <TablixMember>
                           <Group>
                             <Name>details</Name>
@@ -96,63 +78,60 @@
                             </SortExpressions>
                           </Group>
                         </TablixMember>
-                        <TablixMember>
-                          <!-- total order -->
-                          <RepeatOnNewPage>true</RepeatOnNewPage>
-                        </TablixMember>
+                        <TablixMember/>
                       </TablixMembers>
-                    </TablixMember>
-                    <TablixMember>
-                      <!-- total customer -->
-                      <RepeatOnNewPage>true</RepeatOnNewPage>
                     </TablixMember>
                   </TablixMembers>
                 </TablixMember>
-                <TablixMember>
-                  <!--Country footer - total country -->
-                  <RepeatOnNewPage>true</RepeatOnNewPage>
-                </TablixMember>
               </TablixMembers>
-            </TablixMember>
-            <TablixMember>
-              <!-- Tablix footer - Grand Total -->
-              <RepeatOnNewPage>true</RepeatOnNewPage>
             </TablixMember>
           </TablixMembers>
         </TablixRowHierarchy>
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
+              <Width>1cm</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1cm</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>4cm</Width>
+            </TablixColumn>
+            <TablixColumn>
               <Width>2cm</Width>
-            </TablixColumn>          
-            <TablixColumn>
-              <Width>2in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>
+              <Width>2cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>
+              <Width>2cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>
+              <Width>1cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>
+              <Width>2cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>
+              <Width>2cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>2in</Width>              
+              <Width>1cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>5cm</Width>
-            </TablixColumn>            
+              <Width>2cm</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2cm</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1cm</Width>
+            </TablixColumn>
           </TablixColumns>
           <TablixRows>
             <TablixRow>
-              <Height>10mm</Height>
+              <Height>8mm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
@@ -160,6 +139,23 @@
                       <Textbox>
                         <Name>count_header</Name>
                         <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>no_header</Name>
+                        <Value>No</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Aqua</BackgroundColor>
+                        </Style>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -219,24 +215,7 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>discount_header</Name>
-                        <Value>Discount</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>subtotal1_header</Name>
+                        <Name>total1_header</Name>
                         <Value>Total</Value>
                         <Style>
                           <Border>
@@ -251,9 +230,10 @@
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
+                    <ColSpan>2</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>discount_amount_header</Name>
+                        <Name>duscount_header</Name>
                         <Value>Discount</Value>
                         <Style>
                           <Border>
@@ -266,6 +246,7 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -287,7 +268,58 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>count_header2</Name>
+                        <Name>number_header</Name>
+                        <Value>Row Number</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Aqua</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>sum_header</Name>
+                        <Value>Running Sum</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Aqua</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>avg_header</Name>
+                        <Value>Running Avg</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Aqua</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count2_header</Name>
                         <Value/>
                       </Textbox>
                     </ReportItems>
@@ -296,199 +328,13 @@
               </TablixCells>
             </TablixRow>
             <TablixRow>
-              <Height>10mm</Height>
+              <Height>6mm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>none1</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>country_header_number</Name>
-                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Gray</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>6</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>country_header</Name>
-                        <Value>=F.country</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Gray</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>none11</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>none2</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>              
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>customer_count_header</Name>
-                        <Value>=Aggr.RowNumber('country')</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Blue</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>6</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>customer_header</Name>
-                        <Value>=F.customer</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Blue</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>none21</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>none3</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>order_count_header</Name>
-                        <Value>=Aggr.RowNumber('customer')</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Violet</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>              
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>6</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>order_header</Name>
-                        <Value>=F.orderid</Value>
-                        <Style>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>White</Color>
-                          <BackgroundColor>Violet</BackgroundColor>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>none31</Name>
-                        <Value/>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>                
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>8mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>line_count</Name>
+                        <Name>count_tablix</Name>
                         <Value>=Aggr.RowNumber()</Value>
                       </Textbox>
                     </ReportItems>
@@ -498,15 +344,527 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>product</Name>
-                        <CanGrow>true</CanGrow>
-                        <Value>=str(Aggr.RowNumber('orderid')) + ' ' + F.product</Value>
+                        <Name>country_no_header</Name>
+                        <Value>=Aggr.RunningValue('F.country', 'CountDistinct')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_header</Name>
+                        <Value>=F.country</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_sum_qty</Name>
+                        <Value>=Aggr.Sum('F.quantity')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_unit</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_sum_subtotal1</Name>
+                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_discount1</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_sum_discount2</Name>
+                        <Value>=Aggr.Sum('F.discount_amount')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_sum_total</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_row_number</Name>
+                        <Value>=Aggr.RowNumber(&quot;country&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_running_sum_total</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_running_avg_total</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;country&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>country_count2</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Gray</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>6mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count4_header</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_no_header</Name>
+                        <Value>=Aggr.RunningValue('F.customer', 'CountDistinct', &quot;country&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_header</Name>
+                        <Value>=F.customer</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_sum_qty</Name>
+                        <Value>=Aggr.Sum('F.quantity')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_unit</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_sum_subtotal1</Name>
+                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_discount1</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_sum_discount2</Name>
+                        <Value>=Aggr.Sum('F.discount_amount')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_sum_total</Name>
+                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_row_number</Name>
+                        <Value>=Aggr.RowNumber('customer')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_running_sum_total</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_running_avg_total</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;customer&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>customer_count2</Name>
+                        <Value/>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Blue</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>6mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count5_header</Name>
+                        <Value/>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_count</Name>
+                        <Value>=Aggr.RowNumber('orderid')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Violet</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>11</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_header</Name>
+                        <Value>=F.orderid</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                          <BackgroundColor>Violet</BackgroundColor>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+                <TablixCell/>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>7mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count6_header</Name>
+                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>no</Name>
+                        <Value>No</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>product</Name>
+                        <Value>=F.product</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -519,12 +877,10 @@
                         <Name>qty</Name>
                         <Value>=F.quantity</Value>
                         <Style>
-                          <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -537,30 +893,10 @@
                         <Name>unit</Name>
                         <Value>=F.unitprice</Value>
                         <Style>
-                          <TextAlign>Right</TextAlign>                        
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>discount1</Name>
-                        <Value>=Fields.discount</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>                        
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -573,12 +909,28 @@
                         <Name>subtotal1</Name>
                         <Value>=F.subtotal1</Value>
                         <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>discount1</Name>
+                        <Value>=F.discount</Value>
+                        <Style>
+                          <Format>{:.1%}</Format>
                           <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -591,12 +943,10 @@
                         <Name>discount2</Name>
                         <Value>=F.discount_amount</Value>
                         <Style>
-                          <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -609,12 +959,10 @@
                         <Name>total</Name>
                         <Value>=F.subtotal1 - F.discount_amount</Value>
                         <Style>
-                          <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <PaddingLeft>2pt</PaddingLeft>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -624,12 +972,56 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>line_count2</Name>
-                        <Value>='-' + str(
-                            Aggr.RowNumber('details')
-                          ) + '-' + str(
-                            Aggr.RunningValue('F.subtotal1 - F.discount_amount','Sum','country')
-                          )</Value>
+                        <Name>row_number</Name>
+                        <Value>=Aggr.RowNumber('orderid')</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>running_sum</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;orderid&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>running_avg</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;orderid&quot;)</Value>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>count7_header</Name>
+                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -637,34 +1029,78 @@
               </TablixCells>
             </TablixRow>
             <TablixRow>
-              <Height>10mm</Height>
+              <Height>8mm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
-                    <ColSpan>5</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>total_order</Name>
-                        <Value>='Total Order ' + str(F.orderid)</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                        </Style>
+                        <Name>count5_header_2</Name>
+                        <Value/>
                       </Textbox>
-                    </ReportItems>                  
+                    </ReportItems>
                   </CellContents>
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
-                    <ColSpan>2</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>total_order_amount</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Name>orderid_count_2</Name>
+                        <Value>=Aggr.RowNumber('orderid')</Value>
                         <Style>
+                          <Color>Violet</Color>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_count_3</Name>
+                        <Value>=Aggr.RowNumber('customer')</Value>
+                        <Style>
+                          <Color>Blue</Color>                        
+                          <Border>                          
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_count_4</Name>
+                        <Value>=Aggr.RowNumber('country')</Value>
+                        <Style>
+                          <Color>Gray</Color>                        
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_sum_2</Name>
+                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Style>
+                          <Color>Violet</Color>
+                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
@@ -672,109 +1108,75 @@
                           </Border>
                         </Style>
                       </Textbox>
-                    </ReportItems>                  
+                    </ReportItems>
                   </CellContents>
-                </TablixCell>                
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
+                </TablixCell>
                 <TablixCell>
                   <CellContents>
-                    <ColSpan>5</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>total_customer</Name>
-                        <Value>='Total Customer ' + str(F.customer)</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
+                        <Name>orderid_sum_3</Name>
+                        <Value>=Aggr.Sum('F.subtotal1', 'customer')</Value>
+                        <Style>                        
                           <Color>Blue</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>2</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>total_customer_amount</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
-                        <Style>
+                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_sum_4</Name>
+                        <Value>=Aggr.Sum('F.subtotal1', 'country')</Value>
+                        <Style>
+                          <Color>Gray</Color>
+                          <Format>{:,.2f}</Format>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_ruuning_sum_2</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;orderid&quot;)</Value>
+                        <Style>
+                          <Color>Violet</Color>
+                          <Format>{:,.2f}</Format>
+                          <TextAlign>Right</TextAlign>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_ruuning_sum_3</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Style>
                           <Color>Blue</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>                  
-                  </CellContents>
-                </TablixCell>                
-              </TablixCells>
-            </TablixRow>
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>5</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>total_country</Name>
-                        <Value>='Total Country ' + str(F.country)</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>Gray</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>2</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>total_country_amount</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                          <Border>
-                            <Color>LightGrey</Color>
-                            <BorderStyle>Solid</BorderStyle>
-                          </Border>
-                          <Color>Gray</Color>
-                        </Style>
-                      </Textbox>
-                    </ReportItems>
-                  </CellContents>
-                </TablixCell>                
-              </TablixCells>
-            </TablixRow>
-
-            <TablixRow>
-              <Height>10mm</Height>
-              <TablixCells>
-                <TablixCell>
-                  <CellContents>
-                    <ColSpan>5</ColSpan>
-                    <ReportItems>
-                      <Textbox>
-                        <Name>grand_total</Name>
-                        <Value>Grand Total</Value>
-                        <Style>
+                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
@@ -787,12 +1189,13 @@
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
-                    <ColSpan>2</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>grand_total_amount</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Name>orderid_ruuning_sum_4</Name>
+                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
                         <Style>
+                          <Color>Gray</Color>
+                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
@@ -802,28 +1205,47 @@
                       </Textbox>
                     </ReportItems>
                   </CellContents>
-                </TablixCell>                
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ColSpan>3</ColSpan>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>orderid_header_2</Name>
+                        <Value>=F.orderid</Value>
+                        <Style>
+                          <Color>Violet</Color>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell/>
+                <TablixCell/>
               </TablixCells>
             </TablixRow>
-            
           </TablixRows>
         </TablixBody>
+        <DataSetName>OrderDataSet</DataSetName>
         <Style>
           <Border>
             <BorderStyle>Solid</BorderStyle>
           </Border>
         </Style>
-        <DataSetName>OrderDataSet</DataSetName>
       </Tablix>
     </ReportItems>
-    <Style/>
   </Body>
+  <Page/>
   <DataSources>
     <DataSource>
-      <Name>datasource1</Name>
+      <Name>TempDataSource</Name>
       <ConnectionProperties>
-        <DataProvider>postgresql</DataProvider>
-        <ConnectObject>=P.conn_string</ConnectObject>
+        <DataProvider>PostgreSQL</DataProvider>
+        <ConnectObject>dbname=northwind host=localhost port=5432 user=postgres password=h12345678 client_encoding=UNICODE connect_timeout=0</ConnectObject>
       </ConnectionProperties>
     </DataSource>
   </DataSources>
@@ -831,19 +1253,17 @@
     <DataSet>
       <Name>OrderDataSet</Name>
       <Query>
-        <DataSourceName>datasource1</DataSourceName>
-        <CommandText>SELECT orders.orderid, orders.orderdate, orders.customerid, 
-customers.companyname, customers.country, 
-order_details.productid, products.productname, products.categoryid, categories.categoryname, 
-order_details.quantity, order_details.unitprice, order_details.discount 
-FROM orders 
-INNER JOIN customers ON orders.customerid = customers.customerid 
-INNER JOIN order_details ON orders.orderid = order_details.orderid 
-INNER JOIN products ON products.productid = order_details.productid 
-INNER JOIN categories ON categories.categoryid = products.categoryid 
-ORDER BY orders.orderid LIMIT 100</CommandText>
+        <DataSourceName>TempDataSource</DataSourceName>
+        <CommandText>SELECT orders.orderid, orders.orderdate, orders.customerid, customers.companyname, customers.country, order_details.productid, products.productname, products.categoryid, categories.categoryname, order_details.quantity, order_details.unitprice, order_details.discount 
+          FROM orders 
+          INNER JOIN customers ON orders.customerid = customers.customerid 
+          INNER JOIN order_details ON order_details.orderid = orders.orderid 
+          INNER JOIN products ON products.productid = order_details.productid 
+          INNER JOIN categories ON categories.categoryid = products.categoryid 
+          LIMIT 100
+        </CommandText>
       </Query>
-      <Fields>      
+      <Fields>
         <Field>
           <Name>orderid</Name>
           <DataField>orderid</DataField>

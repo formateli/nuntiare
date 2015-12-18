@@ -13,38 +13,35 @@ class Aggregate(object):
             self._running = {}  # Cache for Running values
 
         def get_value(self, function, scope, expression):
-            key = self._get_key(function, scope, expression)
-            if key in self._values:
-                return self._values[key]
+            if not function in self._values:
+                return
+            if not scope in self._values[function]:
+                return
+            if not expression in self._values[function][scope]:
+                return
+            return self._values[function][scope][expression]
 
         def set_value(self, function, scope, expression, value):
-            key = self._get_key(function, scope, expression)
-            self._values[key] = value
-
-        def get_last_running(self, function, scope, instance_name, expression):
-            key = self._get_key_running(
-                function, scope, instance_name, expression)
-            if key in self._running:
-                return self._running[key]
-
-        def set_last_running(self, function, scope, instance_name, expression, value):
-            key = self._get_key_running(
-                function, scope, instance_name, expression)
-            self._running[key] = value
+            if not function in self._values:
+                self._values[function] = {}
+            if not scope in self._values[function]:
+                self._values[function][scope] = {}
+            if not expression in self._values[function][scope]:
+                self._values[function][scope][expression] = None
+            self._values[function][scope][expression] = value
 
         def _get_key(self, function, scope, expression):
             return "{0}-{1}-{2}".format(
                 function, scope, expression)
-
-        def _get_key_running(self, function, scope, instance_name, expression):
-            return "{0}-{1}".format(
-                self._get_key(function, scope, expression), instance_name)
 
     def __init__(self, report):
         self.report = report
         self._cache = Aggregate._AggregateCache()
 
     def Aggregate(self, expression, scope=None):
+        '''
+        Returns a list of values according to expression and scope.
+        '''
         result = self._get_value(
             "aggregate", expression, scope, [[], None])
         return result[0]
@@ -64,9 +61,9 @@ class Aggregate(object):
             "count", expression, scope, [0, None])
         return result[0]
 
-    def CountRows(self, expression, scope=None):
+    def CountRows(self, scope=None):
         result = self._get_value(
-            "count_rows", expression, scope, [0, None])
+            "count_rows", None, scope, [0, None])
         return result[0]
 
     def First(self, expression, scope=None):
@@ -91,102 +88,126 @@ class Aggregate(object):
 
     def RunningValue(self, expression, function, scope=None):
         return self._running_value(
-            "RunningValue", expression, function, scope)
+            'RunningValue', expression, function, scope)
 
     def RowNumber(self, scope=None):
         return self._running_value(
-            "RowNumber", None, None, scope)
+            'RowNumber', None, 'RowNumber', scope)
 
     def _running_value(self, running_name, expression, function, scope):
         if running_name == 'RunningValue':
-            valid_fun = ['Sum', 'Avg']
+            valid_fun = ['Sum', 'Avg', 'CountDistinct']
             if function not in valid_fun:
-                logger.error("Invalid function '{0}' for aggregate RunningValue. Valid are: {1}".format(
-                    function, valid_fun), True)
-            name = running_name + "." + function
-        elif running_name == 'RowNumber':
-            name = running_name
-        else:
-            logger.error("Invalid aggregate running value function '{0}'. Valid are 'RowNumber' and 'RunningValue'.".format(
-                running_name), True)
-        aggr = self._get_aggr_info(expression, scope)
+                logger.error(
+                    "Invalid function '{0}' for aggregate RunningValue. Valid are: {1}".format(
+                        function, valid_fun), True)
+        name = 'RunningValue.' + function
+
         result = None
+        scope_name = None           # Name of group for Running calculation.
+        instance_group = None       # Current instance of scope_name group.
+        location_group = None       # Group where Running function is called.
+        # Current data name and row index if location_group is a detail group.
+        current_row = [None, None]
+        # Last data name and row index if location_group is a detail group.        
+        last_row = [None, None]
+
+        aggr = self._get_aggr_info(expression, scope)
+
         if scope == None:
-            scope_name = aggr[1].top_group.name
-            instance_name = None
+            scope_name = aggr[1].top_group.name # Top group (DataSet)
+            aggr = self._get_aggr_info(expression, scope_name)
         else:
             scope_name = scope
-            instance_name = aggr[1].current_instance().data.name
+        instance_group = self.report.data_groups[scope_name].current_instance()
+        location_group = self.report.data_groups[aggr[2][0]]
+        current_row[0] = location_group.current_instance().data.name
+        if location_group.is_detail_group:
+            current_row[1] = location_group.current_instance().data._current_index
 
-        result = self._cache.get_last_running(
-            name, scope_name, instance_name, expression)
+        value_cache = self._cache.get_value(
+                name, 
+                scope_name + "." + location_group.name,
+                expression
+            )
 
-        if name == 'RowNumber':
+        if value_cache:
+            if value_cache[0] == instance_group.data.name:
+                last_row = value_cache[1]
+                result = [value_cache[2], value_cache[3]]
+                if last_row[0] != None:
+                    if last_row[0] != current_row[0]:
+                        last_row[1] = None # Reset if detail group instance change.
+
+        if function == 'RowNumber':
             if result == None:
-                result = [0,]
-            result[0] += 1
+                result = [0, None]
+            if location_group.is_detail_group:
+                if last_row[1] != current_row[1]:
+                    result[0] += 1
+            else:
+                if current_row[0] != last_row[0]:
+                    result[0] += location_group.current_instance().data.row_count()
         else:
             if result == None:
-                result = [0.0,]
+                result = [0.0, None]
             val = aggr[0].value(self.report)
             if val != None:
-                if function == "Sum":
-                    result[0] += val
-                if function == "Avg":
-                    if len(result) == 1:
-                        result.append(val)
-                        result.append(1)
-                    else:
-                        result[1] += val
-                        result[2] += result[2]
-                    result[0] = result[1] / result[2]
+                pass #TODO
+            #    if function == "Sum":
+            #        result[0] += val
+            #    if function == "Avg":
+            #        if len(result) == 1:
+            #            result.append(val)
+            #            result.append(1)
+            #        else:
+            #            result[1] += val
+            #            result[2] += result[2]
+            #        result[0] = result[1] / result[2]
 
-        self._cache.set_last_running(
-            name, scope_name, instance_name, expression, result)
+        self._cache.set_value(
+                name,
+                scope_name + "." + location_group.name,
+                expression,
+                [instance_group.data.name, current_row, result[0], result[1]]
+            )
 
         return result[0]
 
     def _get_value(self, function, expression, scope, value):
         aggr = self._get_aggr_info(expression, scope)
         result = [value[0], value[1]]
-        if scope and aggr[1].instance:
-            value_cache = self._cache.get_value(function, scope, expression)
-            if value_cache:
-                return value_cache
-            if function == "first":
-                result = self._instance_value(function, aggr[0],
-                    aggr[1].instance[0].data, result[0], result[1])
-            elif function == "last":
-                result = self._instance_value(function, aggr[0],
-                    aggr[1].instance[len(aggr[1].instance - 1)].data, result[0], result[1])
-            else:
-                for instance in aggr[1].instance:
-                    result = self._instance_value(function, aggr[0],
-                        instance.data, result[0], result[1])
-            self._cache.set_value(function, scope, expression, result)
-        else:
-            result = self._instance_value(function, aggr[0],
-                aggr[1].current_instance().data, result[0], result[1])
+
+        scope_name = aggr[1].current_instance().data.name
+
+        value_cache = self._cache.get_value(function, scope_name, expression)
+        if value_cache:
+            return value_cache
+
+        result = self._instance_value(function, aggr[0],
+            aggr[1].current_instance().data, result[0], result[1])
+        self._cache.set_value(function, scope_name, expression, result)
         return result
 
     def _get_aggr_info(self, expression, scope):
-        result = []
-        if expression == None:
-            result.append(None)
-        else:
-            result.append(Expression("=" + expression, None, False))
+        result = [None, None, None] # [expression, group, [current_scope]]
+        if expression != None:
+            result[0] = Expression("=" + expression, None, False)
+        result[2] = self.report.current_data_scope
         if scope:
             group = self.report.data_groups[scope]
         else:
-            group = self.report.data_groups[self.report.current_data_scope[0]]
-        result.append(group)
+            group = self.report.data_groups[result[2][0]] # Current running group
+        result[1] = group
         return result
-        
+
     def _instance_value(self, function, expression, data, 
             result1_start, result2_start):
+
         result1 = result1_start
         result2 = result2_start
-        
+        remember = data._current_index
+
         if function == "count_rows":
             result1 += data.row_count
             return [result1, None]
@@ -197,6 +218,7 @@ class Aggregate(object):
                 data.move_last()
             if not data.EOF:
                 result1 = expression.value(self.report)
+            data.move(remember)
             return [result1, None]
 
         data.move_first()
@@ -211,7 +233,7 @@ class Aggregate(object):
                 elif function == "count":
                     result1 += 1
                 elif function == 'max':
-                    if val > result:
+                    if val > result1:
                         result1 = val
                 elif function == 'min':
                     if val < result1:
@@ -219,6 +241,7 @@ class Aggregate(object):
             elif function == "aggregate":
                 result1.append(val)
             data.move_next()
+        data.move(remember)
         return [result1, result2]
 
 

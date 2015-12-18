@@ -82,6 +82,15 @@ def do_render(args):
 def do_convert(args):
     from xml.dom import minidom
     
+    def replace_text(text):
+        result = text.replace("Fields!", "F.")
+        result = result.replace("Parameters!", "P.")
+        result = result.replace("Sum(", "Aggr.Sum(")
+        result = result.replace("RunningValue(", "Aggr.RunningValue(")
+        result = result.replace("RowNumber(", "Aggr.RowNumber(")
+        result = result.replace(".Value", "")
+        return result
+
     def get_element(doc, node, base_element):
         for n in node.childNodes:
             if n.nodeName in ignore_list:
@@ -90,10 +99,10 @@ def do_convert(args):
                 continue
             if n.nodeName in ('#text'):            
                 if len(n.parentNode.childNodes) == 1:
-                    text = doc.createTextNode(n.nodeValue)
+                    text = doc.createTextNode(replace_text(n.nodeValue))
                     base_element.appendChild(text)
                 continue
-                
+
             if n.parentNode.nodeName == "TextRun" and n.nodeName != "Value":
                 continue
             if n.parentNode.nodeName == "Paragraph" and n.nodeName != "TextRuns":
@@ -106,8 +115,11 @@ def do_convert(args):
             node_name = n.nodeName
             if n.nodeName == "Style" and n.parentNode.nodeName in border_list:
                 node_name = "BorderStyle"
+            if n.nodeName == "ConnectString":
+                node_name = "ConnectObject"
+
             el = doc.createElement(node_name)
-            
+
             if n.hasAttributes():
                 if "Name" in n.attributes.keys():
                     name_element = doc.createElement("Name")
@@ -115,7 +127,7 @@ def do_convert(args):
                     if name_text:
                         name_element.appendChild(name_text)
                         el.appendChild(name_element)
-                        
+
             element_to_append = el
             if n.nodeName in report_item_list and n.parentNode.nodeName == "CellContents":
                 item_element = doc.createElement("ReportItems")
@@ -130,7 +142,7 @@ def do_convert(args):
                 base_element.appendChild(element_to_append) 
 
             get_element(doc, n, el)
-    
+
 
     rdlc = args.rdl
     if not os.path.isfile(rdlc) or not os.access(rdlc, os.R_OK):
@@ -175,11 +187,12 @@ def do_convert(args):
                     "DataElementStyle",
                     "InteractiveHeight",
                     "InteractiveWidth",
+                    "Language",
                   ]
-    
+
     rdlc_path, rdlc_file = os.path.split(rdlc)
     rdlc_name = os.path.splitext(rdlc_file)[0]
-        
+
     nuntiare = os.path.join(rdlc_path, rdlc_name + ".xml")
 
     dom = minidom.parse(rdlc)
@@ -192,9 +205,9 @@ def do_convert(args):
     name_element = doc.createElement("Name")
     name_element.appendChild(doc.createTextNode(rdlc_name))
     root_element.appendChild(name_element)
-    
+
     get_element(doc, node[0], root_element)
-    
+
     doc.appendChild(root_element)
 
     f = open(nuntiare, "wb")
