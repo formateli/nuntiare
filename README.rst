@@ -11,7 +11,7 @@ At a glance
 
 - Reports are defined using xml files as templates.
 - Templates are processed to generate reports according to data (database, parameters, etc). 
-- Nuntiare can connect to any database (modules implementing API 2.0) for data gathering.
+- Nuntiare can connect to any database (modules implementing API 2.0) for data gathering. Python object can be passed trough paramters to be a dataset.
 - Nuntiare defines a render API that can be implemented to develop custom ones.
 - Nuntiare comes with following renders: pdf, png and svg (based on cairo), html, csv and xml.
 - Nuntiare comes with a comand line tool *(nuntiare)*. 

@@ -42,49 +42,40 @@ class Aggregate(object):
         '''
         Returns a list of values according to expression and scope.
         '''
-        result = self._get_value(
-            "aggregate", expression, scope, [[], None])
-        return result[0]
+        return self._get_value(
+            "Aggregate", expression, scope, [[], None])
 
     def Max(self, expression, scope=None):
-        result = self._get_value(
-            "max", expression, scope, [0.0, None])
-        return result[0]
+        return self._get_value(
+            "Max", expression, scope, [0.0, None])
 
     def Min(self, expression, scope=None):
-        result = self._get_value(
-            "min", expression, scope, [0.0, None])
-        return result[0]
+        return self._get_value(
+            "Min", expression, scope, [0.0, None])
 
     def Count(self, expression, scope=None):
-        result = self._get_value(
-            "count", expression, scope, [0, None])
-        return result[0]
+        return self._get_value(
+            "Count", expression, scope, [0, None])
 
     def CountRows(self, scope=None):
-        result = self._get_value(
-            "count_rows", None, scope, [0, None])
-        return result[0]
+        return self._get_value(
+            "CountRows", None, scope, [0, None])
 
     def First(self, expression, scope=None):
-        result = self._get_value(
-            "first", expression, scope, [None, None])
-        return result[0]
+        return self._get_value(
+            "First", expression, scope, [None, None])
 
     def Last(self, expression, scope=None):
-        result = self._get_value(
-            "last", expression, scope, [None, None])
-        return result[0]
+        return self._get_value(
+            "Last", expression, scope, [None, None])
 
     def Avg(self, expression, scope=None):
-        result = self._get_value(
-            "avg", expression, scope, [0.0, 1])
-        return result[0] / result[1]
+        return self._get_value(
+            "Avg", expression, scope, [0.0, 0])
 
     def Sum(self, expression, scope=None):
-        result = self._get_value(
-            "sum", expression, scope, [0.0, None])
-        return result[0]
+        return self._get_value(
+            "Sum", expression, scope, [0.0, None])
 
     def RunningValue(self, expression, function, scope=None):
         return self._running_value(
@@ -137,33 +128,30 @@ class Aggregate(object):
                 result = [value_cache[2], value_cache[3]]
                 if last_row[0] != None:
                     if last_row[0] != current_row[0]:
-                        last_row[1] = None # Reset if detail group instance change.
+                        last_row[1] = None # Reset if detail group instance changed.
+
+        if result == None:
+            result = [0, 0]
 
         if function == 'RowNumber':
-            if result == None:
-                result = [0, None]
             if location_group.is_detail_group:
                 if last_row[1] != current_row[1]:
                     result[0] += 1
             else:
-                if current_row[0] != last_row[0]:
+                if last_row[0] != current_row[0]:
                     result[0] += location_group.current_instance().data.row_count()
         else:
-            if result == None:
-                result = [0.0, None]
-            val = aggr[0].value(self.report)
-            if val != None:
-                pass #TODO
-            #    if function == "Sum":
-            #        result[0] += val
-            #    if function == "Avg":
-            #        if len(result) == 1:
-            #            result.append(val)
-            #            result.append(1)
-            #        else:
-            #            result[1] += val
-            #            result[2] += result[2]
-            #        result[0] = result[1] / result[2]
+            if location_group.is_detail_group:
+                if last_row[1] != current_row[1]:
+                    val = aggr[0].value(self.report)
+                    if val != None:
+                        result[0] += val
+                        if function == 'Avg':
+                            result[1] += 1
+            else:
+                if last_row[0] != current_row[0]:
+                    result = self._instance_value(function, aggr[0],
+                            location_group.current_instance().data, result[0], result[1])
 
         self._cache.set_value(
                 name,
@@ -172,7 +160,7 @@ class Aggregate(object):
                 [instance_group.data.name, current_row, result[0], result[1]]
             )
 
-        return result[0]
+        return self._get_function_result(function, result)
 
     def _get_value(self, function, expression, scope, value):
         aggr = self._get_aggr_info(expression, scope)
@@ -182,12 +170,21 @@ class Aggregate(object):
 
         value_cache = self._cache.get_value(function, scope_name, expression)
         if value_cache:
-            return value_cache
+            return self._get_function_result(function, value_cache)
 
         result = self._instance_value(function, aggr[0],
             aggr[1].current_instance().data, result[0], result[1])
         self._cache.set_value(function, scope_name, expression, result)
-        return result
+
+        return self._get_function_result(function, result)
+
+    def _get_function_result(self, function, result):
+        if function == 'Avg':
+            if result[1] > 0:
+                return result[0] / result[1]
+            else:
+                return 0
+        return result[0]    
 
     def _get_aggr_info(self, expression, scope):
         result = [None, None, None] # [expression, group, [current_scope]]
@@ -201,18 +198,18 @@ class Aggregate(object):
         result[1] = group
         return result
 
-    def _instance_value(self, function, expression, data, 
+    def _instance_value(self, function, expression, data,
             result1_start, result2_start):
 
         result1 = result1_start
         result2 = result2_start
         remember = data._current_index
 
-        if function == "count_rows":
+        if function == "CountRows":
             result1 += data.row_count
             return [result1, None]
-        elif function == "first" or function == "last":
-            if function == "first":
+        elif function == "First" or function == "Last":
+            if function == "First":
                 data.move_first()
             else:
                 data.move_last()
@@ -225,20 +222,20 @@ class Aggregate(object):
         while not data.EOF:
             val = expression.value(self.report)
             if val != None:
-                if function == "sum":
+                if function == "Sum":
                     result1 += val
-                elif function == "avg":
+                elif function == "Avg":
                     result1 += val
                     result2 += 1
-                elif function == "count":
+                elif function == "Count":
                     result1 += 1
-                elif function == 'max':
+                elif function == 'Max':
                     if val > result1:
                         result1 = val
-                elif function == 'min':
+                elif function == 'Min':
                     if val < result1:
                         result1 = val
-            elif function == "aggregate":
+            elif function == "Aggregate":
                 result1.append(val)
             data.move_next()
         data.move(remember)

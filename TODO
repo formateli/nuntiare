@@ -7,10 +7,6 @@ release 0.1.0
 - Fix log file location
 
 - unittest: Grouping
-- In order to get Aggregate functions (sum, avg, count, etc), we 
-introduce Variable declared for each group in the way like 
-JasperReports does.
-
 
 - Grouping recursion
 - Image
