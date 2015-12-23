@@ -10,7 +10,6 @@ class Aggregate(object):
     class _AggregateCache(object):
         def __init__(self):
             self._values = {}   # Cache result of Aggregates with scope.
-            self._running = {}  # Cache for Running values
 
         def get_value(self, function, scope, expression):
             if not function in self._values:
@@ -57,6 +56,10 @@ class Aggregate(object):
         return self._get_value(
             "Count", expression, scope, [0, None])
 
+    def CountDistinct(self, expression, scope=None):
+        return self._get_value(
+            "CountDistinct", expression, scope, [{}, None])
+
     def CountRows(self, scope=None):
         return self._get_value(
             "CountRows", None, scope, [0, None])
@@ -79,14 +82,14 @@ class Aggregate(object):
 
     def RunningValue(self, expression, function, scope=None):
         return self._running_value(
-            'RunningValue', expression, function, scope)
+            expression, function, scope)
 
     def RowNumber(self, scope=None):
         return self._running_value(
-            'RowNumber', None, 'RowNumber', scope)
+            None, 'RowNumber', scope)
 
-    def _running_value(self, running_name, expression, function, scope):
-        if running_name == 'RunningValue':
+    def _running_value(self, expression, function, scope):
+        if function == 'RowNumber':
             valid_fun = ['Sum', 'Avg', 'CountDistinct']
             if function not in valid_fun:
                 logger.error(
@@ -130,10 +133,9 @@ class Aggregate(object):
                     if last_row[0] != current_row[0]:
                         last_row[1] = None # Reset if detail group instance changed.
 
-        if result == None:
-            result = [0, 0]
-
         if function == 'RowNumber':
+            if result == None:
+                result = [0, 0]
             if location_group.is_detail_group:
                 if last_row[1] != current_row[1]:
                     result[0] += 1
@@ -145,9 +147,21 @@ class Aggregate(object):
                 if last_row[1] != current_row[1]:
                     val = aggr[0].value(self.report)
                     if val != None:
-                        result[0] += val
-                        if function == 'Avg':
-                            result[1] += 1
+                        if function == 'Count':
+                            if result == None:
+                                result = [0, None]
+                            result[0] += 1
+                        elif function == 'CountDistinct':
+                            if result == None:
+                                result = [{}, None]
+                            if val not in result[0]:
+                                result[0][val] = None
+                        else:
+                            if result == None:
+                                result = [0, 0]
+                            result[0] += val
+                            if function == 'Avg':
+                                result[1] += 1
             else:
                 if last_row[0] != current_row[0]:
                     result = self._instance_value(function, aggr[0],
@@ -184,7 +198,11 @@ class Aggregate(object):
                 return result[0] / result[1]
             else:
                 return 0
-        return result[0]    
+        elif function == 'CountDistinct':
+            if result[0] == None:
+                return 0
+            return len(result[0])
+        return result[0]
 
     def _get_aggr_info(self, expression, scope):
         result = [None, None, None] # [expression, group, [current_scope]]
@@ -222,20 +240,23 @@ class Aggregate(object):
         while not data.EOF:
             val = expression.value(self.report)
             if val != None:
-                if function == "Sum":
+                if function == 'Sum':
                     result1 += val
-                elif function == "Avg":
+                elif function == 'Avg':
                     result1 += val
                     result2 += 1
-                elif function == "Count":
+                elif function == 'Count':
                     result1 += 1
+                elif function == 'CountDistinct':
+                    if val not in result1:
+                        result1[val] = None
                 elif function == 'Max':
                     if val > result1:
                         result1 = val
                 elif function == 'Min':
                     if val < result1:
                         result1 = val
-            elif function == "Aggregate":
+            elif function == 'Aggregate':
                 result1.append(val)
             data.move_next()
         data.move(remember)
