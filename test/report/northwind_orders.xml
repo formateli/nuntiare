@@ -570,7 +570,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_no_header</Name>
-                        <Value>=Aggr.RunningValue('F.customer', 'CountDistinct', &quot;country&quot;)</Value>
+                        <Value>=Aggr.RunningValue('F.customer', 'CountDistinct', 'country')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -795,7 +795,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_count</Name>
-                        <Value>=Aggr.RowNumber('orderid')</Value>
+                        <Value>=Aggr.RunningValue('F.orderid','CountDistinct','customer')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -855,7 +855,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>no</Name>
-                        <Value>No</Value>
+                        <Value></Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>

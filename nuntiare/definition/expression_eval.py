@@ -29,10 +29,6 @@ class Aggregate(object):
                 self._values[function][scope][expression] = None
             self._values[function][scope][expression] = value
 
-        def _get_key(self, function, scope, expression):
-            return "{0}-{1}-{2}".format(
-                function, scope, expression)
-
     def __init__(self, report):
         self.report = report
         self._cache = Aggregate._AggregateCache()
@@ -89,7 +85,7 @@ class Aggregate(object):
             None, 'RowNumber', scope)
 
     def _running_value(self, expression, function, scope):
-        if function == 'RowNumber':
+        if function != 'RowNumber':
             valid_fun = ['Sum', 'Avg', 'CountDistinct']
             if function not in valid_fun:
                 logger.error(
@@ -163,6 +159,11 @@ class Aggregate(object):
                             if function == 'Avg':
                                 result[1] += 1
             else:
+                if result == None:
+                    if function == 'CountDistinct':
+                       result = [{}, None]
+                    else:
+                        result = [0, 0]
                 if last_row[0] != current_row[0]:
                     result = self._instance_value(function, aggr[0],
                             location_group.current_instance().data, result[0], result[1])
@@ -248,7 +249,7 @@ class Aggregate(object):
                 elif function == 'Count':
                     result1 += 1
                 elif function == 'CountDistinct':
-                    if val not in result1:
+                    if val not in result1:                        
                         result1[val] = None
                 elif function == 'Max':
                     if val > result1:
