@@ -19,7 +19,7 @@ import expression
 import parameter
 import grid
 import data
-#import report
+import aggregate
 
 logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)
 
@@ -30,7 +30,7 @@ SUITE.addTests(LOADER.loadTestsFromModule(expression))
 SUITE.addTests(LOADER.loadTestsFromModule(parameter))
 SUITE.addTests(LOADER.loadTestsFromModule(grid))
 SUITE.addTests(LOADER.loadTestsFromModule(data))
-#SUITE.addTests(LOADER.loadTestsFromModule(report))
+SUITE.addTests(LOADER.loadTestsFromModule(aggregate))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RESULT = RUNNER.run(SUITE)

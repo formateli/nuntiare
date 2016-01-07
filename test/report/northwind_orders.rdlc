@@ -1204,7 +1204,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>=RowNumber("orderid")</Value>
+                              <Value>=RunningValue(Fields!orderid.Value, CountDistinct, "customer")</Value>
                               <Style>
                                 <Color>White</Color>
                               </Style>

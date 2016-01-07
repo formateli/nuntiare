@@ -4,9 +4,10 @@
 
 from importlib import import_module
 from . expression import Expression
+from . functions import *
 from .. import logger
 
-class Aggregate(object):
+class _Aggregate(object):
     class _AggregateCache(object):
         def __init__(self):
             self._values = {}   # Cache result of Aggregates with scope.
@@ -31,11 +32,11 @@ class Aggregate(object):
 
     def __init__(self, report):
         self.report = report
-        self._cache = Aggregate._AggregateCache()
+        self._cache = _Aggregate._AggregateCache()
 
     def Aggregate(self, expression, scope=None):
         '''
-        Returns a list of values according to expression and scope.
+        Returns a list of grouped values according to expression and scope.
         '''
         return self._get_value(
             "Aggregate", expression, scope, [[], None])
@@ -68,6 +69,10 @@ class Aggregate(object):
         return self._get_value(
             "Last", expression, scope, [None, None])
 
+    def Previous(self, expression, scope=None):
+        return self._get_value(
+            "Previous", expression, scope, [None, None])
+
     def Avg(self, expression, scope=None):
         return self._get_value(
             "Avg", expression, scope, [0.0, 0])
@@ -75,6 +80,22 @@ class Aggregate(object):
     def Sum(self, expression, scope=None):
         return self._get_value(
             "Sum", expression, scope, [0.0, None])
+
+    def StDev(self, expression, scope=None):
+        return self._get_value(
+            "StDev", expression, scope, [0.0, None])
+
+    def StDevP(self, expression, scope=None):
+        return self._get_value(
+            "StDevP", expression, scope, [0.0, None])
+
+    def Var(self, expression, scope=None):
+        return self._get_value(
+            "Var", expression, scope, [0.0, None])
+
+    def VarP(self, expression, scope=None):
+        return self._get_value(
+            "VarP", expression, scope, [0.0, None])
 
     def RunningValue(self, expression, function, scope=None):
         return self._running_value(
@@ -268,8 +289,8 @@ class ExpressionEval(object):
     def __init__(self, report):
         self.report = report
         self._context = {}
-        self.aggregate = Aggregate(report)
         self._loaded = False
+        self._aggregate = _Aggregate(report)
 
     def load_modules(self, modules_def):
         if not modules_def:
@@ -303,7 +324,25 @@ class ExpressionEval(object):
             self._loaded = True
 
         Modules = M = self
-        Aggr = A = self.aggregate
+
+        Aggregate = self._aggregate.Aggregate
+        Avg = self._aggregate.Avg
+        Count = self._aggregate.Count
+        CountDistinct = self._aggregate.CountDistinct
+        CountRows = self._aggregate.CountRows
+        First = self._aggregate.First
+        Last = self._aggregate.Last
+        Max = self._aggregate.Max
+        Min = self._aggregate.Min
+        Previous = self._aggregate.Previous
+        RowNumber = self._aggregate.RowNumber
+        RunningValue = self._aggregate.RunningValue
+        Sum = self._aggregate.Sum
+        StDev = self._aggregate.StDev
+        StDevP = self._aggregate.StDevP
+        Var = self._aggregate.Var
+        VarP = self._aggregate.VarP
+
         exp_error = "Error evaluating expression: '{0}'".format(expression)
 
         try:
@@ -321,7 +360,7 @@ class ExpressionEval(object):
                         self.report.current_data_interface].fields
 
             result = eval(expression)
-            
+
         except KeyError as e:
             logger.error(
                 "{0}. Key <{1}> does not exist in dictionary.".format(

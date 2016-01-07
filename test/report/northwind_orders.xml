@@ -335,7 +335,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count_tablix</Name>
-                        <Value>=Aggr.RowNumber()</Value>
+                        <Value>=RowNumber()</Value>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -345,8 +345,8 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_no_header</Name>
-                        <Value>=Aggr.RunningValue('F.country', 'CountDistinct')</Value>
-                        <Style>                        
+                        <Value>=RunningValue('F.country', 'CountDistinct')</Value>
+                        <Style>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -379,7 +379,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_sum_qty</Name>
-                        <Value>=Aggr.Sum('F.quantity')</Value>
+                        <Value>=Sum('F.quantity')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -414,7 +414,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_sum_subtotal1</Name>
-                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Value>=Sum('F.subtotal1')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -449,7 +449,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_sum_discount2</Name>
-                        <Value>=Aggr.Sum('F.discount_amount')</Value>
+                        <Value>=Sum('F.discount_amount')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -467,7 +467,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_sum_total</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Value>=Sum('F.subtotal1 - F.discount_amount')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -485,7 +485,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_row_number</Name>
-                        <Value>=Aggr.RowNumber('country')</Value>
+                        <Value>=RowNumber('country')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -502,7 +502,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_running_sum_total</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -520,7 +520,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_running_avg_total</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;country&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -570,7 +570,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_no_header</Name>
-                        <Value>=Aggr.RunningValue('F.customer', 'CountDistinct', 'country')</Value>
+                        <Value>=RunningValue('F.customer', 'CountDistinct', 'country')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -604,7 +604,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_sum_qty</Name>
-                        <Value>=Aggr.Sum('F.quantity')</Value>
+                        <Value>=Sum('F.quantity')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -639,7 +639,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_sum_subtotal1</Name>
-                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Value>=Sum('F.subtotal1')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -674,7 +674,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_sum_discount2</Name>
-                        <Value>=Aggr.Sum('F.discount_amount')</Value>
+                        <Value>=Sum('F.discount_amount')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -692,7 +692,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_sum_total</Name>
-                        <Value>=Aggr.Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Value>=Sum('F.subtotal1 - F.discount_amount')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -710,7 +710,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_row_number</Name>
-                        <Value>=Aggr.RowNumber('customer')</Value>
+                        <Value>=RowNumber('customer')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -727,7 +727,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_running_sum_total</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -745,7 +745,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_running_avg_total</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;customer&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -795,7 +795,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_count</Name>
-                        <Value>=Aggr.RunningValue('F.orderid','CountDistinct','customer')</Value>
+                        <Value>=RunningValue('F.orderid','CountDistinct','customer')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -845,7 +845,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count6_header</Name>
-                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
+                        <Value>=RowNumber('TablixOrder')</Value>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -987,7 +987,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>row_number</Name>
-                        <Value>=Aggr.RowNumber('orderid')</Value>
+                        <Value>=RowNumber('orderid')</Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -1003,7 +1003,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>running_sum</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;orderid&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;orderid&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1020,7 +1020,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>running_avg</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;orderid&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;orderid&quot;)</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1037,7 +1037,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count7_header</Name>
-                        <Value>=Aggr.RowNumber('TablixOrder')</Value>
+                        <Value>=RowNumber('TablixOrder')</Value>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -1062,7 +1062,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_count_2</Name>
-                        <Value>=Aggr.RowNumber('orderid')</Value>
+                        <Value>=RowNumber('orderid')</Value>
                         <Style>
                           <Color>Violet</Color>
                           <Border>
@@ -1079,7 +1079,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_count_3</Name>
-                        <Value>=Aggr.RowNumber('customer')</Value>
+                        <Value>=RowNumber('customer')</Value>
                         <Style>
                           <Color>Blue</Color>
                           <Border>
@@ -1096,7 +1096,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_count_4</Name>
-                        <Value>=Aggr.RowNumber('country')</Value>
+                        <Value>=RowNumber('country')</Value>
                         <Style>
                           <Color>Gray</Color>                        
                           <Border>
@@ -1113,7 +1113,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_sum_2</Name>
-                        <Value>=Aggr.Sum('F.subtotal1')</Value>
+                        <Value>=Sum('F.subtotal1')</Value>
                         <Style>
                           <Color>Violet</Color>
                           <Format>{:,.2f}</Format>
@@ -1132,7 +1132,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_sum_3</Name>
-                        <Value>=Aggr.Sum('F.subtotal1', 'customer')</Value>
+                        <Value>=Sum('F.subtotal1', 'customer')</Value>
                         <Style>                        
                           <Color>Blue</Color>
                           <Format>{:,.2f}</Format>
@@ -1151,7 +1151,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_sum_4</Name>
-                        <Value>=Aggr.Sum('F.subtotal1', 'country')</Value>
+                        <Value>=Sum('F.subtotal1', 'country')</Value>
                         <Style>
                           <Color>Gray</Color>
                           <Format>{:,.2f}</Format>
@@ -1170,7 +1170,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_ruuning_sum_2</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'orderid')</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'orderid')</Value>
                         <Style>
                           <Color>Violet</Color>
                           <Format>{:,.2f}</Format>
@@ -1189,7 +1189,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_ruuning_sum_3</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
                         <Style>
                           <Color>Blue</Color>
                           <Format>{:,.2f}</Format>
@@ -1208,7 +1208,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_ruuning_sum_4</Name>
-                        <Value>=Aggr.RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
                         <Style>
                           <Color>Gray</Color>
                           <Format>{:,.2f}</Format>
