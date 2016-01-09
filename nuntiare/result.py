@@ -64,12 +64,12 @@ class _SectionInfo(object):
                 definition, "Height", 0.0)
         self.items = None
         self.style = report.get_style(definition)
-        
+
     def run_items(self, definition=None):
         def_passed = self.definition
         if definition:
             def_passed = definition
-        self.items = PageItemsInfo(self.report, 
+        self.items = PageItemsInfo(self.report,
                 def_passed, parent=None)
 
 

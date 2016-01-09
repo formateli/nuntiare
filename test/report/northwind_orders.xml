@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report>
   <Name>northwind_orders</Name>
+  <ReportParameters>
+    <ReportParameter>
+      <Name>data_provider</Name>
+      <DataType>String</DataType>
+      <DefaultValue>PostgreSQL</DefaultValue>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>conn_string</Name>
+      <DataType>String</DataType>
+      <DefaultValue>dbname=xxx host=xxx port=5432 user=user password=password client_encoding=UNICODE connect_timeout=0</DefaultValue>
+    </ReportParameter>
+  </ReportParameters>  
   <Body>
     <ReportItems>
       <Tablix>
@@ -67,7 +79,7 @@
                         </SortExpressions>
                       </Group>
                       <TablixMembers>
-                        <TablixMember/>
+                        <TablixMember/><!-- Order header -->
                         <TablixMember>
                           <Group>
                             <Name>details</Name>
@@ -78,7 +90,7 @@
                             </SortExpressions>
                           </Group>
                         </TablixMember>
-                        <TablixMember/>
+                        <TablixMember/><!-- Order footer -->
                       </TablixMembers>
                     </TablixMember>
                   </TablixMembers>
@@ -381,7 +393,7 @@
                         <Name>country_sum_qty</Name>
                         <Value>=Sum('F.quantity')</Value>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -502,7 +514,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_running_sum_total</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'country')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -520,7 +532,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_running_avg_total</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'country')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>                        
                           <Border>
@@ -727,7 +739,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_running_sum_total</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'customer')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -745,7 +757,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_running_avg_total</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'customer')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1003,7 +1015,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>running_sum</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;orderid&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'orderid')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1020,7 +1032,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>running_avg</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', &quot;orderid&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'orderid')</Value>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1133,7 +1145,7 @@
                       <Textbox>
                         <Name>orderid_sum_3</Name>
                         <Value>=Sum('F.subtotal1', 'customer')</Value>
-                        <Style>                        
+                        <Style>
                           <Color>Blue</Color>
                           <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
@@ -1189,7 +1201,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_ruuning_sum_3</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;customer&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'customer')</Value>
                         <Style>
                           <Color>Blue</Color>
                           <Format>{:,.2f}</Format>
@@ -1208,7 +1220,7 @@
                     <ReportItems>
                       <Textbox>
                         <Name>orderid_ruuning_sum_4</Name>
-                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', &quot;country&quot;)</Value>
+                        <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'country')</Value>
                         <Style>
                           <Color>Gray</Color>
                           <Format>{:,.2f}</Format>
@@ -1260,8 +1272,8 @@
     <DataSource>
       <Name>TempDataSource</Name>
       <ConnectionProperties>
-        <DataProvider>PostgreSQL</DataProvider>
-        <ConnectObject>dbname=northwind host=localhost port=5432 user=postgres password=h12345678 client_encoding=UNICODE connect_timeout=0</ConnectObject>
+        <DataProvider>=P.data_provider</DataProvider>
+        <ConnectObject>=P.conn_string</ConnectObject>
       </ConnectionProperties>
     </DataSource>
   </DataSources>

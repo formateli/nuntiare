@@ -154,8 +154,9 @@ class PageTablix(PageItem):
             while x <= cell.col_span:
                 curr_col = cols[i + (x - 1)]
                 if not curr_col.member.is_static:
-                    logger.error("ColSpan only possible on static members. Tablix '{0}'".format(
-                        self.name), True)
+                    logger.error(
+                        "ColSpan only possible on static members. Tablix '{0}'".format(
+                            self.name), True)
                 self.report.current_data_scope[1] = curr_col.member.scope
                 if x == 1:
                     grid_cell = self.grid_body.add_cell(
