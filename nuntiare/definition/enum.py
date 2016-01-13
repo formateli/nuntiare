@@ -197,8 +197,8 @@ class DataType(_Enum):
     def __init__(self, expression, lnk, must_be_constant):
         super(DataType, self).__init__(
             expression, DataType.enum_list, lnk, must_be_constant)
-            
-            
+
+
 class Operator(_Enum):
     enum_list={'equal': 'Equal',
                'like': 'Like',  
@@ -253,4 +253,4 @@ class BreakLocation(_Enum):
     def __init__(self, expression, lnk, must_be_constant):
         super(BreakLocation, self).__init__(
             expression, BreakLocation.enum_list, lnk, must_be_constant)
-            
+
