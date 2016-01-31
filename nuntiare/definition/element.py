@@ -3,29 +3,30 @@
 # contains the full copyright notices and license terms.
 
 import copy
-from . expression import Expression, String, Boolean, Integer, Variant, Size, Color
+from . expression import Expression, String, Boolean, \
+        Integer, Variant, Size, Color
 from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode, \
         BackgroundRepeat, BackgroundGradientType, \
         DataType, SortDirection, Operator, BreakLocation
 from .. import logger
-from .. data import DataType as dt
+from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
 
 class Element(object):
-    ELEMENT=0
-    STRING=1
-    INTEGER=2
-    BOOLEAN=3
-    FLOAT=4
-    SIZE=5
-    DATE=6
-    COLOR=7
-    EXPRESSION=8
-    EXPRESSION_LIST=9
-    URL=10
-    ENUM=11
-    VARIANT=90
+    ELEMENT = 0
+    STRING = 1
+    INTEGER = 2
+    BOOLEAN = 3
+    FLOAT = 4
+    SIZE = 5
+    DATE = 6
+    COLOR = 7
+    EXPRESSION = 8
+    EXPRESSION_LIST = 9
+    URL = 10
+    ENUM = 11
+    VARIANT = 90
 
     def __init__(self, node, elements, lnk):
         '''
@@ -284,7 +285,7 @@ class Element(object):
         elif name=='Module':
             obj = Module(node, ln)
         else:
-            logger.error("Element '{0}' not implemented.".format(name), True) 
+            logger.error("Element '{0}' not implemented.".format(name), True)
 
         return obj
     
@@ -432,7 +433,8 @@ class _ExpressionList(object):
             element_type, card, must_be_constant, default_value = Element.get_element_def(elements[n.nodeName],
                         lnk.obj.__class__.__name__)
                 
-            ex = Element.expression_factory(elements[n.nodeName][0], n, lnk, card, must_be_constant) 
+            ex = Element.expression_factory(
+                elements[n.nodeName][0], n, lnk, card, must_be_constant) 
             self.expression_list.append(ex)
 
 

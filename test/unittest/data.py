@@ -300,7 +300,7 @@ class DataTest(unittest.TestCase):
 
     def _get_xml_string_1(self):
         return '''
-<Report>
+<Nuntiare>
   <Name>Data_Test</Name>
   <Width>21cm</Width>
   <Page></Page>
@@ -589,12 +589,12 @@ class DataTest(unittest.TestCase):
       </Tablix> 
     </ReportItems>
   </Body>
-</Report>
+</Nuntiare>
 '''
 
     def _get_xml_string_2(self):
         return '''
-<Report>
+<Nuntiare>
   <Name>Sorting Test</Name>
   <Width>21cm</Width>
   <Page></Page>
@@ -721,5 +721,5 @@ LIMIT 500</CommandText>
       </Fields>
     </DataSet>
   </DataSets>
-</Report>
+</Nuntiare>
 '''

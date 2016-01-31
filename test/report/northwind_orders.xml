@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report>
+<Nuntiare>
   <Name>northwind_orders</Name>
+  <Xxx>Prueba</Xxx>
   <ReportParameters>
     <ReportParameter>
       <Name>data_provider</Name>
@@ -1339,4 +1340,4 @@
       </Fields>
     </DataSet>
   </DataSets>
-</Report>
+</Nuntiare>

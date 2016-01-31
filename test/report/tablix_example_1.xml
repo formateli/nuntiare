@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report>
+<Nuntiare>
   <Name>tablix_example_1</Name>
   <Description>Tablix example 1</Description>
   <Author>Fredy Ramirez</Author>  
@@ -142,4 +142,4 @@ INNER JOIN countryregion ON countryregion.countryregioncode = stateprovince.coun
       </Fields>
     </DataSet>
   </DataSets>
-</Report>
+</Nuntiare>

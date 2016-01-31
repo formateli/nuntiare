@@ -11,14 +11,14 @@ class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
     
         string_xml="""
-            <Report>
+            <Nuntiare>
                 <Name>Element Type Test</Name>
                 <Width>21cm</Width>
                 <Page></Page>
                 <Body>
                     <Height>300in</Height>
                 </Body>
-            </Report>"""
+            </Nuntiare>"""
     
         report = Report(string_xml)
         report.run()

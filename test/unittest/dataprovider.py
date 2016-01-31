@@ -4,7 +4,7 @@
 
 "Nuntiare dataprovider test"
 
-from nuntiare.data import DataSource, DataSet
+from nuntiare.data.data import DataSource, DataSet
 from nuntiare.data.dataprovider import get_data_provider
 import unittest
 

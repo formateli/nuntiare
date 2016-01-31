@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report>
+<Nuntiare>
   <Name>tablix_example_2</Name>
   <Description>Tablix example 2</Description>
   <Author>Fredy Ramirez</Author>
@@ -285,4 +285,4 @@ LIMIT 500</CommandText>
       </Fields>
     </DataSet>
   </DataSets>
-</Report>
+</Nuntiare>

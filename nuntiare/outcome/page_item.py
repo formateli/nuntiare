@@ -4,7 +4,7 @@
 
 import sys
 from .. import logger
-from .. data import DataType
+from .. data.data_type import DataType
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):

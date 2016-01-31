@@ -10,7 +10,7 @@ from . import logger
 from . definition.element import Report as ReportDef
 from . definition.expression import Expression
 from . definition.expression_eval import ExpressionEval
-from . data import DataType
+from . data.data_type import DataType
 from . data.data import DataSourceObject, DataSetObject
 from . outcome.style import OutcomeStyle
 from . collection import Collection, CollectionItem
@@ -29,9 +29,6 @@ class Report(object):
     def __init__(self, definition, 
             output_name=None, output_directory=None):
 
-        self._definition_is_file = False
-        self._definition_text_passed = definition
-        self.definition = None
         self.result = None
         self.globals = None
         self.parameters = None
@@ -58,15 +55,17 @@ class Report(object):
                 'OutputDirectory': None,
                 'OutputName': None,
                 }
-                
-        self._parse(output_name, output_directory)
-        
+
+        # The ReportDef object
+        self.definition = self._parse(
+            definition, output_name, output_directory)
+
         self.modules = ExpressionEval(self)
         self.modules.load_modules(self.definition.get_element("Modules"))
-        
+
     def run(self, parameters={}):
         if not self.definition:
-            logger.critical("No definition found in report.", True)            
+            logger.critical("No definition found in report.", True)
     
         logger.info("Running Report '{0}'".format(self.definition.Name))
     
@@ -82,11 +81,11 @@ class Report(object):
 
         logger.info('Running DataSets...')
         self.data_sets = {}
-        self.data_groups = {}        
+        self.data_groups = {}
         self.data_sets = self._get_data_sets()
 
         logger.info('Building result...')
-        self.result = Result(self)       
+        self.result = Result(self)
 
     def save(self, overwrite, apply_filters=False):
         # TODO if apply_filters=True report is saved with filters applied.
@@ -111,10 +110,10 @@ class Report(object):
                         text = doc.createTextNode(n.nodeValue)
                         base_element.appendChild(text)
                     continue
-                
+
                 el = _add_element(doc, base_element, n.nodeName)
                 _get_element(doc, n, el)
-                
+
         def _data_to_string(data_type, value):
             v = DataType.get_value(data_type, value)
             if v != None:
@@ -122,13 +121,13 @@ class Report(object):
                     return "{:%Y-%m-%d %H:%M:%S}".format(v)
                 else:
                     return str(v)
-                
+
         def _add_data(doc, root_element):
             data_root  = _add_element(doc, root_element, "DataEmbedded")
             for key, ds in self.data_sets.items():
                 data = _add_element(doc, data_root, "Data")
                 _add_element(doc, data, "Name", key)
-                records = _add_element(doc, data, "Records")            
+                records = _add_element(doc, data, "Records")
                 for rw in ds.data.original_rows:
                     record = _add_element(doc, records, "Record")
                     i = 0
@@ -139,7 +138,6 @@ class Report(object):
                                 _data_to_string(c.DataType, rw[i]))
                         i = i + 1
 
-
         result_file = os.path.join(self.globals['OutputDirectory'], 
                 self.globals['OutputName'] + ".nuntiare")
 
@@ -147,16 +145,16 @@ class Report(object):
             if os.path.isfile(result_file):
                 logger.error("File '{0}' already exists.".format(result_file),
                         True, "IOError")
-                        
+
         doc = minidom.Document()
         root_element = doc.createElement("Report")
         orig_root = self._get_root(doc = self._get_xml_document())
-        
-        _get_element(doc, orig_root, root_element)        
+
+        _get_element(doc, orig_root, root_element)
         _add_data(doc, root_element)
-                
+
         doc.appendChild(root_element)
-        
+
         f = open(result_file, "wb")
         try:
             f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
@@ -166,35 +164,36 @@ class Report(object):
 
     def get_value(self, element, element_name, default):
         return Expression.get_value_or_default(
-                self, element, element_name, default)        
-        
+                self, element, element_name, default)
+
     def get_style(self, element):
        el = element.get_element("Style")
        return self._style.get_style(el)
 
-    def _parse(self, output_name, output_directory):
-        if os.path.isfile(self._definition_text_passed):
-            if not os.access(self._definition_text_passed, os.R_OK):
+    def _parse(self, definition, output_name, output_directory):
+        is_file = False
+        if os.path.isfile(definition):
+            if not os.access(definition, os.R_OK):
                 logger.error(
-                    "User has not read access for '{0}'.".format(self._definition_text_passed),
+                    "User has not read access for '{0}'.".format(definition),
                     True, "IOError")
-            self._definition_is_file = True
-            
-        root = self._get_root(self._get_xml_document())
-        self.definition = ReportDef(root)
-        
-        self._globals['Author'] = self.definition.Author
-        self._globals['Description'] = self.definition.Description
-        self._globals['Version'] = self.definition.Version
-        self._globals['ReportName'] = self.definition.Name
-        
-        if self._definition_is_file:
-            self._globals['ReportFile'] = self._definition_text_passed
-            self._globals['ReportFileName'] = os.path.basename(self._definition_text_passed)
-            self._globals['ReportFolder'] = os.path.dirname(os.path.realpath(self._definition_text_passed))
+            is_file = True
+
+        root = self._get_root(self._get_xml_document(definition, is_file))
+        report_def = ReportDef(root)
+
+        self._globals['Author'] = report_def.Author
+        self._globals['Description'] = report_def.Description
+        self._globals['Version'] = report_def.Version
+        self._globals['ReportName'] = report_def.Name
+
+        if is_file:
+            self._globals['ReportFile'] = definition
+            self._globals['ReportFileName'] = os.path.basename(definition)
+            self._globals['ReportFolder'] = os.path.dirname(os.path.realpath(definition))
             if not output_directory:
                 output_directory = os.path.dirname(
-                    os.path.realpath(self._definition_text_passed))
+                    os.path.realpath(definition))
             if not output_name:
                 output_name = os.path.splitext(
                     self._globals['ReportFileName'])[0]
@@ -210,34 +209,36 @@ class Report(object):
                 "'{0}' is not a valid directory.".format(
                     output_directory), 
                 True, "IOError")
-            
+
         self._globals['OutputDirectory'] = output_directory
         self._globals['OutputName'] = output_name
 
         if not self._globals['OutputName']:
-            self._globals['OutputName'] = self._globals['ReportName']    
+            self._globals['OutputName'] = self._globals['ReportName']
 
-    def _get_xml_document(self):
+        return report_def
+
+    def _get_xml_document(self, definition, is_file):
         doc = None
         try:
-            if self._definition_is_file:
-                doc = minidom.parse(self._definition_text_passed)
+            if is_file:
+                doc = minidom.parse(definition)
             else:
-                doc = minidom.parseString(self._definition_text_passed)
+                doc = minidom.parseString(definition)
         except Exception as e:
             err_msg = '''Error getting xml dom from definition '{0}'.
 Is it supposed to be a file?. Verify that it exists.
 If it is a xml string, verify that it is well formed.
 System error: {1}'''
             logger.critical(
-                err_msg.format(self._definition_text_passed, e.args[0]), True)
+                err_msg.format(definition, e.args), True)
         return doc
 
     def _get_root(self, doc):
-        root = doc.getElementsByTagName("Report")
+        root = doc.getElementsByTagName('Nuntiare')
         if not root:
             logger.critical(
-                "Xml root tag 'Report' not found.", True)
+                "Xml root element 'Nuntiare' not found.", True)
         return root[0]
 
     def _get_globals(self):
@@ -284,4 +285,4 @@ System error: {1}'''
             data_sets[ds.Name] = DataSetObject(self, ds)
             data_sets[ds.Name].execute()
         return data_sets
-        
+

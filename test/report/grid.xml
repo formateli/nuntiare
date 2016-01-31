@@ -6,7 +6,7 @@
   - Row span
 -->
 
-<Report>
+<Nuntiare>
   <Name>Grid Test</Name>
   <Description>
     A Simple Grid.
@@ -988,4 +988,4 @@
       </Tablix>
     </ReportItems>
   </Body>
-</Report>
+</Nuntiare>
