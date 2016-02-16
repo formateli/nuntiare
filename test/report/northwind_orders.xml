@@ -13,7 +13,7 @@
       <DataType>String</DataType>
       <DefaultValue>dbname=xxx host=xxx port=5432 user=user password=password client_encoding=UNICODE connect_timeout=0</DefaultValue>
     </ReportParameter>
-  </ReportParameters>  
+  </ReportParameters>
   <Body>
     <ReportItems>
       <Tablix>

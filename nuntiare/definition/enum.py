@@ -254,3 +254,43 @@ class BreakLocation(_Enum):
         super(BreakLocation, self).__init__(
             expression, BreakLocation.enum_list, lnk, must_be_constant)
 
+
+class ImageSource(_Enum):
+    '''
+    The source of the image
+    '''
+    enum_list={'external': 'External',
+               'embedded': 'Embedded',
+               'database': 'Database',
+              }
+    def __init__(self, expression, lnk, must_be_constant):
+        super(ImageSource, self).__init__(
+            expression, ImageSource.enum_list, lnk, must_be_constant)
+
+
+class ImageSizing(_Enum):
+    '''
+    Defines the behavior if the image does not fit in the
+    specified size.
+    '''
+    enum_list={'autosize': 'AutoSize',
+               'fit': 'Fit',
+               'fitproportional': 'FitProportional',
+               'clip': 'Clip',
+              }
+    def __init__(self, expression, lnk, must_be_constant):
+        super(ImageSizing, self).__init__(
+            expression, ImageSizing.enum_list, lnk, must_be_constant)
+
+
+class LayoutDirection(_Enum):
+    '''
+    Indicates the overall direction of the layout.
+    '''
+    enum_list={'ltr': 'LTR',
+               'rtl': 'RTL',
+              }
+    def __init__(self, expression, lnk, must_be_constant):
+        super(LayoutDirection, self).__init__(
+            expression, LayoutDirection.enum_list, lnk, must_be_constant)
+

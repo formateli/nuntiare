@@ -120,7 +120,7 @@ class Element(object):
                             lnk.obj.__class__.__name__), True)
 
         # Z Order
-        reportitems_list=[]
+        reportitems_list = []
         if len(items_by_name) > 0:
             z_list=[]
             for key, it in items_by_name.items():
@@ -959,7 +959,7 @@ class Style(Element):
               'PaddingTop': [Element.SIZE],
               'PaddingBottom': [Element.SIZE],
               'LineHeight': [Element.SIZE],
-              'Direction': [Element.ENUM],
+              'TextDirection': [Element.ENUM],
               'WritingMode': [Element.ENUM],
              }
     def __init__(self, node, lnk):
