@@ -1,5 +1,6 @@
-# This file is part of Nuntiare project. 
-# The COYRIGHT file at the top level of this repository 
+# -*- coding: utf-8 -*-
+# This file is part of Nuntiare project.
+# The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import unittest
@@ -68,7 +69,7 @@ class AggregateTest(unittest.TestCase):
             1552.6, 1552.6, 1552.6, 10250)
         self._ckeck_order_footer(grid, 32, 3, 6, 6, 1444.8, 3257.8, 4223.6,
             1444.8, 2997.4, 2997.4, 10253)
-        self._ckeck_customer_header(grid, 33, 2, "Que Del\xc3\xadcia", 40.0,
+        self._ckeck_customer_header(grid, 33, 2, 'Que Delícia', 40.0,
             448.0, 0.0, 448.0, 2, 448.0, 224.0)
         self._ckeck_order_footer(grid, 37, 2, 2, 8, 448.0, 448.0, 4223.6,
             448.0, 448.0, 3445.4, 10261)

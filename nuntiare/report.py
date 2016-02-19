@@ -7,7 +7,7 @@ import datetime
 from xml.dom import minidom
 from . result import Result
 from . import logger
-from . definition.element import Report as ReportDef
+from . definition.element import Nuntiare
 from . definition.expression import Expression
 from . definition.expression_eval import ExpressionEval
 from . data.data_type import DataType
@@ -180,7 +180,7 @@ class Report(object):
             is_file = True
 
         root = self._get_root(self._get_xml_document(definition, is_file))
-        report_def = ReportDef(root)
+        report_def = Nuntiare(root)
 
         self._globals['Author'] = report_def.Author
         self._globals['Description'] = report_def.Description

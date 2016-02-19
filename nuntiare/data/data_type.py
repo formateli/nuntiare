@@ -28,7 +28,7 @@ class DataType():
                 "Unknown bool expression '{0}'. False assigned.".format(value))
             return False
 
-        if data_type == None or value == None:
+        if data_type is None or value is None:
             return value
 
         types = ("Boolean",

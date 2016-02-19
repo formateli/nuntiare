@@ -13,6 +13,13 @@ from .. import logger
 from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
 
+class ElementCard(object):
+    ZERO_OR_ONE = 0
+    ONE = 1
+    ONE_OR_MANY = 2
+    ZERO_OR_MANY = 3
+
+
 class Element(object):
     ELEMENT = 0
     STRING = 1
@@ -115,7 +122,7 @@ class Element(object):
             if len(el) < 5: # Not verified in the node loop above
                 element_type, card, must_be_constant, default_value = Element.get_element_def(
                             el, key)
-                if card in [1, 2]:
+                if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY]:
                     logger.error("'{0}' must be defined for '{1}'.".format(key, 
                             lnk.obj.__class__.__name__), True)
 
@@ -182,149 +189,150 @@ class Element(object):
     @staticmethod
     def element_factory(name, node, lnk):
         ln = Link(lnk.report_def, lnk.obj)
-        if name=='Page':
+        if name == 'Page':
             obj = Page(node, ln)
-        elif name=='PageHeader':
+        elif name == 'PageHeader':
             obj = PageHeader(node, ln)
-        elif name=='PageFooter':
+        elif name == 'PageFooter':
            obj = PageFooter(node, ln)
-        elif name=='Body':
+        elif name == 'Body':
             obj = Body(node, ln)
-        elif name=='Visibility':
+        elif name == 'Visibility':
             obj = Visibility(node, ln)
-        elif name=='DataSources':
+        elif name == 'DataSources':
             obj = DataSources(node, ln)
-        elif name=='DataSource':
+        elif name == 'DataSource':
             obj = DataSource(node, ln)
-        elif name=='ConnectionProperties':
+        elif name == 'ConnectionProperties':
             obj = ConnectionProperties(node, ln)
-        elif name=='DataSets':
+        elif name == 'DataSets':
             obj = DataSets(node, ln)
-        elif name=='DataSet':
+        elif name == 'DataSet':
             obj = DataSet(node, ln)
-        elif name=='Fields':
+        elif name == 'Fields':
             obj = Fields(node, ln)
-        elif name=='Field':
+        elif name == 'Field':
             obj = Field(node, ln)
-        elif name=='Query':
+        elif name == 'Query':
             obj = Query(node, ln)
-        elif name=='QueryParameters':
+        elif name == 'QueryParameters':
             obj = QueryParameters(node, ln)
-        elif name=='QueryParameter':
+        elif name == 'QueryParameter':
             obj = QueryParameter(node, ln)
-        elif name=='SortExpressions':
+        elif name == 'SortExpressions':
             obj = SortExpressions(node, ln)
-        elif name=='SortExpression':
+        elif name == 'SortExpression':
             obj = SortExpression(node, ln)
-        elif name=='Filters':
+        elif name == 'Filters':
             obj = Filters(node, ln)
-        elif name=='Filter':
+        elif name == 'Filter':
             obj = Filter(node, ln)
-        elif name=='Group':
+        elif name == 'Group':
             obj = Group(node, ln)
-        elif name=='ReportParameters':
+        elif name == 'ReportParameters':
             obj = ReportParameters(node, ln)
-        elif name=='ReportParameter':
+        elif name == 'ReportParameter':
             obj = ReportParameter(node, ln)
-        elif name=='ReportItems':
+        elif name == 'ReportItems':
             obj = ReportItems(node, ln)
-        elif name=='Tablix':
+        elif name == 'Tablix':
             obj = Tablix(node, ln)
-        elif name=='TablixColumnHierarchy':
+        elif name == 'TablixColumnHierarchy':
             obj = TablixColumnHierarchy(node, ln)
-        elif name=='TablixRowHierarchy':
+        elif name == 'TablixRowHierarchy':
             obj = TablixRowHierarchy(node, ln)
-        elif name=='TablixMembers':
+        elif name == 'TablixMembers':
             obj = TablixMembers(node, ln)
-        elif name=='TablixMember':
+        elif name == 'TablixMember':
             obj = TablixMember(node, ln)
-        elif name=='TablixBody':
+        elif name == 'TablixBody':
             obj = TablixBody(node, ln)
-        elif name=='TablixHeader':
+        elif name == 'TablixHeader':
             obj = TablixHeader(node, ln)            
-        elif name=='TablixColumns':
+        elif name == 'TablixColumns':
             obj = TablixColumns(node, ln)
-        elif name=='TablixColumn':
+        elif name == 'TablixColumn':
             obj = TablixColumn(node, ln)
-        elif name=='TablixRows':
+        elif name == 'TablixRows':
             obj = TablixRows(node, ln)
-        elif name=='TablixRow':
+        elif name == 'TablixRow':
             obj = TablixRow(node, ln)
-        elif name=='TablixCells':
+        elif name == 'TablixCells':
             obj = TablixCells(node, ln)
-        elif name=='TablixCell':
+        elif name == 'TablixCell':
             obj = TablixCell(node, ln)
-        elif name=='CellContents':
+        elif name == 'CellContents':
             obj = CellContents(node, ln)        
-        elif name=='Style':
+        elif name == 'Style':
             obj = Style(node, ln)
-        elif name=='Border':
+        elif name == 'Border':
             obj = Border(node, ln)
-        elif name=='TopBorder':
+        elif name == 'TopBorder':
             obj = Border(node, ln)
-        elif name=='BottomBorder':
+        elif name == 'BottomBorder':
             obj = Border(node, ln)
-        elif name=='LeftBorder':
+        elif name == 'LeftBorder':
             obj = Border(node, ln)
-        elif name=='RightBorder':
+        elif name == 'RightBorder':
             obj = Border(node, ln)
-        elif name=='BackgroundImage':
+        elif name == 'BackgroundImage':
             obj = BackgroundImage(node, ln)        
-        elif name=='Line':
+        elif name == 'Line':
             obj = Line(node, ln)
-        elif name=='Rectangle':
+        elif name == 'Rectangle':
             obj = Rectangle(node, ln)
-        elif name=='Textbox':
+        elif name == 'Textbox':
             obj = Textbox(node, ln)
-        elif name=='PageBreak':
+        elif name == 'PageBreak':
             obj = PageBreak(node, ln)            
-    #    elif name=='Image':
+    #    elif name == 'Image':
     #        obj = Image(node, ln)
-        elif name=='Modules':
+        elif name == 'Modules':
             obj = Modules(node, ln)
-        elif name=='Module':
+        elif name == 'Module':
             obj = Module(node, ln)
         else:
-            logger.error("Element '{0}' not implemented.".format(name), True)
+            logger.error(
+                "Element '{0}' not implemented.".format(name), True)
 
         return obj
-    
-    
+
+
     @staticmethod
     def enum_factory(name, node, lnk, card, must_be_constant):
         value = get_xml_tag_value(node)
-        if card==1 and value==None:
+        if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY] and value is None:
             logger.error("'{0}' is required for '{1}'.".format(
                     node.nodeName,
                     lnk.obj.__class__.__name__), True)
      
-        if name=='BorderStyle':
+        if name == 'BorderStyle':
             return BorderStyle(value, lnk, must_be_constant)
-        if name=='FontStyle':
+        if name == 'FontStyle':
             return FontStyle(value, lnk, must_be_constant)
-        if name=='FontWeight':
+        if name == 'FontWeight':
             return FontWeight(value, lnk, must_be_constant)
-        if name=='TextDecoration':
+        if name == 'TextDecoration':
             return TextDecoration(value, lnk, must_be_constant)
-        if name=='TextAlign':
+        if name == 'TextAlign':
             return TextAlign(value, lnk, must_be_constant)
-        if name=='VerticalAlign':
+        if name == 'VerticalAlign':
             return VerticalAlign(value, lnk, must_be_constant)
-        if name=='TextDirection':
+        if name == 'TextDirection':
             return TextDirection(value, lnk, must_be_constant)
-        if name=='WritingMode':
+        if name == 'WritingMode':
             return WritingMode(value, lnk, must_be_constant)
-        if name=='BackgroundRepeat':
+        if name == 'BackgroundRepeat':
             return BackgroundRepeat(value, lnk, must_be_constant)
-        if name=='BackgroundGradientType':
+        if name == 'BackgroundGradientType':
             return BackgroundGradientType(value, lnk, must_be_constant)
-        if name=='DataType':
+        if name == 'DataType':
             return DataType(value, lnk, must_be_constant)
-        if name=='SortDirection':
+        if name == 'SortDirection':
             return SortDirection(value, lnk, must_be_constant)
-        if name=='Operator':
+        if name == 'Operator':
             return Operator(value, lnk, must_be_constant)
-        if name=='BreakLocation':
+        if name == 'BreakLocation':
             return BreakLocation(value, lnk, must_be_constant)
 
         logger.error("Enum '{0}' not implemented.".format(name), True)
@@ -333,26 +341,27 @@ class Element(object):
     def expression_factory(name, node, lnk, card, must_be_constant):
         ln = Link(lnk.report_def, lnk.obj, data=node.nodeName)
         value = get_xml_tag_value(node)
-        if card == 1 and value == None:
+        if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY] and value is None:
             logger.error("'{0}' is required for '{1}'.".format(
                     node.nodeName, lnk.obj.__class__.__name__), True)
 
-        if name==Element.STRING:
+        if name == Element.STRING:
             return String(value, ln, must_be_constant)
-        if name==Element.INTEGER:
+        if name == Element.INTEGER:
             return Integer(value, ln, must_be_constant)
-        if name==Element.BOOLEAN:
+        if name == Element.BOOLEAN:
             return Boolean(value, ln, must_be_constant)
-        if name==Element.SIZE:
+        if name == Element.SIZE:
             return Size(value, ln, must_be_constant)        
-        if name==Element.COLOR:
+        if name == Element.COLOR:
             return Color(value, ln, must_be_constant)
-        if name==Element.URL:
+        if name == Element.URL:
             return None
-        if name==Element.VARIANT:
+        if name == Element.VARIANT:
             return Variant(value, ln, must_be_constant)
-     
-        logger.error("Unknown expression element definition: '{0}'.".format(name), True)
+
+        logger.error(
+            "Unknown expression element definition: '{0}'.".format(name), True)
 
     @staticmethod
     def expression_list_factory(name, node, lnk):
@@ -367,9 +376,9 @@ class Element(object):
         return obj
 
     @staticmethod
-    def get_element_def(element, class_name):
+    def get_element_def(element, class_name=None):
         element_type = Element.ELEMENT
-        card = 0
+        card = ElementCard.ZERO_OR_ONE
         must_be_constant = False
         default_value = None
 
@@ -389,10 +398,11 @@ class Element(object):
             # len(element)==4 is ignored, it means that element was checked
             if len(element) > 5:
                 logger.error(
-                    "Invalid number of values for element. Class: '{0}'".format(class_name), True)
+                    "Invalid number of values for element. Class: '{0}'".format(
+                        class_name), True)
 
         return element_type, card, must_be_constant, default_value
-        
+
     def get_element(self, name):
         if name in self.element_list:
             return self.element_list[name]
@@ -401,7 +411,6 @@ class Element(object):
         el = self.get_element(name)
         if el:
             return True
-        return False
 
 
 class Link(object):
@@ -418,23 +427,26 @@ class _ExpressionList(object):
     def __init__(self, node, elements, lnk):
 
         if len(elements) == 0 or len(elements) > 1:
-            logger.error("ElementList only can have one sub element type.", True)
+            logger.error(
+                "ElementList only can have one sub element type.", True)
 
-        lnk.obj=self
-        self.lnk=lnk
-        self.expression_list=[]
+        lnk.obj = self
+        self.lnk = lnk
+        self.expression_list = []
 
         for n in node.childNodes:
             if not n.nodeName in elements:
                 if n.nodeName not in ('#text', '#comment'):
-                    logger.warn("Unknown xml element '{0}' for '{1}'. Ignored.".format(n.nodeName, lnk.obj.__class__.__name__))
+                    logger.warn(
+                        "Unknown xml element '{0}' for '{1}'. Ignored.".format(
+                            n.nodeName, lnk.obj.__class__.__name__))
                 continue
-                
-            element_type, card, must_be_constant, default_value = Element.get_element_def(elements[n.nodeName],
-                        lnk.obj.__class__.__name__)
-                
+
+            element_type, card, must_be_constant, default_value = Element.get_element_def(
+                elements[n.nodeName], lnk.obj.__class__.__name__)
+
             ex = Element.expression_factory(
-                elements[n.nodeName][0], n, lnk, card, must_be_constant) 
+                elements[n.nodeName][0], n, lnk, card, must_be_constant)
             self.expression_list.append(ex)
 
 
@@ -442,7 +454,7 @@ class _ExpressionList(object):
 ###########################
 
 
-class Report(Element):
+class Nuntiare(Element):
     '''
     Root definition element
     '''
@@ -525,7 +537,7 @@ class Report(Element):
         self.data = None
 
         lnk = Link(None, None, self)
-        super(Report, self).__init__(node, self.elements, lnk)
+        super(Nuntiare, self).__init__(node, self.elements, lnk)
 
     def get_parameter_def(self, parameter_name):
         for p in self.parameters_def:
