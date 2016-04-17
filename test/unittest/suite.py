@@ -4,22 +4,16 @@
 
 "Nuntiare unittest suite"
 
-import sys
-import os
-
-DIR = os.path.dirname(os.path.realpath(__file__))
-DIR = os.path.normpath(os.path.join(DIR, '../..', 'nuntiare'))
-if os.path.isdir(DIR):
-    sys.path.insert(0, os.path.dirname(DIR))
-
 import logging
 import unittest
+import load_module
 import dataprovider
 import expression
 import parameter
 import grid
 import data
 import aggregate
+
 
 logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)
 
@@ -34,4 +28,3 @@ SUITE.addTests(LOADER.loadTestsFromModule(aggregate))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RESULT = RUNNER.run(SUITE)
-

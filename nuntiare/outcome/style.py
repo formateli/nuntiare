@@ -1,23 +1,25 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from .. definition.expression import Size
+
 
 class OutcomeStyle(object):
     '''
     Style cache. Must be one instance per report.
     See: nuntiare.report.Report
     '''
-    
+
     _count = 0
     _styles = {}
-    
+
     def __init__(self, report):
         self._report = report
         self.styles = {}
-        self.first_key = None # Used when style_def = None
-        
+        # Used when style_def = None
+        self.first_key = None
+
     def get_style(self, style_def):
         if not style_def and self.first_key:
             return self.styles[self.first_key]
@@ -28,7 +30,7 @@ class OutcomeStyle(object):
                 style_def, "BackgroundGradientType", 'None')
         style.background_gradient_end_color = self._report.get_value(
                 style_def, "BackgroundGradientEndColor", None)
-        style.background_image = None # TODO
+        style.background_image = None  # TODO
         style.font_style = self._report.get_value(
                 style_def, "FontStyle", 'Normal')
         style.font_family = self._report.get_value(
@@ -61,14 +63,19 @@ class OutcomeStyle(object):
                 style_def, "Direction", 'LTR')
         style.writing_mode = self._report.get_value(
                 style_def, "WritingMode", 'Horizontal')
-        
+
         if style_def:
-            self._get_border(style._border, style_def.get_element("Border"))
-            self._get_border(style.top_border, style_def.get_element("TopBorder"))
-            self._get_border(style.bottom_border, style_def.get_element("BottomBorder"))
-            self._get_border(style.left_border, style_def.get_element("LeftBorder"))
-            self._get_border(style.right_border, style_def.get_element("RightBorder"))
-        
+            self._get_border(
+                style._border, style_def.get_element("Border"))
+            self._get_border(
+                style.top_border, style_def.get_element("TopBorder"))
+            self._get_border(
+                style.bottom_border, style_def.get_element("BottomBorder"))
+            self._get_border(
+                style.left_border, style_def.get_element("LeftBorder"))
+            self._get_border(
+                style.right_border, style_def.get_element("RightBorder"))
+
         str_id = style.get_id()
         if str_id in self.styles:
             return self.styles[str_id]
@@ -82,7 +89,7 @@ class OutcomeStyle(object):
         if not self.first_key:
             self.first_key = str_id
         return style
-        
+
     def _get_border(self, border, border_def):
         if not border_def:
             return
@@ -101,19 +108,19 @@ class _StyleInfo(object):
             self.color = color
             self.border_style = style
             self.width = width
-    
+
         def get_id(self):
             self._str_id = None
             self._add_id(self.color)
             self._add_id(self.border_style)
             self._add_id(self.width)
             return self._str_id
-            
+
         def _add_id(self, value):
-            if self._str_id == None:
+            if self._str_id is None:
                 self._str_id = "|"
             else:
-                self._str_id = self._str_id + "-"                
+                self._str_id = self._str_id + "-"
             if value:
                 self._str_id = self._str_id + str(value)
 
@@ -168,7 +175,7 @@ class _StyleInfo(object):
         self._add_id(self.padding_bottom)
         self._add_id(self.line_height)
         self._add_id(self.direction)
-        self._add_id(self.writing_mode)                        
+        self._add_id(self.writing_mode)
         self._add_border_id(self.top_border)
         self._add_border_id(self.bottom_border)
         self._add_border_id(self.left_border)
@@ -180,19 +187,18 @@ class _StyleInfo(object):
             self._add_id_value("")
         else:
             self._add_id_value(str(value))
-    
+
     def _add_border_id(self, border):
         if not border.color:
             border.color = self._border.color
         if not border.border_style:
             border.border_style = self._border.border_style
         if not border.width:
-            border.width = self._border.width            
+            border.width = self._border.width
         self._add_id_value(border.get_id())
-        
+
     def _add_id_value(self, value):
-        if self._str_id == None:
+        if self._str_id is None:
             self._str_id = value
         else:
             self._str_id = self._str_id + "-" + value
-

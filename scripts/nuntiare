@@ -85,9 +85,6 @@ def do_convert(args):
     def replace_text(text):
         result = text.replace("Fields!", "F.")
         result = result.replace("Parameters!", "P.")
-        result = result.replace("Sum(", "Aggr.Sum(")
-        result = result.replace("RunningValue(", "Aggr.RunningValue(")
-        result = result.replace("RowNumber(", "Aggr.RowNumber(")
         result = result.replace(".Value", "")
         return result
 
@@ -201,7 +198,7 @@ def do_convert(args):
         logger.critical("Not a valid Rdlc report definition file.", True)
         
     doc = minidom.Document()
-    root_element = doc.createElement("Report")
+    root_element = doc.createElement("Nuntiare")
     name_element = doc.createElement("Name")
     name_element.appendChild(doc.createTextNode(rdlc_name))
     root_element.appendChild(name_element)

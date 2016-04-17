@@ -1,10 +1,11 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from . outcome.page_item import PageItemsInfo
 from . definition.expression import Size
 from . import logger
+
 
 class Result(object):
     def __init__(self, report):
@@ -17,24 +18,32 @@ class Result(object):
             report, "PageWidth", Size.convert(8.5, "in"))
 
         if self.height <= 0:
-            logger.error("Report 'PageHeight' must be greater than 0.", True)
+            logger.error(
+                "Report 'PageHeight' must be greater than 0.", True)
         if self.width <= 0:
-            logger.error("Report 'PageWidth' must be greater than 0.", True)
+            logger.error(
+                "Report 'PageWidth' must be greater than 0.", True)
 
-        self.margin_top = self.page_def.get_value(report, "TopMargin", 0.0)
-        self.margin_left = self.page_def.get_value(report, "LeftMargin", 0.0)
-        self.margin_right = self.page_def.get_value(report, "RightMargin", 0.0)
-        self.margin_bottom = self.page_def.get_value(report, "BottomMargin", 0.0)
+        self.margin_top = self.page_def.get_value(
+            report, "TopMargin", 0.0)
+        self.margin_left = self.page_def.get_value(
+            report, "LeftMargin", 0.0)
+        self.margin_right = self.page_def.get_value(
+            report, "RightMargin", 0.0)
+        self.margin_bottom = self.page_def.get_value(
+            report, "BottomMargin", 0.0)
 
         self.columns = self.page_def.get_value(report, "Columns", 1)
         self.column_spacing = self.page_def.get_value(
             report, "ColumnSpacing", Size.convert(0.5, "in"))
 
-        self.available_width = self.width - self.margin_left - self.margin_right
-        self.available_height = self.height - self.margin_top - self.margin_bottom
-        
+        self.available_width = \
+            self.width - self.margin_left - self.margin_right
+        self.available_height = \
+            self.height - self.margin_top - self.margin_bottom
+
         self.style = report.get_style(self.page_def)
-        
+
         self.header = self._get_header_footer(self.page_def, "PageHeader")
         self.footer = self._get_header_footer(self.page_def, "PageFooter")
         self.body = BodyInfo(report, report.definition.Body)
@@ -51,7 +60,7 @@ class Result(object):
             el_def = page_def.get_element(element_name)
             if el_def:
                 if element_name == 'PageHeader':
-                    return HeaderInfo(self.report, el_def) 
+                    return HeaderInfo(self.report, el_def)
                 else:
                     return FooterInfo(self.report, el_def)
 
@@ -69,8 +78,8 @@ class _SectionInfo(object):
         def_passed = self.definition
         if definition:
             def_passed = definition
-        self.items = PageItemsInfo(self.report,
-                def_passed, parent=None)
+        self.items = PageItemsInfo(
+            self.report, def_passed, parent=None)
 
 
 class _HeaderFooterInfo(_SectionInfo):
@@ -98,4 +107,3 @@ class FooterInfo(_HeaderFooterInfo):
 class BodyInfo(_SectionInfo):
     def __init__(self, report, definition):
         super(BodyInfo, self).__init__(report, definition)
-

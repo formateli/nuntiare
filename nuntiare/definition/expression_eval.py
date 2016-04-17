@@ -1,5 +1,5 @@
 # This file is part of Nuntiare project.
-# The COPYRIGHT file at the top level of this repository 
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from importlib import import_module
@@ -7,26 +7,27 @@ from . expression import Expression
 from . functions import *
 from .. import logger
 
+
 class _Aggregate(object):
     class _AggregateCache(object):
         def __init__(self):
-            self._values = {}   # Cache result of Aggregates with scope.
+            self._values = {}  # Cache result of Aggregates with scope.
 
         def get_value(self, function, scope, expression):
-            if not function in self._values:
+            if function not in self._values:
                 return
-            if not scope in self._values[function]:
+            if scope not in self._values[function]:
                 return
-            if not expression in self._values[function][scope]:
+            if expression not in self._values[function][scope]:
                 return
             return self._values[function][scope][expression]
 
         def set_value(self, function, scope, expression, value):
-            if not function in self._values:
+            if function not in self._values:
                 self._values[function] = {}
-            if not scope in self._values[function]:
+            if scope not in self._values[function]:
                 self._values[function][scope] = {}
-            if not expression in self._values[function][scope]:
+            if expression not in self._values[function][scope]:
                 self._values[function][scope][expression] = None
             self._values[function][scope][expression] = value
 
@@ -109,9 +110,10 @@ class _Aggregate(object):
         if function != 'RowNumber':
             valid_fun = ['Sum', 'Avg', 'CountDistinct']
             if function not in valid_fun:
-                logger.error(
-                    "Invalid function '{0}' for aggregate RunningValue. Valid are: {1}".format(
-                        function, valid_fun), True)
+                err_msg = "Invalid function '{0}' for aggregate RunningValue. "
+                err_msg += "Valid are: {1}"
+                logger.error(err_msg.format(function, valid_fun), True)
+
         name = 'RunningValue.' + function
 
         result = None
@@ -120,81 +122,87 @@ class _Aggregate(object):
         location_group = None       # Group where Running function is called.
         # Current data name and row index if location_group is a detail group.
         current_row = [None, None]
-        # Last data name and row index if location_group is a detail group.        
+        # Last data name and row index if location_group is a detail group.
         last_row = [None, None]
 
         aggr = self._get_aggr_info(expression, scope)
 
-        if scope == None:
-            scope_name = aggr[1].top_group.name # Top group (DataSet)
+        if scope is None:
+            scope_name = aggr[1].top_group.name  # Top group (DataSet)
             aggr = self._get_aggr_info(expression, scope_name)
         else:
             scope_name = scope
-        instance_group = self.report.data_groups[scope_name].current_instance()
+        instance_group = \
+            self.report.data_groups[scope_name].current_instance()
         location_group = self.report.data_groups[aggr[2][0]]
         current_row[0] = location_group.current_instance().data.name
         if location_group.is_detail_group:
-            current_row[1] = location_group.current_instance().data._current_index
+            current_row[1] = \
+                location_group.current_instance().data._current_index
 
         value_cache = self._cache.get_value(
-                name, 
-                scope_name + "." + location_group.name,
-                expression
-            )
+            name,
+            scope_name + "." + location_group.name,
+            expression
+        )
 
         if value_cache:
             if value_cache[0] == instance_group.data.name:
                 last_row = value_cache[1]
                 result = [value_cache[2], value_cache[3]]
-                if last_row[0] != None:
+                if last_row[0] is not None:
                     if last_row[0] != current_row[0]:
-                        last_row[1] = None # Reset if detail group instance changed.
+                        # Reset if detail group instance changed.
+                        last_row[1] = None
 
         if function == 'RowNumber':
-            if result == None:
+            if result is None:
                 result = [0, 0]
             if location_group.is_detail_group:
                 if last_row[1] != current_row[1]:
                     result[0] += 1
             else:
                 if last_row[0] != current_row[0]:
-                    result[0] += location_group.current_instance().data.row_count()
+                    result[0] += \
+                        location_group.current_instance().data.row_count()
         else:
             if location_group.is_detail_group:
                 if last_row[1] != current_row[1]:
                     val = aggr[0].value(self.report)
-                    if val != None:
+                    if val is not None:
                         if function == 'Count':
-                            if result == None:
+                            if result is None:
                                 result = [0, None]
                             result[0] += 1
                         elif function == 'CountDistinct':
-                            if result == None:
+                            if result is None:
                                 result = [{}, None]
                             if val not in result[0]:
                                 result[0][val] = None
                         else:
-                            if result == None:
+                            if result is None:
                                 result = [0, 0]
                             result[0] += val
                             if function == 'Avg':
                                 result[1] += 1
             else:
-                if result == None:
+                if result is None:
                     if function == 'CountDistinct':
-                       result = [{}, None]
+                        result = [{}, None]
                     else:
                         result = [0, 0]
                 if last_row[0] != current_row[0]:
-                    result = self._instance_value(function, aggr[0],
-                            location_group.current_instance().data, result[0], result[1])
+                    result = self._instance_value(
+                        function, aggr[0],
+                        location_group.current_instance().data,
+                        result[0], result[1])
 
         self._cache.set_value(
-                name,
-                scope_name + "." + location_group.name,
-                expression,
-                [instance_group.data.name, current_row, result[0], result[1]]
-            )
+            name,
+            scope_name + "." + location_group.name,
+            expression,
+            [instance_group.data.name, current_row, result[0], result[1]]
+        )
 
         return self._get_function_result(function, result)
 
@@ -208,8 +216,10 @@ class _Aggregate(object):
         if value_cache:
             return self._get_function_result(function, value_cache)
 
-        result = self._instance_value(function, aggr[0],
-            aggr[1].current_instance().data, result[0], result[1])
+        result = self._instance_value(
+            function, aggr[0],
+            aggr[1].current_instance().data,
+            result[0], result[1])
         self._cache.set_value(function, scope_name, expression, result)
 
         return self._get_function_result(function, result)
@@ -221,24 +231,27 @@ class _Aggregate(object):
             else:
                 return 0
         elif function == 'CountDistinct':
-            if result[0] == None:
+            if result[0] is None:
                 return 0
             return len(result[0])
         return result[0]
 
     def _get_aggr_info(self, expression, scope):
-        result = [None, None, None] # [expression, group, [current_scope]]
-        if expression != None:
+        # [expression, group, [current_scope]]
+        result = [None, None, None]
+        if expression is not None:
             result[0] = Expression("=" + expression, None, False)
         result[2] = self.report.current_data_scope
         if scope:
             group = self.report.data_groups[scope]
         else:
-            group = self.report.data_groups[result[2][0]] # Current running group
+            # Current running group
+            group = self.report.data_groups[result[2][0]]
         result[1] = group
         return result
 
-    def _instance_value(self, function, expression, data,
+    def _instance_value(
+            self, function, expression, data,
             result1_start, result2_start):
 
         result1 = result1_start
@@ -261,7 +274,7 @@ class _Aggregate(object):
         data.move_first()
         while not data.EOF:
             val = expression.value(self.report)
-            if val != None:
+            if val is not None:
                 if function == 'Sum':
                     result1 += val
                 elif function == 'Avg':
@@ -270,7 +283,7 @@ class _Aggregate(object):
                 elif function == 'Count':
                     result1 += 1
                 elif function == 'CountDistinct':
-                    if val not in result1:                        
+                    if val not in result1:
                         result1[val] = None
                 elif function == 'Max':
                     if val > result1:
@@ -303,12 +316,12 @@ class ExpressionEval(object):
                 )
 
     def _add_context(self, from_name, import_name, alias):
-        if alias == None:
+        if alias is None:
             alias = import_name
         if alias in self._context:
-            logger.error(
-                "'{0}' already exists in the expression evaluation context.".format(
-                    alias), True)
+            err_msg = "'{0}' already exists in the "
+            err_msg += "expression evaluation context."
+            logger.error(err_msg.format(alias), True)
         mod_object = None
         if from_name:
             module = import_module(from_name)
@@ -350,11 +363,12 @@ class ExpressionEval(object):
                 # Collections and aliases
                 Parameters = P = self.report.parameters
                 Globals = G = self.report.globals
-                #TODO ReportItems
+                # TODO ReportItems
 
-                if self.report.current_data_scope[0]: # Always in Row
+                if self.report.current_data_scope[0]:  # Always in Row
                     Fields = F = self.report.data_groups[
-                        self.report.current_data_scope[0]].current_instance().data.fields
+                            self.report.current_data_scope[0]
+                        ].current_instance().data.fields
                 elif self.report.current_data_interface:
                     Fields = F = self.report.data_interfaces[
                         self.report.current_data_interface].fields
@@ -368,8 +382,8 @@ class ExpressionEval(object):
                 True, "ValueError")
         except Exception as e:
             logger.error(
-                    "{0}. Unexpected error: '{1}'".format(exp_error, self._get_error_str(e)),
-                        True)
+                "{0}. Unexpected error: '{1}'".format(
+                    exp_error, self._get_error_str(e)), True)
         return result
 
     def _get_error_str(self, e):
@@ -384,4 +398,3 @@ class ExpressionEval(object):
             else:
                 res = "{0} - {1}".format(res, message)
         return res
-

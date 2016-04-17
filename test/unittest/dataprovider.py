@@ -8,6 +8,7 @@ from nuntiare.data.data import DataSource, DataSet
 from nuntiare.data.dataprovider import get_data_provider
 import unittest
 
+
 class DataProvidersTest(unittest.TestCase):
     def test_dataproviders(self):
         data_provider = get_data_provider("no_exists")
@@ -28,7 +29,7 @@ class DataProvidersTest(unittest.TestCase):
         test_params.append(self._get_test_params(
                 "xml",
                 'file=../data/panama.xml',
-               "SELECT * FROM city"
+                "SELECT * FROM city"
                 ))
 
         from dataprovider_data import CITIES_OBJ, CITIES_LIST
@@ -51,12 +52,11 @@ class DataProvidersTest(unittest.TestCase):
     def run_test(self, test_param):
         field_map = [
             {
-            'name': 'id',
-            'data_field': 'id',
-            'field_value': None,
-            'data_type': 'Integer'
+                'name': 'id',
+                'data_field': 'id',
+                'field_value': None,
+                'data_type': 'Integer'
             },
-#            {'name': 'id', 'data_field': 'id', 'data_type': 'Int'},
         ]
 
         data_provider = get_data_provider(test_param['data_provider_name'])
@@ -70,7 +70,7 @@ class DataProvidersTest(unittest.TestCase):
         data_source.connect(test_param['connection_object'])
 
         data_set = DataSet(
-                report = None,
+                report=None,
                 name="ds1",
                 data_source=data_source,
                 field_map=field_map
@@ -120,7 +120,7 @@ class DataProvidersTest(unittest.TestCase):
         self.assertEqual(data_set.EOF, False)
         self.assertEqual(data_set.fields['id'], 6)
 
-        data_set.move(20) #TODO raise error
+        data_set.move(20)  # TODO raise error
         self.assertEqual(data_set.EOF, True)
 
     @staticmethod
@@ -131,4 +131,3 @@ class DataProvidersTest(unittest.TestCase):
             'command': command,
         }
         return res
-

@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from . data_type import DataType
@@ -8,15 +8,18 @@ from .. import logger
 from .. collection import Collection, CollectionItem
 from .. definition.expression import Expression
 
+
 class Field(CollectionItem):
-    def __init__(self, index, parent, name, 
+    def __init__(
+            self, index, parent, name,
             data_field, field_value, data_type):
         super(Field, self).__init__(name)
-        
+
         if (not data_field and not field_value) or \
-            (data_field and field_value):
-            logger.error("'Field' must be type of 'DataField' or 'Value'.", True)        
-        
+                (data_field and field_value):
+            logger.error(
+                "'Field' must be type of 'DataField' or 'Value'.", True)
+
         self.data_field = data_field
         self.field_value = field_value
         self._parent = parent
@@ -32,7 +35,7 @@ class Field(CollectionItem):
         if self.data_field and self.is_missing:
             return
         result = None
-        
+
         data = self._parent.current_data
         row = data.get_current_row()
         if self.is_expression:
@@ -58,7 +61,7 @@ class Fields(Collection):
 
     def add_field(self, name, data_field, field_value, data_type):
         field = Field(
-            self._field_index, self, 
+            self._field_index, self,
             name, data_field, field_value, data_type)
         super(Fields, self).add_item(field)
         self._field_index += 1
@@ -67,7 +70,7 @@ class Fields(Collection):
         res = super(Fields, self).__call__(name, function)
         if res:
             return res
-            
+
         item = self._items_dict[name]
 
         if function == "DataField":
@@ -91,8 +94,10 @@ class FieldsDataInterface(object):
         self.parent = parent
         self.fields = None
 
-    def add_field(self, name, data_field=None, field_value=None, data_type=None):
-        'Must be call only for DataSet'        
+    def add_field(
+            self, name, data_field=None,
+            field_value=None, data_type=None):
+        'Must be call only for DataSet'
         if not self.fields:
             self.fields = Fields(self.parent.report)
         self.fields.add_field(
@@ -109,7 +114,7 @@ class FieldsDataInterface(object):
     def __getitem__(self, key):
         self.fields.set_current_data(self.parent)
         return self.fields[key]
-    
+
     def __setitem__(self, key, value):
         self.fields.set_current_data(self.parent)
         self.fields[key] = value
@@ -119,31 +124,34 @@ class DataInterface(object):
     def __init__(self, report, name):
         self.report = report
         self.name = name
-        self.original_rows = [] # Not Filtered nor sorted
-        self.rows = []          # Filtered and sorted
+        self.original_rows = []  # Not Filtered nor sorted
+        self.rows = []           # Filtered and sorted
         self.EOF = True
         self._current_index = -1
         self.fields = FieldsDataInterface(self)
-        
+
         if report:
             if name in report.data_interfaces:
-                logger.error("DataInterface '{0}' already exists.".format(name))
+                logger.error(
+                    "DataInterface '{0}' already exists.".format(name))
             report.data_interfaces[name] = self
 
-    def add_field(self, name, data_field=None, field_value=None, data_type=None):
+    def add_field(
+            self, name, data_field=None,
+            field_value=None, data_type=None):
         self.fields.add_field(
             name, data_field, field_value, data_type)
 
     def get_field_list(self):
         return self.fields.fields._items
 
-    def add_row(self, row):        
+    def add_row(self, row):
         self.original_rows.append(row)
         self.rows.append(row)
         if self.row_count() == 1:
             self.move_first()
 
-    def row_number(self): 
+    def row_number(self):
         return self._current_index + 1
 
     def row_count(self):
@@ -163,7 +171,7 @@ class DataInterface(object):
             self.set_eof()
             return
         if self.report:
-            self.report.current_data_interface = self.name            
+            self.report.current_data_interface = self.name
         self.EOF = False
         self._current_index = i
 
@@ -189,20 +197,22 @@ class DataSource(object):
         self.name = name
         self.data_provider = data_provider
         self.cursor = None
-    
+
     def connect(self, connection_object):
         self.cursor = None
-        
+
         if not self.data_provider:
-            logger.error("Invalid DataProvider '{0}' for DataSource '{1}'".format(
+            logger.error(
+                "Invalid DataProvider '{0}' for DataSource '{1}'".format(
                     self.data_provider, self.name))
             return False
 
         if not connection_object:
-            logger.error("Invalid connection object for DataSource '{1}'.".format(
+            logger.error(
+                "Invalid connection object for DataSource '{1}'.".format(
                     self.name))
             return False
-        
+
         try:
             conn = self.data_provider.connect(connection_object)
             self.cursor = conn.cursor()
@@ -220,16 +230,17 @@ class DataSet(DataInterface):
         self.data_source = data_source
 
         for f in field_map:
-            self.add_field(f['name'],
+            self.add_field(
+                    f['name'],
                     f['data_field'],
-                    f['field_value'],                    
+                    f['field_value'],
                     f['data_type'])
-                    
+
     def execute(self, command=None):
         if not self.data_source or not self.data_source.cursor:
             return
 
-        self.data_source.cursor.execute(command)                 
+        self.data_source.cursor.execute(command)
         query_result = self.data_source.cursor.fetchall()
 
         for r in query_result:
@@ -244,19 +255,19 @@ class DataSet(DataInterface):
                         for d in self.data_source.cursor.description:
                             if f.data_field == d[0]:
                                 row.append(r[i])
-                                f.is_missing = False                            
-                                break 
+                                f.is_missing = False
+                                break
                             i += 1
-                    elif hasattr(r, f.name): # An Object
+                    elif hasattr(r, f.name):  # An Object
                         row.append(getattr(r, f.name))
                         f.is_missing = False
-                    else: # Treat just as a list of values.
+                    else:  # Treat just as a list of values.
                         if x > len(r) - 1:
                             break
                         f.is_missing = False
                         row.append(r[x])
                 x += 1
-                    
+
             if len(row) == 0:
                 logger.error(
                     "No rows collected for DataSet '{0}'.".format(
@@ -269,7 +280,8 @@ class DataGroupInstance(DataInterface):
         super(DataGroupInstance, self).__init__(data_parent.report, name)
         self.data_parent = data_parent
         self.page_break = page_break
-        self.fields.fields = data_parent.fields.fields # Share Fields definition
+        # Share Fields definition
+        self.fields.fields = data_parent.fields.fields
 
     def _add_parent_rows(self):
         self.data_parent.move_first()
@@ -282,12 +294,13 @@ class DataGroupInstance(DataInterface):
         self.rows.append(row)
 
     @staticmethod
-    def get_groups(data, expression, sub_groups=[],
+    def get_groups(
+            data, expression, sub_groups=[],
             sort_descending=None, page_break=None):
-                    
-        group_list = [] # List of DataInterface objects
 
-        if len(sub_groups) == 0: # If first grouping
+        group_list = []  # List of DataInterface objects
+
+        if len(sub_groups) == 0:  # If first grouping
             sub_groups.append([data.name, data])
 
         for data_group in sub_groups:
@@ -298,17 +311,21 @@ class DataGroupInstance(DataInterface):
             while not dt.EOF:
                 r = dt.get_current_row()
                 exp_key = Expression.get_value_or_default(
-                        dt.report, None, None, None, 
+                        dt.report, None, None, None,
                         direct_expression=expression)
-                if not exp_key in groups_exp:
+                if exp_key not in groups_exp:
                     groups_exp[exp_key] = DataGroupInstance(
-                            dt,"{0}-{1}".format(dt.name, exp_key), page_break)
+                            dt,
+                            "{0}-{1}".format(dt.name, exp_key),
+                            page_break)
                     group_exp_list.append([exp_key, groups_exp[exp_key]])
                 groups_exp[exp_key]._add_row(r)
                 dt.move_next()
-            if sort_descending != None: 
+            if sort_descending is not None:
                 group_exp_list = sorted(
-                    group_exp_list, key=lambda z: z[0], reverse=sort_descending)
+                    group_exp_list,
+                    key=lambda z: z[0],
+                    reverse=sort_descending)
             group_list.extend(group_exp_list)
 
         return group_list
@@ -317,16 +334,17 @@ class DataGroupInstance(DataInterface):
 class DataSourceObject(DataSource):
     def __init__(self, report, data_source_def):
         self.report = report
-                
+
         dp_name = Expression.get_value_or_default(
-                self.report, data_source_def.conn_properties, 
-                "DataProvider", None)
-        data_provider = get_data_provider(dp_name) 
-        super(DataSourceObject, self).__init__(data_source_def.Name, data_provider)
+                self.report, data_source_def.conn_properties,
+                'DataProvider', None)
+        data_provider = get_data_provider(dp_name)
+        super(DataSourceObject, self).__init__(
+            data_source_def.Name, data_provider)
 
         self.conn_object = Expression.get_value_or_default(
-                self.report, data_source_def.conn_properties, 
-                "ConnectObject", None)
+                self.report, data_source_def.conn_properties,
+                'ConnectObject', None)
 
     def connect(self):
         return super(DataSourceObject, self).connect(self.conn_object)
@@ -338,7 +356,9 @@ class DataSetObject(DataSet):
         self.data_set_def = data_set_def
         self.data = None
 
-        data_source = self.report.data_sources[self.data_set_def.query_def.DataSourceName]
+        data_source = self.report.data_sources[
+                self.data_set_def.query_def.DataSourceName
+            ]
 
         field_map = []
         for field in data_set_def.fields:
@@ -347,30 +367,34 @@ class DataSetObject(DataSet):
                 val = val.expression
             field_map.append({
                     'name': field.Name,
-                    'data_field': Expression.get_value_or_default(report, field, "DataField", None),
-                    'field_value': val, 
-                    'data_type': Expression.get_value_or_default(report, field, "DataType", None)
-                })            
+                    'data_field': Expression.get_value_or_default(
+                        report, field, "DataField", None),
+                    'field_value': val,
+                    'data_type': Expression.get_value_or_default(
+                        report, field, "DataType", None)
+                })
 
         super(DataSetObject, self).__init__(
             report, data_set_def.Name, data_source, field_map)
 
-    def execute(self): #TODO Query parameters
+    def execute(self):  # TODO Query parameters
         if self.data_source.cursor:
-            command_text = self.data_set_def.query_def.get_command_text(self.report)
-            super(DataSetObject, self).execute(command_text)
+            command_text = self.data_set_def.query_def.get_command_text(
+                self.report)
+            super(DataSetObject, self).execute(
+                command_text)
         else:
             # Connection failed, try to load data appended to report
             logger.info("Trying to load embedded data...")
             if not self.report.definition.data:
-                logger.critical(
-                    "DataSource connection failed and no data embedded in defintion file for DataSet: '{0}'.".format(
-                        self.name), True)
+                err_msg = "DataSource connection failed and no data embedded"
+                err_msg += " in defintion file for DataSet: '{0}'."
+                logger.critical(err_msg.format(self.name), True)
             self.report.definition.data.load(self.report)
             data = self.report.definition.data.get_data(self.data_set_def.Name)
-            self.data = Data(self.report, self.data_set_def,
-                    data[0], data[1])        
-        
+            self.data = Data(
+                self.report, self.data_set_def, data[0], data[1])
+
         # Filter data
         if self.data_set_def.filters_def:
             flt = FiltersObject(self.report, self.data_set_def.filters_def)
@@ -404,27 +428,30 @@ class FiltersObject(object):
             for flt in filter_def.filter_list:
                 self.filter_list.append(
                     FiltersObject._FilterObject(flt))
-        
+
     def filter_data(self, data):
         if len(self.filter_list) == 0 or \
-            len(data.rows) == 0: # Nothing to filter
+                len(data.rows) == 0:  # Nothing to filter
             return
         for flt in self.filter_list:
             data.rows = self._do_filter(flt, data)
-    
+
     def _do_filter(self, flt, data):
-        rows=[]
+        rows = []
         data.move_first()
         while not data.EOF:
-            val = Expression.get_value_or_default(self.report, 
-                    None, None, None, direct_expression=flt.filter_expression)
-            operator = Expression.get_value_or_default(self.report, 
-                    None, None, None, direct_expression=flt.operator)
-            if operator == None:
+            val = Expression.get_value_or_default(
+                self.report, None, None, None,
+                direct_expression=flt.filter_expression)
+            operator = Expression.get_value_or_default(
+                self.report, None, None, None,
+                direct_expression=flt.operator)
+            if operator is None:
                 raise_error_with_log(
                     "No Operator for Filter in Data '{0}'".format(data.name))
-            row = self._filter_row(data.name, flt.filter_values, 
-                    data.get_current_row(), val, operator)
+            row = self._filter_row(
+                data.name, flt.filter_values,
+                data.get_current_row(), val, operator)
             if row:
                 rows.append(row)
             data.move_next()
@@ -439,13 +466,14 @@ class FiltersObject(object):
                 self.report, None, None, None, direct_expression=v))
 
         if len(vals) == 0:
-            raise_error_with_log("No filter values defined for '{0}'".format(name))
+            raise_error_with_log(
+                "No filter values defined for '{0}'".format(name))
 
-        if operator not in ('In','Between'):
+        if operator not in ('In', 'Between'):
             if len(vals) > 1:
-                raise_error_with_log(
-                    "Operator '{0}' only accepts one filter value. Data name: '{1}'".format(
-                        operator, name))
+                err_msg = "Operator '{0}' only accepts one filter value. "
+                err_msg += "Data name: '{1}'"
+                raise_error_with_log(err_msg.format(operator, name))
             if operator == "Equal":
                 if val == vals[0]:
                     filtered = True
@@ -464,15 +492,17 @@ class FiltersObject(object):
             if operator == "LessThanOrEqual":
                 if val <= vals[0]:
                     filtered = True
-            if operator in ('Like','TopN','BottomN','TopPercent','BottomPercent'):
+            if operator in (
+                    'Like', 'TopN', 'BottomN', 'TopPercent', 'BottomPercent'):
                 raise_error_with_log(
-                    "Operator '{0}' is not supported at this moment.".format(operator))        
-
+                    "Operator '{0}' is not supported at this moment.".format(
+                        operator))
         else:
             if operator == "Between":
                 if len(vals) > 2:
-                    raise_error_with_log(
-                        "Operator '{0}' takes exactly 2 filter values. Data name: '{1}'".format(operator, name))
+                    err_msg = "Operator '{0}' takes exactly 2 filter values. "
+                    err_msg += "Data name: '{1}'"
+                    raise_error_with_log(err_msg.format(operator, name))
                 if val >= vals[0] and val <= vals[1]:
                     filtered = True
             if operator == "In":
@@ -506,7 +536,7 @@ class SortingObject(object):
 
         groups = []
         i = 0
-        for sortby in self.sortby_list:            
+        for sortby in self.sortby_list:
             reverse = False if sortby.direction == "Ascending" else True
             if i == 0:
                 groups = DataGroupInstance.get_groups(
@@ -514,21 +544,22 @@ class SortingObject(object):
                 groups = sorted(
                     groups, key=lambda z: z[0], reverse=reverse)
             else:
-                #Sort is made in get_groups function.
+                # Sort is made in get_groups function.
                 groups = DataGroupInstance.get_groups(
                         data, sortby.sort_value,
                         sub_groups=groups,
                         sort_descending=reverse)
             i += 1
-        
-        if len (groups) == 0:
+
+        if len(groups) == 0:
             return
-            
+
         data.rows = []
         for g in groups:
             for r in g[1].rows:
                 data.rows.append(r)
-            del data.report.data_interfaces[g[1].name] # Delete from global collection
+            # Delete from global collection
+            del data.report.data_interfaces[g[1].name]
 
 
 class DataGroupObject(object):
@@ -537,7 +568,7 @@ class DataGroupObject(object):
             self.group = group
             self.data = data
             self.sub_instance = []
-            
+
         def add_sub_instance(self, instance):
             self.sub_instance.append(instance)
 
@@ -553,8 +584,9 @@ class DataGroupObject(object):
         self.EOF = True
 
         if name in report.data_groups:
-            logger.error(
-                    "DataSet, DataRegion or Group with name '{0}' already exists.".format(name), True)
+            err_msg = "DataSet, DataRegion or Group with "
+            err_msg += "name '{0}' already exists."
+            logger.error(err_msg.format(name), True)
         report.data_groups[name] = self
         if not parent:
             self.top_group = self
@@ -566,14 +598,14 @@ class DataGroupObject(object):
             return
 
         if self.parent and self.parent.is_detail_group:
-            logger.error(
-                    "Group '{0}' could not be created. Parent group '{1}' is a detail group.".format(
-                        name, self.parent.name), True)
+            err_msg = "Group '{0}' could not be created. "
+            err_msg += "Parent group '{1}' is a detail group."
+            logger.error(err_msg.format(name, self.parent.name), True)
 
         exp_def = group_def.get_element('GroupExpressions')
         filter_def = group_def.get_element("Filters")
         sort_def = group_def.get_element("SortExpressions")
-        flt = None        
+        flt = None
         srt = None
         if filter_def:
             flt = FiltersObject(self.report, filter_def)
@@ -621,11 +653,11 @@ class DataGroupObject(object):
 
     def move_first(self):
         self.move(0)
-        
+
     def move_next(self):
         self.move(
             self._current_instance_index + 1)
-        
+
     def move(self, index):
         self.EOF = True
         self._current_instance_index = -1
@@ -660,4 +692,3 @@ class DataGroupObject(object):
         one_grp = DataGroupInstance(data, name, None)
         one_grp._add_parent_rows()
         return one_grp
-

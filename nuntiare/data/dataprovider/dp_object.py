@@ -1,16 +1,19 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from nuntiare import logger
-from . definition import Connect, Cursor,InterfaceError
+from . definition import Connect, Cursor, InterfaceError
 
-apilevel="2.0"
-paramstyle="pyformat"
+
+apilevel = '2.0'
+paramstyle = 'pyformat'
+
 
 class connect(Connect):
     def __init__(self, connection_object):
-        super(connect, self).__init__(connection_object, "A valid Python Object.")
+        super(connect, self).__init__(
+            connection_object, 'A valid Python Object.')
         self.object = connection_object
 
     def cursor(self):
@@ -25,7 +28,6 @@ class ObjectCursor(Cursor):
 
     def execute(self, operation, parameters=None):
         super(ObjectCursor, self).execute(operation, parameters)
-        
         self.description = ()
         self.result = []
         if self.connection.connection_object:
@@ -34,4 +36,3 @@ class ObjectCursor(Cursor):
                 self.result.append(obj)
 
         return self.result
-

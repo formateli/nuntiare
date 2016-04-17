@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import os
@@ -15,6 +15,7 @@ from . data.data import DataSourceObject, DataSetObject
 from . outcome.style import OutcomeStyle
 from . collection import Collection, CollectionItem
 
+
 class Globals(Collection):
     def __init__(self):
         super(Globals, self).__init__()
@@ -26,8 +27,9 @@ class Parameters(Collection):
 
 
 class Report(object):
-    def __init__(self, definition, 
-            output_name=None, output_directory=None):
+    def __init__(
+            self, definition, output_name=None,
+            output_directory=None):
 
         self.result = None
         self.globals = None
@@ -41,20 +43,20 @@ class Report(object):
         self.current_data_interface = None
         self._style = OutcomeStyle(self)
         self._globals = {
-                'Author': None,
-                'Description': None,
-                'Version': None,
-                'PageNumber': -1,
-                'TotalPages': -1,
-                'ExecutionTime': None,
-                'ReportServerUrl': None,
-                'ReportName': None,
-                'ReportFolder': None,
-                'ReportFile': None,
-                'ReportFileName': None,
-                'OutputDirectory': None,
-                'OutputName': None,
-                }
+            'Author': None,
+            'Description': None,
+            'Version': None,
+            'PageNumber': -1,
+            'TotalPages': -1,
+            'ExecutionTime': None,
+            'ReportServerUrl': None,
+            'ReportName': None,
+            'ReportFolder': None,
+            'ReportFile': None,
+            'ReportFileName': None,
+            'OutputDirectory': None,
+            'OutputName': None,
+        }
 
         # The ReportDef object
         self.definition = self._parse(
@@ -66,9 +68,9 @@ class Report(object):
     def run(self, parameters={}):
         if not self.definition:
             logger.critical("No definition found in report.", True)
-    
+
         logger.info("Running Report '{0}'".format(self.definition.Name))
-    
+
         logger.info('Running Globals...')
         self._get_globals()
 
@@ -92,10 +94,10 @@ class Report(object):
         '''
         Append dataset records (without filtering) to definition
         and saves it in a new file with .nuntiare extension.
-        ''' 
+        '''
         def _add_element(doc, parent, element_name, text=None):
             el = doc.createElement(element_name)
-            if text != None:
+            if text is not None:
                 text_el = doc.createTextNode(text)
                 el.appendChild(text_el)
             parent.appendChild(el)
@@ -116,14 +118,14 @@ class Report(object):
 
         def _data_to_string(data_type, value):
             v = DataType.get_value(data_type, value)
-            if v != None:
+            if v is not None:
                 if data_type == "DateTime":
                     return "{:%Y-%m-%d %H:%M:%S}".format(v)
                 else:
                     return str(v)
 
         def _add_data(doc, root_element):
-            data_root  = _add_element(doc, root_element, "DataEmbedded")
+            data_root = _add_element(doc, root_element, "DataEmbedded")
             for key, ds in self.data_sets.items():
                 data = _add_element(doc, data_root, "Data")
                 _add_element(doc, data, "Name", key)
@@ -134,21 +136,23 @@ class Report(object):
                     for c in ds.data.field_list:
                         if c.data_field:
                             _add_element(
-                                doc, record, c.data_field, 
+                                doc, record, c.data_field,
                                 _data_to_string(c.DataType, rw[i]))
                         i = i + 1
 
-        result_file = os.path.join(self.globals['OutputDirectory'], 
-                self.globals['OutputName'] + ".nuntiare")
+        result_file = os.path.join(
+            self.globals['OutputDirectory'],
+            self.globals['OutputName'] + ".nuntiare")
 
         if not overwrite:
             if os.path.isfile(result_file):
-                logger.error("File '{0}' already exists.".format(result_file),
-                        True, "IOError")
+                logger.error(
+                    "File '{0}' already exists.".format(result_file),
+                    True, "IOError")
 
         doc = minidom.Document()
         root_element = doc.createElement("Report")
-        orig_root = self._get_root(doc = self._get_xml_document())
+        orig_root = self._get_root(doc=self._get_xml_document())
 
         _get_element(doc, orig_root, root_element)
         _add_data(doc, root_element)
@@ -159,7 +163,7 @@ class Report(object):
         try:
             f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
         finally:
-            f.close()        
+            f.close()
         logger.info("Report '{0}' saved.".format(result_file))
 
     def get_value(self, element, element_name, default):
@@ -167,8 +171,8 @@ class Report(object):
                 self, element, element_name, default)
 
     def get_style(self, element):
-       el = element.get_element("Style")
-       return self._style.get_style(el)
+        el = element.get_element("Style")
+        return self._style.get_style(el)
 
     def _parse(self, definition, output_name, output_directory):
         is_file = False
@@ -190,7 +194,8 @@ class Report(object):
         if is_file:
             self._globals['ReportFile'] = definition
             self._globals['ReportFileName'] = os.path.basename(definition)
-            self._globals['ReportFolder'] = os.path.dirname(os.path.realpath(definition))
+            self._globals['ReportFolder'] = os.path.dirname(
+                os.path.realpath(definition))
             if not output_directory:
                 output_directory = os.path.dirname(
                     os.path.realpath(definition))
@@ -207,7 +212,7 @@ class Report(object):
         if not os.path.isdir(output_directory):
             logger.error(
                 "'{0}' is not a valid directory.".format(
-                    output_directory), 
+                    output_directory),
                 True, "IOError")
 
         self._globals['OutputDirectory'] = output_directory
@@ -249,7 +254,7 @@ System error: {1}'''
         for key, value in self._globals.items():
             self.globals.add_item(CollectionItem(key))
             self.globals[key] = value
-        
+
     def _get_parameters(self, parameters):
         self.parameters = Parameters()
         for p in self.definition.parameters_def:
@@ -269,7 +274,8 @@ System error: {1}'''
             # Just for logging ...
             for key, value in parameters.items():
                 if not self.definition.get_parameter_def(key):
-                    logger.warn("Unknown Parameter '{0}'. Ignored.".format(key))
+                    logger.warn(
+                        "Unknown Parameter '{0}'. Ignored.".format(key))
 
     def _get_data_sources(self):
         result = {}
@@ -285,4 +291,3 @@ System error: {1}'''
             data_sets[ds.Name] = DataSetObject(self, ds)
             data_sets[ds.Name].execute()
         return data_sets
-

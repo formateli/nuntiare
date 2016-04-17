@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import sys
@@ -7,16 +7,17 @@ import os
 import logging
 import logging.handlers
 
+
 class NuntiareLog(object):
     def __init__(self, default_level="WARNING"):
-        default_level=self._get_level_from_string(default_level)    
+        default_level = self._get_level_from_string(default_level)
         self._logger = logging.getLogger('Nuntiare')
         self._logger.setLevel(default_level)
         self.add_handler(logging.NullHandler())
 
     def add_handler(self, handler, level=None, formatter=None):
         if level:
-            level=self._get_level_from_string(level)
+            level = self._get_level_from_string(level)
             handler.setLevel(level)
         if formatter:
             handler.setFormatter(logging.Formatter(formatter))
@@ -24,32 +25,33 @@ class NuntiareLog(object):
 
     def debug(self, message):
         self._logger.debug(message)
-        
+
     def info(self, message):
         self._logger.info(message)
-        
+
     def warn(self, message):
         self._logger.warning(message)
-        
-    def error(self, message, raise_error=False, error_type=None):
-        self._raise_error_with_log(message, logging.ERROR, 
-                raise_error, error_type)
-    
-    def critical(self, message, raise_error=False, error_type=None):
-        self._raise_error_with_log(message, logging.CRITICAL, 
-                raise_error, error_type)
 
-    def _raise_error_with_log(self, message, log_type, raise_error, error_type):
+    def error(self, message, raise_error=False, error_type=None):
+        self._raise_error_with_log(
+            message, logging.ERROR, raise_error, error_type)
+
+    def critical(self, message, raise_error=False, error_type=None):
+        self._raise_error_with_log(
+            message, logging.CRITICAL, raise_error, error_type)
+
+    def _raise_error_with_log(
+            self, message, log_type, raise_error, error_type):
         if log_type == logging.ERROR:
             self._logger.error(message)
         else:
             self._logger.critical(message)
-        if raise_error:    
+        if raise_error:
             if not error_type or error_type == 'ValueError':
                 raise ValueError(message)
             elif error_type == 'IOError':
                 raise IOError(message)
-            #TODO other types    
+            # TODO other types
             raise ValueError(message)
 
     def _get_level_from_string(self, level):
@@ -63,6 +65,6 @@ class NuntiareLog(object):
             return logging.ERROR
         elif level == "CRITICAL":
             return logging.CRITICAL
-        raise ValueError(
-            "Invalid logging type '{0}'. It must be: DEBUG, INFO, WARNING, ERROR or CRITICAL".format(level))
-
+        err_msg = "Invalid logging type '{0}'. " \
+            "It must be: DEBUG, INFO, WARNING, ERROR or CRITICAL"
+        raise ValueError(err_msg.format(level))

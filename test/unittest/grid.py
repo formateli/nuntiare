@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import unittest
@@ -7,6 +7,7 @@ import dateutil
 import math
 from decimal import Decimal
 from nuntiare.outcome.page_tablix import Grid
+
 
 class GridTest(unittest.TestCase):
     def testGrid(self):
@@ -63,21 +64,21 @@ class GridTest(unittest.TestCase):
         self._check_grid(grid, 0, 0)
         grid.add_cell(0, 0, "0-0")
         self._check_cell(grid, 0, 0, "0-0")
-        self._check_grid(grid, 1, 1)        
+        self._check_grid(grid, 1, 1)
         grid.add_cell(1, 0, "1-0")
         self._check_cell(grid, 1, 0, "1-0")
         self._check_grid(grid, 2, 1)
         grid.add_cell(2, 0, "2-0")
         self._check_cell(grid, 2, 0, "2-0")
-        self._check_grid(grid, 3, 1)        
+        self._check_grid(grid, 3, 1)
         grid.add_cell(0, 1, "0-1")
-        self._check_cell(grid, 0, 1, "0-1")        
+        self._check_cell(grid, 0, 1, "0-1")
         self._check_cell(grid, 1, 1, None)
         self._check_cell(grid, 2, 1, None)
         self._check_grid(grid, 3, 2)
         grid.add_cell(1, 1, "1-1")
         self._check_cell(grid, 1, 1, "1-1")
-        self._check_cell(grid, 2, 1, None)        
+        self._check_cell(grid, 2, 1, None)
         self._check_grid(grid, 3, 2)
         grid.add_cell(2, 1, "2-1")
         self._check_cell(grid, 2, 1, "2-1")
@@ -96,9 +97,9 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 0, 2, "0-2")
         self._check_cell(grid, 1, 2, "1-2")
         self._check_cell(grid, 2, 2, "2-2")
-        self._check_grid(grid, 3, 3)          
+        self._check_grid(grid, 3, 3)
 
-        # Span        
+        # Span
         grid = Grid()
         grid.add_cell(0, 0, "0-0")
         grid.add_cell(0, 1, "0-1")
@@ -131,7 +132,6 @@ class GridTest(unittest.TestCase):
         grid.add_cell(4, 3, "4-3")
         self._check_grid(grid, 5, 4)
 
-        
         # ColSpan and RowSpan
         grid = Grid()
         grid.add_cell(0, 0, "0-0")
@@ -140,7 +140,7 @@ class GridTest(unittest.TestCase):
         grid.add_cell(0, 3, "0-3")
         grid.add_cell(0, 4, "0-4")
         grid.add_cell(1, 0, "1-0")
-        
+
         grid.add_cell(1, 1, "1-1", row_span=3, col_span=3)
         self._check_grid(grid, 4, 5)
         self._check_cell(grid, 1, 4, None)
@@ -152,13 +152,13 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 1, 2, "1-1", row_span=3, col_span=3)
         self._check_cell(grid, 1, 3, "1-1", row_span=3, col_span=3)
         self._check_cell(grid, 2, 1, "1-1", row_span=3, col_span=3)
-        self._check_cell(grid, 3, 1, "1-1", row_span=3, col_span=3)        
-        #Intersection
+        self._check_cell(grid, 3, 1, "1-1", row_span=3, col_span=3)
+        # Intersection
         self._check_cell(grid, 2, 2, "1-1", row_span=3, col_span=3)
         self._check_cell(grid, 2, 3, "1-1", row_span=3, col_span=3)
         self._check_cell(grid, 3, 2, "1-1", row_span=3, col_span=3)
         self._check_cell(grid, 3, 3, "1-1", row_span=3, col_span=3)
-        
+
         grid.add_cell(1, 4, "1-4")
         grid.add_cell(2, 0, "2-0")
         grid.add_cell(2, 4, "2-4")
@@ -169,7 +169,7 @@ class GridTest(unittest.TestCase):
         grid.add_cell(4, 2, "4-2")
         grid.add_cell(4, 3, "4-3")
         grid.add_cell(4, 4, "4-4")
-        
+
         # Last check
         self._check_grid(grid, 5, 5)
         self._check_cell(grid, 0, 0, "0-0")
@@ -198,8 +198,7 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 4, 3, "4-3")
         self._check_cell(grid, 4, 4, "4-4")
 
-
-        #### Span automatically
+        # Span automatically
 
         # Grow direction: Column
         grid = Grid(grow_direction="column")
@@ -266,15 +265,15 @@ class GridTest(unittest.TestCase):
         # Grow direction: Row (Default)
         grid = Grid()
         self._check_grid(grid, 0, 0)
-        cell_0_0 = grid.add_cell(0, 0, "0-0")        
-        
+        cell_0_0 = grid.add_cell(0, 0, "0-0")
+
         cell_0_1 = grid.add_cell(0, 1, "0-1", parent_cell=cell_0_0)
         self._check_grid(grid, 1, 2)
         self._check_cell(grid, 0, 1, "0-1")
         cell_0_2 = grid.add_cell(0, 2, "0-2", parent_cell=cell_0_1)
         self._check_grid(grid, 1, 3)
         self._check_cell(grid, 0, 2, "0-2")
-        
+
         cell_0_3 = grid.add_cell(0, 3, "0-3", parent_cell=cell_0_2)
         self._check_grid(grid, 1, 4)
         self._check_cell(grid, 0, 3, "0-3")
@@ -318,7 +317,7 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 2, 0, "0-0", row_span=5)
         self._check_cell(grid, 3, 0, "0-0", row_span=5)
         self._check_cell(grid, 4, 0, "0-0", row_span=5)
-        
+
         self._check_cell(grid, 0, 1, "0-1", row_span=3)
         self._check_cell(grid, 1, 1, "0-1", row_span=3)
         self._check_cell(grid, 2, 1, "0-1", row_span=3)
@@ -328,13 +327,12 @@ class GridTest(unittest.TestCase):
 
         self._check_cell(grid, 0, 2, "0-2", row_span=3)
         self._check_cell(grid, 1, 2, "0-2", row_span=3)
-        self._check_cell(grid, 2, 2, "0-2", row_span=3)        
+        self._check_cell(grid, 2, 2, "0-2", row_span=3)
 
         self._check_cell(grid, 3, 2, "1-2", row_span=2)
         self._check_cell(grid, 4, 2, "1-2", row_span=2)
-        
 
-        #======== Extend ===========
+        # ======== Extend ===========
 
         grid_A = Grid()
         grid_A.add_cell(0, 0, "A-0-0")
@@ -356,7 +354,7 @@ class GridTest(unittest.TestCase):
         grid_B.add_cell(1, 2, "B-1-2")
         grid_B.add_cell(2, 0, "B-2-0")
         grid_B.add_cell(2, 1, "B-2-1")
-        grid_B.add_cell(2, 2, "B-2-2")        
+        grid_B.add_cell(2, 2, "B-2-2")
 
         grid_A.extend(grid_B, "right")
         self._check_grid(grid_A, 3, 6)
@@ -383,16 +381,16 @@ class GridTest(unittest.TestCase):
 
     def _check_grid(self, grid, row_count, column_count):
         self.assertEqual(len(grid.rows), row_count)
-        self.assertEqual(len(grid.columns), column_count)    
-    
-    def _check_cell(self, grid, row_index, column_index, 
+        self.assertEqual(len(grid.columns), column_count)
+
+    def _check_cell(
+            self, grid, row_index, column_index,
             object_value, row_span=1, col_span=1):
         cell = grid.get_cell(row_index, column_index)
-        if object_value == None:
+        if object_value is None:
             self.assertEqual(cell, object_value)
             return cell
         self.assertEqual(cell.object, object_value)
         self.assertEqual(cell.row_span, row_span)
         self.assertEqual(cell.col_span, col_span)
         return cell
-

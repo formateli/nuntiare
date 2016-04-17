@@ -1,22 +1,24 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 from . page_item import PageItem, PageItemsInfo
 from .. import logger
 from .. data.data import DataGroupObject
 
+
 class PageTablix(PageItem):
     def __init__(self, report, tablix_def, parent):
-        super(PageTablix, self).__init__("PageTablix", report, tablix_def, parent)
+        super(PageTablix, self).__init__(
+            'PageTablix', report, tablix_def, parent)
 
         data_set = None
         tablix_group = None
         data_set_name = report.get_value(
-                tablix_def, 'DataSetName', None)
+            tablix_def, 'DataSetName', None)
 
         if data_set_name:
-            if not data_set_name in report.data_sets:
+            if data_set_name not in report.data_sets:
                 logger.error(
                     "Dataset '{0}' not found for Tablix '{1}'".format(
                         data_set_name, self.name), True)
@@ -27,13 +29,15 @@ class PageTablix(PageItem):
 
         self.column_hierarchy = TablixHierarchy(
             report, tablix_def.get_element(
-                "TablixColumnHierarchy"), tablix_group)
+                'TablixColumnHierarchy'), tablix_group)
         self.row_hierarchy = TablixHierarchy(
             report, tablix_def.get_element(
-                "TablixRowHierarchy"), tablix_group)
+                'TablixRowHierarchy'), tablix_group)
 
-        columns = tablix_def.get_element("TablixBody").get_element("TablixColumns")
-        rows = tablix_def.get_element("TablixBody").get_element("TablixRows")
+        columns = tablix_def.get_element(
+            'TablixBody').get_element('TablixColumns')
+        rows = tablix_def.get_element(
+            'TablixBody').get_element('TablixRows')
 
         if not data_set:
             # It is a simple grid.
@@ -41,11 +45,13 @@ class PageTablix(PageItem):
             # according to columns and rows count.
             self.column_hierarchy.members = []
             for col in columns.column_list:
-                member = TablixMember(self.column_hierarchy, report, None, None, None)
+                member = TablixMember(
+                    self.column_hierarchy, report, None, None, None)
                 self.column_hierarchy.members.append(member)
             self.row_hierarchy.members = []
             for rw in rows.row_list:
-                member = TablixMember(self.row_hierarchy, report, None, None, None)
+                member = TablixMember(
+                    self.row_hierarchy, report, None, None, None)
                 self.row_hierarchy.members.append(member)
 
         self.grid_body = Grid()
@@ -57,8 +63,8 @@ class PageTablix(PageItem):
         self.all_to_first(self.row_hierarchy.members)
         self.all_to_first(self.column_hierarchy.members)
 
-        #self.set_cells_width()
-        self.get_body()        
+        # self.set_cells_width()
+        self.get_body()
 
         self.width = self.grid_body.width
         self.height = self.grid_body.height
@@ -72,7 +78,7 @@ class PageTablix(PageItem):
             "Columns", self.column_hierarchy.members, columns, err)
         self._check_hierarchy_index(
             "Columns", index, columns, err, ending=True)
-        
+
         index = self._validate_hierarchy(
             "Rows", self.row_hierarchy.members, rows, err)
         self._check_hierarchy_index(
@@ -81,20 +87,22 @@ class PageTablix(PageItem):
     def _check_hierarchy_index(self, type_, index, items, err, ending=False):
         if not ending:
             if index > len(items) - 1:
-                logger.error(
-                    "Number of {0} is lower than its hierarchy definition. {1}/{2}. {3}.".format(
-                        type_, len(items), index + 1, err), True)
+                err_msg = "Number of {0} is lower than its " \
+                    "hierarchy definition. {1}/{2}. {3}."
+                logger.error(err_msg.format(
+                    type_, len(items), index + 1, err), True)
         else:
             if len(items) - 1 >= index:
-                logger.error(
-                    "Number of {0} is greater than its hierarchy definition. {1}/{2}. {3}.".format(
-                        type_, len(items) - 1, index, err), True)
+                err_msg = "Number of {0} is greater than its " \
+                    "hierarchy definition. {1}/{2}. {3}."
+                logger.error(err_msg.format(
+                    type_, len(items) - 1, index, err), True)
 
     def _validate_hierarchy(self, type_, members, items, err, index=0):
         for member in members:
             if not member.members:
                 self._check_hierarchy_index(
-                    type_, index, items, err)                
+                    type_, index, items, err)
                 member.set_definition(type_, items[index])
                 index += 1
             else:
@@ -118,7 +126,8 @@ class PageTablix(PageItem):
                     member.group.move_next()
                     i += 1
                     if parent_group:
-                        if i >= len(parent_group.current_instance().sub_instance):
+                        if i >= len(
+                                parent_group.current_instance().sub_instance):
                             break
 
             elif member.group.is_detail_group:
@@ -132,7 +141,7 @@ class PageTablix(PageItem):
                     self._do_cells(member.def_object, row_count)
                     data.move_next()
                     row_count += 1
-            else: #TODO members of no groups member?
+            else:  # TODO members of no groups member?
                 print("TODO")
                 pass
 
@@ -154,13 +163,13 @@ class PageTablix(PageItem):
             while x <= cell.col_span:
                 curr_col = cols[i + (x - 1)]
                 if not curr_col.member.is_static:
-                    logger.error(
-                        "ColSpan only possible on static members. Tablix '{0}'".format(
-                            self.name), True)
+                    err_msg = "ColSpan only possible on " \
+                        "static members. Tablix '{0}'"
+                    logger.error(err_msg.format(self.name), True)
                 self.report.current_data_scope[1] = curr_col.member.scope
                 if x == 1:
                     grid_cell = self.grid_body.add_cell(
-                        row_index, i, cell, 
+                        row_index, i, cell,
                         col_span=cell.col_span, row_span=cell.row_span)
                 sum_width += curr_col.width
                 x += 1
@@ -185,7 +194,7 @@ class PageTablix(PageItem):
 
 
 class TablixHierarchy(object):
-    def __init__(self, report, definition, tablix_group):        
+    def __init__(self, report, definition, tablix_group):
         self.members = []
         self.rows_columns = []
         members_def = definition.get_element("TablixMembers")
@@ -214,24 +223,29 @@ class TablixMember(object):
                     self.contents, "ColSpan", 1))
 
             def get_items(self, grid_cell):
-                items_info = PageItemsInfo(self.report, self.contents, grid_cell)
+                items_info = PageItemsInfo(
+                    self.report, self.contents, grid_cell)
                 if len(items_info.item_list) > 1:
-                    logger.error(
-                        "'CellContents' element must have just one 'ReportItem'.", True)
+                    err_msg = "'CellContents' element must have " \
+                        "just one 'ReportItem'."
+                    logger.error(err_msg, True)
                 return items_info
 
         def __init__(self, member, definition):
             self.member = member
-            self.hidden = False #TODO
+            self.hidden = False  # TODO
             self.height = member.report.get_value(
                     definition, "Height", 0.0)
             self.cells = []
             cells_def = definition.get_element("TablixCells")
             if cells_def:
                 for cell in cells_def.cell_list:
-                    self.cells.append(TablixMember.Row.Cell(member.report, cell, self.height))
+                    self.cells.append(
+                        TablixMember.Row.Cell(
+                            member.report, cell, self.height))
 
-    def __init__(self, hierarchy, report, definition, 
+    def __init__(
+            self, hierarchy, report, definition,
             parent_member, parent_data_group):
         '''
         hierarchy: The TablixHierarchy object which owns this member.
@@ -280,7 +294,8 @@ class TablixMember(object):
             if members_def:
                 for member in members_def.member_list:
                     self.members.append(
-                        TablixMember(hierarchy, report, member, self, group_to_parent))
+                        TablixMember(
+                            hierarchy, report, member, self, group_to_parent))
 
     def set_definition(self, type_, row_column_def):
         if type_ == "Rows":
@@ -288,10 +303,10 @@ class TablixMember(object):
         else:
             self.def_object = TablixMember.Column(self, row_column_def)
         self.hierarchy.rows_columns.append(self.def_object)
-        
+
 
 class Grid(object):
-    ''' 
+    '''
     Thought as a spreadsheet,
     zero to one cell per row/column coordinate.
     If one group expands then row/column of grid increases
@@ -316,11 +331,12 @@ class Grid(object):
                 self._auto_span_count = 0
                 self._parent_cell = None
                 self._children_cells = []
-                
+
                 self.top = 0.0
                 self.left = 0.0
                 self.height = 0.0
-                self.width = 0.0 # Given according to column(s) width
+                # Given according to column(s) width
+                self.width = 0.0
 
             def set_parent(self, parent, columns, column):
                 if not parent:
@@ -333,11 +349,14 @@ class Grid(object):
                 self._auto_span_count += 1
                 if self._grow_direction == "row":
                     column = columns[column.index - 1]
-                    self.row_span = self._auto_span_2(self.row_span, columns, column)
+                    self.row_span = self._auto_span_2(
+                        self.row_span, columns, column)
                     if self.row_span > 1:
-                        column.cells[self.row.index + (self.row_span - 1)] = self
+                        column.cells[self.row.index + (
+                            self.row_span - 1)] = self
                 else:
-                    self.col_span = self._auto_span_2(self.col_span, columns, column)
+                    self.col_span = self._auto_span_2(
+                        self.col_span, columns, column)
                     if self.col_span > 1:
                         column.cells[self.row.index] = self
 
@@ -353,7 +372,7 @@ class Grid(object):
             self.height = 0.0
             self.index = index
             self.cells = []
-            
+
         def add_cell(self, grow_direction, cell_object):
             cell = Grid.Row.Cell(grow_direction, self, cell_object)
             self.cells.append(cell)
@@ -366,21 +385,23 @@ class Grid(object):
         self.height = 0.0
         self.width = 0.0
 
-    def add_cell(self, row_index, column_index,
-            cell_object=None, row_span=1, col_span=1, 
+    def add_cell(
+            self, row_index, column_index,
+            cell_object=None, row_span=1, col_span=1,
             parent_cell=None):
 
         row, new_row = self._get_item(
             row_index, self.rows, Grid.Row)
         column, new_column = self._get_item(
             column_index, self.columns, Grid.Column)
-        
+
         cell = row.add_cell(self._grow_direction, cell_object)
 
         if new_row:
             for col in self.columns:
                 col.cells.append(None)
-            column.cells.pop() # Remove last None of current column
+            # Remove last None of current column
+            column.cells.pop()
             column.cells.append(cell)
         else:
             if new_column and len(self.rows) == 0:
@@ -398,9 +419,9 @@ class Grid(object):
 
         cell.col_span = col_span
         cell.row_span = row_span
-        
+
         cell.set_parent(parent_cell, self.columns, column)
-                
+
         if col_span > 1:
             i = 1
             while i < col_span:
@@ -418,9 +439,9 @@ class Grid(object):
                 self.columns[column_index].cells.pop(row_index + i)
                 self.columns[column_index].cells.insert(row_index + i, cell)
                 i += 1
-                
+
         if col_span > 1 and row_span > 1:
-            # Intersection    
+            # Intersection
             i = row_index + 1
             while i < (row_index + row_span):
                 x = column_index + 1
@@ -429,13 +450,13 @@ class Grid(object):
                     self.columns[x].cells.insert(i, cell)
                     x += 1
                 i += 1
-        
+
         return cell
 
     def get_cell(self, row_index, column_index):
         col = self.columns[column_index]
         return col.cells[row_index]
-        
+
     def next_column(self):
         return len(self.columns)
 
@@ -455,18 +476,20 @@ class Grid(object):
     def extend(self, grid, direction):
         if direction == "right":
             if len(self.rows) != len(grid.rows):
-                logger.error(
-                    "To extend Grid to the right, both rows length must be equal.", True)
+                err_msg = "To extend Grid to the right, " \
+                    "both rows length must be equal."
+                logger.error(err_msg, True)
             i = 0
             for row in grid.rows:
                 self.rows[i].cells.extend(row.cells)
                 i += 1
             self.columns.extend(grid.columns)
 
-        else: # Down
+        else:  # Down
             if len(self.columns) != len(grid.columns):
                 logger.error(
-                    "To extend Grid down, both columns length must be equal.", True)
+                    "To extend Grid down, both columns length must be equal.",
+                    True)
             i = 0
             for column in grid.columns:
                 self.columns[i].cells.extend(column.cells)
@@ -485,4 +508,3 @@ class Grid(object):
         else:
             item = collection[index]
         return item, new
-

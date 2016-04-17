@@ -1,10 +1,11 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import sys
 from .. import logger
 from .. data.data_type import DataType
+
 
 class PageItemsInfo():
     def __init__(self, report, definition, parent):
@@ -21,12 +22,12 @@ class PageItemsInfo():
 
         for it in items:
             page_item = PageItem.page_item_factory(report, it, parent)
-            self.total_height = self.total_height + page_item.height 
+            self.total_height = self.total_height + page_item.height
             if page_item.height > self.max_height:
-                self.max_height =  page_item.height
+                self.max_height = page_item.height
             if page_item.height < self.min_height:
-                self.min_height =  page_item.height
-            if page_item.type == "PageText":
+                self.min_height = page_item.height
+            if page_item.type == 'PageText':
                 if page_item.can_grow:
                     self.can_grow = True
                 if page_item.can_shrink:
@@ -35,12 +36,14 @@ class PageItemsInfo():
 
 
 class PageItem(object):
-    def __init__(self, type_, report, 
+    def __init__(self, type_, report,
                  report_item_def, parent):
-        self.type = type_ # Type of PageItem: PageLine. PageRectangle, PageText, etc.
+        # Type of PageItem: PageLine. PageRectangle, PageText, etc.
+        self.type = type_
         self.report = report
         self.parent = parent
-        self.items_info = None # Only for those that can content 'ReportItems'
+        # Only for those that can content 'ReportItems'
+        self.items_info = None
         self.report_item_def = report_item_def
         self.name = report.get_value(
                 report_item_def, "Name", None)
@@ -86,53 +89,58 @@ class PageItem(object):
             page_item = PageTablix(report, it, parent)
 
         if not page_item:
-            logger.error(
-                "Error trying to get Report item. Invalid definition element '{0}'".format(it), True)
+            err_msg = "Error trying to get Report item. "
+            err_msg += "Invalid definition element '{0}'"
+            logger.error(err_msg.format(it), True)
 
         return page_item
 
 
 class PageLine(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageLine, self).__init__("PageLine", report, report_item_def, parent)
+        super(PageLine, self).__init__(
+            'PageLine', report, report_item_def, parent)
 
 
 class PageRectangle(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageRectangle, self).__init__("PageRectangle", report, report_item_def, parent)
+        super(PageRectangle, self).__init__(
+            'PageRectangle', report, report_item_def, parent)
         self.keep_together = report.get_value(
-                report_item_def, "KeepTogether", True)
+            report_item_def, 'KeepTogether', True)
         self.omit_border_on_page_break = report.get_value(
-                report_item_def, "OmitBorderOnPageBreak", True)
+            report_item_def, 'OmitBorderOnPageBreak', True)
         self.page_break = report.get_value(
-                report_item_def.get_element("PageBreak"), "BreakLocation", None)
+            report_item_def.get_element('PageBreak'), 'BreakLocation', None)
         self.items_info = PageItemsInfo(report, report_item_def, self)
 
 
 class PageText(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageText, self).__init__("PageText", report, report_item_def, parent)
+        super(PageText, self).__init__(
+            'PageText', report, report_item_def, parent)
         self.can_grow = report.get_value(
-                report_item_def, "CanGrow", False)
+            report_item_def, 'CanGrow', False)
         self.can_shrink = report.get_value(
-                report_item_def, "CanShrink", False)
+            report_item_def, 'CanShrink', False)
         self.hide_duplicates = report.get_value(
-                report_item_def, "HideDuplicates", None)
+            report_item_def, 'HideDuplicates', None)
 
         self.value = report.get_value(
-                report_item_def, "Value", None)
+                report_item_def, 'Value', None)
 
-        self.value_formatted = ""
-        if self.value != None:
+        self.value_formatted = ''
+        if self.value is not None:
             if self.style.format:
                 try:
-                    self.value_formatted = DataType.get_value("String",
-                            self.style.format.format(self.value))
+                    self.value_formatted = DataType.get_value(
+                        'String', self.style.format.format(
+                            self.value))
                 except Exception:
-                    logger.warn(
-                        "Invalid format operation. Value '{0}' - Format '{1}'. Ignored.".format(
-                            self.value, self.style.format))
-                    self.value_formatted = DataType.get_value("String", self.value)
+                    err_msg = "Invalid format operation. Value '{0}' - "
+                    err_msg += "Format '{1}'. Ignored."
+                    logger.warn(err_msg.format(self.value, self.style.format))
+                    self.value_formatted = DataType.get_value(
+                        'String', self.value)
             else:
                 self.value_formatted = DataType.get_value("String", self.value)
-

@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
+# This file is part of Nuntiare project.
+# The COYRIGHT file at the top level of this repository
+# contains the full copyright notices and license terms.
 
 "Data used in dataprovider.py test"
 
+
 class City(object):
-    def __init__(self, city_id, name,
+    def __init__(
+            self, city_id, name,
             province, population, is_capital):
         self.id = city_id
         self.name = name
@@ -44,4 +49,3 @@ CITIES_LIST.append((12, "Macaracas", "Los Santos", 9137, False))
 CITIES_LIST.append((13, "Pedasí", "Los Santos", 3864, False))
 CITIES_LIST.append((14, "Pocrí", "Los Santos", 3397, False))
 CITIES_LIST.append((15, "Tonosí", "Los Santos", 9736, False))
-

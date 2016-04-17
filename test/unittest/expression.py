@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import unittest
@@ -7,10 +7,10 @@ from nuntiare.definition.expression import String, Boolean, \
         Integer, Color, Size
 from nuntiare.report import Report
 
+
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
-    
-        string_xml="""
+        string_xml = """
             <Nuntiare>
                 <Name>Element Type Test</Name>
                 <Width>21cm</Width>
@@ -19,16 +19,16 @@ class ElementTypeTest(unittest.TestCase):
                     <Height>300in</Height>
                 </Body>
             </Nuntiare>"""
-    
+
         report = Report(string_xml)
         report.run()
-    
+
         # String
         s = String(None, lnk=None, must_be_constant=True)
         self.assertEqual(s.value(report), None)
         s = String("Hello world!", True)
         self.assertEqual(s.value(report), "Hello world!", )
-        s = String("= 'abc' + 'def'", False) # Eval Expression
+        s = String("= 'abc' + 'def'", False)  # Eval Expression
         self.assertEqual(s.value(report), "abcdef")
 
         # Boolean
@@ -50,7 +50,7 @@ class ElementTypeTest(unittest.TestCase):
         self.assertEqual(s.value(report), True)
         s = Boolean("=True", False)
         self.assertEqual(s.value(report), True)
-        
+
         # Integer
         s = Integer(None, True)
         self.assertEqual(s.value(report), None)
@@ -82,22 +82,22 @@ class ElementTypeTest(unittest.TestCase):
         self.assertEqual(s.value(report), '#0000FF')
         s = Color('IndianRed', True)
         self.assertEqual(s.value(report), '#CD5C5C')
-        
+
         err_message = None
         try:
             rgb = Color.to_rgb('#FFCD5C5C')
         except Exception as e:
             err_message = e.args[0]
-        self.assertEqual(err_message, "Color '#FFCD5C5C' not in correct format.")
+        self.assertEqual(
+            err_message, "Color '#FFCD5C5C' not in correct format.")
 
         rgb = Color.to_rgb('#CD5C5C')
-        self.assertEqual(rgb[0], 205) 
-        self.assertEqual(rgb[1], 92) 
+        self.assertEqual(rgb[0], 205)
+        self.assertEqual(rgb[1], 92)
         self.assertEqual(rgb[2], 92)
 
         s = Color("SlateBlue", True)
         rgb = Color.to_rgb(s.value(report))
-        self.assertEqual(rgb[0], 106) 
-        self.assertEqual(rgb[1], 90) 
+        self.assertEqual(rgb[0], 106)
+        self.assertEqual(rgb[1], 90)
         self.assertEqual(rgb[2], 205)
-

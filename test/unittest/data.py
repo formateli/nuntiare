@@ -1,5 +1,5 @@
-# This file is part of Nuntiare project. 
-# The COYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import unittest
@@ -7,36 +7,38 @@ import os
 import dateutil
 from nuntiare.report import Report
 
+
 class DataTest(unittest.TestCase):
     def test_data(self):
         report1 = Report(self._get_xml_string_1())
-    
+
         con_file_info = open("db_test_connection_northwind", "r")
         conn_str = con_file_info.readline()
         con_file_info.close()
-        
-        parameters = {'conn_string':conn_str}
+
+        parameters = {'conn_string': conn_str}
         report1.run(parameters)
         self._verify(report1)
-        
+
+        # TODO
         return
-        
-        
+
         # Save and DataSets without filtering and sortening in
         # a new file with .nuntiare extension
         report1.save(True)
-        
-        f_result = os.path.join(report1.globals.OutputDirectory(), 
-               report1.globals.OutputName() + ".nuntiare")
-        
-        # Same result as Above, because 
+
+        f_result = os.path.join(
+            report1.globals.OutputDirectory(),
+            report1.globals.OutputName() + ".nuntiare")
+
+        # Same result as Above, because
         # Database emmbeded is not used.
         report2 = Report(f_result)
         report2.run(parameters)
         self._verify(report2)
-        
+
         # Load data stored in file
-        report2.run() #--> No parameters
+        report2.run()  # --> No parameters
         self._verify(report2)
 
     def test_sortening(self):
@@ -44,10 +46,10 @@ class DataTest(unittest.TestCase):
         con_file_info = open("db_test_connection_adventure", "r")
         conn_str = con_file_info.readline()
         con_file_info.close()
-        
-        parameters = {'conn_string':conn_str}
+
+        parameters = {'conn_string': conn_str}
         report.run(parameters)
-        
+
         country_group = report.data_groups["Country"]
         self.assertEqual(len(country_group.instance), 6)
         i = 0
@@ -60,48 +62,55 @@ class DataTest(unittest.TestCase):
             if i == 0:
                 self.assertEqual(data1.fields.CountryRegion, "Australia")
                 self._check_sorting_instance_data(data3, [
-                        ['Australia', 'Alexandria'], ['Australia', 'Sydney']
+                        ['Australia', 'Alexandria'],
+                        ['Australia', 'Sydney']
                     ])
-            elif  i == 1:
+            elif i == 1:
                 self.assertEqual(data1.fields.CountryRegion, "Canada")
                 self._check_sorting_instance_data(data3, [
-                        ['Canada', 'Barrie'], ['Canada', 'Winnipeg']
+                        ['Canada', 'Barrie'],
+                        ['Canada', 'Winnipeg']
                     ])
-            elif  i == 2:
+            elif i == 2:
                 self.assertEqual(data1.fields.CountryRegion, "France")
                 self._check_sorting_instance_data(data3, [
-                        ['France', 'Bordeaux'], ['France', 'Bordeaux']
+                        ['France', 'Bordeaux'],
+                        ['France', 'Bordeaux']
                     ])
-            elif  i == 3:
+            elif i == 3:
                 self.assertEqual(data1.fields.CountryRegion, "Germany")
                 self._check_sorting_instance_data(data3, [
-                        ['Germany', 'Berlin'], ['Germany', 'Berlin']
+                        ['Germany', 'Berlin'],
+                        ['Germany', 'Berlin']
                     ])
-            elif  i == 4:
+            elif i == 4:
                 self.assertEqual(data1.fields.CountryRegion, "United Kingdom")
                 self._check_sorting_instance_data(data3, [
-                        ['United Kingdom', 'Cambridge'], ['United Kingdom', 'Cambridge']
+                        ['United Kingdom', 'Cambridge'],
+                        ['United Kingdom', 'Cambridge']
                     ])
-            elif  i == 5:
+            elif i == 5:
                 self.assertEqual(data1.fields.CountryRegion, "United States")
                 self._check_sorting_instance_data(data3, [
-                        ['United States', 'Albany'], ['United States', 'Woodburn']
-                    ])                
+                        ['United States', 'Albany'],
+                        ['United States', 'Woodburn']
+                    ])
             country_group.move_next()
             i += 1
 
     def _verify(self, report):
         self.assertNotEqual(report.data_sources['DataSourceTest'], None)
-        self.assertEqual(report.data_sources['DataSourceTest'].name,
-                            'DataSourceTest')
+        self.assertEqual(
+            report.data_sources['DataSourceTest'].name,
+            'DataSourceTest')
 
         # DataSet without filter
-        data = report.data_sets['DataSet1'] # It is the DataInterface object
-        # It is appended to the data_groups colecction too        
+        data = report.data_sets['DataSet1']  # It is the DataInterface object
+        # It is appended to the data_groups colecction too
         self.assertEqual(
             'DataSet1' in report.data_sets, 'DataSet1' in report.data_groups)
         self.assertEqual(len(data.rows), 830)
-        data.move_first() # Move to first row
+        data.move_first()  # Move to first row
         self.assertEqual(data.EOF, False)
 
         i = 10248
@@ -131,7 +140,6 @@ class DataTest(unittest.TestCase):
             i += 1
             data.move_next()
 
-        
         # Sort by id 'Descending'
         data = report.data_sets['DataSetSort1']
         data.move_first()
@@ -147,23 +155,25 @@ class DataTest(unittest.TestCase):
 
         data.move_first()
         self.assertEqual(data.fields['customer'], 'WOLZA')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-12-05'))
+        self.assertEqual(
+            data.fields['date'], dateutil.parser.parse('1996-12-05'))
 
         data.move(100)
         self.assertEqual(data.fields['customer'], 'TORTU')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-10-02'))
+        self.assertEqual(
+            data.fields['date'], dateutil.parser.parse('1996-10-02'))
         data.move_last()
         self.assertEqual(data.fields['customer'], 'ALFKI')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1998-04-09'))
+        self.assertEqual(
+            data.fields['date'], dateutil.parser.parse('1998-04-09'))
 
+        # ========== Groups ==================
 
-        #========== Groups ==================
-        
         # Group is created automatically for each DataSet
         datasetgroup = report.data_groups['DataSet1']
         self.assertEqual(len(datasetgroup.instance), 1)
-        self.assertEqual(len(datasetgroup.sub_group), 1) # Tablix1 group
-        self.assertEqual(datasetgroup.parent, None) # Top Group
+        self.assertEqual(len(datasetgroup.sub_group), 1)  # Tablix1 group
+        self.assertEqual(datasetgroup.parent, None)  # Top Group
         self.assertEqual(datasetgroup.is_detail_group, False)
         # Orderred by id (defined in sql query)
         data = datasetgroup.instance[0].data
@@ -177,7 +187,7 @@ class DataTest(unittest.TestCase):
         data.move_last()
         self.assertEqual(data.fields.customer, "RATTC")
         self.assertEqual(data.fields.freight, 8.53)
-        
+
         # DataRegion group.
         # Created for each DataRegion (Tablix, Chart)
         # Data is filtered id > 10500
@@ -185,7 +195,7 @@ class DataTest(unittest.TestCase):
         tablixgroup = report.data_groups['Tablix1']
         self.assertEqual(tablixgroup.parent, datasetgroup)
         self.assertEqual(len(tablixgroup.instance), 1)
-        self.assertEqual(len(tablixgroup.sub_group), 2) # Group1 and Group2
+        self.assertEqual(len(tablixgroup.sub_group), 2)  # Group1 and Group2
         self.assertEqual(tablixgroup.is_detail_group, False)
         data = tablixgroup.instance[0].data
         self.assertEqual(data.row_count(), 577)
@@ -218,18 +228,20 @@ class DataTest(unittest.TestCase):
         data.move_last()
         self.assertEqual(data.fields.customer, "ALFKI")
         self.assertEqual(data.fields.freight, 69.53)
-        
+
         # Group by date and sorted by customer ascending
         group2 = report.data_groups['Group2']
-        self.assertEqual(group2.parent, tablixgroup) # Adjacent group of Group1
+        # Adjacent group of Group1
+        self.assertEqual(group2.parent, tablixgroup)
         self.assertEqual(len(group2.instance), 281)
-        self.assertEqual(len(group2.sub_group), 1) # DetailGroup
+        # DetailGroup
+        self.assertEqual(len(group2.sub_group), 1)
         self.assertEqual(group2.is_detail_group, False)
         row_count = 0
         i = 0
         for ins in group2.instance:
             row_count += ins.data.row_count()
-            if i == 0:                        
+            if i == 0:
                 self._check_instance_data(ins.data, [
                         ['BLAUS', 8.85], ['BLAUS', 8.85]
                     ])
@@ -248,7 +260,7 @@ class DataTest(unittest.TestCase):
                     ])
             i += 1
         self.assertEqual(row_count, 577)
-        
+
         # DetailGroup
         # customer sorted Descending
         detailgroup = report.data_groups['DetailGroup']
@@ -282,7 +294,7 @@ class DataTest(unittest.TestCase):
 
     def _check_sorting_instance_data(self, data, values):
         self._check_instance(data, values, ['CountryRegion', 'City'])
-        
+
     def _check_instance_data(self, data, values):
         self._check_instance(data, values, ['customer', 'freight'])
 
@@ -326,15 +338,15 @@ class DataTest(unittest.TestCase):
           <Name>date</Name>
           <DataField>orderdate</DataField>
           <DataType>DateTime</DataType>
-        </Field> 
+        </Field>
         <Field>
           <Name>customer</Name>
           <DataField>customerid</DataField>
-        </Field> 
+        </Field>
         <Field>
           <Name>employee</Name>
           <DataField>employeeid</DataField>
-        </Field> 
+        </Field>
         <Field>
           <Name>freight</Name>
           <DataField>freight</DataField>
@@ -350,7 +362,8 @@ class DataTest(unittest.TestCase):
       </Fields>
       <Query>
         <DataSourceName>DataSourceTest</DataSourceName>
-        <CommandText>SELECT orderid, orderdate, customerid, employeeid, freight FROM orders ORDER BY orderid</CommandText>
+        <CommandText>SELECT orderid, orderdate, customerid,
+employeeid, freight FROM orders ORDER BY orderid</CommandText>
       </Query>
     </DataSet>
     <DataSet>
@@ -365,15 +378,15 @@ class DataTest(unittest.TestCase):
           <Name>date2</Name>
           <DataField>orderdate</DataField>
           <DataType>DateTime</DataType>
-        </Field> 
+        </Field>
         <Field>
           <Name>customer2</Name>
           <DataField>customerid</DataField>
-        </Field> 
+        </Field>
         <Field>
           <Name>employee2</Name>
           <DataField>employeeid</DataField>
-        </Field> 
+        </Field>
         <Field>
           <Name>freight2</Name>
           <DataField>freight</DataField>
@@ -398,7 +411,8 @@ class DataTest(unittest.TestCase):
       </Fields>
       <Query>
         <DataSourceName>DataSourceTest</DataSourceName>
-        <CommandText>SELECT orderid, orderdate, customerid, employeeid, freight FROM orders ORDER BY orderid</CommandText>
+        <CommandText>SELECT orderid, orderdate, customerid,
+employeeid, freight FROM orders ORDER BY orderid</CommandText>
       </Query>
       <Filters>
         <Filter>
@@ -430,11 +444,12 @@ class DataTest(unittest.TestCase):
           <Name>date</Name>
           <DataField>orderdate</DataField>
           <DataType>DateTime</DataType>
-        </Field> 
+        </Field>
       </Fields>
       <Query>
         <DataSourceName>DataSourceTest</DataSourceName>
-        <CommandText>SELECT orderid, orderdate FROM orders ORDER BY orderid</CommandText>
+        <CommandText>SELECT orderid, orderdate
+          FROM orders ORDER BY orderid</CommandText>
       </Query>
       <SortExpressions>
         <SortExpression>
@@ -455,7 +470,7 @@ class DataTest(unittest.TestCase):
           <Name>date</Name>
           <DataField>orderdate</DataField>
           <DataType>DateTime</DataType>
-        </Field> 
+        </Field>
         <Field>
           <Name>customer</Name>
           <DataField>customerid</DataField>
@@ -463,7 +478,8 @@ class DataTest(unittest.TestCase):
       </Fields>
       <Query>
         <DataSourceName>DataSourceTest</DataSourceName>
-        <CommandText>SELECT orderid, orderdate, customerid FROM orders ORDER BY orderid</CommandText>
+        <CommandText>SELECT orderid, orderdate, customerid
+          FROM orders ORDER BY orderid</CommandText>
       </Query>
       <SortExpressions>
         <SortExpression>
@@ -510,7 +526,7 @@ class DataTest(unittest.TestCase):
           </SortExpression>
           <SortExpression>
             <Value>=F.freight</Value>
-          </SortExpression>          
+          </SortExpression>
         </SortExpressions>
         <TablixColumnHierarchy>
           <TablixMembers>
@@ -536,7 +552,7 @@ class DataTest(unittest.TestCase):
                   </SortExpression>
                   <SortExpression>
                     <Value>=F.customer</Value>
-                  </SortExpression>                  
+                  </SortExpression>
                 </SortExpressions>
               </Group>
               <TablixMembers>
@@ -586,7 +602,7 @@ class DataTest(unittest.TestCase):
             </TablixRow>
           </TablixRows>
         </TablixBody>
-      </Tablix> 
+      </Tablix>
     </ReportItems>
   </Body>
 </Nuntiare>
@@ -609,7 +625,7 @@ class DataTest(unittest.TestCase):
       <DataType>Object</DataType>
       <DefaultValue>xxx</DefaultValue>
     </ReportParameter>
-  </ReportParameters>  
+  </ReportParameters>
   <DataSources>
     <DataSource>
       <Name>DataSourceTest</Name>
@@ -623,7 +639,7 @@ class DataTest(unittest.TestCase):
     <ReportItems>
       <Tablix>
         <Name>Tablix1</Name>
-        <DataSetName>DataSet1</DataSetName>        
+        <DataSetName>DataSet1</DataSetName>
         <TablixColumnHierarchy>
           <TablixMembers>
             <TablixMember/>
@@ -674,7 +690,7 @@ class DataTest(unittest.TestCase):
                 </TablixCell>
               </TablixCells>
             </TablixRow>
-          </TablixRows>            
+          </TablixRows>
         </TablixBody>
       </Tablix>
     </ReportItems>
@@ -685,15 +701,18 @@ class DataTest(unittest.TestCase):
       <Name>DataSet1</Name>
       <Query>
         <DataSourceName>DataSourceTest</DataSourceName>
-        <CommandText>SELECT address.addressline1, address.addressline2, address.city, address.postalcode, 
-stateprovince.name as stateprovince, countryregion.name as countryregion 
-FROM address 
-INNER JOIN stateprovince ON address.stateprovinceid = stateprovince.stateprovinceid 
-INNER JOIN countryregion ON countryregion.countryregioncode = stateprovince.countryregioncode 
+        <CommandText>SELECT address.addressline1, address.addressline2,
+address.city, address.postalcode,
+stateprovince.name as stateprovince, countryregion.name as countryregion
+FROM address
+INNER JOIN stateprovince
+ON address.stateprovinceid = stateprovince.stateprovinceid
+INNER JOIN countryregion
+ON countryregion.countryregioncode = stateprovince.countryregioncode
 ORDER BY address.addressid
 LIMIT 500</CommandText>
       </Query>
-      <Fields>      
+      <Fields>
         <Field>
           <Name>AddressLine1</Name>
           <DataField>addressline1</DataField>
@@ -701,7 +720,7 @@ LIMIT 500</CommandText>
         <Field>
           <Name>AddressLine2</Name>
           <DataField>addressline2</DataField>
-        </Field>        
+        </Field>
         <Field>
           <Name>City</Name>
           <DataField>city</DataField>
