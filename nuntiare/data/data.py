@@ -4,7 +4,7 @@
 
 from . data_type import DataType
 from . dataprovider import get_data_provider
-from .. import logger
+from .. import LOGGER
 from .. collection import Collection, CollectionItem
 from .. definition.expression import Expression
 
@@ -17,7 +17,7 @@ class Field(CollectionItem):
 
         if (not data_field and not field_value) or \
                 (data_field and field_value):
-            logger.error(
+            LOGGER.error(
                 "'Field' must be type of 'DataField' or 'Value'.", True)
 
         self.data_field = data_field
@@ -79,12 +79,12 @@ class Fields(Collection):
             return item.is_missing
         if function == "DataType":
             return item._data_type
-        logger.error(
+        LOGGER.error(
             "Invalid property '{0}' for {1} collection item.".format(
                 name, item.__class__.__name__), True)
 
     def __setitem__(self, key, value):
-        logger.error(
+        LOGGER.error(
             "Item '{0}' in Collection '{1}' is read only.".format(
                 name, self.__class__.__name__), True)
 
@@ -132,7 +132,7 @@ class DataInterface(object):
 
         if report:
             if name in report.data_interfaces:
-                logger.error(
+                LOGGER.error(
                     "DataInterface '{0}' already exists.".format(name))
             report.data_interfaces[name] = self
 
@@ -202,13 +202,13 @@ class DataSource(object):
         self.cursor = None
 
         if not self.data_provider:
-            logger.error(
+            LOGGER.error(
                 "Invalid DataProvider '{0}' for DataSource '{1}'".format(
                     self.data_provider, self.name))
             return False
 
         if not connection_object:
-            logger.error(
+            LOGGER.error(
                 "Invalid connection object for DataSource '{1}'.".format(
                     self.name))
             return False
@@ -217,7 +217,7 @@ class DataSource(object):
             conn = self.data_provider.connect(connection_object)
             self.cursor = conn.cursor()
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 "Error while connecting to database. '{0}'".format(e.args[0]))
             return False
 
@@ -269,7 +269,7 @@ class DataSet(DataInterface):
                 x += 1
 
             if len(row) == 0:
-                logger.error(
+                LOGGER.error(
                     "No rows collected for DataSet '{0}'.".format(
                         self.name), True)
             self.add_row(row)
@@ -385,11 +385,11 @@ class DataSetObject(DataSet):
                 command_text)
         else:
             # Connection failed, try to load data appended to report
-            logger.info("Trying to load embedded data...")
+            LOGGER.info("Trying to load embedded data...")
             if not self.report.definition.data:
                 err_msg = "DataSource connection failed and no data embedded"
                 err_msg += " in defintion file for DataSet: '{0}'."
-                logger.critical(err_msg.format(self.name), True)
+                LOGGER.critical(err_msg.format(self.name), True)
             self.report.definition.data.load(self.report)
             data = self.report.definition.data.get_data(self.data_set_def.Name)
             self.data = Data(
@@ -586,7 +586,7 @@ class DataGroupObject(object):
         if name in report.data_groups:
             err_msg = "DataSet, DataRegion or Group with "
             err_msg += "name '{0}' already exists."
-            logger.error(err_msg.format(name), True)
+            LOGGER.error(err_msg.format(name), True)
         report.data_groups[name] = self
         if not parent:
             self.top_group = self
@@ -600,7 +600,7 @@ class DataGroupObject(object):
         if self.parent and self.parent.is_detail_group:
             err_msg = "Group '{0}' could not be created. "
             err_msg += "Parent group '{1}' is a detail group."
-            logger.error(err_msg.format(name, self.parent.name), True)
+            LOGGER.error(err_msg.format(name, self.parent.name), True)
 
         exp_def = group_def.get_element('GroupExpressions')
         filter_def = group_def.get_element("Filters")

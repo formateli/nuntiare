@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from importlib import import_module
-from ... import __config__
+from ... import CONFIG
 
 
 def get_data_provider(provider_name):
@@ -12,9 +12,9 @@ def get_data_provider(provider_name):
     especified in ../../nuntiare.cfg
     '''
 
-    if not __config__.has_option('data_providers', provider_name):
+    if not CONFIG.has_option('data_providers', provider_name):
         return None
-    module = __config__.get('data_providers', provider_name)
+    module = CONFIG.get('data_providers', provider_name)
     provider = import_module(module)
 
     return provider

@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-from .. import logger
+from .. import LOGGER
 from .. data.data_type import DataType
 
 
@@ -19,7 +19,7 @@ class Expression(object):
         if self.must_be_constant and not is_constant:
             err_msg = "Invalid expression '{0}' for '{1}' in '{2}' element. "
             err_msg += "It must be a constant expression."
-            logger.error(err_msg.format(
+            LOGGER.error(err_msg.format(
                 expression, self.lnk.data,
                 self.lnk.parent.__class__.__name__), True)
         return [expression, is_constant]
@@ -103,10 +103,10 @@ class Color(Expression):
     @staticmethod
     def _validate_hex_color(hex_color):
         if not hex_color:
-            logger.error(
+            LOGGER.error(
                 "Invalid color '{0}'".format(hex_color), True)
         if len(hex_color) != 7 or not hex_color.startswith("#"):
-            logger.error(
+            LOGGER.error(
                 "Color '{0}' not in correct format.".format(hex_color), True)
 
     @staticmethod
@@ -400,7 +400,7 @@ class Color(Expression):
             return "#FFFF00"
         if name == "YellowGreen":
             return "#9ACD32"
-        logger.warn(
+        LOGGER.warn(
             "Color '{0}' not implemented. Default '{1}' assigned.".format(
                 name, Color._default_color))
         return Color._default_color
@@ -436,12 +436,12 @@ class Size(Expression):
 
         string_size = string_size.strip()
         if len(string_size) < 3:
-            logger.error(
+            LOGGER.error(
                 "Invalid format for size: {0}".format(string_size), True)
 
         unit = string_size[len(string_size)-2:]
         if unit not in units:
-            logger.error(
+            LOGGER.error(
                 "Invalid unit value: '{0}' for size '{1}'".format(
                     unit, string_size), True)
 
@@ -465,7 +465,7 @@ class Size(Expression):
         elif unit == "pc":
             result = (value * Size.size_25_4) / Size.size_6
         else:
-            logger.error("Unknown unit '{0}'".format(unit), True)
+            LOGGER.error("Unknown unit '{0}'".format(unit), True)
 
         return result
 
@@ -491,7 +491,7 @@ class Size(Expression):
         elif to_unit == "pc":
             result = int((value / Size.size_25_4) * Size.size_6)
         else:
-            logger.error(
+            LOGGER.error(
                 "Can not convert from 'mm'. Unknown unit '{0}'".format(
                     to_unit), True)
 

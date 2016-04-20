@@ -1,30 +1,31 @@
 #!/usr/bin/python
 
-# This file is part of Nuntiare project. 
-# The COPYRIGHT file at the top level of this repository 
+# This file is part of Nuntiare project.
+# The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
 import os
 import sys
 import argparse
 
+
 try:
-    from nuntiare import __version__, __copyright__, __license__, logger
+    from nuntiare import VERSION, COPYRIGHT, LICENSE, LOGGER
 except ImportError:
-    print("Running uninstalled mode...")
+    print('Running uninstalled mode...')
     DIR = os.path.dirname(os.path.realpath(__file__))
     DIR = os.path.normpath(os.path.join(DIR, '..', 'nuntiare'))
     if os.path.isdir(DIR):
         sys.path.insert(0, os.path.dirname(DIR))
-    from nuntiare import __version__, __copyright__, __license__, logger
+    from nuntiare import VERSION, COPYRIGHT, LICENSE, LOGGER
 
 
-__appname__='Nuntiare command line tool'
+APPNAME = 'Nuntiare command line tool'
 
 
 def get_info():
     res = "\n{0} version {1}\nCopyright {2}\nLicensed under {3}".format(
-        __appname__, __version__, __copyright__, __license__)
+        APPNAME, VERSION, COPYRIGHT, LICENSE)
     return res
 
 
@@ -34,13 +35,13 @@ def do_render(args):
     from nuntiare.render.render import Render
 
     def get_parameters(params):
-        if params==None:
+        if params is None:
             return
-        result={}
+        result = {}
         for p in params:
             i = p.find('=')
             if i < 1:
-                logger.warn(
+                LOGGER.warn(
                     "Parameter in wrong format: '{0}'. Ignored.".format(p))
                 continue
             name = p[:i]
@@ -48,40 +49,42 @@ def do_render(args):
             result[name] = val
         return result
 
-    if sys.stdout: # Default: WARNING
-        logger.add_handler(logging.StreamHandler(sys.stdout), args.v)
+    if sys.stdout:  # Default: WARNING
+        LOGGER.add_handler(logging.StreamHandler(sys.stdout), args.v)
 
     if not os.path.isfile(args.file):
-        logger.critical(
-            "File '{0}' not found.".format(args.file), 
+        LOGGER.critical(
+            "File '{0}' not found.".format(args.file),
             True, "IOError")
 
     renders = args.r
     if not renders:
         if args.save:
-            renders=[]
+            renders = []
         else:
-            renders=['html',] # Default render
+            renders = ['html', ]  # Default render
 
-    report = Report(args.file, output_name=args.o, 
-            output_directory=args.d)
+    report = Report(
+        args.file, output_name=args.o,
+        output_directory=args.d)
 
     report.run(get_parameters(args.p))
 
     for r in renders:
         render = Render.get_render(r)
         if not render:
-            logger.warn("Render '{0}' not found. Continue with next render.".format(r))
+            LOGGER.warn(
+                "Render '{0}' not found. Continue with next render.".format(r))
             continue
         render.render(report, not args.no_overwrite)
-        
+
     if args.save:
         report.save(not args.no_overwrite)
 
 
 def do_convert(args):
     from xml.dom import minidom
-    
+
     def replace_text(text):
         result = text.replace("Fields!", "F.")
         result = result.replace("Parameters!", "P.")
@@ -94,23 +97,29 @@ def do_convert(args):
                 continue
             if n.nodeName in ('#comment') or n.nodeName.startswith("rd:"):
                 continue
-            if n.nodeName in ('#text'):            
-                if len(n.parentNode.childNodes) == 1:
+            parent = n.parentNode
+            if n.nodeName in ('#text'):
+                if len(parent.childNodes) == 1:
                     text = doc.createTextNode(replace_text(n.nodeValue))
                     base_element.appendChild(text)
                 continue
 
-            if n.parentNode.nodeName == "TextRun" and n.nodeName != "Value":
+            if parent.nodeName == "TextRun" and \
+                    n.nodeName != "Value":
                 continue
-            if n.parentNode.nodeName == "Paragraph" and n.nodeName != "TextRuns":
+            if parent.nodeName == "Paragraph" and \
+                    n.nodeName != "TextRuns":
                 continue
-            if n.parentNode.nodeName == "Report" and n.nodeName == "Width":
+            if parent.nodeName == "Report" and \
+                    n.nodeName == "Width":
                 continue
-            if n.parentNode.nodeName == "Body" and n.nodeName == "Height":
+            if parent.nodeName == "Body" and \
+                    n.nodeName == "Height":
                 continue
 
             node_name = n.nodeName
-            if n.nodeName == "Style" and n.parentNode.nodeName in border_list:
+            if n.nodeName == "Style" \
+                    and parent.nodeName in border_list:
                 node_name = "BorderStyle"
             if n.nodeName == "ConnectString":
                 node_name = "ConnectObject"
@@ -120,67 +129,74 @@ def do_convert(args):
             if n.hasAttributes():
                 if "Name" in n.attributes.keys():
                     name_element = doc.createElement("Name")
-                    name_text = doc.createTextNode(n.attributes['Name'].value)
+                    name_text = doc.createTextNode(
+                        n.attributes['Name'].value)
                     if name_text:
                         name_element.appendChild(name_text)
                         el.appendChild(name_element)
 
             element_to_append = el
-            if n.nodeName in report_item_list and n.parentNode.nodeName == "CellContents":
+            if n.nodeName in report_item_list and \
+                    parent.nodeName == "CellContents":
                 item_element = doc.createElement("ReportItems")
                 item_element.appendChild(el)
                 element_to_append = item_element
 
-            if n.nodeName in textbox_list or \
-                (n.parentNode.nodeName in textbox_list and n.nodeName != "Value") or \
-                (n.parentNode.parentNode.nodeName in textbox_list and n.nodeName != "Value"):                
+            in_nodename = n.nodeName in textbox_list
+            in_parent_nodename = parent.nodeName in textbox_list
+            in_parent_parentnode_nodename = \
+                parent.parentNode.nodeName in textbox_list
+
+            if in_nodename or \
+                    (in_parent_nodename and n.nodeName != 'Value') or \
+                    (in_parent_parentnode_nodename and n.nodeName != 'Value'):
                 el = base_element
             else:
-                base_element.appendChild(element_to_append) 
+                base_element.appendChild(element_to_append)
 
             get_element(doc, n, el)
 
-
     rdlc = args.rdl
     if not os.path.isfile(rdlc) or not os.access(rdlc, os.R_OK):
-        logger.error(
-            "'{0}' is not a valid file or User has not read access for it.".format(rdlc), 
-            True, "IOError")            
+        err_msg = "'{0}' is not a valid file or " \
+            "User has not read access for it."
+        LOGGER.error(err_msg.format(rdlc), True, 'IOError')
 
-    logger.info("Converting '{0}' to nuntiare template file.".format(rdlc))
+    LOGGER.info(
+        "Converting '{0}' to nuntiare template file.".format(rdlc))
 
     report_item_list = [
-                         "Line", 
-                         "Rectangle", 
-                         "Textbox", 
-                         "Image", 
-                         "Subreport", 
-                         "CustomReportItem", 
+                         "Line",
+                         "Rectangle",
+                         "Textbox",
+                         "Image",
+                         "Subreport",
+                         "CustomReportItem",
                          "Tablix"
                        ]
     border_list = [
-                    "Border", 
-                    "TopBorder", 
-                    "BottomBorder", 
-                    "LeftBorder", 
+                    "Border",
+                    "TopBorder",
+                    "BottomBorder",
+                    "LeftBorder",
                     "RightBorder"
                   ]
     textbox_list = [
-                     "Paragraphs", 
-                     "Paragraph", 
-                     "TextRuns", 
+                     "Paragraphs",
+                     "Paragraph",
+                     "TextRuns",
                      "TextRun"
                    ]
     ignore_list = [
-                    "KeepTogether", 
-                    "KeepWithGroup", 
-                    "ConsumeContainerWhitespace", 
-                    "AutoRefresh", 
-                    "IntegratedSecurity", 
-                    "Code", 
-                    "CodeModules", 
-                    "Classes", 
-                    "DataElementName", 
+                    "KeepTogether",
+                    "KeepWithGroup",
+                    "ConsumeContainerWhitespace",
+                    "AutoRefresh",
+                    "IntegratedSecurity",
+                    "Code",
+                    "CodeModules",
+                    "Classes",
+                    "DataElementName",
                     "DataElementStyle",
                     "InteractiveHeight",
                     "InteractiveWidth",
@@ -195,8 +211,9 @@ def do_convert(args):
     dom = minidom.parse(rdlc)
     node = dom.getElementsByTagName("Report")
     if not node:
-        logger.critical("Not a valid Rdlc report definition file.", True)
-        
+        LOGGER.critical(
+            "Not a valid Rdlc report definition file.", True)
+
     doc = minidom.Document()
     root_element = doc.createElement("Nuntiare")
     name_element = doc.createElement("Name")
@@ -212,56 +229,81 @@ def do_convert(args):
         f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
     finally:
         f.close()
-    logger.info("'{0}' created.".format(nuntiare))
+    LOGGER.info("'{0}' created.".format(nuntiare))
 
 
 def run():
     # ======== parser ==================
-    parser = argparse.ArgumentParser(description='Nuntiare command line tool', 
+    parser = argparse.ArgumentParser(
+        description='Nuntiare command line tool',
         formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("-i","--info", action="version", version=get_info(),
-            help='Show version, copyright and license.')
+    parser.add_argument(
+        "-i", "--info", action="version", version=get_info(),
+        help='Show version, copyright and license.')
 
     subparsers = parser.add_subparsers()
 
     # ======== render ==================
-    parser_render = subparsers.add_parser('render', 
-            formatter_class=argparse.RawTextHelpFormatter,
-            description='Performs a rendering process for a nuntiare xml definition file.')
+    help = "Performs a rendering process " \
+        "for a nuntiare xml definition file."
+    parser_render = subparsers.add_parser(
+        'render',
+        formatter_class=argparse.RawTextHelpFormatter,
+        description=help)
 
-    parser_render.add_argument("file", help='Nuntiare xml definition file to process.')
-    parser_render.add_argument("-p", metavar="parameters", nargs='+',
-           help="List of parameters in 'name=value' form.\nEx: -p param1=2 'param2=a b c' param3=value3.")
-    parser_render.add_argument("-r", metavar="render", nargs='+',
-           help='List of rendering types. Ex: pdf html csv.\nSee nuntiare.cfg for definitions.\n' + \
-                "Default: 'html'")
-    parser_render.add_argument("-o", metavar="output", 
-           help="Output file name without extension.\nDefault: xml report definition file name.")
-    parser_render.add_argument("-d", metavar="directory", 
-           help="Where output file will be located.\nDefault: xml report definition file directory.")
-    parser_render.add_argument("--no-overwrite", action='store_true', 
-           help="No overwrites resulting file, if it exists.")
-    parser_render.add_argument("--save", action='store_true', 
-           help="Append dataset records to definition \nand saves it in a new file with .nuntiare extension.")
-    parser_render.add_argument("-v", choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"], 
-           default="WARNING", help="Output verbosity. Default: 'WARNING'")
-           
+    help = 'Nuntiare xml definition file to process.'
+    parser_render.add_argument("file", help=help)
+
+    help = "List of parameters in 'name=value' " \
+        "form.\nEx: -p param1=2 'param2=a b c' param3=value3."
+    parser_render.add_argument(
+        "-p", metavar="parameters", nargs='+', help=help)
+
+    help = "List of rendering types. Ex: pdf html csv." \
+        "\nSee nuntiare.cfg for definitions.\nDefault: 'html'"
+    parser_render.add_argument(
+        "-r", metavar="render", nargs='+', help=help)
+
+    help = "Output file name without extension." \
+        "\nDefault: xml report definition file name."
+    parser_render.add_argument("-o", metavar="output", help=help)
+
+    help = "Where output file will be located." \
+        "\nDefault: xml report definition file directory."
+    parser_render.add_argument(
+        "-d", metavar="directory", help=help)
+
+    help = "No overwrites resulting file, if it exists."
+    parser_render.add_argument(
+        "--no-overwrite", action='store_true', help=help)
+
+    help = "Append dataset records to definition " \
+        "\nand saves it in a new file with .nuntiare extension."
+    parser_render.add_argument(
+        "--save", action='store_true', help=help)
+
+    help = "Output verbosity. Default: 'WARNING'"
+    parser_render.add_argument(
+        "-v", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="WARNING", help=help)
 
     # ======== convert ==================
-    parser_convert = subparsers.add_parser('convert', 
-            formatter_class=argparse.RawTextHelpFormatter,
-            description='Converts a Rdl 2008 file to Nuntiare xml definition file.')
+    help = 'Converts a Rdl 2008 file to Nuntiare xml definition file.'
+    parser_convert = subparsers.add_parser(
+        'convert',
+        formatter_class=argparse.RawTextHelpFormatter,
+        description=help)
 
-    parser_convert.add_argument("rdl", help='The Rdl 2008 report file.')
+    help = 'The Rdl 2008 report file.'
+    parser_convert.add_argument("rdl", help=help)
 
     args = parser.parse_args()
 
     if hasattr(args, "file"):
         do_render(args)
-    elif hasattr(args, "rdl"):        
+    elif hasattr(args, "rdl"):
         do_convert(args)
 
 if __name__ == "__main__":
     run()
-

@@ -9,7 +9,7 @@ from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode, \
         BackgroundRepeat, BackgroundGradientType, \
         DataType, SortDirection, Operator, BreakLocation
-from .. import logger
+from .. import LOGGER
 from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
 
@@ -79,7 +79,7 @@ class Element(object):
                     self.set_data()
                     continue
                 if n.nodeName not in ('#text', '#comment'):
-                    logger.warn(
+                    LOGGER.warn(
                         "Unknown xml element '{0}' for '{1}'. Ignored.".format(
                             n.nodeName, lnk.obj.__class__.__name__))
                 continue
@@ -96,15 +96,15 @@ class Element(object):
                         'Line', 'Rectangle', 'Textbox', 'Image',
                         'Subreport', 'CustomReportItem', 'Tablix'):
                     if n.nodeName in ('Textbox'):
-                        err_msg = "Report already has a "
-                        err_msg += "Texbox with name '{0}'"
+                        err_msg = "Report already has a " \
+                            "Texbox with name '{0}'"
                         if el.Name in lnk.report_def.report_items:
-                            logger.error(err_msg.format(el.Name), True)
+                            LOGGER.error(err_msg.format(el.Name), True)
                         lnk.report_def.report_items[el.Name] = el
                     if el.Name in items_by_name:
-                        err_msg = "The container already has "
-                        err_msg += "a report item with name '{0}'"
-                        logger.error(err_msg.format(el.Name), True)
+                        err_msg = "The container already has " \
+                            "a report item with name '{0}'"
+                        LOGGER.error(err_msg.format(el.Name), True)
                     i = el.ZIndex if el.ZIndex > -1 else z_count
                     items_by_name[el.Name] = [el, i]
                     z_count = z_count + 1
@@ -140,7 +140,7 @@ class Element(object):
                 element_type, card, must_be_constant, default_value = \
                     Element.get_element_def(el, key)
                 if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY]:
-                    logger.error("'{0}' must be defined for '{1}'.".format(
+                    LOGGER.error("'{0}' must be defined for '{1}'.".format(
                         key, lnk.obj.__class__.__name__), True)
 
         # Z Order
@@ -176,9 +176,9 @@ class Element(object):
                 return self.__dict__[name]
         else:
             if not result[2]:
-                err_msg = "'{0}' is not a constant property for element '{1}'."
-                err_msg += " Use get_value() instead."
-                logger.error(err_msg.format(name, self.element_name), True)
+                err_msg = "'{0}' is not a constant property " \
+                    "for element '{1}'. Use get_value() instead."
+                LOGGER.error(err_msg.format(name, self.element_name), True)
             else:
                 self._set_attr(name, False, result[3], result[2])
                 return self.__dict__[name]
@@ -190,9 +190,9 @@ class Element(object):
 
     def _verify_element(self, name):
         if name not in self._original_element_list.keys():
-            err_msg = "'{0}' is not a valid member for element '{1}'. "
-            err_msg += "Valid values are: {2}"
-            logger.error(err_msg.format(
+            err_msg = "'{0}' is not a valid member for element '{1}'. " \
+                "Valid values are: {2}"
+            LOGGER.error(err_msg.format(
                 name, self.element_name,
                 self._original_element_list.keys()), True)
 
@@ -316,7 +316,7 @@ class Element(object):
         elif name == 'Module':
             obj = Module(node, ln)
         else:
-            logger.error(
+            LOGGER.error(
                 "Element '{0}' not implemented.".format(name), True)
 
         return obj
@@ -326,7 +326,7 @@ class Element(object):
         value = get_xml_tag_value(node)
         if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY] \
                 and value is None:
-            logger.error("'{0}' is required by '{1}'.".format(
+            LOGGER.error("'{0}' is required by '{1}'.".format(
                 node.nodeName, lnk.obj.__class__.__name__), True)
 
         if name == 'BorderStyle':
@@ -358,7 +358,7 @@ class Element(object):
         if name == 'BreakLocation':
             return BreakLocation(value, lnk, must_be_constant)
 
-        logger.error("Enum '{0}' not implemented.".format(name), True)
+        LOGGER.error("Enum '{0}' not implemented.".format(name), True)
 
     @staticmethod
     def expression_factory(name, node, lnk, card, must_be_constant):
@@ -366,7 +366,7 @@ class Element(object):
         value = get_xml_tag_value(node)
         if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY] and \
                 value is None:
-            logger.error("'{0}' is required by '{1}'.".format(
+            LOGGER.error("'{0}' is required by '{1}'.".format(
                 node.nodeName, lnk.obj.__class__.__name__), True)
 
         if name == Element.STRING:
@@ -384,7 +384,7 @@ class Element(object):
         if name == Element.VARIANT:
             return Variant(value, ln, must_be_constant)
 
-        logger.error(
+        LOGGER.error(
             "Unknown expression element definition: '{0}'.".format(
                 name), True)
 
@@ -396,7 +396,7 @@ class Element(object):
         elif name == 'GroupExpressions':
             obj = GroupExpressions(node, ln)
         else:
-            logger.error(
+            LOGGER.error(
                 "Unknown Element: '{0}' for ExpressionList".format(
                     name), True)
 
@@ -424,7 +424,7 @@ class Element(object):
 
             # len(element)==4 is ignored, it means that element was checked
             if len(element) > 5:
-                logger.error(
+                LOGGER.error(
                     "Invalid number of values. Class: '{0}'".format(
                         class_name), True)
 
@@ -458,7 +458,7 @@ class _ExpressionList(object):
     def __init__(self, node, elements, lnk):
 
         if len(elements) == 0 or len(elements) > 1:
-            logger.error(
+            LOGGER.error(
                 "ElementList only can have one sub element type.", True)
 
         lnk.obj = self
@@ -468,7 +468,7 @@ class _ExpressionList(object):
         for n in node.childNodes:
             if n.nodeName not in elements:
                 if n.nodeName not in ('#text', '#comment'):
-                    logger.warn(
+                    LOGGER.warn(
                         "Unknown xml element '{0}' for '{1}'. Ignored.".format(
                             n.nodeName, lnk.obj.__class__.__name__))
                 continue
@@ -494,7 +494,7 @@ class Nuntiare(Element):
         def load(self, report):
             if self._loaded:
                 return
-            logger.info("Getting data from 'DataEmbedded'")
+            LOGGER.info("Getting data from 'DataEmbedded'")
             # Loads the Data emmeded in definition file
             self._curr_data_name = None
             self._curr_index = 0
@@ -509,7 +509,7 @@ class Nuntiare(Element):
                 return self.data[data_name]
             err_msg = "Attempted to get data '{0}' from DataEmbedded, "
             err_msg += "but it does not exist"
-            logger.warn(err_msg.format(data_name))
+            LOGGER.warn(err_msg.format(data_name))
 
         def reset(self):
             self.data = {}
@@ -565,7 +565,7 @@ class Nuntiare(Element):
     }
 
     def __init__(self, node):
-        logger.info('Initializing report definition...')
+        LOGGER.info('Initializing report definition...')
 
         self.parameters_def = []
         self.data_sources = []
@@ -661,12 +661,12 @@ class ReportParameter(Element):
                     report, passed_value))
 
         if not result and not self.CanBeNone:
-            logger.error(
+            LOGGER.error(
                 "Parameter '{0}' value can not be 'None'".format(
                     self.Name), True)
         if result and result == '' and \
                 not self.AllowBlank and DataType == 'String':
-            logger.error(
+            LOGGER.error(
                 "Parameter '{0}' value can not be an empty string.".format(
                     self.Name), True)
 
@@ -759,7 +759,7 @@ class DataSource(Element):
         self.conn_properties = self.get_element('ConnectionProperties')
         for ds in lnk.report_def.data_sources:
             if ds.Name == self.Name:
-                logger.error(
+                LOGGER.error(
                     "Report already has a DataSource with name '{0}'".format(
                         self.name), True)
         lnk.report_def.data_sources.append(self)
@@ -802,7 +802,7 @@ class DataSet(Element):
 
         for ds in lnk.report_def.data_sets:
             if ds.Name == self.Name:
-                logger.error(
+                LOGGER.error(
                     "DataSet with name '{0}' already exists.".format(
                         self.name), True)
         lnk.report_def.data_sets.append(self)
@@ -832,7 +832,7 @@ class Field(Element):
         data_set = lnk.parent.lnk.parent  # Get Dataset
         for fd in data_set.fields:
             if fd.Name == self.Name:
-                logger.error(
+                LOGGER.error(
                     "DataSet already has '{0}' Field.".format(
                         self.name), True)
         data_set.fields.append(self)
@@ -852,7 +852,7 @@ class Query(Element):
         cmd = Expression.get_value_or_default(
             None, self, "CommandText", None)
         if not cmd:
-            logger.error(
+            LOGGER.error(
                 "'CommandText' is required by 'Query' element.", True)
         return cmd
 

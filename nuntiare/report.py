@@ -6,7 +6,7 @@ import os
 import datetime
 from xml.dom import minidom
 from . result import Result
-from . import logger
+from . import LOGGER
 from . definition.element import Nuntiare
 from . definition.expression import Expression
 from . definition.expression_eval import ExpressionEval
@@ -67,26 +67,26 @@ class Report(object):
 
     def run(self, parameters={}):
         if not self.definition:
-            logger.critical("No definition found in report.", True)
+            LOGGER.critical("No definition found in report.", True)
 
-        logger.info("Running Report '{0}'".format(self.definition.Name))
+        LOGGER.info("Running Report '{0}'".format(self.definition.Name))
 
-        logger.info('Running Globals...')
+        LOGGER.info('Running Globals...')
         self._get_globals()
 
-        logger.info('Running Parameters...')
+        LOGGER.info('Running Parameters...')
         self._get_parameters(parameters)
 
-        logger.info('Running DataSources...')
+        LOGGER.info('Running DataSources...')
         self.data_sources = {}
         self.data_sources = self._get_data_sources()
 
-        logger.info('Running DataSets...')
+        LOGGER.info('Running DataSets...')
         self.data_sets = {}
         self.data_groups = {}
         self.data_sets = self._get_data_sets()
 
-        logger.info('Building result...')
+        LOGGER.info('Building result...')
         self.result = Result(self)
 
     def save(self, overwrite, apply_filters=False):
@@ -146,7 +146,7 @@ class Report(object):
 
         if not overwrite:
             if os.path.isfile(result_file):
-                logger.error(
+                LOGGER.error(
                     "File '{0}' already exists.".format(result_file),
                     True, "IOError")
 
@@ -164,7 +164,7 @@ class Report(object):
             f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
         finally:
             f.close()
-        logger.info("Report '{0}' saved.".format(result_file))
+        LOGGER.info("Report '{0}' saved.".format(result_file))
 
     def get_value(self, element, element_name, default):
         return Expression.get_value_or_default(
@@ -178,7 +178,7 @@ class Report(object):
         is_file = False
         if os.path.isfile(definition):
             if not os.access(definition, os.R_OK):
-                logger.error(
+                LOGGER.error(
                     "User has not read access for '{0}'.".format(definition),
                     True, "IOError")
             is_file = True
@@ -210,7 +210,7 @@ class Report(object):
                 output_directory = os.path.dirname(
                     os.path.realpath(__file__))
         if not os.path.isdir(output_directory):
-            logger.error(
+            LOGGER.error(
                 "'{0}' is not a valid directory.".format(
                     output_directory),
                 True, "IOError")
@@ -235,14 +235,14 @@ class Report(object):
 Is it supposed to be a file?. Verify that it exists.
 If it is a xml string, verify that it is well formed.
 System error: {1}'''
-            logger.critical(
+            LOGGER.critical(
                 err_msg.format(definition, e.args), True)
         return doc
 
     def _get_root(self, doc):
         root = doc.getElementsByTagName('Nuntiare')
         if not root:
-            logger.critical(
+            LOGGER.critical(
                 "Xml root element 'Nuntiare' not found.", True)
         return root[0]
 
@@ -274,7 +274,7 @@ System error: {1}'''
             # Just for logging ...
             for key, value in parameters.items():
                 if not self.definition.get_parameter_def(key):
-                    logger.warn(
+                    LOGGER.warn(
                         "Unknown Parameter '{0}'. Ignored.".format(key))
 
     def _get_data_sources(self):
@@ -287,7 +287,7 @@ System error: {1}'''
     def _get_data_sets(self):
         data_sets = {}
         for ds in self.definition.data_sets:
-            logger.info("  Running DataSet '{0}'".format(ds.Name))
+            LOGGER.info("  Running DataSet '{0}'".format(ds.Name))
             data_sets[ds.Name] = DataSetObject(self, ds)
             data_sets[ds.Name].execute()
         return data_sets

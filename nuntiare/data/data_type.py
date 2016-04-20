@@ -6,7 +6,7 @@ from sys import version_info
 from dateutil import parser
 from datetime import date, datetime
 from decimal import Decimal
-from .. import logger
+from .. import LOGGER
 
 
 class DataType():
@@ -27,7 +27,7 @@ class DataType():
                         '0', '0.0', '', 'none', '[]', '{}'):
                 return False
 
-            logger.warn(
+            LOGGER.warn(
                 "Unknown bool expression '{0}'. False assigned.".format(value))
             return False
 
@@ -47,7 +47,7 @@ class DataType():
         if data_type not in types:
             err_msg = "Unknown Data Type '{0}' for expression '{1}'. "
             err_msg += "Data type must be: {2}"
-            logger.error(err_msg.format(data_type, value, types), True)
+            LOGGER.error(err_msg.format(data_type, value, types), True)
 
         if data_type == 'Object':
             return value
@@ -81,7 +81,7 @@ class DataType():
                 result = Decimal(value)
 
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 "Error getting value '{0}' for '{1}'. {2}".format(
                     value, data_type, e.args),
                 True)
