@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from . page_item import PageItem, PageItemsInfo
-from .. import logger
+from .. import LOGGER
 from .. data.data import DataGroupObject
 
 
@@ -19,7 +19,7 @@ class PageTablix(PageItem):
 
         if data_set_name:
             if data_set_name not in report.data_sets:
-                logger.error(
+                LOGGER.error(
                     "Dataset '{0}' not found for Tablix '{1}'".format(
                         data_set_name, self.name), True)
             data_set = report.data_sets[data_set_name]
@@ -89,13 +89,13 @@ class PageTablix(PageItem):
             if index > len(items) - 1:
                 err_msg = "Number of {0} is lower than its " \
                     "hierarchy definition. {1}/{2}. {3}."
-                logger.error(err_msg.format(
+                LOGGER.error(err_msg.format(
                     type_, len(items), index + 1, err), True)
         else:
             if len(items) - 1 >= index:
                 err_msg = "Number of {0} is greater than its " \
                     "hierarchy definition. {1}/{2}. {3}."
-                logger.error(err_msg.format(
+                LOGGER.error(err_msg.format(
                     type_, len(items) - 1, index, err), True)
 
     def _validate_hierarchy(self, type_, members, items, err, index=0):
@@ -151,7 +151,7 @@ class PageTablix(PageItem):
         cols = self.column_hierarchy.rows_columns
         self.report.current_data_scope = [row.member.scope, None]
         if len(row.cells) != len(cols):
-            logger.error(
+            LOGGER.error(
                 "Number of cells and columns must be equal. {0}/{1}".format(
                     len(row.cells), len(cols)), True)
         i = 0
@@ -165,7 +165,7 @@ class PageTablix(PageItem):
                 if not curr_col.member.is_static:
                     err_msg = "ColSpan only possible on " \
                         "static members. Tablix '{0}'"
-                    logger.error(err_msg.format(self.name), True)
+                    LOGGER.error(err_msg.format(self.name), True)
                 self.report.current_data_scope[1] = curr_col.member.scope
                 if x == 1:
                     grid_cell = self.grid_body.add_cell(
@@ -228,7 +228,7 @@ class TablixMember(object):
                 if len(items_info.item_list) > 1:
                     err_msg = "'CellContents' element must have " \
                         "just one 'ReportItem'."
-                    logger.error(err_msg, True)
+                    LOGGER.error(err_msg, True)
                 return items_info
 
         def __init__(self, member, definition):
@@ -271,7 +271,7 @@ class TablixMember(object):
         self.def_object = None  # Row or Column definition.
 
         if definition:
-            group_def = definition.get_element("Group")
+            group_def = definition.get_element('Group')
             if group_def:
                 self.group = DataGroupObject(
                     report, group_def.Name, parent_data_group)
@@ -281,7 +281,8 @@ class TablixMember(object):
             self.scope = self.group.name
             self.is_static = False
         else:
-            self.scope = parent_data_group.name
+            if parent_data_group:
+                self.scope = parent_data_group.name
 
         if parent_member:
             if parent_member.is_static:
@@ -289,7 +290,7 @@ class TablixMember(object):
             parent_member.children.append(self)
 
         if definition:
-            members_def = definition.get_element("TablixMembers")
+            members_def = definition.get_element('TablixMembers')
             group_to_parent = self.group if self.group else parent_data_group
             if members_def:
                 for member in members_def.member_list:
@@ -478,7 +479,7 @@ class Grid(object):
             if len(self.rows) != len(grid.rows):
                 err_msg = "To extend Grid to the right, " \
                     "both rows length must be equal."
-                logger.error(err_msg, True)
+                LOGGER.error(err_msg, True)
             i = 0
             for row in grid.rows:
                 self.rows[i].cells.extend(row.cells)
@@ -487,7 +488,7 @@ class Grid(object):
 
         else:  # Down
             if len(self.columns) != len(grid.columns):
-                logger.error(
+                LOGGER.error(
                     "To extend Grid down, both columns length must be equal.",
                     True)
             i = 0
@@ -503,7 +504,7 @@ class Grid(object):
             collection.append(item)
             new = True
         elif index > len(collection):
-            logger.error(
+            LOGGER.error(
                 "Grid must increase by one Row/Column.", True)
         else:
             item = collection[index]

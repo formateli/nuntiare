@@ -4,7 +4,7 @@
 
 import os
 from importlib import import_module
-from .. import __config__, logger
+from .. import CONFIG, LOGGER
 
 
 class Render(object):
@@ -14,7 +14,7 @@ class Render(object):
 
     def render(self, report, overwrite=True):
         if not report.result:
-            logger.critical(
+            LOGGER.critical(
                 "No Result object in report. Have you executed run()?", True)
 
         if self.extension:
@@ -23,7 +23,7 @@ class Render(object):
                 report.globals['OutputName'] + "." + self.extension)
             if not overwrite:
                 if os.path.isfile(self.result_file):
-                    logger.error(
+                    LOGGER.error(
                         "File '{0}' already exists.".format(self.result_file),
                         True, 'IOError')
 
@@ -37,15 +37,15 @@ class Render(object):
         to 'render_name'. Ex: 'html'
         '''
         render_class = None
-        if not __config__.has_option('renders', render_name):
+        if not CONFIG.has_option('renders', render_name):
             return
-        module = __config__.get('renders', render_name)
+        module = CONFIG.get('renders', render_name)
         module = module + '.render'
         try:
             render = import_module(module)
             render_class = getattr(render, 'RenderObject')
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 "Error loading '{0}' render module. {1}".format(
                     render_name, e.message), True)
             return

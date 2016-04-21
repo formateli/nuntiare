@@ -269,7 +269,7 @@ def run():
         "\nDefault: xml report definition file name."
     parser_render.add_argument("-o", metavar="output", help=help)
 
-    help = "Where output file will be located." \
+    help = "Directory where output file will be located." \
         "\nDefault: xml report definition file directory."
     parser_render.add_argument(
         "-d", metavar="directory", help=help)

@@ -1,133 +1,123 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-  TODO: 
-  - Set footer in a grid for better display
-  - Row span
--->
-
+<?xml version="1.0" ?>
 <Nuntiare>
-  <Name>Grid Test</Name>
   <Description>
     A Simple Grid.
-    Note that Tablix has no DataSet assigned. 
+    Note that Tablix has no DataSet assigned.
   </Description>
   <Author>Fredy Ramirez</Author>
-
+  <Name>Grid Test</Name>
   <ReportParameters>
     <ReportParameter>
-      <Name>parameter0</Name>
-      <DataType>Integer</DataType>
       <CanBeNone>false</CanBeNone>
+      <Name>parameter0</Name>
       <AllowBlank>false</AllowBlank>
+      <DataType>Integer</DataType>
       <DefaultValue>3000</DefaultValue>
     </ReportParameter>
     <ReportParameter>
-      <Name>parameter1</Name>
-      <DataType>Integer</DataType>
       <CanBeNone>false</CanBeNone>
+      <Name>parameter1</Name>
       <AllowBlank>false</AllowBlank>
+      <DataType>Integer</DataType>
       <DefaultValue>=Parameters.parameter0 + 2000</DefaultValue>
     </ReportParameter>
   </ReportParameters>
-
   <Page>
-    <PageWidth>210mm</PageWidth>
-    <PageHeight>1000mm</PageHeight>
     <TopMargin>1cm</TopMargin>
+    <PageWidth>210mm</PageWidth>
+    <BottomMargin>1cm</BottomMargin>
+    <PageHeight>1000mm</PageHeight>
     <LeftMargin>1cm</LeftMargin>
     <RightMargin>1cm</RightMargin>
-    <BottomMargin>1cm</BottomMargin>
     <PageHeader>
-      <Height>1.5cm</Height>
       <PrintOnFirstPage>true</PrintOnFirstPage>
       <PrintOnLastPage>true</PrintOnLastPage>
+      <Height>1.5cm</Height>
       <Style>
         <BottomBorder>
           <BorderStyle>Solid</BorderStyle>
-          <Color>Black</Color>
           <Width>2pt</Width>
+          <Color>Black</Color>
         </BottomBorder>
       </Style>
       <ReportItems>
         <Textbox>
-          <Name>header1</Name>
-          <Height>1.5cm</Height>
-          <Width>140mm</Width>
-          <Value>Grid Test</Value>
           <Left>0.00pt</Left>
+          <Name>header1</Name>
+          <Width>140mm</Width>
           <Top>3mm</Top>
+          <ZIndex>1</ZIndex>
+          <Height>1.5cm</Height>
+          <Value>Grid Test</Value>
           <Style>
-            <FontWeight>Bold</FontWeight>
             <FontSize>16pt</FontSize>
+            <FontWeight>Bold</FontWeight>
             <TextAlign>Center</TextAlign>
             <VerticalAlign>Middle</VerticalAlign>
           </Style>
-          <ZIndex>1</ZIndex>
         </Textbox>
       </ReportItems>
-    </PageHeader>        
-
+    </PageHeader>
     <PageFooter>
-      <Height>1.5cm</Height>
       <PrintOnFirstPage>true</PrintOnFirstPage>
       <PrintOnLastPage>true</PrintOnLastPage>
+      <Height>1.5cm</Height>
       <Style>
         <TopBorder>
-          <Color>Black</Color>
-          <Width>2 pt</Width>
           <BorderStyle>Solid</BorderStyle>
+          <Width>2 pt</Width>
+          <Color>Black</Color>
         </TopBorder>
       </Style>
       <ReportItems>
         <Textbox>
-          <Name>reportname</Name>
-          <Height>8mm</Height>
-          <Width>60mm</Width>
-          <Value>='Report name: ' + Globals.ReportName</Value>
           <Left>0mm</Left>
+          <Name>reportname</Name>
+          <Width>60mm</Width>
           <Top>2mm</Top>
           <ZIndex>0</ZIndex>
+          <Height>8mm</Height>
+          <Value>='Report name: ' + Globals.ReportName</Value>
         </Textbox>
         <Textbox>
-          <Name>reportfolder</Name>
-          <Height>8mm</Height>
-          <Width>60mm</Width>
-          <Value>='Folder: ' + Globals.ReportFolder</Value>
           <Left>0mm</Left>
+          <Name>reportfolder</Name>
+          <Width>60mm</Width>
           <Top>12mm</Top>
           <ZIndex>1</ZIndex>
+          <Height>8mm</Height>
+          <Value>='Folder: ' + Globals.ReportFolder</Value>
         </Textbox>
         <Textbox>
-          <Name>reportfile</Name>
-          <Height>8mm</Height>
-          <Width>60mm</Width>
-          <Value>='File: ' + Globals.ReportFile</Value>
           <Left>0mm</Left>
+          <Name>reportfile</Name>
+          <Width>60mm</Width>
           <Top>22mm</Top>
           <ZIndex>1</ZIndex>
+          <Height>8mm</Height>
+          <Value>='File: ' + Globals.ReportFile</Value>
         </Textbox>
         <Textbox>
-          <Name>reporttime</Name>
-          <Height>8mm</Height>
-          <Width>90mm</Width>
-          <Value>=Globals.ExecutionTime</Value>
           <Left>100mm</Left>
+          <Name>reporttime</Name>
+          <Width>90mm</Width>
           <Top>2mm</Top>
           <ZIndex>2</ZIndex>
+          <Height>8mm</Height>
+          <Value>=Globals.ExecutionTime</Value>
           <Style>
-            <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
             <TextAlign>Right</TextAlign>
+            <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
           </Style>
         </Textbox>
         <Textbox>
-          <Name>reportpage</Name>
-          <Height>8mm</Height>
-          <Width>90mm</Width>
-          <Value>='Page ' + str(Globals.PageNumber) + ' of ' + str(Globals.TotalPages)</Value>
           <Left>100mm</Left>
+          <Name>reportpage</Name>
+          <Width>90mm</Width>
           <Top>12mm</Top>
           <ZIndex>2</ZIndex>
+          <Height>8mm</Height>
+          <Value>='Page ' + str(Globals.PageNumber) + ' of ' + str(Globals.TotalPages)</Value>
           <Style>
             <TextAlign>Right</TextAlign>
           </Style>
@@ -135,33 +125,30 @@
       </ReportItems>
     </PageFooter>
   </Page>
-  
   <Body>
     <ReportItems>
       <Tablix>
+        <Left>5mm</Left>
         <Name>grid1</Name>
         <Top>5mm</Top>
-        <Left>5mm</Left>
         <Style>
           <BackgroundColor>Yellow</BackgroundColor>
           <Border>
-            <Color>Red</Color>
-            <Width>3pt</Width>
             <BorderStyle>Solid</BorderStyle>
+            <Width>3pt</Width>
+            <Color>Red</Color>
           </Border>
         </Style>
-                
-        <TablixColumnHierarchy>          
+        <TablixColumnHierarchy>
           <TablixMembers>
-            <TablixMember />
-          </TablixMembers>          
+            <TablixMember/>
+          </TablixMembers>
         </TablixColumnHierarchy>
         <TablixRowHierarchy>
           <TablixMembers>
-            <TablixMember />
+            <TablixMember/>
           </TablixMembers>
         </TablixRowHierarchy>
-        
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
@@ -174,8 +161,7 @@
               <Width>60mm</Width>
             </TablixColumn>
           </TablixColumns>
-
-          <TablixRows>          
+          <TablixRows>
             <TablixRow>
               <Height>10mm</Height>
               <TablixCells>
@@ -186,8 +172,8 @@
                         <Name>title1</Name>
                         <Value>Title 1</Value>
                         <Style>
-                          <Color>White</Color>
                           <BackgroundColor>Black</BackgroundColor>
+                          <Color>White</Color>
                           <FontWeight>Bold</FontWeight>
                           <FontSize>12pt</FontSize>
                           <TextAlign>Center</TextAlign>
@@ -230,8 +216,8 @@
                         <Name>title3</Name>
                         <Value>Title 3</Value>
                         <Style>
-                          <Color>White</Color>
                           <BackgroundColor>Black</BackgroundColor>
+                          <Color>White</Color>
                           <FontWeight>Bold</FontWeight>
                           <FontSize>12pt</FontSize>
                           <TextAlign>Center</TextAlign>
@@ -246,7 +232,7 @@
                   </CellContents>
                 </TablixCell>
               </TablixCells>
-            </TablixRow>                        
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -295,8 +281,8 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-              </TablixCells>                                
-            </TablixRow>                                                
+              </TablixCells>
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -361,11 +347,10 @@
                             <BorderStyle>Solid</BorderStyle>
                           </BottomBorder>
                         </Style>
-                      </Textbox>                                        
+                      </Textbox>
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -396,7 +381,7 @@
                       </Textbox>
                     </ReportItems>
                   </CellContents>
-                </TablixCell>                                
+                </TablixCell>
               </TablixCells>
             </TablixRow>
             <TablixRow>
@@ -404,7 +389,7 @@
               <TablixCells>
                 <TablixCell>
                   <CellContents>
-                    <ReportItems>                                        
+                    <ReportItems>
                       <Textbox>
                         <Name>r4.1</Name>
                         <Value>Row4.1</Value>
@@ -413,7 +398,7 @@
                             <BorderStyle>Solid</BorderStyle>
                           </BottomBorder>
                         </Style>
-                      </Textbox>                                        
+                      </Textbox>
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
@@ -448,7 +433,7 @@
                   </CellContents>
                 </TablixCell>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -467,7 +452,6 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -483,7 +467,6 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -500,13 +483,13 @@
                   </CellContents>
                 </TablixCell>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
-                    <ReportItems>                                        
+                    <ReportItems>
                       <Textbox>
                         <Name>r6.1</Name>
                         <Value>Row6.1</Value>
@@ -519,7 +502,6 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ColSpan>2</ColSpan>
@@ -538,16 +520,16 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
               </TablixCells>
             </TablixRow>
-                        
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
                     <ColSpan>2</ColSpan>
-                    <ReportItems>                                        
+                    <ReportItems>
                       <Textbox>
                         <Name>r7.1</Name>
                         <Value>2 cols span</Value>
@@ -558,18 +540,18 @@
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
                         </Style>
-                      </Textbox>                                        
+                      </Textbox>
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
-                    <ReportItems>                                        
+                    <ReportItems>
                       <Textbox>
                         <Name>r7.2</Name>
                         <Value>Row7.2 align middle</Value>
                         <Style>
-                          <VerticalAlign>Middle</VerticalAlign>                        
+                          <VerticalAlign>Middle</VerticalAlign>
                           <Border>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
@@ -577,9 +559,10 @@
                       </Textbox>
                     </ReportItems>
                   </CellContents>
-                </TablixCell>                                
+                </TablixCell>
+                <TablixCell/>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -601,6 +584,8 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
+                <TablixCell/>
               </TablixCells>
             </TablixRow>
             <TablixRow>
@@ -623,7 +608,6 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-                                
                 <TablixCell>
                   <CellContents>
                     <ColSpan>2</ColSpan>
@@ -632,24 +616,22 @@
                         <Name>grid2</Name>
                         <TablixColumnHierarchy>
                           <TablixMembers>
-                            <TablixMember />
+                            <TablixMember/>
                           </TablixMembers>
                         </TablixColumnHierarchy>
                         <TablixRowHierarchy>
                           <TablixMembers>
-                            <TablixMember />
+                            <TablixMember/>
                           </TablixMembers>
                         </TablixRowHierarchy>
-                        
                         <Style>
                           <BackgroundColor>Pink</BackgroundColor>
                           <Border>
-                            <Color>Red</Color>
-                            <Width>3pt</Width>
                             <BorderStyle>Solid</BorderStyle>
+                            <Width>3pt</Width>
+                            <Color>Red</Color>
                           </Border>
                         </Style>
-                                                
                         <TablixBody>
                           <TablixColumns>
                             <TablixColumn>
@@ -658,21 +640,21 @@
                           </TablixColumns>
                           <TablixRows>
                             <TablixRow>
-                                <Height>10mm</Height>
-                                <TablixCells>
-                                  <TablixCell>
-                                    <CellContents>
-                                      <ReportItems>
-                                        <Textbox>
+                              <Height>10mm</Height>
+                              <TablixCells>
+                                <TablixCell>
+                                  <CellContents>
+                                    <ReportItems>
+                                      <Textbox>
                                         <Name>newtabletitle</Name>
                                         <Value>New Table</Value>
                                         <Style>
-                                          <TextAlign>Center</TextAlign>
-                                          <VerticalAlign>Middle</VerticalAlign>
-                                          <Color>White</Color>
                                           <BackgroundColor>Black</BackgroundColor>
+                                          <Color>White</Color>
                                           <FontWeight>Bold</FontWeight>
                                           <FontSize>12pt</FontSize>
+                                          <TextAlign>Center</TextAlign>
+                                          <VerticalAlign>Middle</VerticalAlign>
                                           <BottomBorder>
                                             <BorderStyle>Solid</BorderStyle>
                                           </BottomBorder>
@@ -712,30 +694,31 @@
                                   <CellContents>
                                     <ReportItems>
                                       <Textbox>
-                                      <Name>parameter2</Name>
-                                      <Value>=Globals.ExecutionTime</Value>
-                                      <Style>
-                                        <TextAlign>Center</TextAlign>                                                                
-                                        <VerticalAlign>Middle</VerticalAlign>
-                                        <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
-                                        <BottomBorder>
-                                          <BorderStyle>Solid</BorderStyle>
-                                        </BottomBorder>
-                                      </Style>
-                                    </Textbox>
-                                  </ReportItems>
-                                </CellContents>
-                              </TablixCell>
-                            </TablixCells>
+                                        <Name>parameter2</Name>
+                                        <Value>=Globals.ExecutionTime</Value>
+                                        <Style>
+                                          <TextAlign>Center</TextAlign>
+                                          <VerticalAlign>Middle</VerticalAlign>
+                                          <Format>{:%A, %m-%d-%Y %H:%M:%S}</Format>
+                                          <BottomBorder>
+                                            <BorderStyle>Solid</BorderStyle>
+                                          </BottomBorder>
+                                        </Style>
+                                      </Textbox>
+                                    </ReportItems>
+                                  </CellContents>
+                                </TablixCell>
+                              </TablixCells>
                             </TablixRow>
                           </TablixRows>
                         </TablixBody>
                       </Tablix>
                     </ReportItems>
                   </CellContents>
-                </TablixCell>                                
+                </TablixCell>
+                <TablixCell/>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>20mm</Height>
               <TablixCells>
@@ -757,31 +740,31 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ColSpan>2</ColSpan>
                     <ReportItems>
                       <Rectangle>
-                        <Name>rectangle1</Name>
-                        <Height>5cm</Height>
-                        <Width>2cm</Width>
                         <Left>2mm</Left>
+                        <Height>5cm</Height>
+                        <Name>rectangle1</Name>
+                        <Width>2cm</Width>
                         <Top>2mm</Top>
                         <Style>
                           <BackgroundColor>Green</BackgroundColor>
                           <Border>
-                            <Color>Blue</Color>
-                            <Width>3 pt</Width>
                             <BorderStyle>Solid</BorderStyle>
+                            <Width>3 pt</Width>
+                            <Color>Blue</Color>
                           </Border>
                         </Style>
                       </Rectangle>
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -796,11 +779,10 @@
                             <BorderStyle>Solid</BorderStyle>
                           </BottomBorder>
                         </Style>
-                      </Textbox>                                        
+                      </Textbox>
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
-
                 <TablixCell>
                   <CellContents>
                     <ReportItems>
@@ -834,7 +816,7 @@
                   </CellContents>
                 </TablixCell>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -887,7 +869,7 @@
                   </CellContents>
                 </TablixCell>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -921,8 +903,9 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -943,12 +926,12 @@
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
+                    <RowSpan>2</RowSpan>
                     <ColSpan>2</ColSpan>
-                    <RowSpan>2</RowSpan>                  
                     <ReportItems>
                       <Textbox>
-                        <CanGrow>True</CanGrow>
                         <Name>r14.2</Name>
+                        <CanGrow>True</CanGrow>
                         <Value>Row14.2 - 2 colspan 2 rowspan</Value>
                         <Style>
                           <TextAlign>Center</TextAlign>
@@ -961,8 +944,9 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
               </TablixCells>
-            </TablixRow>            
+            </TablixRow>
             <TablixRow>
               <Height>8mm</Height>
               <TablixCells>
@@ -981,6 +965,8 @@
                     </ReportItems>
                   </CellContents>
                 </TablixCell>
+                <TablixCell/>
+                <TablixCell/>
               </TablixCells>
             </TablixRow>
           </TablixRows>
