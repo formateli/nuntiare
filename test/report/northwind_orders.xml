@@ -1,22 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <Nuntiare>
   <Name>northwind_orders</Name>
   <Xxx>Prueba</Xxx>
   <ReportParameters>
     <ReportParameter>
       <Name>data_provider</Name>
-      <DataType>String</DataType>
       <DefaultValue>PostgreSQL</DefaultValue>
+      <DataType>String</DataType>
     </ReportParameter>
     <ReportParameter>
       <Name>conn_string</Name>
-      <DataType>String</DataType>
       <DefaultValue>dbname=xxx host=xxx port=5432 user=user password=password client_encoding=UNICODE connect_timeout=0</DefaultValue>
+      <DataType>String</DataType>
     </ReportParameter>
   </ReportParameters>
   <Body>
     <ReportItems>
       <Tablix>
+        <DataSetName>OrderDataSet</DataSetName>
         <Name>TablixOrder</Name>
         <Left>1in</Left>
         <TablixColumnHierarchy>
@@ -80,7 +81,7 @@
                         </SortExpressions>
                       </Group>
                       <TablixMembers>
-                        <TablixMember/><!-- Order header -->
+                        <TablixMember/>
                         <TablixMember>
                           <Group>
                             <Name>details</Name>
@@ -91,7 +92,7 @@
                             </SortExpressions>
                           </Group>
                         </TablixMember>
-                        <TablixMember/><!-- Order footer -->
+                        <TablixMember/>
                       </TablixMembers>
                     </TablixMember>
                   </TablixMembers>
@@ -151,7 +152,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count_header</Name>
-                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -160,14 +160,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>no_header</Name>
                         <Value>No</Value>
+                        <Name>no_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -177,14 +177,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>product_header</Name>
                         <Value>Product</Value>
+                        <Name>product_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -194,14 +194,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>qty_header</Name>
                         <Value>Qty</Value>
+                        <Name>qty_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -211,14 +211,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>unit_header</Name>
                         <Value>Unit</Value>
+                        <Name>unit_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -228,14 +228,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>total1_header</Name>
                         <Value>Total</Value>
+                        <Name>total1_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -246,14 +246,14 @@
                     <ColSpan>2</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>duscount_header</Name>
                         <Value>Discount</Value>
+                        <Name>duscount_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -264,14 +264,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>total_header</Name>
                         <Value>Total</Value>
+                        <Name>total_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -281,14 +281,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>number_header</Name>
                         <Value>Row Number</Value>
+                        <Name>number_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -298,14 +298,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>sum_header</Name>
                         <Value>Running Sum</Value>
+                        <Name>sum_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -315,14 +315,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>avg_header</Name>
                         <Value>Running Avg</Value>
+                        <Name>avg_header</Name>
                         <Style>
+                          <BackgroundColor>Aqua</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Aqua</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -333,7 +333,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count2_header</Name>
-                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -347,8 +346,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>count_tablix</Name>
                         <Value>=RowNumber()</Value>
+                        <Name>count_tablix</Name>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -357,14 +356,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_no_header</Name>
                         <Value>=RunningValue('F.country', 'CountDistinct')</Value>
+                        <Name>country_no_header</Name>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -374,14 +373,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_header</Name>
                         <Value>=F.country</Value>
+                        <Name>country_header</Name>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -391,15 +390,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_sum_qty</Name>
                         <Value>=Sum('F.quantity')</Value>
+                        <Name>country_sum_qty</Name>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -410,13 +409,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_unit</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -426,15 +424,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_sum_subtotal1</Name>
                         <Value>=Sum('F.subtotal1')</Value>
+                        <Name>country_sum_subtotal1</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Gray</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -445,13 +443,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_discount1</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -461,15 +458,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_sum_discount2</Name>
                         <Value>=Sum('F.discount_amount')</Value>
+                        <Name>country_sum_discount2</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Gray</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -479,15 +476,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_sum_total</Name>
                         <Value>=Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Name>country_sum_total</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Gray</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -497,14 +494,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_row_number</Name>
                         <Value>=RowNumber('country')</Value>
+                        <Name>country_row_number</Name>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -514,15 +511,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_running_sum_total</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'country')</Value>
+                        <Name>country_running_sum_total</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Gray</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -532,15 +529,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>country_running_avg_total</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'country')</Value>
+                        <Name>country_running_avg_total</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Gray</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -551,13 +548,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>country_count2</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Gray</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Gray</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -573,7 +569,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count4_header</Name>
-                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -582,14 +577,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_no_header</Name>
                         <Value>=RunningValue('F.customer', 'CountDistinct', 'country')</Value>
+                        <Name>customer_no_header</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -599,14 +594,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_header</Name>
                         <Value>=F.customer</Value>
+                        <Name>customer_header</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -616,15 +611,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_sum_qty</Name>
                         <Value>=Sum('F.quantity')</Value>
+                        <Name>customer_sum_qty</Name>
                         <Style>
-                          <Format>{:,.2f}</Format>                        
+                          <BackgroundColor>Blue</BackgroundColor>
+                          <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -635,13 +630,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_unit</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -651,15 +645,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_sum_subtotal1</Name>
                         <Value>=Sum('F.subtotal1')</Value>
+                        <Name>customer_sum_subtotal1</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -670,13 +664,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_discount1</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -686,15 +679,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_sum_discount2</Name>
                         <Value>=Sum('F.discount_amount')</Value>
+                        <Name>customer_sum_discount2</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -704,15 +697,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_sum_total</Name>
                         <Value>=Sum('F.subtotal1 - F.discount_amount')</Value>
+                        <Name>customer_sum_total</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -722,14 +715,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_row_number</Name>
                         <Value>=RowNumber('customer')</Value>
+                        <Name>customer_row_number</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -739,15 +732,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_running_sum_total</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'customer')</Value>
+                        <Name>customer_running_sum_total</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -757,15 +750,15 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>customer_running_avg_total</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'customer')</Value>
+                        <Name>customer_running_avg_total</Name>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Format>{:,.2f}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -776,13 +769,12 @@
                     <ReportItems>
                       <Textbox>
                         <Name>customer_count2</Name>
-                        <Value/>
                         <Style>
+                          <BackgroundColor>Blue</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Blue</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -798,7 +790,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count5_header</Name>
-                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -807,14 +798,14 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_count</Name>
                         <Value>=RunningValue('F.orderid','CountDistinct','customer')</Value>
+                        <Name>orderid_count</Name>
                         <Style>
+                          <BackgroundColor>Violet</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Violet</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -825,14 +816,14 @@
                     <ColSpan>11</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_header</Name>
                         <Value>=F.orderid</Value>
+                        <Name>orderid_header</Name>
                         <Style>
+                          <BackgroundColor>Violet</BackgroundColor>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
                           </Border>
-                          <BackgroundColor>Violet</BackgroundColor>
                         </Style>
                       </Textbox>
                     </ReportItems>
@@ -857,8 +848,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>count6_header</Name>
                         <Value>=RowNumber('TablixOrder')</Value>
+                        <Name>count6_header</Name>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -868,7 +859,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>no</Name>
-                        <Value></Value>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -883,8 +873,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>product</Name>
                         <Value>=F.product</Value>
+                        <Name>product</Name>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -899,8 +889,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>qty</Name>
                         <Value>=F.quantity</Value>
+                        <Name>qty</Name>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -915,8 +905,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>unit</Name>
                         <Value>=F.unitprice</Value>
+                        <Name>unit</Name>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -931,8 +921,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>subtotal1</Name>
                         <Value>=F.subtotal1</Value>
+                        <Name>subtotal1</Name>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -947,11 +937,11 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>discount1</Name>
                         <Value>=F.discount</Value>
+                        <Name>discount1</Name>
                         <Style>
-                          <Format>{:.1%}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:.1%}</Format>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -965,8 +955,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>discount2</Name>
                         <Value>=F.discount_amount</Value>
+                        <Name>discount2</Name>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -982,8 +972,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>total</Name>
                         <Value>=F.subtotal1 - F.discount_amount</Value>
+                        <Name>total</Name>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -999,8 +989,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>row_number</Name>
                         <Value>=RowNumber('orderid')</Value>
+                        <Name>row_number</Name>
                         <Style>
                           <Border>
                             <Color>LightGrey</Color>
@@ -1015,8 +1005,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>running_sum</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'orderid')</Value>
+                        <Name>running_sum</Name>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1032,8 +1022,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>running_avg</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Avg', 'orderid')</Value>
+                        <Name>running_avg</Name>
                         <Style>
                           <Format>{:,.2f}</Format>
                           <Border>
@@ -1049,8 +1039,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>count7_header</Name>
                         <Value>=RowNumber('TablixOrder')</Value>
+                        <Name>count7_header</Name>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -1065,7 +1055,6 @@
                     <ReportItems>
                       <Textbox>
                         <Name>count5_header_2</Name>
-                        <Value/>
                       </Textbox>
                     </ReportItems>
                   </CellContents>
@@ -1074,8 +1063,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_count_2</Name>
                         <Value>=RowNumber('orderid')</Value>
+                        <Name>orderid_count_2</Name>
                         <Style>
                           <Color>Violet</Color>
                           <Border>
@@ -1091,8 +1080,8 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_count_3</Name>
                         <Value>=RowNumber('customer')</Value>
+                        <Name>orderid_count_3</Name>
                         <Style>
                           <Color>Blue</Color>
                           <Border>
@@ -1108,10 +1097,10 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_count_4</Name>
                         <Value>=RowNumber('country')</Value>
+                        <Name>orderid_count_4</Name>
                         <Style>
-                          <Color>Gray</Color>                        
+                          <Color>Gray</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1125,12 +1114,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_sum_2</Name>
                         <Value>=Sum('F.subtotal1')</Value>
+                        <Name>orderid_sum_2</Name>
                         <Style>
-                          <Color>Violet</Color>
-                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
+                          <Color>Violet</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1144,12 +1133,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_sum_3</Name>
                         <Value>=Sum('F.subtotal1', 'customer')</Value>
+                        <Name>orderid_sum_3</Name>
                         <Style>
-                          <Color>Blue</Color>
-                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
+                          <Color>Blue</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1163,12 +1152,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_sum_4</Name>
                         <Value>=Sum('F.subtotal1', 'country')</Value>
+                        <Name>orderid_sum_4</Name>
                         <Style>
-                          <Color>Gray</Color>
-                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
+                          <Color>Gray</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1182,12 +1171,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_ruuning_sum_2</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'orderid')</Value>
+                        <Name>orderid_ruuning_sum_2</Name>
                         <Style>
+                          <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
                           <Color>Violet</Color>
-                          <Format>{:,.2f}</Format>
-                          <TextAlign>Right</TextAlign>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1201,12 +1190,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_ruuning_sum_3</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'customer')</Value>
+                        <Name>orderid_ruuning_sum_3</Name>
                         <Style>
-                          <Color>Blue</Color>
-                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
+                          <Color>Blue</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1220,12 +1209,12 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_ruuning_sum_4</Name>
                         <Value>=RunningValue('F.subtotal1 - F.discount_amount', 'Sum', 'country')</Value>
+                        <Name>orderid_ruuning_sum_4</Name>
                         <Style>
-                          <Color>Gray</Color>
-                          <Format>{:,.2f}</Format>
                           <TextAlign>Right</TextAlign>
+                          <Format>{:,.2f}</Format>
+                          <Color>Gray</Color>
                           <Border>
                             <Color>LightGrey</Color>
                             <BorderStyle>Solid</BorderStyle>
@@ -1240,8 +1229,8 @@
                     <ColSpan>3</ColSpan>
                     <ReportItems>
                       <Textbox>
-                        <Name>orderid_header_2</Name>
                         <Value>=F.orderid</Value>
+                        <Name>orderid_header_2</Name>
                         <Style>
                           <Color>Violet</Color>
                           <Border>
@@ -1259,7 +1248,6 @@
             </TablixRow>
           </TablixRows>
         </TablixBody>
-        <DataSetName>OrderDataSet</DataSetName>
         <Style>
           <Border>
             <BorderStyle>Solid</BorderStyle>
@@ -1283,13 +1271,17 @@
       <Name>OrderDataSet</Name>
       <Query>
         <DataSourceName>TempDataSource</DataSourceName>
-        <CommandText>SELECT orders.orderid, orders.orderdate, orders.customerid, customers.companyname, customers.country, order_details.productid, products.productname, products.categoryid, categories.categoryname, order_details.quantity, order_details.unitprice, order_details.discount 
-          FROM orders 
-          INNER JOIN customers ON orders.customerid = customers.customerid 
-          INNER JOIN order_details ON order_details.orderid = orders.orderid 
-          INNER JOIN products ON products.productid = order_details.productid 
-          INNER JOIN categories ON categories.categoryid = products.categoryid 
-          LIMIT 100
+        <CommandText>SELECT orders.orderid, orders.orderdate,
+orders.customerid, customers.companyname, customers.country,
+order_details.productid, products.productname, products.categoryid,
+categories.categoryname, order_details.quantity,
+order_details.unitprice, order_details.discount
+FROM orders
+INNER JOIN customers ON orders.customerid = customers.customerid
+INNER JOIN order_details ON order_details.orderid = orders.orderid
+INNER JOIN products ON products.productid = order_details.productid
+INNER JOIN categories ON categories.categoryid = products.categoryid
+LIMIT 100
         </CommandText>
       </Query>
       <Fields>
@@ -1330,12 +1322,12 @@
           <DataField>discount</DataField>
         </Field>
         <Field>
-          <Name>subtotal1</Name>
           <Value>=F.quantity * F.unitprice</Value>
+          <Name>subtotal1</Name>
         </Field>
         <Field>
-          <Name>discount_amount</Name>
           <Value>=F.subtotal1 * F.discount</Value>
+          <Name>discount_amount</Name>
         </Field>
       </Fields>
     </DataSet>

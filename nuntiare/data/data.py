@@ -598,13 +598,15 @@ class DataGroupObject(object):
             return
 
         if self.parent and self.parent.is_detail_group:
-            err_msg = "Group '{0}' could not be created. "
-            err_msg += "Parent group '{1}' is a detail group."
-            LOGGER.error(err_msg.format(name, self.parent.name), True)
+            err_msg = "Group '{0}' could not be created. " \
+                "Parent group '{1}' is a detail group."
+            LOGGER.error(
+                err_msg.format(
+                    group_def.Name, self.parent.name), True)
 
         exp_def = group_def.get_element('GroupExpressions')
-        filter_def = group_def.get_element("Filters")
-        sort_def = group_def.get_element("SortExpressions")
+        filter_def = group_def.get_element('Filters')
+        sort_def = group_def.get_element('SortExpressions')
         flt = None
         srt = None
         if filter_def:
