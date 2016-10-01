@@ -13,6 +13,7 @@ import parameter
 import grid
 import data
 import aggregate
+import render_pdf
 
 
 logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)
@@ -25,6 +26,7 @@ SUITE.addTests(LOADER.loadTestsFromModule(parameter))
 SUITE.addTests(LOADER.loadTestsFromModule(grid))
 SUITE.addTests(LOADER.loadTestsFromModule(data))
 SUITE.addTests(LOADER.loadTestsFromModule(aggregate))
+SUITE.addTests(LOADER.loadTestsFromModule(render_pdf))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RESULT = RUNNER.run(SUITE)

@@ -30,10 +30,8 @@ class Element(object):
     SIZE = 5
     DATE = 6
     COLOR = 7
-    EXPRESSION = 8
-    EXPRESSION_LIST = 9
-    URL = 10
-    ENUM = 11
+    EXPRESSION_LIST = 8
+    ENUM = 9
     VARIANT = 90
 
     def __init__(self, node, elements, lnk):
@@ -43,13 +41,14 @@ class Element(object):
          key: Element name
          value: A list [] with the following values:
             Element type. Default value: Element.ELEMENT
-            Card: Values can be: 0 (0 to 1), 1 (1), 2 (1 to N), 3 (0 to N).
-                Default value: 0
+            Card: ElementCard value.
+                Default value: ElementCard.ZERO_OR_ONE
             Must be a constant: If true,
                 this element value can not be an expression.
                 Ignore if type is Element.ELEMENT. Default value: False
             DefaultValue
-                Ignore if type is Element.ELEMENT. Default value: False
+                Ignore if type is Element.ELEMENT. Only valid if
+                must_be_constant = True. Default value: None
         lnk: The linking object
         '''
 
@@ -85,7 +84,7 @@ class Element(object):
                 continue
 
             element_type, card, must_be_constant, default_value = \
-                Element.get_element_def(elements[n.nodeName], n.nodeName)
+                Element.get_element_def(elements[n.nodeName])
 
             elements[n.nodeName] = \
                 [element_type, card, must_be_constant, default_value, True]
@@ -107,7 +106,7 @@ class Element(object):
                         LOGGER.error(err_msg.format(el.Name), True)
                     i = el.ZIndex if el.ZIndex > -1 else z_count
                     items_by_name[el.Name] = [el, i]
-                    z_count = z_count + 1
+                    z_count += 1
                 self.element_list[n.nodeName] = el
                 self.non_expression_list[n.nodeName] = \
                     self.element_list[n.nodeName]
@@ -138,7 +137,7 @@ class Element(object):
         for key, el in elements.items():
             if len(el) < 5:  # Not verified in the node loop above
                 element_type, card, must_be_constant, default_value = \
-                    Element.get_element_def(el, key)
+                    Element.get_element_def(el)
                 if card in [ElementCard.ONE, ElementCard.ONE_OR_MANY]:
                     LOGGER.error("'{0}' must be defined for '{1}'.".format(
                         key, lnk.obj.__class__.__name__), True)
@@ -166,27 +165,21 @@ class Element(object):
     def __getattr__(self, name):
         self._verify_element(name)
         result = Element.get_element_def(
-                    self._original_element_list[name], name)
-
+                    self._original_element_list[name])
         if result[0] in (
-                Element.ELEMENT, Element.EXPRESSION_LIST, Element.URL):
+                Element.ELEMENT, Element.EXPRESSION_LIST):
             el = self.get_element(name)
             if el:
                 self._set_attr(name, True, el, False)
                 return self.__dict__[name]
         else:
-            if not result[2]:
+            if result[2] is None:
                 err_msg = "'{0}' is not a constant property " \
                     "for element '{1}'. Use get_value() instead."
                 LOGGER.error(err_msg.format(name, self.element_name), True)
             else:
                 self._set_attr(name, False, result[3], result[2])
                 return self.__dict__[name]
-
-    def get_value(self, report, name, default_value=None):
-        self._verify_element(name)
-        return Expression.get_value_or_default(
-            report, self, name, default_value)
 
     def _verify_element(self, name):
         if name not in self._original_element_list.keys():
@@ -195,6 +188,11 @@ class Element(object):
             LOGGER.error(err_msg.format(
                 name, self.element_name,
                 self._original_element_list.keys()), True)
+
+    def get_value(self, report, name, default_value=None):
+        self._verify_element(name)
+        return Expression.get_value_or_default(
+            report, self, name, default_value)
 
     @staticmethod
     def extend_element_list(class_, additional_elements):
@@ -379,8 +377,6 @@ class Element(object):
             return Size(value, ln, must_be_constant)
         if name == Element.COLOR:
             return Color(value, ln, must_be_constant)
-        if name == Element.URL:
-            return None
         if name == Element.VARIANT:
             return Variant(value, ln, must_be_constant)
 
@@ -403,7 +399,7 @@ class Element(object):
         return obj
 
     @staticmethod
-    def get_element_def(element, class_name=None):
+    def get_element_def(element):
         element_type = Element.ELEMENT
         card = ElementCard.ZERO_OR_ONE
         must_be_constant = False
@@ -419,14 +415,10 @@ class Element(object):
                 if element[2]:
                     must_be_constant = element[2]
             if len(element) >= 4:
-                if element[3]:
+                if element[3] is not None:
                     default_value = element[3]
 
             # len(element)==4 is ignored, it means that element was checked
-            if len(element) > 5:
-                LOGGER.error(
-                    "Invalid number of values. Class: '{0}'".format(
-                        class_name), True)
 
         return element_type, card, must_be_constant, default_value
 
@@ -474,8 +466,7 @@ class _ExpressionList(object):
                 continue
 
             element_type, card, must_be_constant, default_value = \
-                Element.get_element_def(
-                    elements[n.nodeName], lnk.obj.__class__.__name__)
+                Element.get_element_def(elements[n.nodeName])
 
             ex = Element.expression_factory(
                 elements[n.nodeName][0], n, lnk, card, must_be_constant)
@@ -507,8 +498,8 @@ class Nuntiare(Element):
         def get_data(self, data_name):
             if data_name in self.data.keys():
                 return self.data[data_name]
-            err_msg = "Attempted to get data '{0}' from DataEmbedded, "
-            err_msg += "but it does not exist"
+            err_msg = "Attempted to get data '{0}' from DataEmbedded, " \
+                "but it does not exist"
             LOGGER.warn(err_msg.format(data_name))
 
         def reset(self):
@@ -634,11 +625,11 @@ class ReportParameters(Element):
 
 class ReportParameter(Element):
     elements = {
-        'Name': [Element.STRING, 1, True],
-        'DataType': [Element.ENUM, 1, True],
-        'CanBeNone': [Element.BOOLEAN, 0, True, True],
-        'AllowBlank': [Element.BOOLEAN, 0, True, True],
-        'DefaultValue': [Element.VARIANT, 1],
+        'Name': [Element.STRING, ElementCard.ONE, True],
+        'DataType': [Element.ENUM, ElementCard.ZERO_OR_ONE, True, 'String'],
+        'CanBeNone': [Element.BOOLEAN, ElementCard.ZERO_OR_ONE, True, True],
+        'AllowBlank': [Element.BOOLEAN, ElementCard.ZERO_OR_ONE, True, True],
+        'DefaultValue': [Element.VARIANT, ElementCard.ONE],
         'Promt': [Element.STRING],
     }
 
@@ -665,7 +656,7 @@ class ReportParameter(Element):
                 "Parameter '{0}' value can not be 'None'".format(
                     self.Name), True)
         if result and result == '' and \
-                not self.AllowBlank and DataType == 'String':
+                not self.AllowBlank and self.DataType == 'String':
             LOGGER.error(
                 "Parameter '{0}' value can not be an empty string.".format(
                     self.Name), True)
@@ -687,14 +678,14 @@ class Page(Element):
     elements = {
         'PageHeader': [],
         'PageFooter': [],
-        'PageHeight': [Element.SIZE, 0, True],
-        'PageWidth': [Element.SIZE, 0, True],
-        'LeftMargin': [Element.SIZE, 0, True],
-        'RightMargin': [Element.SIZE, 0, True],
-        'TopMargin': [Element.SIZE, 0, True],
-        'BottomMargin': [Element.SIZE, 0, True],
-        'Columns': [Element.INTEGER, 0, True],
-        'ColumnSpacing': [Element.SIZE, 0, True],
+        'PageHeight': [Element.SIZE, 0, True, 11 * 72],
+        'PageWidth': [Element.SIZE, 0, True, 8.5 * 72],
+        'LeftMargin': [Element.SIZE, 0, True, 0.0],
+        'RightMargin': [Element.SIZE, 0, True, 0.0],
+        'TopMargin': [Element.SIZE, 0, True, 0.0],
+        'BottomMargin': [Element.SIZE, 0, True, 0.0],
+        'Columns': [Element.INTEGER, 0, True, 1],
+        'ColumnSpacing': [Element.SIZE, 0, True, 0.5 * 72],
         'Style': [],
     }
 
@@ -702,21 +693,13 @@ class Page(Element):
         super(Page, self).__init__(node, self.elements, lnk)
 
 
-class _ReportElement(Element):
-    elements = {'Style': [], }
-
-    def __init__(self, node, additional_elements, lnk):
-        el = Element.extend_element_list(
-                _ReportElement, additional_elements)
-        super(_ReportElement, self).__init__(node, el, lnk)
-
-
-class _PageSection(_ReportElement):
+class _PageSection(Element):
     elements = {
         'ReportItems': [],
-        'Height': [Element.SIZE, 1, True],
+        'Height': [Element.SIZE, 1, True, 0.0],
         'PrintOnFirstPage': [Element.BOOLEAN, 0, True],
         'PrintOnLastPage': [Element.BOOLEAN, 0, True],
+        'Style': [],
     }
 
     def __init__(self, node, lnk):
@@ -733,8 +716,11 @@ class PageFooter(_PageSection):
         super(PageFooter, self).__init__(node, lnk)
 
 
-class Body(_ReportElement):
-    elements = {'ReportItems': [], }
+class Body(Element):
+    elements = {
+        'ReportItems': [],
+        'Style': [],
+    }
 
     def __init__(self, node, lnk):
         super(Body, self).__init__(node, self.elements, lnk)
@@ -850,7 +836,7 @@ class Query(Element):
 
     def get_command_text(self, report):
         cmd = Expression.get_value_or_default(
-            None, self, "CommandText", None)
+            report, self, 'CommandText', None)
         if not cmd:
             LOGGER.error(
                 "'CommandText' is required by 'Query' element.", True)
@@ -952,22 +938,22 @@ class Style(Element):
         'BackgroundGradientType': [Element.ENUM],
         'BackgroundGradientEndColor': [Element.COLOR],
         'BackgroundImage': [],
-        'FontStyle': [Element.ENUM],
-        'FontFamily': [Element.STRING],
-        'FontSize': [Element.SIZE],
-        'FontWeight': [Element.ENUM],
+        'FontStyle': [Element.ENUM, 0, False, 'Normal'],
+        'FontFamily': [Element.STRING, 0, False, 'Arial'],
+        'FontSize': [Element.SIZE, 0, False, 10],
+        'FontWeight': [Element.ENUM, 0, False, 'Normal'],
         'Format': [Element.STRING],
-        'TextDecoration': [Element.ENUM],
-        'TextAlign': [Element.ENUM],
-        'VerticalAlign': [Element.ENUM],
-        'Color': [Element.COLOR],
-        'PaddingLeft': [Element.SIZE],
-        'PaddingRight': [Element.SIZE],
-        'PaddingTop': [Element.SIZE],
-        'PaddingBottom': [Element.SIZE],
-        'LineHeight': [Element.SIZE],
-        'TextDirection': [Element.ENUM],
-        'WritingMode': [Element.ENUM],
+        'TextDecoration': [Element.ENUM, 0, False, 'None'],
+        'TextAlign': [Element.ENUM, 0, False, 'General'],
+        'VerticalAlign': [Element.ENUM, 0, False, 'Top'],
+        'Color': [Element.COLOR, 0, False, 'Black'],
+        'PaddingLeft': [Element.SIZE, 0, False, 0.0],
+        'PaddingRight': [Element.SIZE, 0, False, 0.0],
+        'PaddingTop': [Element.SIZE, 0, False, 0.0],
+        'PaddingBottom': [Element.SIZE, 0, False, 0.0],
+        'LineHeight': [Element.SIZE, 0, False, 1.0],
+        'TextDirection': [Element.ENUM, 0, False, 'LTR'],
+        'WritingMode': [Element.ENUM, 0, False, 'Horizontal'],
     }
 
     def __init__(self, node, lnk):
@@ -977,8 +963,8 @@ class Style(Element):
 class Border(Element):
     elements = {
         'Color': [Element.COLOR],
-        'BorderStyle': [Element.ENUM],
-        'Width': [Element.SIZE],
+        'BorderStyle': [Element.ENUM, 0, False, 'Solid'],
+        'Width': [Element.SIZE, 0, False, 1],
     }
 
     def __init__(self, node, lnk):
@@ -1046,7 +1032,7 @@ class ReportItems(Element):
         super(ReportItems, self).__init__(node, self.elements, lnk)
 
 
-class _ReportItem(_ReportElement):
+class _ReportItem(Element):
     elements = {
         'Name': [Element.STRING, 1, True],
         'ActionInfo': [],
@@ -1059,6 +1045,7 @@ class _ReportItem(_ReportElement):
         'ToolTip': [Element.STRING],
         'Bookmark': [Element.STRING],
         'RepeatWith': [Element.STRING, 0, True],
+        'Style': [],
     }
 
     def __init__(self, type, node, lnk, additional_elements):
@@ -1078,7 +1065,8 @@ class Rectangle(_ReportItem):
     elements = {
         'ReportItems': [],
         'PageBreak': [],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True],
+        'KeepTogether': [Element.BOOLEAN, 0, True, False],
+        'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True, True],
     }
 
     def __init__(self, node, lnk):
@@ -1090,6 +1078,7 @@ class Subreport(_ReportItem):
         'ReportName': [Element.STRING, 1, True],
         'Parameters': [],
         'NoRowsMessage': [Element.STRING],
+        'KeepTogether': [Element.BOOLEAN, 0, True, False],
         'MergeTransactions': [Element.BOOLEAN, 0, True],
         'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True],
     }
@@ -1133,12 +1122,13 @@ class Textbox(_ReportItem):
         'Value': [Element.VARIANT, 0],
         'CanGrow': [Element.BOOLEAN, 0, True],
         'CanShrink': [Element.BOOLEAN, 0, True],
+        'KeepTogether': [Element.BOOLEAN, 0, True, False],
         'HideDuplicates': [Element.STRING, 0, True],
         'ToggleImage': [],
     }
 
     def __init__(self, node, lnk):
-        super(Textbox, self).__init__("Textbox", node, lnk, self.elements)
+        super(Textbox, self).__init__('Textbox', node, lnk, self.elements)
 
 
 class ToggleImage(Element):
@@ -1175,6 +1165,7 @@ class Tablix(_DataRegion):
         'RepeatRowHeaders': [Element.BOOLEAN, 0, True],
         'FixedColumnHeaders': [Element.BOOLEAN, 0, True],
         'FixedRowHeaders': [Element.BOOLEAN, 0, True],
+        'KeepTogether': [Element.BOOLEAN, 0, True, False],
         'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True],
     }
 
@@ -1253,6 +1244,7 @@ class TablixMember(Element):
         'TablixMembers': [],
         'FixedData': [Element.BOOLEAN, 0, True],
         'Visibility': [],
+        'KeepTogether': [Element.BOOLEAN, 0, True, False],
         'HideIfNoRows': [Element.BOOLEAN, 0, True],
         'RepeatOnNewPage': [Element.BOOLEAN, 0, True],
     }

@@ -1,527 +1,509 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <Nuntiare>
-    <Name>Text Test</Name>
-    <Description />
-    <Author>Fredy Ramirez</Author>
-    
-    <Page>
-        <PageWidth>210mm</PageWidth>
-        <PageHeight>280mm</PageHeight>
-        <TopMargin>1cm</TopMargin>
-        <LeftMargin>1cm</LeftMargin>
-        <RightMargin>1cm</RightMargin>
-        <BottomMargin>1cm</BottomMargin>
+  <Author>Fredy Ramirez</Author>
+  <Name>Text Test</Name>
+  <Page>
+    <PageWidth>210mm</PageWidth>
+    <PageHeight>280mm</PageHeight>
+    <LeftMargin>1cm</LeftMargin>
+    <RightMargin>1cm</RightMargin>
+    <TopMargin>1cm</TopMargin>
+    <BottomMargin>1cm</BottomMargin>
+    <PageHeader>
+      <PrintOnFirstPage>true</PrintOnFirstPage>
+      <Height>1.5cm</Height>
+      <PrintOnLastPage>true</PrintOnLastPage>
+      <Style>
+        <BackgroundColor>Yellow</BackgroundColor>
+        <BottomBorder>
+          <Width>2pt</Width>
+          <Color>Red</Color>
+          <BorderStyle>Solid</BorderStyle>
+        </BottomBorder>
+      </Style>
+      <ReportItems>
+        <Textbox>
+          <Value>TextBox in header</Value>
+          <Name>header1</Name>
+          <Height>1.5cm</Height>
+          <Left>0pt</Left>
+          <Width>180mm</Width>
+          <Top>3mm</Top>
+          <ZIndex>1</ZIndex>
+          <CanShrink>True</CanShrink>
+          <Style>
+            <FontWeight>Bold</FontWeight>
+            <TextAlign>Center</TextAlign>
+            <FontSize>16pt</FontSize>
+          </Style>
+        </Textbox>
+      </ReportItems>
+    </PageHeader>
+    <PageFooter>
+      <PrintOnFirstPage>true</PrintOnFirstPage>
+      <Height>1.5cm</Height>
+      <PrintOnLastPage>true</PrintOnLastPage>
+      <Style>
+        <BackgroundColor>Yellow</BackgroundColor>
+        <TopBorder>
+          <Width>2pt</Width>
+          <Color>Red</Color>
+          <BorderStyle>Solid</BorderStyle>
+        </TopBorder>
+      </Style>
+      <ReportItems>
+        <Textbox>
+          <Value>TextBox in footer</Value>
+          <Name>footer1</Name>
+          <Height>1.5cm</Height>
+          <Left>0pt</Left>
+          <Width>180mm</Width>
+          <Top>3mm</Top>
+          <ZIndex>5</ZIndex>
+          <CanShrink>True</CanShrink>
+          <Style>
+            <FontWeight>Bold</FontWeight>
+            <TextAlign>Center</TextAlign>
+            <FontSize>16pt</FontSize>
+          </Style>
+        </Textbox>
+      </ReportItems>
+    </PageFooter>
+  </Page>
+  <Body>
+    <ReportItems>
+      <Textbox>
+        <Name>TextBox1</Name>
+        <Value>Left top 14pt
+Line 2
+Line 3
+Line 4
+Line 5
+CanGrow=True</Value>
+        <CanGrow>True</CanGrow>
+        <Height>2cm</Height>
+        <Left>0cm</Left>
+        <Width>4cm</Width>
+        <Style>
+          <VerticalAlign>Top</VerticalAlign>
+          <FontSize>14 pt</FontSize>
+          <PaddingTop>2 mm</PaddingTop>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Left middle
+Line 2</Value>
+        <Name>TextBox2</Name>
+        <Height>2cm</Height>
+        <Width>4cm</Width>
+        <Top>4cm</Top>
+        <Style>
+          <FontSize>10 pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Left bottom
+Line 2</Value>
+        <Name>TextBox3</Name>
+        <Height>2cm</Height>
+        <Width>4cm</Width>
+        <Top>6.5cm</Top>
+        <Style>
+          <VerticalAlign>Bottom</VerticalAlign>
+          <TextAlign>Left</TextAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Center top</Value>
+        <Name>TextBox4</Name>
+        <Height>2cm</Height>
+        <Left>6cm</Left>
+        <Width>5cm</Width>
+        <Top>0cm</Top>
+        <Style>
+          <VerticalAlign>Top</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+            <Width>1</Width>
+            <Color>Black</Color>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Center middle</Value>
+        <Name>TextBox5</Name>
+        <Height>2cm</Height>
+        <Left>6cm</Left>
+        <Width>5cm</Width>
+        <Top>2.5cm</Top>
+        <Style>
+          <VerticalAlign>Middle</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Center bottom</Value>
+        <Name>TextBox6</Name>
+        <Height>2cm</Height>
+        <Left>6cm</Left>
+        <Width>5cm</Width>
+        <Top>5cm</Top>
+        <Style>
+          <VerticalAlign>Bottom</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <Color>White</Color>
+          <BackgroundColor>Black</BackgroundColor>
+          <Border>
+            <Color>Blue</Color>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Right middle</Value>
+        <Name>TextBox8</Name>
+        <Height>2cm</Height>
+        <Left>6cm</Left>
+        <Width>5cm</Width>
+        <Top>7.5cm</Top>
+        <Style>
+          <VerticalAlign>Middle</VerticalAlign>
+          <TextAlign>Right</TextAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Right bottom</Value>
+        <Name>TextBox9</Name>
+        <Height>2cm</Height>
+        <Left>6cm</Left>
+        <Width>5cm</Width>
+        <Top>10cm</Top>
+        <Style>
+          <VerticalAlign>Bottom</VerticalAlign>
+          <TextAlign>Right</TextAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <CanShrink>True</CanShrink>
+        <Value>Right top 18pt
+CanShrink=True</Value>
+        <Name>TextBox7</Name>
+        <Height>4cm</Height>
+        <Left>12cm</Left>
+        <Width>6cm</Width>
+        <Top>0cm</Top>
+        <Style>
+          <VerticalAlign>Top</VerticalAlign>
+          <TextAlign>Right</TextAlign>
+          <Color>Red</Color>
+          <PaddingRight>3mm</PaddingRight>
+          <PaddingLeft>2mm</PaddingLeft>
+          <FontSize>18pt</FontSize>
+          <BackgroundColor>Pink</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Text Clipped 1
+Text Clipped 2
+Text Clipped 3
+Text Clipped 4
+Text Clipped 5
+Text Clipped 6</Value>
+        <Name>TextBox9-2</Name>
+        <Height>2cm</Height>
+        <Left>12cm</Left>
+        <Width>5cm</Width>
+        <Top>5cm</Top>
+        <Style>
+          <VerticalAlign>Middle</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>TextClipped 1XText Clipped 2XText Clipped 3XText Clipped 4XText Clipped 5XText Clipped 6 5XText Clipped 7</Value>
+        <Name>TextBox9-3</Name>
+        <Height>1.5cm</Height>
+        <Left>12cm</Left>
+        <Width>4cm</Width>
+        <Top>8cm</Top>
+        <Style>
+          <VerticalAlign>Middle</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>ABCDE Sans</Value>
+        <Name>TextBox11</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>5cm</Width>
+        <Top>10cm</Top>
+        <Style>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>ABCDE Arial</Value>
+        <Name>TextBox12</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>5cm</Width>
+        <Top>11cm</Top>
+        <Style>
+          <FontFamily>Arial</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>ABCDE Monospace</Value>
+        <Name>TextBox13</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>7cm</Width>
+        <Top>12cm</Top>
+        <Style>
+          <FontFamily>courier</FontFamily>
+          <FontSize>14pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>ABCDE Wxyz</Value>
+        <Name>TextBox14</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>5cm</Width>
+        <Top>13cm</Top>
+        <Style>
+          <FontFamily>Wxyz</FontFamily>
+          <FontSize>14 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Style Normal</Value>
+        <Name>TextBox15</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>5cm</Width>
+        <Top>15cm</Top>
+        <Style>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Style Italic</Value>
+        <Name>TextBox16</Name>
+        <Height>1cm</Height>
+        <Left>0mm</Left>
+        <Width>5cm</Width>
+        <Top>15.5cm</Top>
+        <Style>
+          <FontStyle>Italic</FontStyle>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
 
-        <PageHeader>
-            <Height>1.5cm</Height>
-            <PrintOnFirstPage>true</PrintOnFirstPage>
-            <PrintOnLastPage>true</PrintOnLastPage>
-            <Style>
-                <BottomBorder>
-                    <BorderStyle>Solid</BorderStyle>
-                    <Color>Red</Color>
-                    <Width>2pt</Width>
-                </BottomBorder>
-                <BackgroundColor>Yellow</BackgroundColor>
-            </Style>
-            <ReportItems>
-                <Textbox>
-                    <Name>header1</Name>
-                    <Height>1.5cm</Height>
-                    <Width>180mm</Width>
-                    <Value>TextBox in header</Value>                    
-                    <Style>
-                        <FontWeight>Bold</FontWeight>
-                        <FontSize>16pt</FontSize>
-                        <TextAlign>Center</TextAlign>
-                    </Style>
-                    <Left>0pt</Left>
-                    <Top>3mm</Top>
-                    <ZIndex>1</ZIndex>                    
-                </Textbox>
-            </ReportItems>
-        </PageHeader>
-        
-        <PageFooter>       
-            <Height>1.5cm</Height>
-            <PrintOnFirstPage>true</PrintOnFirstPage>
-            <PrintOnLastPage>true</PrintOnLastPage>
-            <Style>
-                <TopBorder>
-                    <BorderStyle>Solid</BorderStyle>
-                    <Color>Red</Color>
-                    <Width>2pt</Width>
-                </TopBorder>
-                <BackgroundColor>Yellow</BackgroundColor>
-            </Style>            
-            <ReportItems>
-                <Textbox>
-                    <Name>footer1</Name>
-                    <Height>1.5cm</Height>
-                    <Width>180mm</Width>
-                    <Value>TextBox in footer</Value>                    
-                    <Style>
-                        <FontWeight>Bold</FontWeight>
-                        <FontSize>16pt</FontSize>
-                        <TextAlign>Center</TextAlign>
-                    </Style>
-                    <Left>0pt</Left>
-                    <Top>3mm</Top>
-                    <ZIndex>5</ZIndex>                    
-                </Textbox>
-            </ReportItems>
-        </PageFooter>
-    </Page>        
+      <Textbox>
+        <Value>Weight 100</Value>
+        <Name>TextBox17</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>13cm</Top>
+        <Style>
+          <FontWeight>100</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
 
-    <Body>
-        <ReportItems>
-            <Textbox>            
-                <Name>TextBox1</Name>
-                <Value>Left top 14pt&#10;Line 2&#10;Line 3&#10;Line 4&#10;Line 5&#10;CanGrow=True</Value>
-                <Height>5mm</Height>
-                <Width>6cm</Width>
-                <CanGrow>True</CanGrow>
-                <Style>
-                    <FontSize>14 pt</FontSize>
-                    <PaddingLeft>2 mm</PaddingLeft>
-                    <PaddingTop>2 mm</PaddingTop>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <VerticalAlign>Top</VerticalAlign>
-                </Style>        
-                <Left>0cm</Left>
-                <Top>1mm</Top>        
-            </Textbox>
-            
-            <Textbox>
-                <Name>TextBox2</Name>
-                <Value>Left middle&#10;Line 2</Value>
-                <Height>2.5cm</Height>
-                <Width>5cm</Width>
-                <Style>                
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>          
-                    <VerticalAlign>Middle</VerticalAlign>          
-                </Style>
-                <Left>7cm</Left>
-                <Top>1mm</Top>
-            </Textbox>            
-
-            <Textbox>
-                <Name>TextBox3</Name>
-                <Value>Left bottom&#10;Line 2</Value>
-                <Height>2.5cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Left</TextAlign>
-                    <VerticalAlign>Bottom</VerticalAlign>
-                    <PaddingBottom>2 mm</PaddingBottom>
-                </Style>
-                <Left>13cm</Left>
-                <Top>1mm</Top>
-            </Textbox>
-            
-            <Textbox>
-                <Name>TextBox4</Name>
-                <Value>Center top</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Center</TextAlign>
-                    <VerticalAlign>Top</VerticalAlign>
-                </Style>
-                <Left>7cm</Left>
-                <Top>3cm</Top>
-            </Textbox>            
-
-            <Textbox>
-                <Name>TextBox5</Name>
-                <Value>Center middle</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Center</TextAlign>
-                    <VerticalAlign>Middle</VerticalAlign>
-                </Style>
-                <Left>7cm</Left>
-                <Top>6cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox6</Name>
-                <Value>Center bottom</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Color>White</Color>
-                    <BackgroundColor>Black</BackgroundColor>
-                    <Border>
-                        <Color>Blue</Color>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Center</TextAlign>
-                    <VerticalAlign>Bottom</VerticalAlign>
-                </Style>
-                <Left>13cm</Left>
-                <Top>3cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox7</Name>
-                <Value>Right top 18pt&#10;CanShrink=True</Value>
-                <Height>4cm</Height>
-                <Width>6cm</Width>
-                <CanShrink>True</CanShrink>
-                <Style>
-                    <Color>Red</Color>
-                    <FontSize>18pt</FontSize>
-                    <BackgroundColor>Pink</BackgroundColor>
-                    <PaddingRight>3 mm</PaddingRight>
-                    <PaddingTop>2 mm</PaddingTop>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Right</TextAlign>
-                    <VerticalAlign>Top</VerticalAlign>
-                </Style>
-                <Left>0mm</Left>
-                <Top>6cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox8</Name>
-                <Value>Right middle</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Right</TextAlign>
-                    <VerticalAlign>Middle</VerticalAlign>
-                </Style>
-                <Left>7cm</Left>
-                <Top>9cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox9</Name>
-                <Value>Right bottom</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <TextAlign>Right</TextAlign>
-                    <VerticalAlign>Bottom</VerticalAlign>
-                </Style>
-                <Left>13cm</Left>
-                <Top>6cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox9-2</Name>
-                <Value>Text Clipped 1&#10;Text Clipped 2&#10;Text Clipped 3&#10;Text Clipped 4&#10;Text Clipped 5&#10;Text Clipped 6</Value>
-                <Height>2cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                <VerticalAlign>Middle</VerticalAlign>
-                </Style>
-                <Left>13cm</Left>
-                <Top>9 cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox9-3</Name>
-                <Value>TextClipped 1XText Clipped 2XText Clipped 3XText Clipped 4XText Clipped 5XText Clipped 6</Value>
-                <Height>1.5cm</Height>
-                <Width>4cm</Width>
-                <Style>
-                    <Border>
-                        <BorderStyle>Solid</BorderStyle>
-                    </Border>
-                    <VerticalAlign>Middle</VerticalAlign>
-                </Style>
-                <Left>13cm</Left>
-                <Top>12 cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox11</Name>
-                <Value>ABCDE Sans</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>14 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>10cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox12</Name>
-                <Value>ABCDE Arial</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontFamily>Arial</FontFamily>
-                    <FontSize>14 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>11cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox13</Name>
-                <Value>ABCDE Monospace</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontFamily>Monospace</FontFamily>
-                    <FontSize>14 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>12cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox14</Name>
-                <Value>ABCDE Wxyz</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontFamily>Wxyz</FontFamily>
-                    <FontSize>14 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>13cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox15</Name>
-                <Value>Style Normal</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>15cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox16</Name>
-                <Value>Style Italic</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontStyle>Italic</FontStyle> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>15.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox17</Name>
-                <Value>Weight 100</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>100</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>16.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox18</Name>
-                <Value>Weight 200</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>200</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>17cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox19</Name>
-                <Value>Weight 300</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>300</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>17.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox20</Name>
-                <Value>Weight 400</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>400</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>18cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox21</Name>
-                <Value>Weight 500</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>500</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>18.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox22</Name>
-                <Value>Weight 600</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>600</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>19cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox23</Name>
-                <Value>Weight 700</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>700</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>19.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox24</Name>
-                <Value>Weight 800</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>800</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>20cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox25</Name>
-                <Value>Weight 900</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>900</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>20.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox26</Name>
-                <Value>Weight Lighter</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>Lighter</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>21cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox27</Name>
-                <Value>Weight Normal</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>Normal</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>21.5cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox28</Name>
-                <Value>Weight Bold</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>Bold</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>22cm</Top>
-            </Textbox>
-
-            <Textbox>
-                <Name>TextBox29</Name>
-                <Value>Weight Bolder</Value>
-                <Height>1cm</Height>
-                <Width>5cm</Width>
-                <Style>
-                    <FontWeight>Bolder</FontWeight> 
-                    <FontFamily>Sans</FontFamily>
-                    <FontSize>12 pt</FontSize>
-                </Style>
-                <Left>0mm</Left>
-                <Top>22.5cm</Top>
-            </Textbox>
-            
-        </ReportItems>        
-    </Body>
+      <Textbox>
+        <Value>Weight 200</Value>
+        <Name>TextBox18</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>13.5cm</Top>
+        <Style>
+          <FontWeight>200</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 300</Value>
+        <Name>TextBox19</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>14cm</Top>
+        <Style>
+          <FontWeight>300</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 400</Value>
+        <Name>TextBox20</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>14.5cm</Top>
+        <Style>
+          <FontWeight>400</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 500</Value>
+        <Name>TextBox21</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>15cm</Top>
+        <Style>
+          <FontWeight>500</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 600</Value>
+        <Name>TextBox22</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>15.5cm</Top>
+        <Style>
+          <FontWeight>600</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 700</Value>
+        <Name>TextBox23</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>16cm</Top>
+        <Style>
+          <FontWeight>700</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 800</Value>
+        <Name>TextBox24</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>16.5cm</Top>
+        <Style>
+          <FontWeight>800</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight 900</Value>
+        <Name>TextBox25</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>17cm</Top>
+        <Style>
+          <FontWeight>900</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight Lighter</Value>
+        <Name>TextBox26</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>17.5cm</Top>
+        <Style>
+          <FontWeight>Lighter</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight Normal</Value>
+        <Name>TextBox27</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>18cm</Top>
+        <Style>
+          <FontWeight>Normal</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight Bold</Value>
+        <Name>TextBox28</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>18.5cm</Top>
+        <Style>
+          <FontWeight>Bold</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+      <Textbox>
+        <Value>Weight Bolder</Value>
+        <Name>TextBox29</Name>
+        <Height>1cm</Height>
+        <Left>10cm</Left>
+        <Width>5cm</Width>
+        <Top>19cm</Top>
+        <Style>
+          <FontWeight>Bolder</FontWeight>
+          <FontFamily>Sans</FontFamily>
+          <FontSize>12 pt</FontSize>
+        </Style>
+      </Textbox>
+    </ReportItems>
+  </Body>
 </Nuntiare>

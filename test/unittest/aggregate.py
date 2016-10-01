@@ -4,7 +4,7 @@
 # contains the full copyright notices and license terms.
 
 import unittest
-import os
+from tools import get_report_path
 from datetime import datetime
 from decimal import Decimal
 from nuntiare.report import Report
@@ -19,12 +19,7 @@ class AggregateTest(unittest.TestCase):
         Sum in diferent contexts.
         Test Grouping and sorting too.
         '''
-
-        report_path = os.path.dirname(os.path.realpath(__file__))
-        report_path = os.path.normpath(
-            os.path.join(report_path, '..', 'report'))
-        report = Report(os.path.join(
-            report_path, 'northwind_orders.xml'))
+        report = Report(get_report_path('northwind_orders.xml'))
 
         con_file_info = open("db_test_connection_northwind", "r")
         conn_str = con_file_info.readline()

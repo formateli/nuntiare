@@ -5,18 +5,18 @@
 import sys
 import cgi
 from .. render import Render
-from ... import logger
+from ... import LOGGER
 from ... outcome.page_item import PageRectangle
 
 
-class RenderObject(Render):
+class HtmlRender(Render):
     def __init__(self):
-        super(RenderObject, self).__init__(extension='html')
+        super(HtmlRender, self).__init__(extension='html')
         self.doc = None
         self.style_helper = _StyleHelper()
 
     def render(self, report, overwrite):
-        super(RenderObject, self).render(report, overwrite)
+        super(HtmlRender, self).render(report, overwrite)
 
         report.globals.TotalPages = 1
         report.globals.PageNumber = 1
@@ -31,7 +31,7 @@ class RenderObject(Render):
 
         container = _HtmlElement('div', 'container')
         container.add_attribute(
-            'style', 'width:{0}mm'.format(report.result.available_width))
+            'style', 'width:{0}pt'.format(report.result.available_width))
 
         self._get_report_header_footer(
             'header', report, report.result.header, container)
@@ -85,10 +85,10 @@ class RenderObject(Render):
         report_header = _HtmlElement("div", "{0}_container".format(name))
         if name == "header":
             report_header.add_attribute(
-                "style", "height:{0}mm".format(header_footer.height))
+                "style", "height:{0}pt".format(header_footer.height))
         else:
             report_header.add_attribute(
-                "style", "clear:both; height:{0}mm".format(
+                "style", "clear:both; height:{0}pt".format(
                     header_footer.height))
         container.add_element(report_header)
         self._render_items(items, report_header)
@@ -97,7 +97,7 @@ class RenderObject(Render):
         report_body = _HtmlElement("div", "body_container")
         report_body.add_attribute(
             "style",
-            "float:left; padding:1mm 1mm 1mm 1mm; width:{0}mm".format(
+            "float:left; padding:1pt 1pt 1pt 1pt; width:{0}pt".format(
                 report.result.available_width))
         container.add_element(report_body)
         self._render_items(report.result.body.items.item_list,
@@ -201,7 +201,7 @@ class RenderObject(Render):
         else:
             res = rec
 
-        if vertical_align and txt != "":
+        if vertical_align and txt != '':
             div_vertical = _HtmlElement("div", vertical_align)
             div_vertical.add_element(_HtmlElement("text", None, txt))
             rec.add_element(div_vertical)
@@ -237,9 +237,9 @@ class RenderObject(Render):
         self._add_style_property(
             'overflow', 'hidden', ignore_list,  properties)
         self._add_style_property(
-            'height', "{0}mm".format(it.height), ignore_list,  properties)
+            'height', "{0}pt".format(it.height), ignore_list,  properties)
         self._add_style_property(
-            'width', "{0}mm".format(it.width), ignore_list,  properties)
+            'width', "{0}pt".format(it.width), ignore_list,  properties)
         if it.style.background_color:
             self._add_style_property(
                 'background-color',
@@ -260,7 +260,7 @@ class RenderObject(Render):
                     it.style.left_border.border_style)),
             ignore_list, properties)
         self._add_style_property(
-            'border-width', "{0}mm {1}mm {2}mm {3}mm".format(
+            'border-width', "{0}pt {1}pt {2}pt {3}pt".format(
                 self._get_border_style_width(
                     it.style.top_border.width),
                 self._get_border_style_width(
@@ -295,7 +295,7 @@ class RenderObject(Render):
                 'font-style', it.style.font_style,
                 ignore_list,  properties)
             self._add_style_property(
-                'font-size', "{0}mm".format(it.style.font_size),
+                'font-size', "{0}pt".format(it.style.font_size),
                 ignore_list,  properties)
             self._add_style_property(
                 'text-align', it.style.text_align,
@@ -304,7 +304,7 @@ class RenderObject(Render):
                 'text-decoration', it.style.text_decoration,
                 ignore_list, properties)
             self._add_style_property(
-                'padding', "{0}mm {1}mm {2}mm {3}mm".format(
+                'padding', "{0}pt {1}pt {2}pt {3}pt".format(
                     it.style.padding_top,
                     it.style.padding_right,
                     it.style.padding_left,
@@ -328,19 +328,19 @@ class RenderObject(Render):
         lines = []
         lines = self.doc.get_element()
         try:
-            f = open(self.result_file, "w")
+            f = open(self.result_file, "wb")
             try:
                 for l in lines:
                     f.write(l.encode('utf-8'))
             finally:
                 f.close()
         except IOError as e:
-            logger.error(
+            LOGGER.error(
                 "I/O Error trying to write to file '{0}'. {1}.".format(
                     self.result_file, e.strerror),
                 True, "IOError")
         except:
-            logger.error(
+            LOGGER.error(
                 "Unexpected error trying to write to file '{0}'. {1}.".format(
                     self.result_file, sys.exc_info()[0]),
                 True, "IOError")

@@ -55,7 +55,7 @@ def do_render(args):
     if not os.path.isfile(args.file):
         LOGGER.critical(
             "File '{0}' not found.".format(args.file),
-            True, "IOError")
+            True, 'IOError')
 
     renders = args.r
     if not renders:
@@ -74,7 +74,7 @@ def do_render(args):
         render = Render.get_render(r)
         if not render:
             LOGGER.warn(
-                "Render '{0}' not found. Continue with next render.".format(r))
+                "Render '{0}' not found.".format(r))
             continue
         render.render(report, not args.no_overwrite)
 
@@ -86,9 +86,9 @@ def do_convert(args):
     from xml.dom import minidom
 
     def replace_text(text):
-        result = text.replace("Fields!", "F.")
-        result = result.replace("Parameters!", "P.")
-        result = result.replace(".Value", "")
+        result = text.replace('Fields!', 'F.')
+        result = result.replace('Parameters!', 'P.')
+        result = result.replace('.Value', '')
         return result
 
     def get_element(doc, node, base_element):
@@ -206,7 +206,7 @@ def do_convert(args):
     rdlc_path, rdlc_file = os.path.split(rdlc)
     rdlc_name = os.path.splitext(rdlc_file)[0]
 
-    nuntiare = os.path.join(rdlc_path, rdlc_name + ".xml")
+    nuntiare = os.path.join(rdlc_path, rdlc_name + '.xml')
 
     dom = minidom.parse(rdlc)
     node = dom.getElementsByTagName("Report")
@@ -215,8 +215,8 @@ def do_convert(args):
             "Not a valid Rdlc report definition file.", True)
 
     doc = minidom.Document()
-    root_element = doc.createElement("Nuntiare")
-    name_element = doc.createElement("Name")
+    root_element = doc.createElement('Nuntiare')
+    name_element = doc.createElement('Name')
     name_element.appendChild(doc.createTextNode(rdlc_name))
     root_element.appendChild(name_element)
 
@@ -224,9 +224,9 @@ def do_convert(args):
 
     doc.appendChild(root_element)
 
-    f = open(nuntiare, "wb")
+    f = open(nuntiare, 'wb')
     try:
-        f.write(doc.toprettyxml(indent="  ", encoding="utf-8"))
+        f.write(doc.toprettyxml(indent='  ', encoding='utf-8'))
     finally:
         f.close()
     LOGGER.info("'{0}' created.".format(nuntiare))

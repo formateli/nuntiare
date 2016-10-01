@@ -73,11 +73,11 @@ class Fields(Collection):
 
         item = self._items_dict[name]
 
-        if function == "DataField":
+        if function == 'DataField':
             return item.data_field
-        if function == "IsMissing":
+        if function == 'IsMissing':
             return item.is_missing
-        if function == "DataType":
+        if function == 'DataType':
             return item._data_type
         LOGGER.error(
             "Invalid property '{0}' for {1} collection item.".format(
@@ -362,16 +362,16 @@ class DataSetObject(DataSet):
 
         field_map = []
         for field in data_set_def.fields:
-            val = field.get_element("Value")
+            val = field.get_element('Value')
             if val:
                 val = val.expression
             field_map.append({
                     'name': field.Name,
                     'data_field': Expression.get_value_or_default(
-                        report, field, "DataField", None),
+                        report, field, 'DataField', None),
                     'field_value': val,
                     'data_type': Expression.get_value_or_default(
-                        report, field, "DataType", None)
+                        report, field, 'DataType', None)
                 })
 
         super(DataSetObject, self).__init__(
@@ -385,10 +385,10 @@ class DataSetObject(DataSet):
                 command_text)
         else:
             # Connection failed, try to load data appended to report
-            LOGGER.info("Trying to load embedded data...")
+            LOGGER.info('Trying to load embedded data...')
             if not self.report.definition.data:
-                err_msg = "DataSource connection failed and no data embedded"
-                err_msg += " in defintion file for DataSet: '{0}'."
+                err_msg = "DataSource connection failed and " \
+                    "no data embedded in defintion file for DataSet: '{0}'."
                 LOGGER.critical(err_msg.format(self.name), True)
             self.report.definition.data.load(self.report)
             data = self.report.definition.data.get_data(self.data_set_def.Name)
@@ -413,9 +413,9 @@ class FiltersObject(object):
     class _FilterObject(object):
         def __init__(self, filter_def):
             self.filter_values = []
-            self.filter_expression = filter_def.get_element("FilterExpression")
-            self.operator = filter_def.get_element("Operator")
-            filter_values_def = filter_def.get_element("FilterValues")
+            self.filter_expression = filter_def.get_element('FilterExpression')
+            self.operator = filter_def.get_element('Operator')
+            filter_values_def = filter_def.get_element('FilterValues')
             if filter_values_def:
                 for v in filter_values_def.expression_list:
                     self.filter_values.append(v)
@@ -474,22 +474,22 @@ class FiltersObject(object):
                 err_msg = "Operator '{0}' only accepts one filter value. "
                 err_msg += "Data name: '{1}'"
                 raise_error_with_log(err_msg.format(operator, name))
-            if operator == "Equal":
+            if operator == 'Equal':
                 if val == vals[0]:
                     filtered = True
-            if operator == "NotEqual":
+            if operator == 'NotEqual':
                 if val != vals[0]:
                     filtered = True
-            if operator == "GreaterThan":
+            if operator == 'GreaterThan':
                 if val > vals[0]:
                     filtered = True
-            if operator == "GreaterThanOrEqual":
+            if operator == 'GreaterThanOrEqual':
                 if val >= vals[0]:
                     filtered = True
-            if operator == "LessThan":
+            if operator == 'LessThan':
                 if val < vals[0]:
                     filtered = True
-            if operator == "LessThanOrEqual":
+            if operator == 'LessThanOrEqual':
                 if val <= vals[0]:
                     filtered = True
             if operator in (
@@ -498,14 +498,14 @@ class FiltersObject(object):
                     "Operator '{0}' is not supported at this moment.".format(
                         operator))
         else:
-            if operator == "Between":
+            if operator == 'Between':
                 if len(vals) > 2:
-                    err_msg = "Operator '{0}' takes exactly 2 filter values. "
-                    err_msg += "Data name: '{1}'"
+                    err_msg = "Operator '{0}' takes exactly 2 " \
+                        "filter values. Data name: '{1}'"
                     raise_error_with_log(err_msg.format(operator, name))
                 if val >= vals[0] and val <= vals[1]:
                     filtered = True
-            if operator == "In":
+            if operator == 'In':
                 if val in vals:
                     filtered = True
 
@@ -517,11 +517,11 @@ class SortingObject(object):
     class _SortByObject(object):
         def __init__(self, sortby_def, report):
             self.sort_expression = None
-            self.direction = "Ascending"
+            self.direction = 'Ascending'
             if sortby_def:
-                self.sort_value = sortby_def.get_element("Value")
+                self.sort_value = sortby_def.get_element('Value')
                 self.direction = report.get_value(
-                    sortby_def, "SortDirection", "Ascending")
+                    sortby_def, 'SortDirection', 'Ascending')
 
     def __init__(self, report, sorting_def):
         self.report = report
@@ -537,7 +537,7 @@ class SortingObject(object):
         groups = []
         i = 0
         for sortby in self.sortby_list:
-            reverse = False if sortby.direction == "Ascending" else True
+            reverse = False if sortby.direction == 'Ascending' else True
             if i == 0:
                 groups = DataGroupInstance.get_groups(
                     data, sortby.sort_value, sub_groups=[])
@@ -584,8 +584,8 @@ class DataGroupObject(object):
         self.EOF = True
 
         if name in report.data_groups:
-            err_msg = "DataSet, DataRegion or Group with "
-            err_msg += "name '{0}' already exists."
+            err_msg = "DataSet, DataRegion or Group with " \
+                "name '{0}' already exists."
             LOGGER.error(err_msg.format(name), True)
         report.data_groups[name] = self
         if not parent:
@@ -680,9 +680,9 @@ class DataGroupObject(object):
 
     def _modify_name(self, data):
         name = data.name
-        check = ""
-        while name.startswith("data_copy_"):
-            check += "data_copy_"
+        check = ''
+        while name.startswith('data_copy_'):
+            check += 'data_copy_'
             name = name[10:]
         if check:
             del self.report.data_interfaces[check + name]

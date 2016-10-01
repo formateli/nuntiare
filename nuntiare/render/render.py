@@ -2,7 +2,9 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
+import sys
 import os
+import inspect
 from importlib import import_module
 from .. import CONFIG, LOGGER
 
@@ -11,11 +13,14 @@ class Render(object):
     def __init__(self, extension=None):
         self.extension = extension
         self.result_file = None
+        self.report = None
 
     def render(self, report, overwrite=True):
         if not report.result:
             LOGGER.critical(
-                "No Result object in report. Have you executed run()?", True)
+                'No Result object in report. Have you executed run()?', True)
+
+        self.report = report
 
         if self.extension:
             self.result_file = os.path.join(
@@ -33,21 +38,31 @@ class Render(object):
     @staticmethod
     def get_render(render_name):
         '''
-        Returns a derived Render object that corresponds
+        Returns a derived Render object that correspond
         to 'render_name'. Ex: 'html'
         '''
+        LOGGER.info(
+            "Requiring render '{0}'".format(render_name))
         render_class = None
         if not CONFIG.has_option('renders', render_name):
             return
         module = CONFIG.get('renders', render_name)
-        module = module + '.render'
+        i = module.rindex('.')
+        module_name = module[:i]
+        class_name = module[i + 1:]
         try:
-            render = import_module(module)
-            render_class = getattr(render, 'RenderObject')
+            render = import_module(module_name)
+            render_class = getattr(render, class_name)
         except Exception as e:
             LOGGER.error(
-                "Error loading '{0}' render module. {1}".format(
-                    render_name, e.message), True)
+                "Error loading '{0}' render module. {1}.".format(
+                    render_name, sys.exc_info()), True)
             return
+
         if render_class:
+            LOGGER.info(
+                "Render '{0}' found.".format(render_name))
             return render_class()
+        else:
+            LOGGER.warn(
+                "Render '{0}' not found.".format(render_name))

@@ -9,9 +9,44 @@
       <DataType>String</DataType>
     </ReportParameter>
     <ReportParameter>
-      <Name>conn_string</Name>
-      <DefaultValue>dbname=xxx host=xxx port=5432 user=user password=password client_encoding=UNICODE connect_timeout=0</DefaultValue>
+      <Name>db_name</Name>
+      <DefaultValue>northwind</DefaultValue>
       <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>db_host</Name>
+      <DefaultValue>localhost</DefaultValue>
+      <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>db_port</Name>
+      <DefaultValue>5432</DefaultValue>
+      <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>db_user</Name>
+      <DefaultValue>user</DefaultValue>
+      <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>db_password</Name>
+      <DefaultValue>passwd</DefaultValue>
+      <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>conn_string</Name>
+      <DefaultValue>='dbname=' + P.db_name + \
+' host=' + P.db_host + \
+' port=' + P.db_port + \
+' user=' + P.db_user + \
+' password=' + P.db_password + \
+' client_encoding=UNICODE connect_timeout=0'</DefaultValue>
+      <DataType>String</DataType>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>query_limit</Name>
+      <DataType>Integer</DataType>
+      <DefaultValue>100</DefaultValue>
     </ReportParameter>
   </ReportParameters>
   <Body>
@@ -1249,6 +1284,7 @@
           </TablixRows>
         </TablixBody>
         <Style>
+          <BackgroundColor>#ffffb3</BackgroundColor>
           <Border>
             <BorderStyle>Solid</BorderStyle>
           </Border>
@@ -1271,18 +1307,17 @@
       <Name>OrderDataSet</Name>
       <Query>
         <DataSourceName>TempDataSource</DataSourceName>
-        <CommandText>SELECT orders.orderid, orders.orderdate,
-orders.customerid, customers.companyname, customers.country,
-order_details.productid, products.productname, products.categoryid,
-categories.categoryname, order_details.quantity,
-order_details.unitprice, order_details.discount
-FROM orders
-INNER JOIN customers ON orders.customerid = customers.customerid
-INNER JOIN order_details ON order_details.orderid = orders.orderid
-INNER JOIN products ON products.productid = order_details.productid
-INNER JOIN categories ON categories.categoryid = products.categoryid
-LIMIT 100
-        </CommandText>
+        <CommandText>='SELECT orders.orderid, orders.orderdate, ' + \
+'orders.customerid, customers.companyname, customers.country, ' + \
+'order_details.productid, products.productname, products.categoryid, ' + \
+'categories.categoryname, order_details.quantity, ' + \
+'order_details.unitprice, order_details.discount ' + \
+'FROM orders ' + \
+'INNER JOIN customers ON orders.customerid = customers.customerid ' + \
+'INNER JOIN order_details ON order_details.orderid = orders.orderid ' + \
+'INNER JOIN products ON products.productid = order_details.productid ' + \
+'INNER JOIN categories ON categories.categoryid = products.categoryid ' + \
+'LIMIT ' + str(P.query_limit)</CommandText>
       </Query>
       <Fields>
         <Field>

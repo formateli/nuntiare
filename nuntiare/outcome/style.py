@@ -2,8 +2,6 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-from .. definition.expression import Size
-
 
 class OutcomeStyle(object):
     '''
@@ -13,101 +11,107 @@ class OutcomeStyle(object):
 
     _count = 0
     _styles = {}
+    _default_style = None
 
     def __init__(self, report):
         self._report = report
-        self.styles = {}
-        # Used when style_def = None
-        self.first_key = None
+        # List fonts found in report
+        self.fonts = []
+        # Ensure default style
+        self.get_style(None)
 
     def get_style(self, style_def):
-        if not style_def and self.first_key:
-            return self.styles[self.first_key]
+        if not style_def and OutcomeStyle._default_style:
+            return OutcomeStyle._styles[OutcomeStyle._default_style]
         style = _StyleInfo()
         style.background_color = self._report.get_value(
-                style_def, "BackgroundColor", None)
+            style_def, 'BackgroundColor', None)
         style.background_gradient_type = self._report.get_value(
-                style_def, "BackgroundGradientType", 'None')
+            style_def, 'BackgroundGradientType', 'None')
         style.background_gradient_end_color = self._report.get_value(
-                style_def, "BackgroundGradientEndColor", None)
+            style_def, 'BackgroundGradientEndColor', None)
         style.background_image = None  # TODO
         style.font_style = self._report.get_value(
-                style_def, "FontStyle", 'Normal')
+            style_def, 'FontStyle', 'Normal')
         style.font_family = self._report.get_value(
-                style_def, "FontFamily", 'Arial')
+            style_def, 'FontFamily', 'Arial')
+        if style.font_family not in self.fonts:
+            self.fonts.append(style.font_family)
         style.font_size = self._report.get_value(
-                style_def, "FontSize", Size.convert(10, 'pt'))
+            style_def, 'FontSize', 10)
         style.font_weight = self._report.get_value(
-                style_def, "FontWeight", 'Normal')
+            style_def, 'FontWeight', 'Normal')
         style.format = self._report.get_value(
-                style_def, "Format", None)
+            style_def, 'Format', None)
         style.text_decoration = self._report.get_value(
-                style_def, "TextDecoration", 'None')
+            style_def, 'TextDecoration', 'None')
         style.text_align = self._report.get_value(
-                style_def, "TextAlign", 'General')
+            style_def, 'TextAlign', 'None')
         style.vertical_align = self._report.get_value(
-                style_def, "VerticalAlign", 'Top')
+            style_def, 'VerticalAlign', 'Top')
         style.color = self._report.get_value(
-                style_def, "Color", '#000000')
+            style_def, 'Color', '#000000')
         style.padding_left = self._report.get_value(
-                style_def, "PaddingLeft", 0.0)
+            style_def, 'PaddingLeft', 0.0)
         style.padding_right = self._report.get_value(
-                style_def, "PaddingRight", 0.0)
+            style_def, 'PaddingRight', 0.0)
         style.padding_top = self._report.get_value(
-                style_def, "PaddingTop", 0.0)
+            style_def, 'PaddingTop', 0.0)
         style.padding_bottom = self._report.get_value(
-                style_def, "PaddingBottom", 0.0)
+            style_def, 'PaddingBottom', 0.0)
         style.line_height = self._report.get_value(
-                style_def, "LineHeight", Size.convert(1, 'pt'))
+            style_def, 'LineHeight', 1)
         style.direction = self._report.get_value(
-                style_def, "Direction", 'LTR')
+            style_def, 'Direction', 'LTR')
         style.writing_mode = self._report.get_value(
-                style_def, "WritingMode", 'Horizontal')
+            style_def, 'WritingMode', 'Horizontal')
 
         if style_def:
             self._get_border(
-                style._border, style_def.get_element("Border"))
+                style._border, style_def.get_element('Border'))
             self._get_border(
-                style.top_border, style_def.get_element("TopBorder"))
+                style.top_border, style_def.get_element('TopBorder'))
             self._get_border(
-                style.bottom_border, style_def.get_element("BottomBorder"))
+                style.bottom_border, style_def.get_element('BottomBorder'))
             self._get_border(
-                style.left_border, style_def.get_element("LeftBorder"))
+                style.left_border, style_def.get_element('LeftBorder'))
             self._get_border(
-                style.right_border, style_def.get_element("RightBorder"))
+                style.right_border, style_def.get_element('RightBorder'))
 
         str_id = style.get_id()
-        if str_id in self.styles:
-            return self.styles[str_id]
         if str_id in OutcomeStyle._styles:
-            self.styles[str_id] = OutcomeStyle._styles[str_id]
             return OutcomeStyle._styles[str_id]
         style.id = OutcomeStyle._count
-        OutcomeStyle._count = OutcomeStyle._count + 1
+        OutcomeStyle._count += 1
         OutcomeStyle._styles[str_id] = style
-        self.styles[str_id] = style
-        if not self.first_key:
-            self.first_key = str_id
+        if not OutcomeStyle._default_style:
+            OutcomeStyle._default_style = str_id
         return style
 
     def _get_border(self, border, border_def):
         if not border_def:
             return
-        border.color = self._report.get_value(
-                border_def, "Color", None)
-        border.border_style = self._report.get_value(
-                border_def, "BorderStyle", None)
-        border.Width = self._report.get_value(
-                border_def, "Width", None)
+        color = self._report.get_value(
+            border_def, 'Color', None)
+        if color:
+            border.color = color
+        border_style = self._report.get_value(
+            border_def, 'BorderStyle', None)
+        if border_style:
+            border.border_style = border_style
+        width = self._report.get_value(
+            border_def, 'Width', None)
+        if width:
+            border.width = width
 
 
 class _StyleInfo(object):
     class Border(object):
-        def __init__(self, color=None, style=None, width=None):
+        def __init__(self):
             self._str_id = None
-            self.color = color
-            self.border_style = style
-            self.width = width
+            self.color = None
+            self.border_style = None
+            self.width = None
 
         def get_id(self):
             self._str_id = None
@@ -120,15 +124,14 @@ class _StyleInfo(object):
             if self._str_id is None:
                 self._str_id = "|"
             else:
-                self._str_id = self._str_id + "-"
+                self._str_id += '-'
             if value:
-                self._str_id = self._str_id + str(value)
+                self._str_id += str(value)
 
     def __init__(self):
         self.id = None
         self._str_id = None
-        self._border = _StyleInfo.Border(
-                "#000000", 'None', Size.convert(1, 'pt'))
+        self._border = _StyleInfo.Border()
         self.top_border = _StyleInfo.Border()
         self.bottom_border = _StyleInfo.Border()
         self.left_border = _StyleInfo.Border()
@@ -183,8 +186,8 @@ class _StyleInfo(object):
         return self._str_id
 
     def _add_id(self, value):
-        if not value:
-            self._add_id_value("")
+        if value is None:
+            self._add_id_value('-')
         else:
             self._add_id_value(str(value))
 
@@ -201,4 +204,4 @@ class _StyleInfo(object):
         if self._str_id is None:
             self._str_id = value
         else:
-            self._str_id = self._str_id + "-" + value
+            self._str_id += "-" + value

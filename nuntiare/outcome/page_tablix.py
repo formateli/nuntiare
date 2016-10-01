@@ -75,14 +75,14 @@ class PageTablix(PageItem):
             "corresponding Hierarchy."
 
         index = self._validate_hierarchy(
-            "Columns", self.column_hierarchy.members, columns, err)
+            'Columns', self.column_hierarchy.members, columns, err)
         self._check_hierarchy_index(
-            "Columns", index, columns, err, ending=True)
+            'Columns', index, columns, err, ending=True)
 
         index = self._validate_hierarchy(
-            "Rows", self.row_hierarchy.members, rows, err)
+            'Rows', self.row_hierarchy.members, rows, err)
         self._check_hierarchy_index(
-            "Rows", index, rows, err, ending=True)
+            'Rows', index, rows, err, ending=True)
 
     def _check_hierarchy_index(self, type_, index, items, err, ending=False):
         if not ending:
@@ -197,11 +197,12 @@ class TablixHierarchy(object):
     def __init__(self, report, definition, tablix_group):
         self.members = []
         self.rows_columns = []
-        members_def = definition.get_element("TablixMembers")
+        members_def = definition.get_element('TablixMembers')
         if members_def:
             for member in members_def.member_list:
                 self.members.append(
-                    TablixMember(self, report, member, None, tablix_group))
+                    TablixMember(
+                        self, report, member, None, tablix_group))
 
 
 class TablixMember(object):
@@ -209,7 +210,7 @@ class TablixMember(object):
         def __init__(self, member, definition):
             self.member = member
             self.width = member.report.get_value(
-                definition, "Width", 0.0)
+                definition, 'Width', 0.0)
 
     class Row():
         class Cell():
@@ -218,9 +219,9 @@ class TablixMember(object):
                 self.height = height
                 self.contents = definition.get_element('CellContents')
                 self.row_span = int(report.get_value(
-                    self.contents, "RowSpan", 1))
+                    self.contents, 'RowSpan', 1))
                 self.col_span = int(report.get_value(
-                    self.contents, "ColSpan", 1))
+                    self.contents, 'ColSpan', 1))
 
             def get_items(self, grid_cell):
                 items_info = PageItemsInfo(
@@ -235,9 +236,9 @@ class TablixMember(object):
             self.member = member
             self.hidden = False  # TODO
             self.height = member.report.get_value(
-                    definition, "Height", 0.0)
+                definition, 'Height', 0.0)
             self.cells = []
-            cells_def = definition.get_element("TablixCells")
+            cells_def = definition.get_element('TablixCells')
             if cells_def:
                 for cell in cells_def.cell_list:
                     self.cells.append(
@@ -260,11 +261,11 @@ class TablixMember(object):
         self.parent_member = parent_member
         self.children = []
         self.fixed_data = report.get_value(
-            definition, "FixedData", False)
+            definition, 'FixedData', False)
         self.hide_if_no_rows = report.get_value(
-            definition, "HideIfNoRows", False)
+            definition, 'HideIfNoRows', False)
         self.repeat_on_new_page = report.get_value(
-            definition, "RepeatOnNewPage", False)
+            definition, 'RepeatOnNewPage', False)
         self.group = None
         self.scope = None
         self.is_static = True
@@ -299,7 +300,7 @@ class TablixMember(object):
                             hierarchy, report, member, self, group_to_parent))
 
     def set_definition(self, type_, row_column_def):
-        if type_ == "Rows":
+        if type_ == 'Rows':
             self.def_object = TablixMember.Row(self, row_column_def)
         else:
             self.def_object = TablixMember.Column(self, row_column_def)
@@ -323,7 +324,7 @@ class Grid(object):
     class Row(object):
         class Cell(object):
             def __init__(self, grow_direction, row, cell_object):
-                self.type = "RowCell"
+                self.type = 'RowCell'
                 self.object = cell_object
                 self.row = row
                 self.row_span = 1
@@ -345,6 +346,9 @@ class Grid(object):
                 self._parent_cell = parent
                 self._parent_cell._children_cells.append(self)
                 parent._auto_span(columns, column)
+
+            def set_new_height(self, height):
+                pass
 
             def _auto_span(self, columns, column):
                 self._auto_span_count += 1
@@ -379,7 +383,7 @@ class Grid(object):
             self.cells.append(cell)
             return cell
 
-    def __init__(self, grow_direction="row"):
+    def __init__(self, grow_direction='row'):
         self._grow_direction = grow_direction
         self.columns = []
         self.rows = []
@@ -475,10 +479,10 @@ class Grid(object):
         self.height += height
 
     def extend(self, grid, direction):
-        if direction == "right":
+        if direction == 'right':
             if len(self.rows) != len(grid.rows):
-                err_msg = "To extend Grid to the right, " \
-                    "both rows length must be equal."
+                err_msg = 'To extend Grid to the right, ' \
+                    'both rows length must be equal.'
                 LOGGER.error(err_msg, True)
             i = 0
             for row in grid.rows:
@@ -489,7 +493,7 @@ class Grid(object):
         else:  # Down
             if len(self.columns) != len(grid.columns):
                 LOGGER.error(
-                    "To extend Grid down, both columns length must be equal.",
+                    'To extend Grid down, both columns length must be equal.',
                     True)
             i = 0
             for column in grid.columns:
@@ -505,7 +509,7 @@ class Grid(object):
             new = True
         elif index > len(collection):
             LOGGER.error(
-                "Grid must increase by one Row/Column.", True)
+                'Grid must increase by one Row/Column.', True)
         else:
             item = collection[index]
         return item, new

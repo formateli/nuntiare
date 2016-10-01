@@ -3,8 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from . outcome.page_item import PageItemsInfo
-from . definition.expression import Size
-from . import logger
+from . import LOGGER
 
 
 class Result(object):
@@ -12,98 +11,81 @@ class Result(object):
         self.report = report
         self.page_def = report.definition.Page
 
-        self.height = self.page_def.get_value(
-            report, "PageHeight", Size.convert(11, "in"))
-        self.width = self.page_def.get_value(
-            report, "PageWidth", Size.convert(8.5, "in"))
+        self.height = self.page_def.PageHeight
+        self.width = self.page_def.PageWidth
 
         if self.height <= 0:
-            logger.error(
+            LOGGER.error(
                 "Report 'PageHeight' must be greater than 0.", True)
         if self.width <= 0:
-            logger.error(
+            LOGGER.error(
                 "Report 'PageWidth' must be greater than 0.", True)
 
-        self.margin_top = self.page_def.get_value(
-            report, "TopMargin", 0.0)
-        self.margin_left = self.page_def.get_value(
-            report, "LeftMargin", 0.0)
-        self.margin_right = self.page_def.get_value(
-            report, "RightMargin", 0.0)
-        self.margin_bottom = self.page_def.get_value(
-            report, "BottomMargin", 0.0)
+        self.margin_top = self.page_def.TopMargin
+        self.margin_left = self.page_def.LeftMargin
+        self.margin_right = self.page_def.RightMargin
+        self.margin_bottom = self.page_def.BottomMargin
 
-        self.columns = self.page_def.get_value(report, "Columns", 1)
-        self.column_spacing = self.page_def.get_value(
-            report, "ColumnSpacing", Size.convert(0.5, "in"))
+        self.header = None
+        self.footer = None
+        if self.page_def.PageHeader:
+            self.header = HeaderFooterInfo(
+                report, self.page_def.PageHeader)
+        if self.page_def.PageFooter:
+            self.footer = HeaderFooterInfo(
+                report, self.page_def.PageFooter)
+
+        self.body = BodyInfo(report, report.definition.Body)
+        self.body.set_available_height(
+            self.height, self.margin_top, self.margin_bottom,
+            self.header, self.footer)
 
         self.available_width = \
             self.width - self.margin_left - self.margin_right
-        self.available_height = \
-            self.height - self.margin_top - self.margin_bottom
 
+        self.columns = self.page_def.Columns
+        self.column_spacing = self.page_def.ColumnSpacing
         self.style = report.get_style(self.page_def)
-
-        self.header = self._get_header_footer(self.page_def, "PageHeader")
-        self.footer = self._get_header_footer(self.page_def, "PageFooter")
-        self.body = BodyInfo(report, report.definition.Body)
-
-        if self.body.height == 0 or self.body.height > self.available_height:
-            self.body.height = self.available_height
-        if self.body.height < self.available_height:
-            self.available_height = self.body.height
-
         self.body.run_items()
-
-    def _get_header_footer(self, page_def, element_name):
-        if page_def:
-            el_def = page_def.get_element(element_name)
-            if el_def:
-                if element_name == 'PageHeader':
-                    return HeaderInfo(self.report, el_def)
-                else:
-                    return FooterInfo(self.report, el_def)
 
 
 class _SectionInfo(object):
-    def __init__(self, report, definition):
+    def __init__(self, report, definition, has_height):
         self.report = report
         self.definition = definition
-        self.height = report.get_value(
-                definition, "Height", 0.0)
+        self.available_height = 0.0
+
+        if has_height:
+            self.height = definition.Height
+            self.available_height = self.height
+
         self.items = None
         self.style = report.get_style(definition)
 
-    def run_items(self, definition=None):
-        def_passed = self.definition
-        if definition:
-            def_passed = definition
-        self.items = PageItemsInfo(
-            self.report, def_passed, parent=None)
-
-
-class _HeaderFooterInfo(_SectionInfo):
-    def __init__(self, report, definition):
-        super(_HeaderFooterInfo, self).__init__(report, definition)
-        self.print_on_first_page = report.get_value(
-            definition, "PrintOnFirstPage", True)
-        self.print_on_last_page = report.get_value(
-            definition, "PrintOnLastPage", True)
-
     def run_items(self):
-        super(_HeaderFooterInfo, self).run_items(self.xml_definition)
+        self.items = None
+        self.items = PageItemsInfo(
+            self.report, self.definition, parent=None)
 
 
-class HeaderInfo(_HeaderFooterInfo):
+class HeaderFooterInfo(_SectionInfo):
     def __init__(self, report, definition):
-        super(HeaderInfo, self).__init__(report, definition)
-
-
-class FooterInfo(_HeaderFooterInfo):
-    def __init__(self, report, definition):
-        super(FooterInfo, self).__init__(report, definition)
+        super(HeaderFooterInfo, self).__init__(report, definition, True)
+        self.print_on_first_page = definition.PrintOnFirstPage
+        self.print_on_last_page = definition.PrintOnLastPage
 
 
 class BodyInfo(_SectionInfo):
     def __init__(self, report, definition):
-        super(BodyInfo, self).__init__(report, definition)
+        super(BodyInfo, self).__init__(report, definition, False)
+
+    def set_available_height(
+            self, page_height,
+            margin_top, margin_bottom,
+            header, footer):
+        self.available_height = \
+            page_height - margin_top - margin_bottom
+        if header:
+            self.available_height -= header.height
+        if footer:
+            self.available_height -= footer.height

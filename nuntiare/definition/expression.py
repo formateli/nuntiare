@@ -7,7 +7,8 @@ from .. data.data_type import DataType
 
 
 class Expression(object):
-    def __init__(self, expression, lnk, must_be_constant):
+    def __init__(
+            self, expression, lnk, must_be_constant):
         self.lnk = lnk
         self.must_be_constant = must_be_constant
         self.expression, self.is_constant = self.set_expression(expression)
@@ -17,8 +18,8 @@ class Expression(object):
         if expression is None or not expression.startswith('='):
             is_constant = True
         if self.must_be_constant and not is_constant:
-            err_msg = "Invalid expression '{0}' for '{1}' in '{2}' element. "
-            err_msg += "It must be a constant expression."
+            err_msg = "Invalid expression '{0}' for '{1}' in '{2}' element." \
+                " It must be a constant expression."
             LOGGER.error(err_msg.format(
                 expression, self.lnk.data,
                 self.lnk.parent.__class__.__name__), True)
@@ -85,17 +86,17 @@ class Color(Expression):
         return self._color
 
     def _set_color(self, str_input):
-        if str_input is None or str_input.strip() == "":
+        if str_input is None or str_input.strip() == '':
             self._color = Color._default_color
             return
 
         str_input = str_input.strip()
-        if str_input.startswith("#"):
+        if str_input.startswith('#'):
             Color._validate_hex_color(str_input)
             self._color = str_input
-        elif str_input.startswith("rgb"):
+        elif str_input.startswith('rgb'):
             pass  # TODO
-        elif str_input.startswith("argb"):
+        elif str_input.startswith('argb'):
             pass  # TODO
         else:
             self._color = Color._get_color_by_name(str_input)
@@ -105,7 +106,7 @@ class Color(Expression):
         if not hex_color:
             LOGGER.error(
                 "Invalid color '{0}'".format(hex_color), True)
-        if len(hex_color) != 7 or not hex_color.startswith("#"):
+        if len(hex_color) != 7 or not hex_color.startswith('#'):
             LOGGER.error(
                 "Color '{0}' not in correct format.".format(hex_color), True)
 
@@ -114,291 +115,292 @@ class Color(Expression):
         result = []
         Color._validate_hex_color(hex_color)
         hex_color = hex_color[1:]  # Remove '#'
-        result.append(int(hex_color[0:2], 16))
-        result.append(int(hex_color[2:4], 16))
-        result.append(int(hex_color[4:], 16))
+        result.append(int(hex_color[0:2] + hex_color[0:2], 16))
+        result.append(int(hex_color[2:4] + hex_color[2:4], 16))
+        result.append(int(hex_color[4:] + hex_color[4:], 16))
         return result
 
     @staticmethod
     def _get_color_by_name(name):
+        name = name.lower()
         # See http://www.w3schools.com/html/html_colornames.asp
-        if name == "AliceBlue":
+        if name == "aliceblue":
             return "#F0F8FF"
-        if name == "AntiqueWhite":
+        if name == "antiquewhite":
             return "#FAEBD7"
-        if name == "Aqua":
+        if name == "aqua":
             return "#00FFFF"
-        if name == "Aquamarine":
+        if name == "aquamarine":
             return "#7FFFD4"
-        if name == "Azure":
+        if name == "azure":
             return "#F0FFFF"
-        if name == "Beige":
+        if name == "beige":
             return "#F5F5DC"
-        if name == "Bisque":
+        if name == "bisque":
             return "#FFE4C4"
-        if name == "Black":
+        if name == "black":
             return "#000000"
-        if name == "BlanchedAlmond":
+        if name == "blanchedalmond":
             return "#FFEBCD"
-        if name == "Blue":
+        if name == "blue":
             return "#0000FF"
-        if name == "BlueViolet":
+        if name == "blueviolet":
             return "#8A2BE2"
-        if name == "Brown":
+        if name == "brown":
             return "#A52A2A"
-        if name == "BurlyWood":
+        if name == "burlywood":
             return "#DEB887"
-        if name == "CadetBlue":
+        if name == "cadetblue":
             return "#5F9EA0"
-        if name == "Chartreuse":
+        if name == "chartreuse":
             return "#7FFF00"
-        if name == "Chocolate":
+        if name == "chocolate":
             return "#D2691E"
-        if name == "Coral":
+        if name == "coral":
             return "#FF7F50"
-        if name == "CornflowerBlue":
+        if name == "cornflowerblue":
             return "#6495ED"
-        if name == "Cornsilk":
+        if name == "cornsilk":
             return "#FFF8DC"
-        if name == "Crimson":
+        if name == "crimson":
             return "#DC143C"
-        if name == "Cyan":
+        if name == "cyan":
             return "#00FFFF"
-        if name == "DarkBlue":
+        if name == "darkblue":
             return "#00008B"
-        if name == "DarkCyan":
+        if name == "darkcyan":
             return "#008B8B"
-        if name == "DarkGoldenrod":
+        if name == "darkgoldenrod":
             return "#B8860B"
-        if name == "DarkGray":
+        if name == "darkgray":
             return "#A9A9A9"
-        if name == "DarkGreen":
+        if name == "darkgreen":
             return "#006400"
-        if name == "DarkKhaki":
+        if name == "darkkhaki":
             return "#BDB76B"
-        if name == "DarkMagenta":
+        if name == "darkmagenta":
             return "#8B008B"
-        if name == "DarkOliveGreen":
+        if name == "darkolivegreen":
             return "#556B2F"
-        if name == "DarkOrange":
+        if name == "darkorange":
             return "#FF8C00"
-        if name == "DarkOrchid":
+        if name == "darkorchid":
             return "#9932CC"
-        if name == "DarkRed":
+        if name == "darkred":
             return "#8B0000"
-        if name == "DarkSalmon":
+        if name == "darksalmon":
             return "#E9967A"
-        if name == "DarkSeaGreen":
+        if name == "darkseagreen":
             return "#8FBC8F"
-        if name == "DarkSlateBlue":
+        if name == "darkslateblue":
             return "#483D8B"
-        if name == "DarkSlateGray":
+        if name == "darkslategray":
             return "#2F4F4F"
-        if name == "DarkTurquoise":
+        if name == "darkturquoise":
             return "#00CED1"
-        if name == "DarkViolet":
+        if name == "darkviolet":
             return "#9400D3"
-        if name == "DeepPink":
+        if name == "deeppink":
             return "#FF1493"
-        if name == "DeepSkyBlue":
+        if name == "deepskyblue":
             return "#00BFFF"
-        if name == "DimGray":
+        if name == "dimgray":
             return "#696969"
-        if name == "DodgerBlue":
+        if name == "dodgerblue":
             return "#1E90FF"
-        if name == "Firebrick":
+        if name == "firebrick":
             return "#B22222"
-        if name == "FloralWhite":
+        if name == "floralwhite":
             return "#FFFAF0"
-        if name == "ForestGreen":
+        if name == "forestgreen":
             return "#228B22"
-        if name == "Fuchsia":
+        if name == "fuchsia":
             return "#FF00FF"
-        if name == "Gainsboro":
+        if name == "gainsboro":
             return "#DCDCDC"
-        if name == "GhostWhite":
+        if name == "ghostwhite":
             return "#F8F8FF"
-        if name == "Gold":
+        if name == "gold":
             return "#FFD700"
-        if name == "Goldenrod":
+        if name == "goldenrod":
             return "#DAA520"
-        if name == "Gray":
+        if name == "gray":
             return "#808080"
-        if name == "Green":
+        if name == "green":
             return "#008000"
-        if name == "GreenYellow":
+        if name == "greenyellow":
             return "#ADFF2F"
-        if name == "Honeydew":
+        if name == "honeydew":
             return "#F0FFF0"
-        if name == "HotPink":
+        if name == "hotpink":
             return "#FF69B4"
-        if name == "IndianRed":
+        if name == "indianred":
             return "#CD5C5C"
-        if name == "Indigo":
+        if name == "indigo":
             return "#4B0082"
-        if name == "Ivory":
+        if name == "ivory":
             return "#FFFFF0"
-        if name == "Khaki":
+        if name == "khaki":
             return "#F0E68C"
-        if name == "Lavender":
+        if name == "lavender":
             return "#E6E6FA"
-        if name == "LavenderBlush":
+        if name == "lavenderblush":
             return "#FFF0F5"
-        if name == "LawnGreen":
+        if name == "lawngreen":
             return "#7CFC00"
-        if name == "LemonChiffon":
+        if name == "lemonchiffon":
             return "#FFFACD"
-        if name == "LightBlue":
+        if name == "lightblue":
             return "#ADD8E6"
-        if name == "LightCoral":
+        if name == "lightcoral":
             return "#F08080"
-        if name == "LightCyan":
+        if name == "lightcyan":
             return "#E0FFFF"
-        if name == "LightGoldenrodYellow":
+        if name == "lightgoldenrodyellow":
             return "#FAFAD2"
-        if name == "LightGrey":
+        if name == "lightgrey":
             return "#D3D3D3"
-        if name == "LightGreen":
+        if name == "lightgreen":
             return "#90EE90"
-        if name == "LightPink":
+        if name == "lightpink":
             return "#FFB6C1"
-        if name == "LightSalmon":
+        if name == "lightsalmon":
             return "#FFA07A"
-        if name == "LightSeaGreen":
+        if name == "lightseagreen":
             return "#20B2AA"
-        if name == "LightSkyBlue":
+        if name == "lightskyblue":
             return "#87CEFA"
-        if name == "LightSlateGray":
+        if name == "lightslategray":
             return "#778899"
-        if name == "LightSteelBlue":
+        if name == "lightsteelblue":
             return "#B0C4DE"
-        if name == "LightYellow":
+        if name == "lightyellow":
             return "#FFFFE0"
-        if name == "Lime":
+        if name == "lime":
             return "#00FF00"
-        if name == "LimeGreen":
+        if name == "limegreen":
             return "#32CD32"
-        if name == "Linen":
+        if name == "linen":
             return "#FAF0E6"
-        if name == "Magenta":
+        if name == "magenta":
             return "#FF00FF"
-        if name == "Maroon":
+        if name == "maroon":
             return "#800000"
-        if name == "MediumAquamarine":
+        if name == "mediumaquamarine":
             return "#66CDAA"
-        if name == "MediumBlue":
+        if name == "mediumblue":
             return "#0000CD"
-        if name == "MediumOrchid":
+        if name == "mediumorchid":
             return "#BA55D3"
-        if name == "MediumPurple":
+        if name == "mediumpurple":
             return "#9370DB"
-        if name == "MediumSeaGreen":
+        if name == "mediumseagreen":
             return "#3CB371"
-        if name == "MediumSlateBlue":
+        if name == "mediumslateblue":
             return "#7B68EE"
-        if name == "MediumSpringGreen":
+        if name == "mediumspringgreen":
             return "#00FA9A"
-        if name == "MediumTurquoise":
+        if name == "mediumturquoise":
             return "#48D1CC"
-        if name == "MediumVioletRed":
+        if name == "mediumvioletred":
             return "#C71585"
-        if name == "MidnightBlue":
+        if name == "midnightblue":
             return "#191970"
-        if name == "MintCream":
+        if name == "mintcream":
             return "#F5FFFA"
-        if name == "MistyRose":
+        if name == "mistyrose":
             return "#FFE4E1"
-        if name == "Moccasin":
+        if name == "moccasin":
             return "#FFE4B5"
-        if name == "NavajoWhite":
+        if name == "navajowhite":
             return "#FFDEAD"
-        if name == "Navy":
+        if name == "navy":
             return "#000080"
-        if name == "OldLace":
+        if name == "oldlace":
             return "#FDF5E6"
-        if name == "Olive":
+        if name == "olive":
             return "#808000"
-        if name == "OliveDrab":
+        if name == "olivedrab":
             return "#6B8E23"
-        if name == "Orange":
+        if name == "orange":
             return "#FFA500"
-        if name == "OrangeRed":
+        if name == "orangered":
             return "#FF4500"
-        if name == "Orchid":
+        if name == "orchid":
             return "#DA70D6"
-        if name == "PaleGoldenrod":
+        if name == "palegoldenrod":
             return "#EEE8AA"
-        if name == "PaleGreen":
+        if name == "palegreen":
             return "#98FB98"
-        if name == "PaleTurquoise":
+        if name == "paleturquoise":
             return "#AFEEEE"
-        if name == "PaleVioletRed":
+        if name == "palevioletred":
             return "#DB7093"
-        if name == "PapayaWhip":
+        if name == "papayawhip":
             return "#FFEFD5"
-        if name == "PeachPuff":
+        if name == "peachpuff":
             return "#FFDAB9"
-        if name == "Peru":
+        if name == "peru":
             return "#CD853F"
-        if name == "Pink":
+        if name == "pink":
             return "#FFC0CB"
-        if name == "PowderBlue":
+        if name == "powderblue":
             return "#B0E0E6"
-        if name == "Purple":
+        if name == "purple":
             return "#800080"
-        if name == "Red":
+        if name == "red":
             return "#FF0000"
-        if name == "RosyBrown":
+        if name == "rosybrown":
             return "#BC8F8F"
-        if name == "RoyalBlue":
+        if name == "royalblue":
             return "#4169E1"
-        if name == "SaddleBrown":
+        if name == "saddlebrown":
             return "#8B4513"
-        if name == "Salmon":
+        if name == "salmon":
             return "#FA8072"
-        if name == "SandyBrown":
+        if name == "sandybrown":
             return "#F4A460"
-        if name == "SeaGreen":
+        if name == "seagreen":
             return "#2E8B57"
-        if name == "SeaShell":
+        if name == "seashell":
             return "#FFF5EE"
-        if name == "Sienna":
+        if name == "sienna":
             return "#A0522D"
-        if name == "Silver":
+        if name == "silver":
             return "#C0C0C0"
-        if name == "SkyBlue":
+        if name == "skyblue":
             return "#87CEEB"
-        if name == "SlateBlue":
+        if name == "slateblue":
             return "#6A5ACD"
-        if name == "SlateGray":
+        if name == "slategray":
             return "#708090"
-        if name == "Snow":
+        if name == "snow":
             return "#FFFAFA"
-        if name == "SpringGreen":
+        if name == "springgreen":
             return "#00FF7F"
-        if name == "SteelBlue":
+        if name == "steelblue":
             return "#4682B4"
-        if name == "Tan":
+        if name == "tan":
             return "#D2B48C"
-        if name == "Teal":
+        if name == "teal":
             return "#008080"
-        if name == "Thistle":
+        if name == "thistle":
             return "#D8BFD8"
-        if name == "Tomato":
+        if name == "tomato":
             return "#FF6347"
-        if name == "Turquoise":
+        if name == "turquoise":
             return "#40E0D0"
-        if name == "Violet":
+        if name == "violet":
             return "#EE82EE"
-        if name == "Wheat":
+        if name == "wheat":
             return "#F5DEB3"
-        if name == "White":
+        if name == "white":
             return "#FFFFFF"
-        if name == "WhiteSmoke":
+        if name == "whitesmoke":
             return "#F5F5F5"
-        if name == "Yellow":
+        if name == "yellow":
             return "#FFFF00"
-        if name == "YellowGreen":
+        if name == "yellowgreen":
             return "#9ACD32"
         LOGGER.warn(
             "Color '{0}' not implemented. Default '{1}' assigned.".format(
@@ -414,7 +416,7 @@ class Size(Expression):
 
     def __init__(self, string_size, lnk, must_be_constant=False):
         super(Size, self).__init__(string_size, lnk, must_be_constant)
-        self._size = None
+        self._size = None  # points
         if not self.is_constant:
             return
         self._get_value(string_size)
@@ -432,6 +434,15 @@ class Size(Expression):
             self._size = 0.0
             return self._size
 
+        # convert to unicode
+        string_size = DataType.get_value('String', string_size)
+        try:
+            # No unit, so it is in points
+            self._size = float(string_size)
+            return self._size
+        except:
+            self._size = None
+
         units = ('in', 'cm', 'mm', 'pt', 'pc')
 
         string_size = string_size.strip()
@@ -439,15 +450,15 @@ class Size(Expression):
             LOGGER.error(
                 "Invalid format for size: {0}".format(string_size), True)
 
-        unit = string_size[len(string_size)-2:]
+        unit = string_size[len(string_size) - 2:]
         if unit not in units:
             LOGGER.error(
-                "Invalid unit value: '{0}' for size '{1}'".format(
-                    unit, string_size), True)
+                "Invalid unit '{0}' for size '{1}'. Valid are: {2}".format(
+                    unit, string_size, units), True)
 
         size = string_size[:len(string_size) - 2]
         size = size.strip()
-        self._size = Size.convert_to_mm(float(size), unit)
+        self._size = Size.convert(float(size), unit, 'pt')
         return self._size
 
     @staticmethod
@@ -456,13 +467,13 @@ class Size(Expression):
         if unit == 'mm':
             return value
         result = None
-        if unit == "in":
+        if unit == 'in':
             result = value * Size.size_25_4
-        elif unit == "cm":
+        elif unit == 'cm':
             result = value * Size.size_10
-        elif unit == "pt":
+        elif unit == 'pt':
             result = (value * Size.size_25_4) / Size.size_72
-        elif unit == "pc":
+        elif unit == 'pc':
             result = (value * Size.size_25_4) / Size.size_6
         else:
             LOGGER.error("Unknown unit '{0}'".format(unit), True)
@@ -480,20 +491,19 @@ class Size(Expression):
         result = None
         value = Size.convert_to_mm(value, from_unit)
 
-        if to_unit == "mm":
+        if to_unit == 'mm':
             result = value
-        elif to_unit == "in":
+        elif to_unit == 'in':
             result = value / Size.size_25_4
-        elif to_unit == "cm":
+        elif to_unit == 'cm':
             result = value / Size.size_10
-        elif to_unit == "pt":
-            result = int((value / Size.size_25_4) * Size.size_72)
-        elif to_unit == "pc":
+        elif to_unit == 'pt':
+            result = (value / Size.size_25_4) * Size.size_72
+        elif to_unit == 'pc':
             result = int((value / Size.size_25_4) * Size.size_6)
         else:
             LOGGER.error(
-                "Can not convert from 'mm'. Unknown unit '{0}'".format(
-                    to_unit), True)
+                "Unknown unit '{0}'".format(to_unit), True)
 
         return result
 

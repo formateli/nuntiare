@@ -63,7 +63,7 @@ class Report(object):
             definition, output_name, output_directory)
 
         self.modules = ExpressionEval(self)
-        self.modules.load_modules(self.definition.get_element("Modules"))
+        self.modules.load_modules(self.definition.get_element('Modules'))
 
     def run(self, parameters={}):
         if not self.definition:
@@ -171,7 +171,7 @@ class Report(object):
                 self, element, element_name, default)
 
     def get_style(self, element):
-        el = element.get_element("Style")
+        el = element.get_element('Style')
         return self._style.get_style(el)
 
     def _parse(self, definition, output_name, output_directory):

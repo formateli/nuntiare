@@ -5,7 +5,7 @@
 from importlib import import_module
 from . expression import Expression
 from . functions import *
-from .. import logger
+from .. import LOGGER
 
 
 class _Aggregate(object):
@@ -110,9 +110,9 @@ class _Aggregate(object):
         if function != 'RowNumber':
             valid_fun = ['Sum', 'Avg', 'CountDistinct']
             if function not in valid_fun:
-                err_msg = "Invalid function '{0}' for aggregate RunningValue. "
-                err_msg += "Valid are: {1}"
-                logger.error(err_msg.format(function, valid_fun), True)
+                err_msg = "Invalid function '{0}' for aggregate " \
+                    "RunningValue. Valid are: {1}"
+                LOGGER.error(err_msg.format(function, valid_fun), True)
 
         name = 'RunningValue.' + function
 
@@ -319,9 +319,9 @@ class ExpressionEval(object):
         if alias is None:
             alias = import_name
         if alias in self._context:
-            err_msg = "'{0}' already exists in the "
-            err_msg += "expression evaluation context."
-            logger.error(err_msg.format(alias), True)
+            err_msg = "'{0}' already exists in the " \
+                "expression evaluation context."
+            LOGGER.error(err_msg.format(alias), True)
         mod_object = None
         if from_name:
             module = import_module(from_name)
@@ -376,12 +376,12 @@ class ExpressionEval(object):
             result = eval(expression)
 
         except KeyError as e:
-            logger.error(
+            LOGGER.error(
                 "{0}. Key <{1}> does not exist in dictionary.".format(
                     exp_error, self._get_error_str(e)),
                 True, "ValueError")
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 "{0}. Unexpected error: '{1}'".format(
                     exp_error, self._get_error_str(e)), True)
         return result
