@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<orders>
+  <order>
+    <country>Panama</country>
+    <city>Panama</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+  <order>
+    <country>Panama</country>
+    <city>David</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+  <order>
+    <country>Panama</country>
+    <city>Santiago</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+  <order>
+    <country>Venezuela</country>
+    <city>Caracas</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+  <order>
+    <country>Venezuela</country>
+    <city>Maracay</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+  <order>
+    <country>Colombia</country>
+    <city>cucuta</city>
+    <product>product1</product>
+    <qty>1</qty>
+    <price>12.0</price>
+  </order>
+</orders>

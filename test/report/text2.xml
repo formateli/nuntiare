@@ -1,0 +1,224 @@
+<?xml version="1.0" ?>
+<Nuntiare>
+  <Name>Text Test</Name>
+  <Author>Fredy Ramirez</Author>
+  <Page>
+    <BottomMargin>1cm</BottomMargin>
+    <TopMargin>1cm</TopMargin>
+    <Columns>2</Columns>
+    <LeftMargin>1cm</LeftMargin>
+    <RightMargin>1cm</RightMargin>
+    <PageWidth>210mm</PageWidth>
+    <PageHeight>180mm</PageHeight>
+    <PageHeader>
+      <Height>1.5cm</Height>
+      <PrintOnFirstPage>true</PrintOnFirstPage>
+      <PrintOnLastPage>true</PrintOnLastPage>
+      <Style>
+        <BackgroundColor>Yellow</BackgroundColor>
+        <BottomBorder>
+          <Width>2pt</Width>
+          <Color>Red</Color>
+          <BorderStyle>Solid</BorderStyle>
+        </BottomBorder>
+      </Style>
+      <ReportItems>
+        <Textbox>
+          <Left>0pt</Left>
+          <ZIndex>1</ZIndex>
+          <Name>header1</Name>
+          <Top>3mm</Top>
+          <Width>180mm</Width>
+          <Height>1.5cm</Height>
+          <CanShrink>True</CanShrink>
+          <Value>TextBox in header</Value>
+          <Style>
+            <FontSize>16pt</FontSize>
+            <TextAlign>Center</TextAlign>
+            <FontWeight>Bold</FontWeight>
+          </Style>
+        </Textbox>
+      </ReportItems>
+    </PageHeader>
+    <PageFooter>
+      <Height>1.5cm</Height>
+      <PrintOnFirstPage>true</PrintOnFirstPage>
+      <PrintOnLastPage>true</PrintOnLastPage>
+      <Style>
+        <BackgroundColor>Yellow</BackgroundColor>
+        <TopBorder>
+          <Width>2pt</Width>
+          <Color>Red</Color>
+          <BorderStyle>Solid</BorderStyle>
+        </TopBorder>
+      </Style>
+      <ReportItems>
+        <Textbox>
+          <Left>0pt</Left>
+          <ZIndex>5</ZIndex>
+          <Name>footer1</Name>
+          <Top>3mm</Top>
+          <Width>180mm</Width>
+          <Height>1.5cm</Height>
+          <CanShrink>True</CanShrink>
+          <Value>TextBox in footer</Value>
+          <Style>
+            <FontSize>16pt</FontSize>
+            <TextAlign>Center</TextAlign>
+            <FontWeight>Bold</FontWeight>
+          </Style>
+        </Textbox>
+      </ReportItems>
+    </PageFooter>
+  </Page>
+
+  <Body>
+    <ReportItems>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox1</Name>
+        <Top>1pt</Top>
+        <Width>5cm</Width>
+        <Height>2cm</Height>
+        <CanGrow>False</CanGrow>
+        <Value>CanGrow=False
+Line 2
+Line 3
+Line 4
+Line 5
+Last line</Value>
+        <Style>
+          <FontSize>14 pt</FontSize>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Yellow</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Top</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox2</Name>
+        <Top>2.5cm</Top>
+        <Width>5cm</Width>
+        <Height>2cm</Height>
+        <CanGrow>True</CanGrow>
+        <Value>CanGrow=True
+Line 2
+Line 3
+Line 4
+Line 5
+Last line</Value>
+        <Style>
+          <FontSize>14 pt</FontSize>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Yellow</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Top</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox3</Name>
+        <Top>5cm</Top>
+        <Width>5.5cm</Width>
+        <Height>1.5cm</Height>
+        <CanGrow>False</CanGrow>
+        <Value>Simple Textbox 1</Value>
+        <Style>
+          <PaddingBottom>2 mm</PaddingBottom>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Red</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <PaddingRight>2 mm</PaddingRight>
+          <Color>White</Color>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox4</Name>
+        <Top>7cm</Top>
+        <Width>5cm</Width>
+        <Height>2cm</Height>
+        <CanGrow>True</CanGrow>
+        <Value>CanGrow=True
+Line 2
+Line 3
+Line 4
+Line 5
+Last line</Value>
+        <Style>
+          <FontSize>14 pt</FontSize>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Yellow</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Top</VerticalAlign>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox5</Name>
+        <Top>9.5cm</Top>
+        <Width>5cm</Width>
+        <Height>1.5cm</Height>
+        <CanGrow>False</CanGrow>
+        <Value>Simple Textbox 2</Value>
+        <Style>
+          <PaddingBottom>2 mm</PaddingBottom>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Red</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <PaddingRight>2 mm</PaddingRight>
+          <Color>White</Color>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+      <Textbox>
+        <Left>1pt</Left>
+        <Name>TextBox6</Name>
+        <Top>11.5cm</Top>
+        <Width>5cm</Width>
+        <Height>1.5cm</Height>
+        <CanGrow>False</CanGrow>
+        <Value>Simple Textbox 3</Value>
+        <Style>
+          <PaddingBottom>2 mm</PaddingBottom>
+          <PaddingLeft>2 mm</PaddingLeft>
+          <BackgroundColor>Red</BackgroundColor>
+          <PaddingTop>2 mm</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+          <TextAlign>Center</TextAlign>
+          <PaddingRight>2 mm</PaddingRight>
+          <Color>White</Color>
+          <Border>
+            <BorderStyle>Solid</BorderStyle>
+          </Border>
+        </Style>
+      </Textbox>
+
+    </ReportItems>
+  </Body>
+</Nuntiare>

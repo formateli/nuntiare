@@ -46,6 +46,7 @@ MANIFEST
 *.svg
 *.png
 *.csv
+*.nuntiare
 db_test_connection_panama
 db_test_connection_northwind
 db_test_connection_adventure

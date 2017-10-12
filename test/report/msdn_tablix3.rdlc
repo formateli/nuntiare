@@ -1,0 +1,994 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+
+  <Width>19cm</Width>
+
+  <Page>
+    <PageHeight>28cm</PageHeight>
+    <PageWidth>21.5cm</PageWidth>
+    <TopMargin>1cm</TopMargin>
+    <BottomMargin>1cm</BottomMargin>
+    <LeftMargin>1cm</LeftMargin>
+    <RightMargin>1cm</RightMargin>
+    <Style />
+
+    <PageHeader>
+        <Height>1.5cm</Height>
+        <PrintOnFirstPage>true</PrintOnFirstPage>
+        <ReportItems>
+            <Textbox Name="hd">
+              <Paragraphs>
+                <Paragraph>
+                 <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!TotalPages</Value>
+                    </TextRun>
+                  </TextRuns>
+                </Paragraph>
+              </Paragraphs>
+              <Height>0.5cm</Height>
+              <Width>10cm</Width>
+            </Textbox>
+        </ReportItems>
+    </PageHeader>
+  </Page>
+
+
+  <DataSources>
+    <DataSource Name="TempDataSource">
+      <rd:DataSourceID>e5117b05-6b2e-46cb-ad6e-9bd5036946d7</rd:DataSourceID>
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>data source=localhost;initial catalog=AdventureWorks2000</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+    </DataSource>
+  </DataSources>
+
+
+  <DataSets>
+    <DataSet Name="Sales">
+      <Query>
+        <DataSourceName>TempDataSource</DataSourceName>
+        <CommandText></CommandText>
+      </Query>
+
+      <Fields>
+        <Field Name="CarrierTrackingNumber">
+          <DataField>CarrierTrackingNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LineTotal">
+          <DataField>LineTotal</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="ModifiedDate">
+          <DataField>ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="OrderQty">
+          <DataField>OrderQty</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="rowguid">
+          <DataField>rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="SalesOrderDetailID">
+          <DataField>SalesOrderDetailID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="UnitPrice">
+          <DataField>UnitPrice</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="UnitPriceDiscount">
+          <DataField>UnitPriceDiscount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="AccountNumber">
+          <DataField>AccountNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Comment">
+          <DataField>Comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CreditCardApprovalCode">
+          <DataField>CreditCardApprovalCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DueDate">
+          <DataField>DueDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Freight">
+          <DataField>Freight</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="OnlineOrderFlag">
+          <DataField>OnlineOrderFlag</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="OrderDate">
+          <DataField>OrderDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="PurchaseOrderNumber">
+          <DataField>PurchaseOrderNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RevisionNumber">
+          <DataField>RevisionNumber</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="SalesOrderHeader_ModifiedDate">
+          <DataField>SalesOrderHeader_ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="SalesOrderHeader_rowguid">
+          <DataField>SalesOrderHeader_rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="SalesOrderHeader_SalesOrderID">
+          <DataField>SalesOrderHeader_SalesOrderID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="SalesOrderNumber">
+          <DataField>SalesOrderNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ShipDate">
+          <DataField>ShipDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Status">
+          <DataField>Status</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="SubTotal">
+          <DataField>SubTotal</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="TaxAmt">
+          <DataField>TaxAmt</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="TotalDue">
+          <DataField>TotalDue</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Class">
+          <DataField>Class</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Color">
+          <DataField>Color</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DaysToManufacture">
+          <DataField>DaysToManufacture</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="DiscontinuedDate">
+          <DataField>DiscontinuedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="FinishedGoodsFlag">
+          <DataField>FinishedGoodsFlag</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="ListPrice">
+          <DataField>ListPrice</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="MakeFlag">
+          <DataField>MakeFlag</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Product_ModifiedDate">
+          <DataField>Product_ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Product_ProductID">
+          <DataField>Product_ProductID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Product_rowguid">
+          <DataField>Product_rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="ProductLine">
+          <DataField>ProductLine</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductNumber">
+          <DataField>ProductNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ReorderPoint">
+          <DataField>ReorderPoint</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="SafetyStockLevel">
+          <DataField>SafetyStockLevel</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="SellEndDate">
+          <DataField>SellEndDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="SellStartDate">
+          <DataField>SellStartDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Size">
+          <DataField>Size</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="StandardCost">
+          <DataField>StandardCost</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Style">
+          <DataField>Style</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Weight">
+          <DataField>Weight</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="ProductSubcategory_ModifiedDate">
+          <DataField>ProductSubcategory_ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="ProductSubcategory_Name">
+          <DataField>ProductSubcategory_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductSubcategory_ProductSubcategoryID">
+          <DataField>ProductSubcategory_ProductSubcategoryID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ProductSubcategory_rowguid">
+          <DataField>ProductSubcategory_rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="ProductCategory_ModifiedDate">
+          <DataField>ProductCategory_ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="ProductCategoryName">
+          <DataField>ProductCategory_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductCategory_ProductCategoryID">
+          <DataField>ProductCategory_ProductCategoryID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ProductCategory_rowguid">
+          <DataField>ProductCategory_rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="CostLastYear">
+          <DataField>CostLastYear</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="CostYTD">
+          <DataField>CostYTD</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="CountryRegionCode">
+          <DataField>CountryRegionCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SalesLastYear">
+          <DataField>SalesLastYear</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="SalesTerritory_ModifiedDate">
+          <DataField>SalesTerritory_ModifiedDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="SalesTerritory_Name">
+          <DataField>SalesTerritory_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SalesTerritory_rowguid">
+          <DataField>SalesTerritory_rowguid</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="SalesTerritory_TerritoryID">
+          <DataField>SalesTerritory_TerritoryID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="SalesYTD">
+          <DataField>SalesYTD</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="SalesPerson">
+          <DataField>SalesPersonId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="OrderYear">
+          <Value>=Fields!OrderDate.Value.Year</Value>
+        </Field>
+        <Field Name="OrderQuarter">
+          <Value>=("Q") &amp; (((Fields!OrderDate.Value.Month) \ (4)) + (1))</Value>
+        </Field>
+      </Fields>
+
+    </DataSet>
+  </DataSets>
+
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>0b6c2fd3-677c-4f76-85ba-1d3bfadd496e</rd:ReportID>
+  <Language>en-US</Language>
+
+  <Body>
+    <Height>0cm</Height>
+    <ReportItems>
+
+
+
+<Tablix Name="Tablix3">
+    <TablixColumnHierarchy>
+      <TablixMembers>
+        <TablixMember>
+          <Group Name="SalesPerson">
+            <GroupExpressions>
+              <GroupExpression>=Fields!SalesPerson.Value</GroupExpression>
+            </GroupExpressions>
+          </Group>
+          <TablixHeader>
+            <Size>0.48438in</Size>
+            <CellContents>
+              <Textbox Name="SalesPerson">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Fields!SalesPerson.Value</Value>
+                        <Style>
+                          <FontSize>12pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Center</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Aqua</BackgroundColor>
+                </Style>
+              </Textbox>
+            </CellContents>
+          </TablixHeader>
+          <TablixMembers>
+            <TablixMember>
+              <TablixHeader>
+                <Size>0.45833in</Size>
+                <CellContents>
+                  <Textbox Name="Textbox8">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>List Price</Value>
+                            <Style>
+                              <FontWeight>Bold</FontWeight>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                        </Style>
+                      </Paragraph>
+                    </Paragraphs>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <BackgroundColor>Aqua</BackgroundColor>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+            </TablixMember>
+            <TablixMember>
+              <TablixHeader>
+                <Size>0.45833in</Size>
+                <CellContents>
+                  <Textbox Name="Textbox9">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Standard Cost</Value>
+                            <Style>
+                              <FontWeight>Bold</FontWeight>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style>
+                          <TextAlign>Right</TextAlign>
+                        </Style>
+                      </Paragraph>
+                    </Paragraphs>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <BackgroundColor>Aqua</BackgroundColor>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+            </TablixMember>
+          </TablixMembers>
+        </TablixMember>
+        <TablixMember>
+          <Group Name="OrdersGroup">
+            <GroupExpressions>
+              <GroupExpression>=Fields!OrderDate.Value.Month()</GroupExpression>
+            </GroupExpressions>
+          </Group>
+          <SortExpressions>
+            <SortExpression>
+              <Value>=Fields!OrderDate.Value.Month()</Value>
+            </SortExpression>
+          </SortExpressions>
+          <TablixHeader>
+            <Size>0.94271in</Size>
+            <CellContents>
+              <Textbox Name="OrdersColumnHeader">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Total Orders</Value>
+                        <Style>
+                          <FontSize>12pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Right</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Pink</BackgroundColor>
+                </Style>
+              </Textbox>
+            </CellContents>
+          </TablixHeader>
+        </TablixMember>
+      </TablixMembers>
+    </TablixColumnHierarchy>
+    <TablixRowHierarchy>
+      <TablixMembers>
+        <TablixMember>
+          <Group Name="CategoryGroup">
+            <GroupExpressions>
+                <GroupExpression>=Fields!ProductCategoryName.Value</GroupExpression>
+            </GroupExpressions>
+          </Group>
+          <SortExpressions>
+            <SortExpression>
+              <Value>=Fields!ProductCategoryName.Value</Value>
+            </SortExpression>
+          </SortExpressions>
+          <TablixHeader>
+            <Size>1in</Size>
+            <CellContents>
+              <Textbox Name="CategoryRowHeader">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Fields!ProductCategoryName.Value</Value>
+                      </TextRun>
+                    </TextRuns>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Cornsilk</BackgroundColor>
+                </Style>
+              </Textbox>
+            </CellContents>
+          </TablixHeader>
+          <TablixMembers>
+            <TablixMember>
+              <TablixHeader>
+                <Size>1.76562in</Size>
+                <CellContents>
+                  <Textbox Name="ProductHeaderRowHeader">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>First order received</Value>
+                            <Style>
+                              <FontWeight>Bold</FontWeight>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                      </Paragraph>
+                    </Paragraphs>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+              <KeepWithGroup>After</KeepWithGroup>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+            </TablixMember>
+            <TablixMember>
+              <Group Name="Product">
+                <GroupExpressions>
+                    <GroupExpression>=Fields!Name.Value</GroupExpression>
+                </GroupExpressions>
+              </Group>
+              <TablixHeader>
+                <Size>1.76562in</Size>
+                <CellContents>
+                  <Textbox Name="ProductRowHeader">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>=Fields!Name.Value</Value>
+                          </TextRun>
+                        </TextRuns>
+                      </Paragraph>
+                    </Paragraphs>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <BackgroundColor>Yellow</BackgroundColor>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+            </TablixMember>
+            <TablixMember>
+              <TablixHeader>
+                <Size>1.76562in</Size>
+                <CellContents>
+                  <Textbox Name="ProductFooterRowHeader">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Total</Value>
+                            <Style>
+                              <FontWeight>Bold</FontWeight>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                      </Paragraph>
+                    </Paragraphs>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <TopBorder>
+                        <Color>Black</Color>
+                      </TopBorder>
+                      <BottomBorder>
+                        <Color>Black</Color>
+                        <Width>2pt</Width>
+                      </BottomBorder>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+              <KeepWithGroup>Before</KeepWithGroup>
+            </TablixMember>
+          </TablixMembers>
+        </TablixMember>
+      </TablixMembers>
+    </TablixRowHierarchy>
+    <TablixCorner>
+      <TablixCornerRows>
+        <TablixCornerRow>
+          <TablixCornerCell>
+            <CellContents>
+              <Textbox Name="Textbox4">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Bicycle sales for June 2004</Value>
+                        <Style>
+                          <FontSize>12pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>Underline</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Lime</BackgroundColor>
+                </Style>
+              </Textbox>
+              <ColSpan>2</ColSpan>
+            </CellContents>
+          </TablixCornerCell>
+          <TablixCornerCell />
+        </TablixCornerRow>
+        <TablixCornerRow>
+          <TablixCornerCell>
+            <CellContents>
+              <Textbox Name="Textbox18">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Category</Value>
+                        <Style>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Lime</BackgroundColor>
+                </Style>
+              </Textbox>
+            </CellContents>
+          </TablixCornerCell>
+          <TablixCornerCell>
+            <CellContents>
+              <Textbox Name="Textbox7">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Product Name</Value>
+                        <Style>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                  </Paragraph>
+                </Paragraphs>
+                <Style>
+                  <Border>
+                    <Color>LightGrey</Color>
+                    <Style>Solid</Style>
+                  </Border>
+                  <BackgroundColor>Lime</BackgroundColor>
+                </Style>
+              </Textbox>
+            </CellContents>
+          </TablixCornerCell>
+        </TablixCornerRow>
+      </TablixCornerRows>
+    </TablixCorner>
+    <TablixBody>
+      <TablixColumns>
+        <TablixColumn>
+          <Width>1.47396in</Width>
+        </TablixColumn>
+        <TablixColumn>
+          <Width>1.29167in</Width>
+        </TablixColumn>
+        <TablixColumn>
+          <Width>1in</Width>
+        </TablixColumn>
+      </TablixColumns>
+      <TablixRows>
+        <TablixRow>
+          <Height>0.25in</Height>
+          <TablixCells>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="OrderDate">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=First(Fields!OrderDate.Value)</Value>
+                          <Style>
+                            <Format>MMM dd, yyyy</Format>
+                          </Style>
+                        </TextRun>
+                      </TextRuns>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                      </Style>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                  </Style>
+                </Textbox>
+                <ColSpan>2</ColSpan>
+              </CellContents>
+            </TablixCell>
+            <TablixCell />
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="Textbox40">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value />
+                        </TextRun>
+                      </TextRuns>
+                      <Style>
+                        <TextAlign>Center</TextAlign>
+                      </Style>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                    <BackgroundColor>Pink</BackgroundColor>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+          </TablixCells>
+        </TablixRow>
+        <TablixRow>
+          <Height>0.39062in</Height>
+          <TablixCells>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="ListPrice">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!ListPrice.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="StandardCost">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!StandardCost.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="OrderQty">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!OrderQty.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                    <BackgroundColor>Pink</BackgroundColor>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+          </TablixCells>
+        </TablixRow>
+        <TablixRow>
+          <Height>0.25in</Height>
+          <TablixCells>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="ListPrice1">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!ListPrice.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                    <TopBorder>
+                      <Color>Black</Color>
+                    </TopBorder>
+                    <BottomBorder>
+                      <Color>Black</Color>
+                      <Width>2pt</Width>
+                    </BottomBorder>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="StandardCost1">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!StandardCost.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                    <TopBorder>
+                      <Color>Black</Color>
+                    </TopBorder>
+                    <BottomBorder>
+                      <Color>Black</Color>
+                      <Width>2pt</Width>
+                    </BottomBorder>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+            <TablixCell>
+              <CellContents>
+                <Textbox Name="Textbox42">
+                  <CanGrow>true</CanGrow>
+                  <KeepTogether>true</KeepTogether>
+                  <Paragraphs>
+                    <Paragraph>
+                      <TextRuns>
+                        <TextRun>
+                          <Value>=Sum(Fields!OrderQty.Value)</Value>
+                        </TextRun>
+                      </TextRuns>
+                    </Paragraph>
+                  </Paragraphs>
+                  <Style>
+                    <Border>
+                      <Color>LightGrey</Color>
+                      <Style>Solid</Style>
+                    </Border>
+                    <TopBorder>
+                      <Color>Black</Color>
+                    </TopBorder>
+                    <BottomBorder>
+                      <Color>Black</Color>
+                      <Width>2pt</Width>
+                    </BottomBorder>
+                    <BackgroundColor>Pink</BackgroundColor>
+                  </Style>
+                </Textbox>
+              </CellContents>
+            </TablixCell>
+          </TablixCells>
+        </TablixRow>
+      </TablixRows>
+    </TablixBody>
+    <DataSetName>Sales</DataSetName>
+    <Style>
+      <Border>
+        <Style>None</Style>
+      </Border>
+    </Style>
+  </Tablix>
+
+
+    </ReportItems>
+
+    <Style />
+  </Body>
+</Report>
+
+
