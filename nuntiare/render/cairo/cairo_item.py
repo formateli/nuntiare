@@ -14,7 +14,8 @@ class CairoItem(object):
         self.children = []
         # Nuntiare outcome object
         self.item = item
-        self.keep_together = item.keep_together
+        self.keep_together = \
+            item.keep_together if hasattr(item, 'keep_together') else None
         self.original_top = item.original_top
         self.original_left = item.original_left
         self.original_height = item.original_height

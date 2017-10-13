@@ -11,18 +11,13 @@ class OutcomeStyle(object):
 
     _count = 0
     _styles = {}
-    _default_style = None
 
     def __init__(self, report):
         self._report = report
         # List fonts found in report
         self.fonts = []
-        # Ensure default style
-        self.get_style(None)
 
-    def get_style(self, style_def):
-        if not style_def and OutcomeStyle._default_style:
-            return OutcomeStyle._styles[OutcomeStyle._default_style]
+    def get_style(self, style_def, type_):
         style = _StyleInfo()
         style.background_color = self._report.get_value(
             style_def, 'BackgroundColor', None)
@@ -62,13 +57,15 @@ class OutcomeStyle(object):
         style.line_height = self._report.get_value(
             style_def, 'LineHeight', 1)
         style.direction = self._report.get_value(
-            style_def, 'Direction', 'LTR')
+            style_def, 'TextDirection', 'LTR')
         style.writing_mode = self._report.get_value(
             style_def, 'WritingMode', 'Horizontal')
 
+        self._get_border(
+            style._border, 
+            style_def.get_element('Border') if style_def else None,
+            main=[True, type_])
         if style_def:
-            self._get_border(
-                style._border, style_def.get_element('Border'))
             self._get_border(
                 style.top_border, style_def.get_element('TopBorder'))
             self._get_border(
@@ -79,28 +76,32 @@ class OutcomeStyle(object):
                 style.right_border, style_def.get_element('RightBorder'))
 
         str_id = style.get_id()
-        if str_id in OutcomeStyle._styles:
-            return OutcomeStyle._styles[str_id]
-        style.id = OutcomeStyle._count
-        OutcomeStyle._count += 1
-        OutcomeStyle._styles[str_id] = style
-        if not OutcomeStyle._default_style:
-            OutcomeStyle._default_style = str_id
+        if str_id in self._styles:
+            return self._styles[str_id]
+        style.id = self._count
+        self._count += 1
+        self._styles[str_id] = style
         return style
 
-    def _get_border(self, border, border_def):
-        if not border_def:
+    def _get_border(self, border, border_def, main=None):
+        if not border_def and not main:
             return
         color = self._report.get_value(
-            border_def, 'Color', None)
+            border_def, 'Color', '#000000' if main else None)
         if color:
             border.color = color
+        default_bs = None
+        if main:
+            if main[1] == 'PageLine':
+                default_bs = 'Solid'
+            else:
+                default_bs = 'None'
         border_style = self._report.get_value(
-            border_def, 'BorderStyle', None)
+            border_def, 'BorderStyle', default_bs)
         if border_style:
             border.border_style = border_style
         width = self._report.get_value(
-            border_def, 'Width', None)
+            border_def, 'Width', 1 if main else None)
         if width:
             border.width = width
 

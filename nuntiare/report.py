@@ -166,12 +166,13 @@ class Report(object):
         LOGGER.info("Report '{0}' saved.".format(result_file))
 
     def get_value(self, element, element_name, default):
-        return Expression.get_value_or_default(
-                self, element, element_name, default)
+        if not element:
+            return default
+        return element.get_value(self, element_name, default)
 
-    def get_style(self, element):
+    def get_style(self, element, type_):
         el = element.get_element('Style')
-        return self._style.get_style(el)
+        return self._style.get_style(el, type_)
 
     def _definition_source_is_file(self):
         if os.path.isfile(self.definition_source):

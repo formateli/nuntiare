@@ -45,7 +45,7 @@ class Result(object):
 
         self.columns = self.page_def.Columns
         self.column_spacing = self.page_def.ColumnSpacing
-        self.style = report.get_style(self.page_def)
+        self.style = report.get_style(self.page_def, None)
         self.body.run_items()
 
 
@@ -60,7 +60,7 @@ class _SectionInfo(object):
             self.available_height = self.height
 
         self.items = None
-        self.style = report.get_style(definition)
+        self.style = report.get_style(definition, None)
 
     def run_items(self):
         self.items = None

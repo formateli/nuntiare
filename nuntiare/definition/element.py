@@ -861,7 +861,7 @@ class Style(Element):
         'TextDecoration': [Element.ENUM, Card.ZERO_ONE, False, 'None'],
         'TextAlign': [Element.ENUM, Card.ZERO_ONE, False, 'General'],
         'VerticalAlign': [Element.ENUM, Card.ZERO_ONE, False, 'Top'],
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, 'Black'],
+        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
         'PaddingLeft': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
         'PaddingRight': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
         'PaddingTop': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
@@ -877,8 +877,8 @@ class Style(Element):
 
 class Border(Element):
     elements = {
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, 'Black'],
-        'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Solid'],
+        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
+        'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False],
         'Width': [Element.SIZE, Card.ZERO_ONE, False, 1],
     }
 

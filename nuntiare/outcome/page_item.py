@@ -74,13 +74,22 @@ class PageItem(object):
             report_item_def, 'Left', 0)
         self.zindex = report.get_value(
             report_item_def, 'ZIndex', -1)
-        self.style = report.get_style(report_item_def)
         self.height = report.get_value(
             report_item_def, 'Height', 0)
         self.width = report.get_value(
             report_item_def, 'Width', 0)
-        self.keep_together = report.get_value(
-            report_item_def, 'KeepTogether', False)
+        self.tool_tip = report.get_value(
+            report_item_def, 'ToolTip', None)
+        self.bookmark = report.get_value(
+            report_item_def, 'Bookmark', None)
+        self.repeat_with = report.get_value(
+            report_item_def, 'RepeatWith', None)
+        self.data_element_name = report.get_value(
+            report_item_def, 'DataElementName', None)
+        self.data_element_output = report.get_value(
+            report_item_def, 'DataElementOutput', 'Auto')
+        # TODO  Visibility, ActionInfo
+        self.style = report.get_style(report_item_def, type_)
 
         if parent and type_ != 'RowCell' and parent.type == 'RowCell':
             self.height = 0.0
@@ -207,6 +216,8 @@ class PageRectangle(PageItem):
             report_item_def, 'OmitBorderOnPageBreak', True)
         self.page_break = report.get_value(
             report_item_def.get_element('PageBreak'), 'BreakLocation', None)
+        self.keep_together = report.get_value(
+            report_item_def, 'KeepTogether', False)
         self.items_info = PageItemsInfo(report, report_item_def, self)
 
 
@@ -214,12 +225,18 @@ class PageText(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageText, self).__init__(
             'PageText', report, report_item_def, parent)
+
         self.can_grow = report.get_value(
             report_item_def, 'CanGrow', False)
         self.can_shrink = report.get_value(
             report_item_def, 'CanShrink', False)
         self.hide_duplicates = report.get_value(
             report_item_def, 'HideDuplicates', None)
+        self.keep_together = report.get_value(
+            report_item_def, 'KeepTogether', False)
+        self.data_element_style = report.get_value(
+            report_item_def, 'DataElementStyle', 'Auto')
+        # TODO ToggleImage
 
         self.value = report.get_value(
                 report_item_def, 'Value', None)

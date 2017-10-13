@@ -43,11 +43,6 @@
           <Name>Line1</Name>
           <Top>10mm</Top>
           <Left>1mm</Left>
-          <Style>
-            <Border>
-              <BorderStyle>Solid</BorderStyle>
-            </Border>
-          </Style>
         </Line>
         <Textbox>
           <Height>5mm</Height>

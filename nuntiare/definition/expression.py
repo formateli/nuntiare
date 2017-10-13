@@ -98,7 +98,7 @@ class Color(Expression):
 
     def _set_color(self, str_input):
         if str_input is None or str_input.strip() == '':
-            self._color = Color._default_color
+            self._color = self._default_color
             return
 
         str_input = str_input.strip()
@@ -110,7 +110,7 @@ class Color(Expression):
         elif str_input.startswith('argb'):
             pass  # TODO
         else:
-            self._color = Color._get_color_by_name(str_input)
+            self._color = self._get_color_by_name(str_input)
 
     @staticmethod
     def _validate_hex_color(hex_color):
