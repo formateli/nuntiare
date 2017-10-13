@@ -33,9 +33,7 @@ _ELEMENT_CLASSES = [
     'CellContents', 'Style', 'Border',
     'TopBorder', 'BottomBorder', 'LeftBorder', 'RightBorder',
     'BackgroundImage', 'Line', 'Rectangle', 'Textbox',
-    'PageBreak',
-    # 'Image',
-    'Modules', 'Module'
+    'PageBreak', 'Image', 'Modules', 'Module'
 ]
 
 _ENUM_CLASSES = [
@@ -84,15 +82,14 @@ class Element(object):
         elements: A dictionary with the elements belonging to this element.
          key: Element name
          value: A list [] with the following values:
-            Element type. Default value: Element.ELEMENT
+            Element type. Default: Element.ELEMENT
             Card: ElementCard value.
-                Default value: Card.ZERO_ONE
+                Default: Card.ZERO_ONE
             Must be a constant: If true,
                 this element value can not be an expression.
-                Ignore if type is Element.ELEMENT. Default value: False
+                Ignore if type is Element.ELEMENT. Default: False
             DefaultValue
-                Ignore if type is Element.ELEMENT. Only valid if
-                must_be_constant = True. Default value: None
+                Ignore if type is Element.ELEMENT. Default: None
         lnk: The linking object
         '''
 
@@ -123,8 +120,8 @@ class Element(object):
                     continue
                 if n.nodeName not in ('#text', '#comment'):
                     LOGGER.warn(
-                        "Unknown xml element '{0}' for '{1}'. Ignored.".format(
-                            n.nodeName, lnk.obj.__class__.__name__))
+                        "Unknown element '{0}' for '{1}'. Ignored.".format(
+                            n.nodeName, self.element_name))
                 continue
 
             element_type, card, must_be_constant, default_value = \
@@ -183,8 +180,13 @@ class Element(object):
                 element_type, card, must_be_constant, default_value = \
                     Element.get_element_def(el)
                 if card in [Card.ONE, Card.ONE_MANY]:
-                    LOGGER.error("'{0}' must be defined for '{1}'.".format(
-                        key, lnk.obj.__class__.__name__), True)
+                    LOGGER.error(
+                        "'{0}' must be defined for '{1}'.".format(
+                            key, self.element_name), True)
+                if default_value and element_type not in \
+                        [Element.ELEMENT, Element.EXPRESSION_LIST]:
+                    self._set_attr(
+                        key, False, default_value, True)
 
         # Z Order
         reportitems_list = []
@@ -234,6 +236,8 @@ class Element(object):
                 self._original_element_list.keys()), True)
 
     def get_value(self, report, name, default_value=None):
+        if name in self.__dict__:
+            return self.__dict__[name]
         self._verify_element(name)
         return Expression.get_value_or_default(
             report, self, name, default_value)
@@ -585,14 +589,14 @@ class Page(Element):
     elements = {
         'PageHeader': [],
         'PageFooter': [],
-        'PageHeight': [Element.SIZE, 0, True, 11 * 72],
-        'PageWidth': [Element.SIZE, 0, True, 8.5 * 72],
-        'LeftMargin': [Element.SIZE, 0, True, 0.0],
-        'RightMargin': [Element.SIZE, 0, True, 0.0],
-        'TopMargin': [Element.SIZE, 0, True, 0.0],
-        'BottomMargin': [Element.SIZE, 0, True, 0.0],
-        'Columns': [Element.INTEGER, 0, True, 1],
-        'ColumnSpacing': [Element.SIZE, 0, True, 0.5 * 72],
+        'PageHeight': [Element.SIZE, Card.ZERO_ONE, True, 11 * 72],
+        'PageWidth': [Element.SIZE, Card.ZERO_ONE, True, 8.5 * 72],
+        'LeftMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+        'RightMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+        'TopMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+        'BottomMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+        'Columns': [Element.INTEGER, Card.ZERO_ONE, True, 1],
+        'ColumnSpacing': [Element.SIZE, Card.ZERO_ONE, True, 0.5 * 72],
         'Style': [],
     }
 
@@ -850,7 +854,7 @@ class Style(Element):
         'BackgroundGradientEndColor': [Element.COLOR],
         'BackgroundImage': [],
         'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
+        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Sans'],
         'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
         'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
         'Format': [Element.STRING],

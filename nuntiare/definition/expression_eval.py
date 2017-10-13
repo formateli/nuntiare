@@ -392,10 +392,10 @@ class ExpressionEval(object):
             return
         for module in modules_def.modules:
             self._add_context(
-                    self.report.get_value(module, 'From', None),
-                    self.report.get_value(module, 'Import', None),
-                    self.report.get_value(module, 'As', None)
-                )
+                self.report.get_value(module, 'From', None),
+                self.report.get_value(module, 'Import', None),
+                self.report.get_value(module, 'As', None)
+            )
 
     def _add_context(self, from_name, import_name, alias):
         if alias is None:
