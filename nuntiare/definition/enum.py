@@ -17,11 +17,10 @@ class _Enum(Expression):
 
     def _get_enum_by_name(self, name):
         if not name or name == '':
-            return None
+            return
         l_name = name.strip().lower()
         if l_name in self._enum_list:
             return self._enum_list[l_name]
-
         LOGGER.error(
             "Invalid value '{0}' for Enum '{1}'. Valid values are: {2}".format(
                 name, self.__class__.__name__, self.get_values_list()), True)
@@ -33,17 +32,29 @@ class _Enum(Expression):
         return result
 
 
+class DataElementStyle(_Enum):
+    enum_list = {
+        'auto': 'Auto',
+        'attribute': 'Attribute',
+        'element': 'Element'
+    }
+
+    def __init__(self, expression, lnk, must_be_constant):
+        super(DataElementStyle, self).__init__(
+            expression, self.enum_list, lnk, must_be_constant)
+
+
 class DataElementOutput(_Enum):
     enum_list = {
         'auto': 'Auto',
         'output': 'Output',
         'nooutput': 'NoOutput',
-        'contentsonly': 'ContentsOnly',
+        'contentsonly': 'ContentsOnly'
     }
 
     def __init__(self, expression, lnk, must_be_constant):
         super(DataElementOutput, self).__init__(
-            expression, DataElementOutput.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class BorderStyle(_Enum):
@@ -62,7 +73,7 @@ class BorderStyle(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(BorderStyle, self).__init__(
-            expression, BorderStyle.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class FontStyle(_Enum):
@@ -73,7 +84,7 @@ class FontStyle(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(FontStyle, self).__init__(
-            expression, FontStyle.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class FontWeight(_Enum):
@@ -95,7 +106,7 @@ class FontWeight(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(FontWeight, self).__init__(
-            expression, FontWeight.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class TextDecoration(_Enum):
@@ -108,7 +119,7 @@ class TextDecoration(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(TextDecoration, self).__init__(
-            expression, TextDecoration.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class TextAlign(_Enum):
@@ -122,7 +133,7 @@ class TextAlign(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(TextAlign, self).__init__(
-            expression, TextAlign.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class VerticalAlign(_Enum):
@@ -134,7 +145,7 @@ class VerticalAlign(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(VerticalAlign, self).__init__(
-            expression, VerticalAlign.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class TextDirection(_Enum):
@@ -145,7 +156,7 @@ class TextDirection(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(TextDirection, self).__init__(
-            expression, TextDirection.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class WritingMode(_Enum):
@@ -156,7 +167,7 @@ class WritingMode(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(WritingMode, self).__init__(
-            expression, WritingMode.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class BackgroundRepeat(_Enum):
@@ -169,7 +180,7 @@ class BackgroundRepeat(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(BackgroundRepeat, self).__init__(
-            expression, BackgroundRepeat.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class BackgroundGradientType(_Enum):
@@ -186,8 +197,7 @@ class BackgroundGradientType(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(BackgroundGradientType, self).__init__(
-            expression, BackgroundGradientType.enum_list,
-            lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class DataType(_Enum):
@@ -203,7 +213,7 @@ class DataType(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(DataType, self).__init__(
-            expression, DataType.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class Operator(_Enum):
@@ -225,7 +235,7 @@ class Operator(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(Operator, self).__init__(
-            expression, Operator.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class SortDirection(_Enum):
@@ -236,7 +246,7 @@ class SortDirection(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(SortDirection, self).__init__(
-            expression, SortDirection.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class BreakLocation(_Enum):
@@ -249,7 +259,7 @@ class BreakLocation(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(BreakLocation, self).__init__(
-            expression, BreakLocation.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class ImageSource(_Enum):
@@ -261,7 +271,7 @@ class ImageSource(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(ImageSource, self).__init__(
-            expression, ImageSource.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class ImageSizing(_Enum):
@@ -274,7 +284,7 @@ class ImageSizing(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(ImageSizing, self).__init__(
-            expression, ImageSizing.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class LayoutDirection(_Enum):
@@ -285,7 +295,7 @@ class LayoutDirection(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(LayoutDirection, self).__init__(
-            expression, LayoutDirection.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
 
 
 class Position(_Enum):
@@ -303,4 +313,4 @@ class Position(_Enum):
 
     def __init__(self, expression, lnk, must_be_constant):
         super(LayoutDirection, self).__init__(
-            expression, LayoutDirection.enum_list, lnk, must_be_constant)
+            expression, self.enum_list, lnk, must_be_constant)
