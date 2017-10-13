@@ -456,6 +456,7 @@ class Nuntiare(Element):
         'EmbeddedImages': [],
         'Page': [Element.ELEMENT, Card.ONE],
         'Language': [Element.STRING, Card.ZERO_ONE, True],
+        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
         'DataElementStyle': [
             Element.ENUM, Card.ZERO_ONE, True, 'Attribute'],
     }
@@ -803,6 +804,8 @@ class Group(Element):
         'Filters': [],
         'SortExpressions': [],
         'Parent': [Element.VARIANT],
+        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Output'],
     }
 
     def __init__(self, node, lnk):
@@ -846,22 +849,22 @@ class Style(Element):
         'BackgroundGradientType': [Element.ENUM],
         'BackgroundGradientEndColor': [Element.COLOR],
         'BackgroundImage': [],
-        'FontStyle': [Element.ENUM, 0, False, 'Normal'],
-        'FontFamily': [Element.STRING, 0, False, 'Arial'],
-        'FontSize': [Element.SIZE, 0, False, 10],
-        'FontWeight': [Element.ENUM, 0, False, 'Normal'],
+        'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
+        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
+        'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
+        'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
         'Format': [Element.STRING],
-        'TextDecoration': [Element.ENUM, 0, False, 'None'],
-        'TextAlign': [Element.ENUM, 0, False, 'General'],
-        'VerticalAlign': [Element.ENUM, 0, False, 'Top'],
-        'Color': [Element.COLOR, 0, False, 'Black'],
-        'PaddingLeft': [Element.SIZE, 0, False, 0.0],
-        'PaddingRight': [Element.SIZE, 0, False, 0.0],
-        'PaddingTop': [Element.SIZE, 0, False, 0.0],
-        'PaddingBottom': [Element.SIZE, 0, False, 0.0],
-        'LineHeight': [Element.SIZE, 0, False, 1.0],
-        'TextDirection': [Element.ENUM, 0, False, 'LTR'],
-        'WritingMode': [Element.ENUM, 0, False, 'Horizontal'],
+        'TextDecoration': [Element.ENUM, Card.ZERO_ONE, False, 'None'],
+        'TextAlign': [Element.ENUM, Card.ZERO_ONE, False, 'General'],
+        'VerticalAlign': [Element.ENUM, Card.ZERO_ONE, False, 'Top'],
+        'Color': [Element.COLOR, Card.ZERO_ONE, False, 'Black'],
+        'PaddingLeft': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+        'PaddingRight': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+        'PaddingTop': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+        'PaddingBottom': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+        'LineHeight': [Element.SIZE, Card.ZERO_ONE, False, 1.0],
+        'TextDirection': [Element.ENUM, Card.ZERO_ONE, False, 'LTR'],
+        'WritingMode': [Element.ENUM, Card.ZERO_ONE, False, 'Horizontal'],
     }
 
     def __init__(self, node, lnk):
@@ -870,9 +873,9 @@ class Style(Element):
 
 class Border(Element):
     elements = {
-        'Color': [Element.COLOR],
-        'BorderStyle': [Element.ENUM, 0, False, 'Solid'],
-        'Width': [Element.SIZE, 0, False, 1],
+        'Color': [Element.COLOR, Card.ZERO_ONE, False, 'Black'],
+        'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Solid'],
+        'Width': [Element.SIZE, Card.ZERO_ONE, False, 1],
     }
 
     def __init__(self, node, lnk):
@@ -901,8 +904,8 @@ class BottomBorder(Border):
 
 class BackgroundImage(Element):
     elements = {
-        'ImageSource': [Element.ENUM, 1, True],
-        'Value': [Element.VARIANT, 1],
+        'ImageSource': [Element.ENUM, Card.ONE, True],
+        'Value': [Element.VARIANT, Card.ONE],
         'MIMEType': [Element.STRING],
         'BackgroundRepeat': [Element.ENUM],
         'TransparentColor': [Element.COLOR],
@@ -954,6 +957,8 @@ class _ReportItem(Element):
         'Bookmark': [Element.STRING],
         'RepeatWith': [Element.STRING, Card.ZERO_ONE, True],
         'Style': [],
+        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
     }
 
     def __init__(self, type, node, lnk, additional_elements):
@@ -1161,6 +1166,8 @@ class TablixMember(Element):
         'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
         'HideIfNoRows': [Element.BOOLEAN, Card.ZERO_ONE, True],
         'RepeatOnNewPage': [Element.BOOLEAN, Card.ZERO_ONE, True],
+        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
     }
 
     def __init__(self, node, lnk):
@@ -1232,7 +1239,12 @@ class TablixCells(Element):
 
 
 class TablixCell(Element):
-    elements = {'CellContents': [], }
+    elements = {
+        'CellContents': [],
+        'DataElementName': [Element.STRING, Card.ZERO_ONE, True, 'Cell'],
+        'DataElementOutput': [
+            Element.ENUM, Card.ZERO_ONE, True, 'ContentsOnly'],
+    }
 
     def __init__(self, node, lnk):
         super(TablixCell, self).__init__(node, self.elements, lnk)
