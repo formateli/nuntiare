@@ -230,7 +230,7 @@ class Element(object):
     def _verify_element(self, name):
         if name not in self._original_element_list.keys():
             err_msg = "'{0}' is not a valid member for element '{1}'. " \
-                "Valid values are: {2}"
+                "Valid are: {2}"
             LOGGER.error(err_msg.format(
                 name, self.element_name,
                 self._original_element_list.keys()), True)

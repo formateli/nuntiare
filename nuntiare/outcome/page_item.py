@@ -103,19 +103,19 @@ class PageItem(object):
         self.original_height = self.height
         self.original_width = self.width
 
-    @staticmethod
-    def in_zone_down_x(it_ref, it_to_move):
-        if it_to_move.original_top <= \
-                (it_ref.original_top + it_ref.original_height):
-            return
-        if (it_to_move.original_left + it_to_move.original_width) <= \
-                it_ref.original_left:
-            return
-        if it_to_move.original_left >= \
-                (it_ref.original_left + it_ref.original_width):
-            return
-
-        return True
+#    @staticmethod
+#    def in_zone_down_x(it_ref, it_to_move):
+#        if it_to_move.original_top <= \
+#                (it_ref.original_top + it_ref.original_height):
+#            return
+#        if (it_to_move.original_left + it_to_move.original_width) <= \
+#                it_ref.original_left:
+#            return
+#        if it_to_move.original_left >= \
+#                (it_ref.original_left + it_ref.original_width):
+#            return
+#
+#        return True
 
     @staticmethod
     def in_zone_down(it_ref, it_to_move):

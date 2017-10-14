@@ -6,9 +6,27 @@ import sys
 import cgi
 from .. render import Render
 from ... import LOGGER
-from ... outcome.page_item import PageRectangle
+from ... outcome.page_item import PageItemsInfo
 
 __all__ = ['HtmlRender']
+
+
+class HeaderFooterRectangle(object):
+    def __init__(self, report, definition):
+        self.type = 'PageRectangle'
+        self.name = None
+        self.width = None
+        self.parent = None
+        self.height = report.get_value(
+            definition, 'Height', 0)
+        self.items_info = PageItemsInfo(
+            report, definition, self)
+        self.style = report.get_style(
+            definition, self.type)
+
+    def get_item_list(self):
+        if self.items_info:
+            return self.items_info.item_list
 
 
 class HtmlRender(Render):
@@ -79,7 +97,7 @@ class HtmlRender(Render):
             self, name, report, header_footer, container):
         if not header_footer or not header_footer.definition:
             return
-        rec = PageRectangle(report, header_footer.definition, None)
+        rec = HeaderFooterRectangle(report, header_footer.definition)
         rec.name = "div_" + name
         rec.width = report.result.available_width
         items = [rec, ]
