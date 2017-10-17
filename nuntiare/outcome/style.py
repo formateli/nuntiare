@@ -62,7 +62,7 @@ class OutcomeStyle(object):
             style_def, 'WritingMode', 'Horizontal')
 
         self._get_border(
-            style._border, 
+            style._border,
             style_def.get_element('Border') if style_def else None,
             main=[True, type_])
         if style_def:
