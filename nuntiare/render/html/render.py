@@ -17,6 +17,8 @@ class HeaderFooterRectangle(object):
         self.name = None
         self.width = None
         self.parent = None
+        self.top = 0
+        self.left = 0
         self.height = report.get_value(
             definition, 'Height', 0)
         self.items_info = PageItemsInfo(
