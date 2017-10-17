@@ -239,6 +239,8 @@ class DataSource(object):
             return False
 
         try:
+            LOGGER.debug(
+                "Connecting Data Source '{0}'".format(self.name))
             conn = self.data_provider.connect(connection_object)
             self.cursor = conn.cursor()
         except Exception as e:
@@ -266,7 +268,12 @@ class DataSet(DataInterface):
             if not self.data_source or \
                     not self.data_source.cursor:
                 return
-            self.data_source.cursor.execute(command)
+            try:
+                self.data_source.cursor.execute(command)
+            except Exception as e:
+                LOGGER.error(
+                    "Error executing data set '{0}': {1}".format(
+                        self.name, e.args), True)
             query_result = self.data_source.cursor.fetchall()
             if self.data_source.cursor.description:
                 is_api_2 = True
@@ -383,10 +390,11 @@ class DataGroupInstance(DataInterface):
 class DataSourceObject(DataSource):
     def __init__(self, report, data_source_def):
         self.report = report
-
         dp_name = Expression.get_value_or_default(
                 self.report, data_source_def.conn_properties,
                 'DataProvider', None)
+        LOGGER.debug(
+            "Looking for Data Provider '{0}'".format(dp_name))
         data_provider = get_data_provider(dp_name)
         super(DataSourceObject, self).__init__(
             data_source_def.Name, data_provider)

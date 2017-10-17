@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from importlib import import_module
-from ... import CONFIG
+from ... import CONFIG, LOGGER
 
 
 def get_data_provider(provider_name):
@@ -13,8 +13,12 @@ def get_data_provider(provider_name):
     '''
 
     if not CONFIG.has_option('data_providers', provider_name):
-        return None
+        return
     module = CONFIG.get('data_providers', provider_name)
-    provider = import_module(module)
-
+    try:
+        provider = import_module(module)
+    except Exception as e:
+        err = "Error importing '{0}' for Data Provider '{1}': {2}".format(
+                module, provider_name, e.args)
+        LOGGER.error(err, True)
     return provider
