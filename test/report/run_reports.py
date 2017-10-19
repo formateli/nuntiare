@@ -27,13 +27,13 @@ def get_conn_string(file_name):
 
 
 REPORTS = {
-    'countries1.xml': [['html'], {}],
+    'countries1.xml': [['xml', 'html'], {}],
     'countries2.xml': [['html'], {}],
     'grid.xml': [['html'], {}],
     'keep_together_1.xml': [['html', 'pdf'], {}],
     'keep_together_2.xml': [['html', 'pdf'], {}],
     'keep_together_3.xml': [['html', 'pdf'], {}],
-    'line.xml': [['html', 'pdf'], {}],
+    'line.xml': [['xml', 'html', 'pdf'], {}],
     'northwind_orders.xml': [['html'], {
         'conn_string': get_conn_string('db_test_connection_northwind')}],
     'reportviewer_tablix_sample1.xml': [['html'], {
@@ -60,7 +60,7 @@ def run_report(report_file, renders, parameters):
             "File '{0}' not found.".format(report_file),
             True, 'IOError')
 
-    report = Report(report_file)
+    report = Report(report_file, output_name=report_file)
     report.run(parameters)
     for r in renders:
         LOGGER.info("render '{0}'".format(r))

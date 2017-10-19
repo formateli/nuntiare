@@ -646,6 +646,8 @@ class DataGroupObject(object):
         self._current_instance_index = -1
         self.EOF = True
         self.location = location
+        self.data_element_name = name
+        self.data_element_output = 'Auto'
 
         if name in report.data_groups:
             err_msg = "DataSet, DataRegion or Group with " \
@@ -662,6 +664,11 @@ class DataGroupObject(object):
     def create_instances(self, group_def):
         if not group_def:
             return
+
+        self.data_element_name = self.report.get_value(
+            group_def, 'DataElementName', self.name)
+        self.data_element_output = self.report.get_value(
+            group_def, 'DataElementOutput', 'Auto')
 
         if self.parent and self.parent.is_detail_group:
             err_msg = "Group '{0}' could not be created. " \

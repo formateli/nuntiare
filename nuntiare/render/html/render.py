@@ -178,25 +178,6 @@ class HtmlRender(Render):
             if grp.sub_items:
                 add_sub_items(grp.sub_items, header_rows)
 
-#        if it.tablix_corner:
-#            corner = _HtmlElement('table', it.name + '_corner')
-#            td_corner = _HtmlElement('td', None)
-#            td_corner.add_attribute('colspan',
-#                len(it.row_hierarchy.cumulative_sizes))
-#            td_corner.add_attribute('rowspan',
-#                len(it.column_hierarchy.cumulative_sizes))
-
-#            for row in it.tablix_corner.rows:
-#                rw = _HtmlElement('tr', None)
-#                for cell in row.cells:
-#                    if not cell.object:
-#                        continue
-#                    self._render_items(cell.object.item_list, rw)
-#                corner.add_element(rw)
-
-#            td_corner.add_element(corner)
-#            header_rows[0].add_element(td_corner)
-
         for r in header_rows:
             tablix.add_element(r)
 

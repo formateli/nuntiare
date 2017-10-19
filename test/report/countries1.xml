@@ -46,7 +46,7 @@
   <Body>
     <ReportItems>
       <Tablix>
-        <Name>Matrix1</Name>
+        <Name>CountryMatrix</Name>
         <TablixCorner>
           <TablixCornerRows>
             <TablixCornerRow>

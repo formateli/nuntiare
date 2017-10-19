@@ -442,9 +442,8 @@ class TablixHierarchy(object):
             self.cumulative_sizes.append(size)
 
     def has_header(self):
-        if not self.cumulative_sizes:
-            return
-        return True
+        if self.cumulative_sizes:
+            return True
 
     def _validate_hierarchy(self, members, items, err, index=0):
         for member in members:
@@ -504,6 +503,7 @@ class TablixMember(object):
             self.level = None
             self.cell = None
             self.defined = False
+            self.textbox_name = None
 
         def set_header(self, header_definition):
             if not header_definition:
@@ -513,6 +513,14 @@ class TablixMember(object):
             self.cell = TablixCell(
                 self.member.report, header_definition, 0.0)
             self._check_cumulative_size()
+
+            if self.cell.contents:
+                reportitems = \
+                    self.cell.contents.get_element('ReportItems')
+                if reportitems:
+                    textbox = reportitems.get_element('Textbox')
+                    if textbox:
+                        self.textbox_name = textbox.Name
             self.defined = True
 
         def get_total_size(self):
@@ -572,6 +580,7 @@ class TablixMember(object):
         '''
         self.hierarchy = hierarchy
         self.report = report
+        self.definition = definition
         self.members = []
         self.parent_member = parent_member
         self.children = []
@@ -585,12 +594,16 @@ class TablixMember(object):
         self.scope = None
         self.is_static = True
         self.header = TablixMember.Header(self)
+        self.data_element_name = report.get_value(
+            definition, 'DataElementName', None)
+        self.data_element_output = report.get_value(
+            definition, 'DataElementOutput', 'Auto')
         self.def_object = None  # Row or Column definition.
 
         if definition:
             header_def = definition.get_element('TablixHeader')
             if header_def:
-                self.header.set_header(header_def)
+                self.header.set_header(header_def)                
             group_def = definition.get_element('Group')
             if group_def:
                 self.group = DataGroupObject(
@@ -606,9 +619,19 @@ class TablixMember(object):
                 self.scope = parent_data_group.name
 
         if parent_member:
-            if parent_member.is_static:
-                self.is_static = False
+#            if parent_member.is_static:
+#                self.is_static = False
             parent_member.children.append(self)
+
+        if self.data_element_name is None:
+            if self.is_static:
+                if self.header.textbox_name:
+                    self.data_element_name = self.header.textbox_name
+                else:
+                    self.data_element_name = 'StaticMember'
+            else:
+                self.data_element_name = \
+                    self.group.name + '_Collection' 
 
         if definition:
             members_def = definition.get_element('TablixMembers')

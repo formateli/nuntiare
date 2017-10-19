@@ -460,7 +460,8 @@ class Nuntiare(Element):
         'EmbeddedImages': [],
         'Page': [Element.ELEMENT, Card.ONE],
         'Language': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+        'DataElementName': [
+            Element.STRING, Card.ZERO_ONE, True, 'Nuntiare'],
         'DataElementStyle': [
             Element.ENUM, Card.ZERO_ONE, True, 'Attribute'],
     }
@@ -854,7 +855,7 @@ class Style(Element):
         'BackgroundGradientEndColor': [Element.COLOR],
         'BackgroundImage': [],
         'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Sans'],
+        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
         'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
         'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
         'Format': [Element.STRING],
