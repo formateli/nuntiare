@@ -45,10 +45,10 @@ https://msdn.microsoft.com/en-us/library/ee208845(v=sql.105).aspx</Description>
   <Body>
     <ReportItems>
       <Tablix>
+        <Name>Address</Name>
         <Left>1in</Left>
         <DataSetName>AddressDataSet</DataSetName>
         <ToolTip>Addresses</ToolTip>
-        <Name>Tablix2</Name>
         <Visibility>
           <Hidden>=Parameters.ShowTable=False</Hidden>
         </Visibility>
@@ -66,6 +66,7 @@ https://msdn.microsoft.com/en-us/library/ee208845(v=sql.105).aspx</Description>
           <TablixMembers>
             <TablixMember>
               <RepeatOnNewPage>true</RepeatOnNewPage>
+              <DataElementName>Headers</DataElementName>
             </TablixMember>
             <TablixMember>
               <Group>
@@ -83,6 +84,7 @@ https://msdn.microsoft.com/en-us/library/ee208845(v=sql.105).aspx</Description>
               <TablixMembers>
                 <TablixMember>
                   <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <DataElementName>CountryHeader</DataElementName>
                 </TablixMember>
                 <TablixMember>
                   <Group>

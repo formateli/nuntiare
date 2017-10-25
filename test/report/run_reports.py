@@ -34,7 +34,7 @@ REPORTS = {
     'keep_together_2.xml': [['html', 'pdf'], {}],
     'keep_together_3.xml': [['html', 'pdf'], {}],
     'line.xml': [['xml', 'html', 'pdf'], {}],
-    'northwind_orders.xml': [['html'], {
+    'northwind_orders.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_northwind')}],
     'reportviewer_tablix_sample1.xml': [['html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
@@ -43,9 +43,9 @@ REPORTS = {
     'reportviewer_tablix_sample3.xml': [['html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
     'rownumber.xml': [['html'], {}],
-    'tablix_example_1.xml': [['html'], {
-        'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'tablix_example_2.xml': [['html'], {
+    'tablix_example_1.xml': [['xml', 'html'], {
+       'conn_string': get_conn_string('db_test_connection_adventure')}],
+    'tablix_example_2.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
     'tablix_example_3.xml': [['html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],

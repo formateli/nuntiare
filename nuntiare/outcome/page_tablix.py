@@ -1,4 +1,5 @@
 # This file is part of Nuntiare project.
+
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
@@ -272,11 +273,16 @@ class PageTablix(PageItem):
 
     def _run_rows(self, members, row_count=0, parent_group=None):
         for member in members:
+            row_instance = None
             if not member.group:
+                if member.group_belongs:
+                    row_instance = \
+                        member.group_belongs.current_instance().data.name
                 if member.def_object:
                     self._run_cols(
                         self.column_hierarchy.members,
-                        member.def_object, row_count)
+                        member.def_object, row_count,
+                        row_instance=row_instance)
                     row_count += 1
                 elif member.children:
                     row_count = self._run_rows(
@@ -285,10 +291,13 @@ class PageTablix(PageItem):
             elif not member.group.is_detail_group:
                 i = 0
                 while not member.group.EOF:
+                    row_instance = \
+                        member.group.current_instance().data.name
                     if member.def_object:
                         self._run_cols(
                             self.column_hierarchy.members,
-                            member.def_object, row_count)
+                            member.def_object, row_count,
+                            row_instance=row_instance)
                         row_count += 1
                     else:
                         row_count = self._run_rows(
@@ -309,7 +318,8 @@ class PageTablix(PageItem):
                 while not data.EOF:
                     self._run_cols(
                         self.column_hierarchy.members,
-                        member.def_object, row_count)
+                        member.def_object, row_count,
+                        row_instance=data.name)
                     data.move_next()
                     row_count += 1
 
@@ -318,37 +328,48 @@ class PageTablix(PageItem):
     def _run_cols(
             self, members, row, row_index,
             col_count=0, parent_group=None,
-            is_new_row=True):
+            is_new_row=True, row_instance=None):
 
         if is_new_row:
             self.all_to_first(
                 self.column_hierarchy.members)
 
         for member in members:
+            col_instance = None
             if not member.group:
+                if member.group_belongs:
+                    col_instance = \
+                        member.group_belongs.current_instance().data.name
                 if member.def_object:
                     self._do_cell(
                         row, row_index,
                         member.def_object,
-                        col_count)
+                        col_count,
+                        row_instance,
+                        col_instance=col_instance)
                     col_count += 1
                 elif member.children:
                     col_count = self._run_cols(
                         member.members, row, row_index,
-                        col_count, None, False)
+                        col_count, None, False,
+                        row_instance=row_instance)
 
             elif not member.group.is_detail_group:
                 i = 0
                 while not member.group.EOF:
+                    data = member.group.current_instance().data
                     if member.def_object:
                         self._do_cell(
                             row, row_index,
-                            member.def_object, col_count)
+                            member.def_object, col_count,
+                            row_instance,
+                            col_instance=data.name)
                         col_count += 1
                     else:
                         col_count = self._run_cols(
                             member.members, row, row_index,
-                            col_count, member.group, False)
+                            col_count, member.group, False,
+                            row_instance=row_instance)
                     member.group.move_next()
                     i += 1
                     if parent_group:
@@ -363,17 +384,21 @@ class PageTablix(PageItem):
 
         return col_count
 
-    def _do_cell(self, row, row_index, col, col_index):
+    def _do_cell(
+            self, row, row_index, col, col_index,
+            row_instance, col_instance):
         self.report.current_data_scope = [
                 row.member.scope,
                 col.member.scope
             ]
-
         cell = row.cells[col.index]
         grid_cell = self.grid_body.add_cell(
             row_index, col_index, cell,
             col_span=cell.col_span,
-            row_span=cell.row_span)
+            row_span=cell.row_span,
+            row_member=row.member,
+            row_instance=row_instance,
+            col_instance=col_instance)
 
         grid_cell.width = col.width
         grid_cell.height = cell.height
@@ -405,7 +430,9 @@ class TablixHierarchy(object):
                 mb = TablixMember(
                     self, report, member,
                     parent_member=None,
-                    parent_data_group=tablix_group)
+                    parent_data_group=tablix_group,
+                    parent_group=None,
+                    group_belongs=None)
                 if header_size == 0.0:
                     header_size = mb.header.get_total_size()
                 else:
@@ -570,13 +597,18 @@ class TablixMember(object):
 
     def __init__(
             self, hierarchy, report, definition,
-            parent_member, parent_data_group):
+            parent_member, parent_data_group,
+            parent_group, group_belongs):
         '''
         hierarchy: The TablixHierarchy object which owns this member.
         report: The report object.
         definition: The nuntiare TablixMember definition.
         parent_member: Parent member.
         parent_data_group: The parent data. TablixGroup for First members.
+        parent_group: The real parent group. TablixGroup is exclude.
+        group_belongs: Group for wich this member belongs. Usefull in case
+            member is static but is part of a group.
+            It can not be the TablixGroup.
         '''
         self.hierarchy = hierarchy
         self.report = report
@@ -593,12 +625,14 @@ class TablixMember(object):
         self.group = None
         self.scope = None
         self.is_static = True
+        self.group_belongs = None
+        self.parent_group = parent_group
         self.header = TablixMember.Header(self)
         self.data_element_name = report.get_value(
             definition, 'DataElementName', None)
         self.data_element_output = report.get_value(
             definition, 'DataElementOutput', 'Auto')
-        self.def_object = None  # Row or Column definition.
+        self.def_object = None  # Row or Column definition.        
 
         if definition:
             header_def = definition.get_element('TablixHeader')
@@ -612,15 +646,15 @@ class TablixMember(object):
                 self.group.create_instances(group_def)
 
         if self.group:
+            self.group_belongs = self.group
             self.scope = self.group.name
             self.is_static = False
         else:
             if parent_data_group:
                 self.scope = parent_data_group.name
+            self.group_belongs = group_belongs
 
         if parent_member:
-#            if parent_member.is_static:
-#                self.is_static = False
             parent_member.children.append(self)
 
         if self.data_element_name is None:
@@ -635,14 +669,18 @@ class TablixMember(object):
 
         if definition:
             members_def = definition.get_element('TablixMembers')
-            group_to_parent = \
+            data_group_to_parent = \
                 self.group if self.group else parent_data_group
+            group_to_parent = \
+                self.group if self.group else parent_group
             if members_def:
                 header_size = 0.0
                 for member in members_def.member_list:
                     new_member = TablixMember(
                         hierarchy, report, member,
-                        self, group_to_parent)
+                        self, data_group_to_parent,
+                        group_to_parent,
+                        self.group_belongs)
                     self.members.append(new_member)
                     if header_size == 0.0:
                         header_size = new_member.header.get_total_size()
@@ -728,10 +766,15 @@ class Grid(object):
                         self._parent_cell._auto_span(columns, column)
                 return result
 
-        def __init__(self, index):
+        def __init__(
+                self, index, member=None,
+                row_instance=None, col_instance=None):
             self.height = 0.0
             self.index = index
             self.cells = []
+            self.member = member
+            self.row_instance = row_instance
+            self.col_instance = col_instance
 
         def add_cell(self, grow_direction, cell_object):
             cell = Grid.Row.Cell(grow_direction, self, cell_object)
@@ -748,10 +791,14 @@ class Grid(object):
     def add_cell(
             self, row_index, column_index,
             cell_object=None, row_span=1, col_span=1,
-            parent_cell=None):
+            parent_cell=None, row_member=None,
+            row_instance=None, col_instance=None):
 
         row, new_row = self._get_item(
-            row_index, self.rows, Grid.Row)
+            row_index, self.rows, Grid.Row,
+            row_member=row_member,
+            row_instance=row_instance,
+            col_instance=col_instance)
         column, new_column = self._get_item(
             column_index, self.columns, Grid.Column)
 
@@ -856,10 +903,18 @@ class Grid(object):
                 i += 1
             self.rows.extend(grid.rows)
 
-    def _get_item(self, index, collection, class_):
+    def _get_item(
+            self, index, collection, class_,
+            row_member=None, row_instance=None,
+            col_instance=None):
         new = False
         if index == len(collection):
-            item = class_(index)
+            if row_member:
+                item = class_(
+                    index, row_member,
+                    row_instance, col_instance)
+            else:
+                item = class_(index)
             collection.append(item)
             new = True
         elif index > len(collection):

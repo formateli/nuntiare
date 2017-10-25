@@ -85,7 +85,7 @@ class PageItem(object):
         self.repeat_with = report.get_value(
             report_item_def, 'RepeatWith', None)
         self.data_element_name = report.get_value(
-            report_item_def, 'DataElementName', None)
+            report_item_def, 'DataElementName', self.name)
         self.data_element_output = report.get_value(
             report_item_def, 'DataElementOutput', 'Auto')
         # TODO  Visibility, ActionInfo
@@ -236,6 +236,8 @@ class PageText(PageItem):
             report_item_def, 'KeepTogether', False)
         self.data_element_style = report.get_value(
             report_item_def, 'DataElementStyle', 'Auto')
+        if self.data_element_style == 'Auto':
+            self.data_element_style = report.definition.DataElementStyle
         # TODO ToggleImage
 
         self.value = report.get_value(

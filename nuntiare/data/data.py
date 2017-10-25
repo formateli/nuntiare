@@ -636,7 +636,7 @@ class DataGroupObject(object):
             self.sub_instance.append(instance)
 
     def __init__(self, report, name, parent, location=None):
-        self.name = name
+        self.name = name = name
         self.report = report
         self.instance = []      # List of GroupInstance objects.
         self.top_group = None   # Top group. Normally the data set.
@@ -719,7 +719,7 @@ class DataGroupObject(object):
         self.parent.sub_group.append(self)
 
     def add_data_instance(self, data):
-        instance = DataGroupObject.GroupInstance(self, data)
+        instance = self.GroupInstance(self, data)
         self.instance.append(instance)
         return instance
 

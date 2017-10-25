@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <Nuntiare>
   <Name>northwind_orders</Name>
+  <DataElementStyle>Element</DataElementStyle>
   <Xxx>Prueba</Xxx>
   <ReportParameters>
     <ReportParameter>
