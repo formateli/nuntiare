@@ -8,7 +8,8 @@ from . expression import Expression, String, Boolean, \
 from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
         TextAlign, VerticalAlign, TextDirection, WritingMode, \
         BackgroundRepeat, BackgroundGradientType, \
-        DataType, SortDirection, Operator, BreakLocation, DataElementStyle
+        DataType, SortDirection, Operator, BreakLocation, \
+        DataElementStyle, DataElementOutput
 from .. import LOGGER
 from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
@@ -42,7 +43,7 @@ _ENUM_CLASSES = [
     'TextDirection', 'WritingMode', 'BackgroundRepeat',
     'BackgroundGradientType', 'DataType',
     'SortDirection', 'Operator', 'BreakLocation',
-    'DataElementStyle'
+    'DataElementStyle', 'DataElementOutput'
 ]
 
 _EXPRESSION_CLASSES = [

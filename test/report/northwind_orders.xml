@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <Nuntiare>
   <Name>northwind_orders</Name>
-  <DataElementStyle>Element</DataElementStyle>
   <Xxx>Prueba</Xxx>
   <ReportParameters>
     <ReportParameter>
@@ -75,7 +74,9 @@
         </TablixColumnHierarchy>
         <TablixRowHierarchy>
           <TablixMembers>
-            <TablixMember/>
+            <TablixMember>
+              <DataElementName>TablixHeader</DataElementName>
+            </TablixMember>
             <TablixMember>
               <Group>
                 <Name>country</Name>
@@ -89,7 +90,9 @@
                 </SortExpressions>
               </Group>
               <TablixMembers>
-                <TablixMember/>
+                <TablixMember>
+                  <DataElementName>CountryHeader</DataElementName>
+                </TablixMember>
                 <TablixMember>
                   <Group>
                     <Name>customer</Name>
@@ -103,7 +106,9 @@
                     </SortExpressions>
                   </Group>
                   <TablixMembers>
-                    <TablixMember/>
+                    <TablixMember>
+                      <DataElementName>CustomerHeader</DataElementName>
+                    </TablixMember>
                     <TablixMember>
                       <Group>
                         <Name>orderid</Name>
@@ -117,7 +122,11 @@
                         </SortExpressions>
                       </Group>
                       <TablixMembers>
-                        <TablixMember/>
+                      <!--
+                        <TablixMember>
+                          <DataElementName>OrderHeader</DataElementName>
+                        </TablixMember>
+                      -->
                         <TablixMember>
                           <Group>
                             <Name>details</Name>
@@ -128,7 +137,9 @@
                             </SortExpressions>
                           </Group>
                         </TablixMember>
-                        <TablixMember/>
+                        <TablixMember>
+                          <DataElementName>OrderTotal</DataElementName>
+                        </TablixMember>
                       </TablixMembers>
                     </TablixMember>
                   </TablixMembers>
@@ -818,6 +829,7 @@
                 </TablixCell>
               </TablixCells>
             </TablixRow>
+<!--
             <TablixRow>
               <Height>6mm</Height>
               <TablixCells>
@@ -877,6 +889,7 @@
                 <TablixCell/>
               </TablixCells>
             </TablixRow>
+-->
             <TablixRow>
               <Height>7mm</Height>
               <TablixCells>

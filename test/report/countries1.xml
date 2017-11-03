@@ -46,7 +46,7 @@
   <Body>
     <ReportItems>
       <Tablix>
-        <Name>CountryMatrix</Name>
+        <Name>CountryProductTablix</Name>
         <TablixCorner>
           <TablixCornerRows>
             <TablixCornerRow>
@@ -90,7 +90,7 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>Textbox85</Name>
+                        <Name>TotalCity</Name>
                         <CanGrow>true</CanGrow>
                         <Value>=Sum('F.total')</Value>
                         <Style>
@@ -112,7 +112,7 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>Textbox86</Name>
+                        <Name>TotalCountry</Name>
                         <CanGrow>true</CanGrow>
                         <Value>=Sum('F.total')</Value>
                         <Style>
@@ -134,7 +134,7 @@
                   <CellContents>
                     <ReportItems>
                       <Textbox>
-                        <Name>Textbox87</Name>
+                        <Name>TotalCountries</Name>
                         <CanGrow>true</CanGrow>
                         <Value>=Sum('F.total')</Value>
                         <Style>
@@ -422,7 +422,7 @@
                 <CellContents>
                   <ReportItems>
                     <Textbox>
-                      <Name>gran_total_txt</Name>
+                      <Name>GranTotal</Name>
                       <Value>Grand Total</Value>
                       <Style>
                         <Border>

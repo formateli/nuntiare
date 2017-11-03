@@ -63,6 +63,12 @@ class XmlRender(Render):
                     member.group_belongs.data_element_name
                 m['group_element_output'] = \
                     member.group_belongs.data_element_output
+                if member.group.sub_group:
+                    grp = groups[member.group]
+                    grp['children'] = {}
+                    for child in member.group.sub_group:
+                        grp['children'][child.name] = \
+                            {'current_instance': None}
 
             if member.parent_member:
                 pm = members_tree[member.parent_member]
@@ -72,6 +78,54 @@ class XmlRender(Render):
             if member.children:
                 self._get_members(
                     member.children, members_tree, groups)
+
+    def _append_member_group_to_parent(
+            self, doc, tablix, row, members_tree, groups,
+            tablix_element, member_el):
+        parent_group = row.member.get_parent_group(tablix)
+        if parent_group:
+            pg = groups[parent_group]
+            pg['element'].appendChild(member_el)
+        else:
+            if not row.member.parent_member:
+                tablix_element.appendChild(member_el)
+            else:
+                pm = self._get_element(
+                    doc, members_tree[
+                        row.member.parent_member
+                    ],
+                    members_tree, tablix_element)
+                pm.appendChild(member_el)
+
+    def _create_children_groups_el(self, doc, groups, group, group_el):
+        grp = groups[group]
+        for child in group.sub_group:
+            ch_grp = groups[child]
+            ch_el = doc.createElement(
+                ch_grp['member']['data_element_name'])
+            group_el.appendChild(ch_el)
+            grp['children'][child.name]['collection_el'] = ch_el
+            grp['children'][child.name]['current_instance'] = 'NEW_BLANK'
+
+    def _new_group_instance(
+            self, doc, tablix, tablix_element,
+            members_tree, groups, group):
+        grp = groups[group]
+        grp_el = doc.createElement(group.data_element_name)
+        grp['element'] = grp_el
+        member = grp['member']
+        parent_group = member['member'].get_parent_group(tablix)
+        
+        if parent_group:
+            pg = groups[parent_group]
+            member_el = pg['children'][group.name]['collection_el']
+        else:
+            member_el = self._get_element(
+                doc, grp['member'],
+                members_tree, tablix_element)
+        member_el.appendChild(grp_el)
+        grp['current_row_instance'] = 'NEW_BLANK'
+        return grp_el
 
     def _render_items(self, items, doc, parent):
         if not items:
@@ -83,16 +137,17 @@ class XmlRender(Render):
 
             tablix_element = doc.createElement(it.name)
             parent.appendChild(tablix_element)
-
             members_tree = {}
             groups = {}
+
             self._get_members(
                 it.row_hierarchy.members,
                 members_tree, groups)
 
             for row in it.grid_body.rows:
+                if not row.member:
+                    continue
                 member = members_tree[row.member]
-
                 if member['data_element_output'] == 'NoOutput':
                     continue
                 if row.member.group and \
@@ -100,62 +155,96 @@ class XmlRender(Render):
                     continue
 
                 element = None
+
                 if not member['parent_member'] and \
                         not row.member.group_belongs:
-                    print("NO PANRENT MEMBER")
+                    LOGGER.debug("NO PARENT MEMBER")
                     element = self._get_element(
                         doc, member, members_tree, tablix_element)
+
                 elif not row.member.group_belongs:
-                    print("NO GROUP_BELONGS")
+                    LOGGER.debug("NO GROUP_BELONGS")
                     element = self._get_element(
                         doc, member, members_tree, tablix_element)
+
                 elif not row.member.group and \
                         row.member.group_belongs:
-                    print("NO GROUP AND GROUP_BELONGS")
+                    LOGGER.debug("NO GROUP AND GROUP_BELONGS")
                     grp = groups[row.member.group_belongs]
-                    if row.row_instance == grp['current_row_instance']:
+                    new_instance = False
+                    if  grp['current_row_instance'] in \
+                            ['NEW_BLANK', row.instance]:
                         grp_el = grp['element']
                     else:
-                        grp_el = doc.createElement(
-                            row.member.group_belongs.data_element_name)
-                        grp['element'] = grp_el
-                        grp['current_row_instance'] = row.row_instance
-                        member_el = self._get_element(
-                            doc, grp['member'],
-                            members_tree, tablix_element)
-                        member_el.appendChild(grp_el)
+                        new_instance = True
+                        grp_el = self._new_group_instance(
+                            doc, it, tablix_element, members_tree, groups,
+                            row.member.group_belongs)
 
                     element = doc.createElement(
                         row.member.data_element_name)
-                        
                     grp_el.appendChild(element)
+                    grp['current_row_instance'] = row.instance
+                    if new_instance and row.member.group_belongs.sub_group:
+                        self._create_children_groups_el(
+                            doc, groups, row.member.group_belongs, grp_el)
 
                 elif row.member.group and \
                         row.member.group.is_detail_group:
-                    print("DETAIL GROUP")
+                    LOGGER.debug("DETAIL GROUP")
                     grp = groups[row.member.group]
                     element = doc.createElement(
                         row.member.group.data_element_name)
-                    if row.row_instance == grp['current_row_instance']:
+                    if row.instance == grp['current_row_instance']:
+                        member_el = grp['element_collection']
+                    else:
+                        parent_group = row.member.get_parent_group(it)
+                        if parent_group:
+                            pg = groups[parent_group]
+                            curr_child_instance = pg['children'][
+                                    row.member.group_belongs.name][
+                                        'current_instance']
+                            if curr_child_instance not in \
+                                    ['NEW_BLANK', row.instance]:
+                                grp_el = self._new_group_instance(
+                                   doc, it, tablix_element,
+                                   members_tree, groups,
+                                   parent_group)
+                                self._create_children_groups_el(
+                                    doc, groups,
+                                    parent_group,
+                                    grp_el)
+
+                            member_el = \
+                                pg['children'][
+                                    row.member.group_belongs.name][
+                                        'collection_el']
+                            pg['children'][row.member.group_belongs.name]['current_instance'] = \
+                                row.instance
+                        else:
+                            member_el = doc.createElement(
+                                row.member.data_element_name)
+                        grp['element_collection'] = member_el
+                        grp['current_row_instance'] = row.instance
+                        self._append_member_group_to_parent(
+                            doc, it, row, members_tree, groups,
+                            tablix_element, member_el)
+                    member_el.appendChild(element)
+
+                elif row.member.group:
+                    LOGGER.debug("GROUP")
+                    grp = groups[row.member.group]
+                    element = doc.createElement(
+                        row.member.group.data_element_name)
+                    if 'element_collection' in grp:
                         member_el = grp['element_collection']
                     else:
                         member_el = doc.createElement(
                             row.member.data_element_name)
                         grp['element_collection'] = member_el
-                        grp['current_row_instance'] = row.row_instance
-                        if row.member.parent_group:
-                            pg = groups[row.member.parent_group]
-                            pg['element'].appendChild(member_el)
-                        else:
-                            if not row.member.parent_member:
-                                tablix_element.appendChild(member_el)
-                            else:
-                                pm = self._get_element(
-                                    doc, members_tree[
-                                        row.member.parent_member
-                                    ],
-                                    members_tree, tablix_element)
-                                pm.appendChild(member_el)
+                        self._append_member_group_to_parent(
+                            doc, it, row, members_tree, groups,
+                            tablix_element, member_el)
                     member_el.appendChild(element)
 
                 for cell in row.cells:
@@ -169,9 +258,12 @@ class XmlRender(Render):
                         continue
 
                     if type_ == 'PageRectangle':
-                        rec_element = doc.createElement(
-                            item.data_element_name)
-                        element.appendChild(rec_element)
+                        if item.data_element_output == 'ContentsOnly':
+                            rec_element = element
+                        else:
+                            rec_element = doc.createElement(
+                                item.data_element_name)
+                            element.appendChild(rec_element)
                         if item.items_info and item.items_info.item_list:
                             for it in item.items_info.item_list:
                                 if it.type != 'PageText':
@@ -181,13 +273,13 @@ class XmlRender(Render):
                         self._run_textbox(doc, element, item)
 
     def _run_textbox(self, doc, element, item):
+        value = str(item.value) if item.value is not None else ''
+        name = item.data_element_name        
         if item.data_element_style == 'Attribute':
-            element.setAttribute(
-                item.data_element_name, item.value)
+            element.setAttribute(name, value)
         else:
-            txt_element = doc.createElement(
-                item.data_element_name)
-            text = doc.createTextNode(str(item.value))
+            txt_element = doc.createElement(name)
+            text = doc.createTextNode(value)
             txt_element.appendChild(text)
             element.appendChild(txt_element)
 

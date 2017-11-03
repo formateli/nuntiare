@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Nuntiare>
-  <Name>Country tablix</Name>
+  <Name>Rownumber Tablix</Name>
   <DataSources>
     <DataSource>
       <Name>src1</Name>
@@ -8,7 +8,7 @@
   </DataSources>
   <DataSets>
     <DataSet>
-      <Name>OrdersDataSet</Name>
+      <Name>RecordsDataSet</Name>
       <Query>
         <DataSourceName>src1</DataSourceName>
         <CommandText/>
@@ -260,7 +260,7 @@
         </TablixRowHierarchy>
         <RepeatColumnHeaders>true</RepeatColumnHeaders>
         <RepeatRowHeaders>true</RepeatRowHeaders>
-        <DataSetName>OrdersDataSet</DataSetName>
+        <DataSetName>RecordsDataSet</DataSetName>
         <Top>2pt</Top>
         <Left>2pt</Left>
         <Height>0.85in</Height>
@@ -488,7 +488,7 @@
         </TablixRowHierarchy>
         <RepeatColumnHeaders>true</RepeatColumnHeaders>
         <RepeatRowHeaders>true</RepeatRowHeaders>
-        <DataSetName>OrdersDataSet</DataSetName>
+        <DataSetName>RecordsDataSet</DataSetName>
         <Top>2pt</Top>
         <Left>2pt</Left>
         <Height>0.85in</Height>
@@ -715,7 +715,7 @@
         </TablixRowHierarchy>
         <RepeatColumnHeaders>true</RepeatColumnHeaders>
         <RepeatRowHeaders>true</RepeatRowHeaders>
-        <DataSetName>OrdersDataSet</DataSetName>
+        <DataSetName>RecordsDataSet</DataSetName>
         <Top>2pt</Top>
         <Left>2pt</Left>
         <Height>0.85in</Height>
@@ -942,7 +942,7 @@
         </TablixRowHierarchy>
         <RepeatColumnHeaders>true</RepeatColumnHeaders>
         <RepeatRowHeaders>true</RepeatRowHeaders>
-        <DataSetName>OrdersDataSet</DataSetName>
+        <DataSetName>RecordsDataSet</DataSetName>
         <Top>2pt</Top>
         <Left>2pt</Left>
         <Height>0.85in</Height>
@@ -1170,7 +1170,7 @@
         </TablixRowHierarchy>
         <RepeatColumnHeaders>true</RepeatColumnHeaders>
         <RepeatRowHeaders>true</RepeatRowHeaders>
-        <DataSetName>OrdersDataSet</DataSetName>
+        <DataSetName>RecordsDataSet</DataSetName>
         <Top>2pt</Top>
         <Left>2pt</Left>
         <Height>0.85in</Height>
@@ -1185,7 +1185,7 @@
   </Page>
   <DataEmbedded>
     <Data>
-      <Name>OrdersDataSet</Name>
+      <Name>RecordsDataSet</Name>
       <Records>
         <Record>
           <country>US</country>

@@ -28,33 +28,36 @@ def get_conn_string(file_name):
 
 REPORTS = {
     'countries1.xml': [['xml', 'html'], {}],
-    'countries2.xml': [['html'], {}],
-    'grid.xml': [['html'], {}],
-    'keep_together_1.xml': [['html', 'pdf'], {}],
-    'keep_together_2.xml': [['html', 'pdf'], {}],
-    'keep_together_3.xml': [['html', 'pdf'], {}],
+    'countries2.xml': [['xml', 'html'], {}],
+    'grid.xml': [['xml', 'html'], {}],
+    'keep_together_1.xml': [['xml', 'html', 'pdf'], {}],
+    'keep_together_2.xml': [['xml', 'html', 'pdf'], {}],
+    'keep_together_3.xml': [['xml', 'html', 'pdf'], {}],
     'line.xml': [['xml', 'html', 'pdf'], {}],
     'northwind_orders.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_northwind')}],
-    'reportviewer_tablix_sample1.xml': [['html'], {
+    'reportviewer_tablix_sample1.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'reportviewer_tablix_sample2.xml': [['html'], {
+    'reportviewer_tablix_sample2.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'reportviewer_tablix_sample3.xml': [['html'], {
+    'reportviewer_tablix_sample3.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
     'rownumber.xml': [['html'], {}],
     'tablix_example_1.xml': [['xml', 'html'], {
        'conn_string': get_conn_string('db_test_connection_adventure')}],
     'tablix_example_2.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'tablix_example_3.xml': [['html'], {
+    'tablix_example_3.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'text.xml': [['html', 'pdf'], {}],
-    'text2.xml': [['html', 'pdf'], {}],
+    'text.xml': [['xml', 'html', 'pdf'], {}],
+    'text2.xml': [['xml', 'html', 'pdf'], {}],
 }
 
 
 def run_report(report_file, renders, parameters):
+
+    LOGGER.info('file: {0}'.format(report_file))
+
     if not os.path.isfile(report_file):
         LOGGER.critical(
             "File '{0}' not found.".format(report_file),

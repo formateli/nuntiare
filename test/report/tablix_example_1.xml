@@ -76,7 +76,8 @@ https://msdn.microsoft.com/en-us/library/ee208912(v=sql.105).aspx</Description>
                     <ReportItems>
                       <Rectangle>
                         <Height>2cm</Height>
-                        <Name>Rectangle1</Name>
+                        <Name>RectangleContainer</Name>
+                        <DataElementOutput>ContentsOnly</DataElementOutput>
                         <ReportItems>
                           <Textbox>
                             <Value>=F.AddressLine1</Value>

@@ -147,12 +147,14 @@ class PageTablix(PageItem):
             self.column_hierarchy.members = []
             for col in columns.column_list:
                 member = TablixMember(
-                    self.column_hierarchy, report, None, None, None)
+                    self.column_hierarchy, report,
+                    None, None, None, None)
                 self.column_hierarchy.members.append(member)
             self.row_hierarchy.members = []
             for rw in rows.row_list:
                 member = TablixMember(
-                    self.row_hierarchy, report, None, None, None)
+                    self.row_hierarchy, report,
+                    None, None, None, None)
                 self.row_hierarchy.members.append(member)
             # TODO No headers are allowed, raise an error if so.
 
@@ -397,6 +399,7 @@ class PageTablix(PageItem):
             col_span=cell.col_span,
             row_span=cell.row_span,
             row_member=row.member,
+            col_member=col.member,
             row_instance=row_instance,
             col_instance=col_instance)
 
@@ -431,7 +434,6 @@ class TablixHierarchy(object):
                     self, report, member,
                     parent_member=None,
                     parent_data_group=tablix_group,
-                    parent_group=None,
                     group_belongs=None)
                 if header_size == 0.0:
                     header_size = mb.header.get_total_size()
@@ -597,15 +599,13 @@ class TablixMember(object):
 
     def __init__(
             self, hierarchy, report, definition,
-            parent_member, parent_data_group,
-            parent_group, group_belongs):
+            parent_member, parent_data_group, group_belongs):
         '''
         hierarchy: The TablixHierarchy object which owns this member.
         report: The report object.
         definition: The nuntiare TablixMember definition.
         parent_member: Parent member.
         parent_data_group: The parent data. TablixGroup for First members.
-        parent_group: The real parent group. TablixGroup is exclude.
         group_belongs: Group for wich this member belongs. Usefull in case
             member is static but is part of a group.
             It can not be the TablixGroup.
@@ -626,7 +626,6 @@ class TablixMember(object):
         self.scope = None
         self.is_static = True
         self.group_belongs = None
-        self.parent_group = parent_group
         self.header = TablixMember.Header(self)
         self.data_element_name = report.get_value(
             definition, 'DataElementName', None)
@@ -671,15 +670,12 @@ class TablixMember(object):
             members_def = definition.get_element('TablixMembers')
             data_group_to_parent = \
                 self.group if self.group else parent_data_group
-            group_to_parent = \
-                self.group if self.group else parent_group
             if members_def:
                 header_size = 0.0
                 for member in members_def.member_list:
                     new_member = TablixMember(
                         hierarchy, report, member,
                         self, data_group_to_parent,
-                        group_to_parent,
                         self.group_belongs)
                     self.members.append(new_member)
                     if header_size == 0.0:
@@ -689,6 +685,13 @@ class TablixMember(object):
                             err = 'Peers members header size ' \
                                 'must be equal.'
                             LOGGER.error(err, True)
+
+    def get_parent_group(self, tablix):
+        if not self.group_belongs:
+            return
+        names = [tablix.name, self.group_belongs.top_group.name]
+        if self.group_belongs.parent.name not in names:
+            return self.group_belongs.parent
 
     def set_definition(self, type_, row_column_def, index):
         if type_ == 'Rows':
@@ -709,17 +712,24 @@ class Grid(object):
     '''
 
     class Column(object):
-        def __init__(self, index):
+        def __init__(self, index, member, instance):
             self.width = 0.0
             self.index = index
             self.cells = []
+            self.member = member
+            self.instance = instance
 
     class Row(object):
         class Cell(object):
-            def __init__(self, grow_direction, row, cell_object):
+            def __init__(
+                    self, grow_direction, row, column, cell_object,
+                    row_instance, col_instance):
                 self.type = 'RowCell'
                 self.object = cell_object
                 self.row = row
+                self.column = column
+                self.row_instance = row_instance
+                self.col_instance = col_instance
                 self.row_span = 0
                 self.col_span = 0
                 self._grow_direction = grow_direction
@@ -767,17 +777,20 @@ class Grid(object):
                 return result
 
         def __init__(
-                self, index, member=None,
-                row_instance=None, col_instance=None):
+                self, index, member, instance):
             self.height = 0.0
             self.index = index
             self.cells = []
             self.member = member
-            self.row_instance = row_instance
-            self.col_instance = col_instance
+            self.instance = instance
 
-        def add_cell(self, grow_direction, cell_object):
-            cell = Grid.Row.Cell(grow_direction, self, cell_object)
+        def add_cell(
+                self, grow_direction,
+                cell_object, column,
+                row_instance, col_instance):
+            cell = Grid.Row.Cell(
+                grow_direction, self, column, cell_object,
+                row_instance, col_instance)
             self.cells.append(cell)
             return cell
 
@@ -791,18 +804,19 @@ class Grid(object):
     def add_cell(
             self, row_index, column_index,
             cell_object=None, row_span=1, col_span=1,
-            parent_cell=None, row_member=None,
+            parent_cell=None, row_member=None, col_member=None,
             row_instance=None, col_instance=None):
 
         row, new_row = self._get_item(
             row_index, self.rows, Grid.Row,
-            row_member=row_member,
-            row_instance=row_instance,
-            col_instance=col_instance)
+            row_member, row_instance)
         column, new_column = self._get_item(
-            column_index, self.columns, Grid.Column)
+            column_index, self.columns, Grid.Column,
+            col_member, col_instance)
 
-        cell = row.add_cell(self._grow_direction, cell_object)
+        cell = row.add_cell(
+            self._grow_direction, cell_object,
+            column, row_instance, col_instance)
 
         if new_row:
             for col in self.columns:
@@ -905,16 +919,11 @@ class Grid(object):
 
     def _get_item(
             self, index, collection, class_,
-            row_member=None, row_instance=None,
-            col_instance=None):
+            member, instance):
         new = False
         if index == len(collection):
-            if row_member:
-                item = class_(
-                    index, row_member,
-                    row_instance, col_instance)
-            else:
-                item = class_(index)
+            item = class_(
+                index, member, instance)
             collection.append(item)
             new = True
         elif index > len(collection):
