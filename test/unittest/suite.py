@@ -4,8 +4,16 @@
 
 "Nuntiare unittest suite"
 
-import logging
+import os
+import sys
 import unittest
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+DIR = os.path.normpath(os.path.join(DIR, '..', '..', 'nuntiare'))
+if os.path.isdir(DIR):
+    sys.path.insert(0, os.path.dirname(DIR))
+
+import logging
 import load_module
 import dataprovider
 import expression

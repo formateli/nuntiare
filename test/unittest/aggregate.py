@@ -25,7 +25,10 @@ class AggregateTest(unittest.TestCase):
         conn_str = con_file_info.readline()
         con_file_info.close()
 
-        parameters = {'conn_string': conn_str}
+        parameters = {
+                'conn_string': conn_str,
+                'query_limit': 100,
+            }
         report.run(parameters)
 
         grid = report.result.body.items.item_list[0].grid_body
@@ -197,6 +200,7 @@ class AggregateTest(unittest.TestCase):
     def _ckeck_country_header(
             self, grid, row,
             v1, v2, v3, v4, v5, v6, v7, v8, v9, v10):
+        print(self._cell_value(grid, row, 2))
         # RowNumber() in Tablix contexts (Counting countries)
         self.assertEqual(self._cell_value(grid, row, 0), v1)
         # RunningValue('F.country', 'CountDistinct')
