@@ -47,9 +47,9 @@ class DataProvidersTest(unittest.TestCase):
                 ))
 
         for parameter in test_params:
-            self.run_test(parameter)
+            self._run_test(parameter)
 
-    def run_test(self, test_param):
+    def _run_test(self, test_param):
         field_map = [
             {
                 'name': 'id',

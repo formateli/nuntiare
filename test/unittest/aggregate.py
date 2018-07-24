@@ -200,7 +200,6 @@ class AggregateTest(unittest.TestCase):
     def _ckeck_country_header(
             self, grid, row,
             v1, v2, v3, v4, v5, v6, v7, v8, v9, v10):
-        print(self._cell_value(grid, row, 2))
         # RowNumber() in Tablix contexts (Counting countries)
         self.assertEqual(self._cell_value(grid, row, 0), v1)
         # RunningValue('F.country', 'CountDistinct')
