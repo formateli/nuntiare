@@ -225,14 +225,13 @@ class DataSource(object):
 
     def connect(self, connection_object):
         self.cursor = None
-
         if not self.data_provider:
             LOGGER.error(
                 "Invalid DataProvider '{0}' for DataSource '{1}'".format(
                     self.data_provider, self.name))
             return False
 
-        if not connection_object:
+        if connection_object is None:
             LOGGER.error(
                 "Invalid connection object for DataSource '{0}'.".format(
                     self.name))
