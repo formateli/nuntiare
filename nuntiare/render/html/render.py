@@ -286,6 +286,8 @@ class HtmlRender(Render):
                         'font-weight', 'font-style', 'font-size',
                         'text-align', 'text-decoration', 'padding'])
                 self._add_style(rec, it, ['height', ])
+                if it.style.vertical_align in ('Middle', 'Bottom'):
+                    vertical_align = it.style.vertical_align
             else:
                 self._add_style(rec, it, [])
 
