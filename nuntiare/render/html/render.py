@@ -64,20 +64,14 @@ class HtmlRender(Render):
         body.add_element(container)
         html.add_element(body)
 
-        str_style = ".div_Middle " \
-            "{display: inline-block;vertical-align: middle;}\n" + \
-            ".div_Bottom {display: inline-block;vertical-align: bottom;}\n"
+        str_style = ".div_Middle "  \
+            "{display: inline-block; position: relative; top: 50%; " \
+            "transform: translateY(-50%); vertical-align: middle;}\n"
+        str_style += ".div_Bottom " \
+            "{display: inline-block; position: relative; top: 100%; " \
+            "transform: translateY(-100%); vertical-align: middle;}\n"
+
         for key, value in self.style_helper.style_list.items():
-            if value.find("; vertical-align:Middle;") > -1:
-                str_style += key + \
-                    ":before {content: ''; " \
-                    "display: inline-block;height: 100%; " \
-                    "vertical-align: middle;margin-right: -0.1em;}\n"
-            if value.find("; vertical-align:Bottom;") > -1:
-                str_style += key + \
-                    ":before {content: ''; " \
-                    "display: inline-block;height: 100%; " \
-                    "vertical-align: bottom;margin-right: -0.1em;}\n"
             str_style += key + "{" + value + "}\n"
 
         style = _HtmlElement('style', None)
@@ -311,7 +305,11 @@ class HtmlRender(Render):
         if vertical_align and txt != '':
             div_vertical = _HtmlElement('div', vertical_align)
             div_vertical.add_element(_HtmlElement('text', None, txt))
-            rec.add_element(div_vertical)
+            if is_div:
+                rec.add_element(div_vertical)
+            else:
+                if sub_rec:
+                    sub_rec.add_element(div_vertical)
 
         return res
 
