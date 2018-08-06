@@ -64,7 +64,15 @@ class HtmlRender(Render):
         body.add_element(container)
         html.add_element(body)
 
-        str_style = ".div_Middle "  \
+        str_style = "@page {size: " + str(report.result.width) + \
+            "pt " + str(report.result.height) + "pt; " + \
+            "margin-top: " + str(report.result.margin_top) + "pt; " \
+            "margin-right: " + str(report.result.margin_right) + "pt; " \
+            "margin-bottom: " + str(report.result.margin_bottom) + "pt; " \
+            "margin-left: " + str(report.result.margin_left) + "pt;}\n"
+
+
+        str_style += ".div_Middle "  \
             "{display: inline-block; position: relative; top: 50%; " \
             "transform: translateY(-50%); vertical-align: middle;}\n"
         str_style += ".div_Bottom " \
