@@ -70,8 +70,7 @@ class HtmlRender(Render):
             "margin-right: " + str(report.result.margin_right) + "pt; " \
             "margin-bottom: " + str(report.result.margin_bottom) + "pt; " \
             "margin-left: " + str(report.result.margin_left) + "pt;}\n"
-
-
+        str_style += ".page-break	{page-break-before: always;}\n"
         str_style += ".div_Middle "  \
             "{display: inline-block; position: relative; top: 50%; " \
             "transform: translateY(-50%); vertical-align: middle;}\n"
@@ -132,12 +131,27 @@ class HtmlRender(Render):
         for it in items:
             if it.type == 'PageLine':
                 continue  # Not supported
-            if it.type == 'PageRectangle' or it.type == 'PageText':
+            if it.type in ['PageRectangle', 'PageText']:
                 el = self._get_rectangle(it)
             if it.type == 'PageTablix':
                 el = self._get_grid(it)
 
+            break_ = None
+            break_el = None
+            if hasattr(it, 'page_break'):
+                break_ = it.page_break
+                if break_:
+                    if break_ in ['Start', 'StartAndEnd']:
+                        break_el = _HtmlElement('div', None)
+                        break_el.add_attribute('class', 'page-break')
+                        container.add_element(break_el)
+
             container.add_element(el)
+
+            if break_ and break_ in ['End', 'StartAndEnd']:
+                break_el = _HtmlElement('div', None)
+                break_el.add_attribute('class', 'page-break')
+                container.add_element(break_el)
 
     def _set_tablix_column_header(self, tablix, it):
         def get_column_header_rows(hierarchy):

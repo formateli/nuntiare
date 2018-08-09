@@ -134,6 +134,8 @@ class PageTablix(PageItem):
         self.row_hierarchy = TablixHierarchy(
             'Rows', report, tablix_def.get_element(
                 'TablixRowHierarchy'), tablix_group)
+        self.page_break = report.get_value(
+            tablix_def.get_element('PageBreak'), 'BreakLocation', None)
 
         columns = tablix_def.get_element(
             'TablixBody').get_element('TablixColumns')
