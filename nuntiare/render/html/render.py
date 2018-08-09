@@ -162,6 +162,8 @@ class HtmlRender(Render):
 
         def add_sub_items(items, header_rows):
             for sub in items:
+                if sub.level is None:
+                    continue
                 row = header_rows[sub.level]
                 self._render_items(sub.cell.object.item_list, row)
                 if sub.sub_items:
