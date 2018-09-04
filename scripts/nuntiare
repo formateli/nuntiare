@@ -242,7 +242,7 @@ def run():
         "-i", "--info", action='version', version=get_info(),
         help='Show version, copyright and license.')
 
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(dest='command')
 
     # ======== render ==================
     help = "Performs a rendering process " \
@@ -300,10 +300,11 @@ def run():
 
     args = parser.parse_args()
 
-    if hasattr(args, "file"):
+    if args.command == 'render':
         do_render(args)
-    elif hasattr(args, "rdl"):
+    elif args.command == 'convert':
         do_convert(args)
+
 
 if __name__ == "__main__":
     run()
