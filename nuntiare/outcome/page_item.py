@@ -3,9 +3,9 @@
 # contains the full copyright notices and license terms.
 
 import sys
-import cairo
-from .. nuntiarepango import pango, NuntiarePango
-from .. import LOGGER
+#import cairo
+#from .. nuntiarepango import pango, NuntiarePango
+from .. import LOGGER, FontManager
 from .. data.data_type import DataType
 
 
@@ -172,10 +172,12 @@ class PageItem(object):
 
     def _normalize_height_width(self):
         if self.parent:
-            if self.parent.height > 0.0 and self.height == 0.0:
-                self.height = self.parent.height - self.parent.top
-            if self.parent.width > 0.0 and self.width == 0.0:
-                self.width = self.parent.width - self.parent.left
+            if self.parent.height:
+                if self.parent.height > 0 and self.height == 0:
+                    self.height = self.parent.height - self.parent.top
+            if self.parent.width:
+              if self.parent.width > 0 and self.width == 0:
+                    self.width = self.parent.width - self.parent.left
 
     def get_item_list(self):
         if self.items_info:
@@ -263,6 +265,27 @@ class PageText(PageItem):
             self._can_grow_height()
 
     def _can_grow_height(self):
+        if self.value_formatted == '':
+            return
+
+        max_height = \
+            self.height - self.style.padding_top - self.style.padding_bottom
+
+        text_height = FontManager.get_text_height(
+                self.value_formatted,
+                self.report.definition.Page,
+                self.height,
+                self.style,
+        )
+
+        if text_height > max_height:
+            self.set_new_height(
+                text_height +
+                self.style.padding_top +
+                self.style.padding_bottom)
+
+    #TODO delete
+    def _can_grow_height_XXX(self):
         if self.value_formatted == '':
             return
 

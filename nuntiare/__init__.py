@@ -5,18 +5,18 @@
 import sys
 import os
 import logging
+from importlib import import_module
 from . logger import NuntiareLog
 
 try:
     from ConfigParser import ConfigParser
 except ImportError:
-    # Python 3
     from configparser import ConfigParser
 
 
 PROJECT_NAME = 'Nuntiare'
 AUTHOR = 'Fredy Ramirez'
-COPYRIGHT = '2013-2017, Fredy Ramirez - http://www.formateli.com'
+COPYRIGHT = '2013-2018, Fredy Ramirez - http://www.formateli.com'
 LICENSE = 'GNU GENERAL PUBLIC LICENSE V3'
 VERSION = '0.1.0'
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -60,3 +60,17 @@ if log_file != '':
             rotating_fh,
             level=file_level,
             formatter='%(levelname)s: %(message)s')
+
+
+# FontManager
+
+LOGGER.debug('Loading Font Manager...')
+
+fm = get_config_value('font', 'manager', 'nuntiare.font.NuntiareFont')
+i = fm.rindex('.')
+module_name = fm[:i]
+class_name = fm[i + 1:]
+
+font_manager = import_module(module_name)
+FontManager = getattr(font_manager, class_name)
+LOGGER.debug('  ' + fm)
