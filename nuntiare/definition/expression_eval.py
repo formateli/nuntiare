@@ -460,23 +460,10 @@ class ExpressionEval(object):
         except KeyError as e:
             LOGGER.error(
                 "{0}. Key <{1}> does not exist in dictionary.".format(
-                    exp_error, self._get_error_str(e)),
+                    exp_error, e),
                 True, "ValueError")
         except Exception as e:
             LOGGER.error(
                 "{0}. Unexpected error: '{1}'".format(
-                    exp_error, self._get_error_str(e)), True)
+                    exp_error, e), True)
         return result
-
-    def _get_error_str(self, e):
-        res = None
-        if not e:
-            return ''
-        for message in e.args:
-            if not message:
-                continue
-            if not res:
-                res = message
-            else:
-                res = "{0} - {1}".format(res, message)
-        return res

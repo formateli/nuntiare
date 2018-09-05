@@ -365,9 +365,12 @@ class DataGroupInstance(DataInterface):
             dt.move_first()
             while not dt.EOF:
                 r = dt.get_current_row()
+
                 exp_key = Expression.get_value_or_default(
-                        dt.report, None, None, None,
-                        direct_expression=expression)
+                            dt.report, None, None, None,
+                            direct_expression=expression
+                        )
+
                 if exp_key not in groups_exp:
                     groups_exp[exp_key] = DataGroupInstance(
                             dt,
@@ -635,7 +638,7 @@ class DataGroupObject(object):
             self.sub_instance.append(instance)
 
     def __init__(self, report, name, parent, location=None):
-        self.name = name = name
+        self.name = name
         self.report = report
         self.instance = []      # List of GroupInstance objects.
         self.top_group = None   # Top group. Normally the data set.

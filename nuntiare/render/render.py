@@ -4,7 +4,6 @@
 
 import sys
 import os
-import inspect
 from importlib import import_module
 from .. import CONFIG, LOGGER
 

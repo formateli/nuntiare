@@ -73,4 +73,4 @@ class_name = fm[i + 1:]
 
 font_manager = import_module(module_name)
 FontManager = getattr(font_manager, class_name)
-LOGGER.debug('  ' + fm)
+LOGGER.debug('  ' + FontManager.get_description())
