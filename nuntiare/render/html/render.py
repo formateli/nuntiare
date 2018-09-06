@@ -461,8 +461,10 @@ class HtmlRender(Render):
             f = open(self.result_file, "wb")
             try:
                 for l in lines:
-                    #f.write(l.encode('utf-8'))
-                    f.write(l)
+                    if sys.version_info[0] == 2:  # python2
+                        f.write(l)
+                    else:                    
+                        f.write(l.encode('utf-8'))
             finally:
                 f.close()
         except IOError as e:

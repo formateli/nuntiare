@@ -274,6 +274,7 @@ class PageText(PageItem):
         text_height = FontManager.get_text_height(
                 self.value_formatted,
                 self.report.definition.Page,
+                self.width,
                 self.height,
                 self.style,
         )

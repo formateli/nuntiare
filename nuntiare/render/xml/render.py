@@ -158,18 +158,15 @@ class XmlRender(Render):
 
                 if not member['parent_member'] and \
                         not row.member.group_belongs:
-                    LOGGER.debug("NO PARENT MEMBER")
                     element = self._get_element(
                         doc, member, members_tree, tablix_element)
 
                 elif not row.member.group_belongs:
-                    LOGGER.debug("NO GROUP_BELONGS")
                     element = self._get_element(
                         doc, member, members_tree, tablix_element)
 
                 elif not row.member.group and \
                         row.member.group_belongs:
-                    LOGGER.debug("NO GROUP AND GROUP_BELONGS")
                     grp = groups[row.member.group_belongs]
                     new_instance = False
                     if  grp['current_row_instance'] in \
@@ -191,7 +188,6 @@ class XmlRender(Render):
 
                 elif row.member.group and \
                         row.member.group.is_detail_group:
-                    LOGGER.debug("DETAIL GROUP")
                     grp = groups[row.member.group]
                     element = doc.createElement(
                         row.member.group.data_element_name)
@@ -232,7 +228,6 @@ class XmlRender(Render):
                     member_el.appendChild(element)
 
                 elif row.member.group:
-                    LOGGER.debug("GROUP")
                     grp = groups[row.member.group]
                     element = doc.createElement(
                         row.member.group.data_element_name)
@@ -287,19 +282,22 @@ class XmlRender(Render):
         try:
             f = open(self.result_file, 'wb')
             try:
-                f.write(
-                    doc.toprettyxml(indent='  ', encoding='utf-8'))
+                if sys.version_info[0] == 2:  # python2
+                    res = doc.toprettyxml(indent='  ')
+                else:
+                    res = doc.toprettyxml(indent='  ', encoding='utf-8')
+                f.write(res)
             finally:
                 f.close()
         except IOError as e:
             LOGGER.error(
                 "I/O Error trying to write to file '{0}'. {1}.".format(
-                    self.result_file, e.strerror),
+                    self.result_file, e),
                 True, "IOError")
-        except:
+        except Exception as e:
             LOGGER.error(
                 "Unexpected error trying to write to file '{0}'. {1}.".format(
-                    self.result_file, sys.exc_info()[0]),
+                    self.result_file, e),
                 True, "IOError")
 
     def help(self):
