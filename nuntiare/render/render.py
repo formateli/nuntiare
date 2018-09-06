@@ -2,7 +2,6 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-import sys
 import os
 from importlib import import_module
 from .. import CONFIG, LOGGER
@@ -55,7 +54,7 @@ class Render(object):
         except Exception as e:
             LOGGER.error(
                 "Error loading '{0}' render module. {1}.".format(
-                    render_name, sys.exc_info()), True)
+                    render_name, e), True)
             return
 
         if render_class:

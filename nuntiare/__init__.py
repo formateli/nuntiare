@@ -74,4 +74,6 @@ font_manager = import_module(module_name)
 FontManager = getattr(font_manager, class_name)
 if hasattr(FontManager, '_get_font_manager'):
     FontManager = FontManager._get_font_manager()
-LOGGER.debug('  ' + FontManager.get_description())
+LOGGER.debug("  {0}: {1}".format(
+        FontManager.get_name(), FontManager.get_description())
+    )

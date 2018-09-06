@@ -4,7 +4,8 @@
 
 import cairo
 from ... definition.expression import Color
-from ... nuntiarepango import pango, NuntiarePango
+#from ... nuntiarepango import pango, NuntiarePango
+from ... import FontManager
 from ... import LOGGER
 
 
@@ -134,6 +135,8 @@ class CairoItem(object):
                 item.height)
             return
 
+        pango = FontManager.get_pango
+
         max_height = \
             item.height - item.style.padding_top - item.style.padding_bottom
         max_width = \
@@ -143,11 +146,11 @@ class CairoItem(object):
         layout, pango_ctx = cls._get_pango_layout(
             ctx, item, font_desc, max_width)
 
-        NuntiarePango.layout_set_text(layout, text)
-        text_w, text_h = NuntiarePango.layout_get_width_height(layout)
+        FontManager.layout_set_text(layout, text)
+        text_w, text_h = FontManager.layout_get_width_height(layout)
 
-        text_height = text_h / pango.SCALE
-        text_width = text_w / pango.SCALE
+        text_height = text_h / pango('SCALE')
+        text_width = text_w / pango('SCALE')
 
         if text_height > max_height or text_width > max_width:
             if text_height > max_height:
@@ -182,7 +185,7 @@ class CairoItem(object):
 
         ctx.move_to(text_x, text_y)
 
-        NuntiarePango.layout_show(layout, pango_ctx, ctx)
+        FontManager.layout_show(layout, pango_ctx, ctx)
 
         cls.finish_clip_area(ctx)
         cls.finish_clip_area(ctx)
@@ -276,31 +279,33 @@ class CairoItem(object):
 
     @classmethod
     def _get_font_description(cls, it):
-        font_desc = pango.FontDescription(
+        pango = FontManager.get_pango
+
+        font_desc = pango('FontDescription')(
             it.style.font_family)
         font_desc.set_size(
-            int(it.style.font_size * pango.SCALE))
+            int(it.style.font_size * pango('SCALE')))
 
         # Font style
         if it.style.font_style == 'Normal':
-            style = NuntiarePango.get_style('NORMAL')
+            style = FontManager.get_style('NORMAL')
         elif it.style.font_style == 'Italic':
-            style = NuntiarePango.get_style('ITALIC')
+            style = FontManager.get_style('ITALIC')
         font_desc.set_style(style)
 
         # Font weight
         if it.style.font_weight in ('Lighter', '100', '200'):
-            weight = NuntiarePango.get_weight('ULTRALIGHT')
+            weight = FontManager.get_weight('ULTRALIGHT')
         elif it.style.font_weight == '300':
-            weight = NuntiarePango.get_weight('LIGHT')
+            weight = FontManager.get_weight('LIGHT')
         elif it.style.font_weight in ('Normal', '400', '500'):
-            weight = NuntiarePango.get_weight('NORMAL')
+            weight = FontManager.get_weight('NORMAL')
         elif it.style.font_weight in ('Bold', '600', '700'):
-            weight = NuntiarePango.get_weight('BOLD')
+            weight = FontManager.get_weight('BOLD')
         elif it.style.font_weight in ('Bolder', '800'):
-            weight = NuntiarePango.get_weight('ULTRABOLD')
+            weight = FontManager.get_weight('ULTRABOLD')
         elif it.style.font_weight == '900':
-            weight = NuntiarePango.get_weight('HEAVY')
+            weight = FontManager.get_weight('HEAVY')
         font_desc.set_weight(weight)
 
         # TODO TextDecoration
@@ -309,20 +314,22 @@ class CairoItem(object):
 
     @classmethod
     def _get_pango_layout(cls, ctx, it, font_desc, max_width):
-        pango_ctx = NuntiarePango.get_pango_context(ctx)
-        layout = NuntiarePango.get_layout(pango_ctx)
+        pango = FontManager.get_pango
 
-        layout.set_width(int(max_width * pango.SCALE))
+        pango_ctx = FontManager.get_pango_context(ctx)
+        layout = FontManager.get_layout(pango_ctx)
+
+        layout.set_width(int(max_width * pango('SCALE')))
         layout.set_font_description(font_desc)
 
         if it.style.text_align in ('General', 'Left'):
-            alignment = NuntiarePango.get_alignment('LEFT')
+            alignment = FontManager.get_alignment('LEFT')
         elif it.style.text_align == 'Right':
-            alignment = NuntiarePango.get_alignment('RIGHT')
+            alignment = FontManager.get_alignment('RIGHT')
         elif it.style.text_align == 'Center':
-            alignment = NuntiarePango.get_alignment('CENTER')
+            alignment = FontManager.get_alignment('CENTER')
         else:
-            alignment = NuntiarePango.get_alignment('LEFT')
+            alignment = FontManager.get_alignment('LEFT')
         layout.set_alignment(alignment)
 
         # TODO
