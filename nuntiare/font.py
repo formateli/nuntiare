@@ -10,10 +10,13 @@ try:
     import pangocairo
     _TYPE = 'GTK'
 except ImportError:
-    import cairo
-    from gi.repository import Pango as pango
-    from gi.repository import PangoCairo as pangocairo
-    _TYPE = 'GI'
+    try:
+        import cairo
+        from gi.repository import Pango as pango
+        from gi.repository import PangoCairo as pangocairo
+        _TYPE = 'GI'
+    except ImportError:
+        pass
 
 
 class IFontManager(object):
