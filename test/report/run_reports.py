@@ -27,14 +27,14 @@ def get_conn_string(file_name):
 
 
 REPORTS = {
-    'countries1.xml': [['xml', 'html'], {}],
-    'countries2.xml': [['xml', 'html'], {}],
+    'countries1.xml': [['xml', 'html', 'csv'], {}],
+    'countries2.xml': [['xml', 'html', 'csv'], {}],
     'grid.xml': [['xml', 'html'], {}],
     'keep_together_1.xml': [['xml', 'html', 'pdf'], {}],
     'keep_together_2.xml': [['xml', 'html', 'pdf'], {}],
     'keep_together_3.xml': [['xml', 'html', 'pdf'], {}],
     'line.xml': [['xml', 'html', 'pdf'], {}],
-    'northwind_orders.xml': [['xml', 'html'], {
+    'northwind_orders.xml': [['xml', 'html', 'csv'], {
         'conn_string': get_conn_string('db_test_connection_northwind')}],
     'reportviewer_tablix_sample1.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
