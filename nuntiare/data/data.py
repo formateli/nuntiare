@@ -382,7 +382,8 @@ class DataGroupInstance(DataInterface):
             if sort_descending is not None:
                 group_exp_list = sorted(
                     group_exp_list,
-                    key=lambda z: z[0],
+                    #key=lambda z: z[0],
+                    key=lambda z: (z[0] is None, z[0]),
                     reverse=sort_descending)
             group_list.extend(group_exp_list)
 
