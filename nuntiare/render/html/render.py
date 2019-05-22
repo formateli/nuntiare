@@ -302,13 +302,19 @@ class HtmlRender(Render):
                 sub_rec = _HtmlElement('div', 'div_' + it.name)
                 rec.add_element(sub_rec)
             if sub_rec:
+                ignore = [
+                    'border-collapse',
+                    'border-style', 'border-width', 'border-color',
+                    'color', 'vertical-align', 'font-family',
+                    'font-weight', 'font-style', 'font-size',
+                    'text-align', 'text-decoration', 'padding'
+                ]
+
+                #if it.parent.col_span > 1:
+                #    ignore.append('width')
+
                 self._add_style(
-                    sub_rec, it, [
-                        'width', 'border-collapse',
-                        'border-style', 'border-width', 'border-color',
-                        'color', 'vertical-align', 'font-family',
-                        'font-weight', 'font-style', 'font-size',
-                        'text-align', 'text-decoration', 'padding'])
+                    sub_rec, it, ignore_list=ignore)
                 self._add_style(rec, it, ['height', ])
                 if it.style.vertical_align in ('Middle', 'Bottom'):
                     vertical_align = it.style.vertical_align

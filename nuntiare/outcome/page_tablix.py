@@ -169,6 +169,21 @@ class PageTablix(PageItem):
                     len(row.cells), len(self.column_hierarchy.rows_columns)),
                     True)
 
+            # Set cell width
+            y = 0
+            while y < len(self.column_hierarchy.rows_columns):
+                cell = row.cells[y]
+                col = self.column_hierarchy.rows_columns[y]
+
+                cell.width = col.width
+                w = 1
+                if cell.col_span > 1:
+                    while w < cell.col_span:
+                        cell.width += self.column_hierarchy.rows_columns[y + w].width
+                        row.cells[y + w].width = 0.0
+                        w += 1
+                y += w
+
         self.column_header_groups = []
         self.all_to_first(self.column_hierarchy.members)
         self._get_header('Column', self.column_hierarchy.members)
@@ -404,7 +419,7 @@ class PageTablix(PageItem):
             row_instance=row_instance,
             col_instance=col_instance)
 
-        grid_cell.width = col.width
+        grid_cell.width = cell.width
         grid_cell.height = cell.height
         item_info = grid_cell.object.get_items(grid_cell)
         grid_cell.object = item_info
@@ -506,6 +521,7 @@ class TablixCell(object):
     def __init__(self, report, definition, height):
         self.report = report
         self.height = height
+        self.width = 0.0
         self.contents = definition.get_element('CellContents')
         self.row_span = int(report.get_value(
             self.contents, 'RowSpan', 1))
@@ -885,15 +901,15 @@ class Grid(object):
     def next_row(self):
         return len(self.rows)
 
-    def set_column_width(self, index, width):
-        col = self.columns[index]
-        col.width = width
-        self.width += width
+    #def set_column_width(self, index, width):
+    #    col = self.columns[index]
+    #    col.width = width
+    #    self.width += width
 
-    def set_row_height(self, index, height):
-        row = self.rows[index]
-        row.height = height
-        self.height += height
+    #def set_row_height(self, index, height):
+    #    row = self.rows[index]
+    #    row.height = height
+    #    self.height += height
 
     def extend(self, grid, direction):
         if direction == 'right':
