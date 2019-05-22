@@ -310,9 +310,6 @@ class HtmlRender(Render):
                     'text-align', 'text-decoration', 'padding'
                 ]
 
-                #if it.parent.col_span > 1:
-                #    ignore.append('width')
-
                 self._add_style(
                     sub_rec, it, ignore_list=ignore)
                 self._add_style(rec, it, ['height', ])
