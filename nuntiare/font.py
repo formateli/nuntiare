@@ -11,7 +11,10 @@ try:
     _TYPE = 'GTK'
 except ImportError:
     try:
+        import gi
         import cairo
+        gi.require_version('Pango', '1.0')
+        gi.require_version('PangoCairo', '1.0')
         from gi.repository import Pango as pango
         from gi.repository import PangoCairo as pangocairo
         _TYPE = 'GI'
