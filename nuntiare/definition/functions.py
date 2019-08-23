@@ -106,6 +106,12 @@ def Today():
     return datetime.today()
 
 
+def DayOfWeek(date_time):
+    days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+    dayNumber=date_time.weekday()
+    return days[dayNumber]
+
+
 # String funtions
 def Format(value, format_exp):
     'Formats value according to format_exp.'
