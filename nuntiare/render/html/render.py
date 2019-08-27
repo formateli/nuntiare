@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 import sys
-import cgi
+import html
 from .. render import Render
 from ... import LOGGER
 from ... outcome.page_item import PageItemsInfo
@@ -267,7 +267,7 @@ class HtmlRender(Render):
         if is_textbox:
             txt = it.value_formatted
             if txt:
-                txt = cgi.escape(txt)
+                txt = html.escape(txt)
                 txt = txt.replace('\n', '<br>')  # New line
             else:
                 txt = ''
