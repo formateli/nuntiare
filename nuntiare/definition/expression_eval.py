@@ -50,7 +50,8 @@ class _Aggregate(object):
                 return
             if expression not in self._values[function][scope_str]:
                 return
-            return self._values[function][scope_str][expression]
+            val = self._values[function][scope_str][expression]
+            return val
 
         def set_value(
                 self, function, row_scope, col_scope,
@@ -333,7 +334,7 @@ class _Aggregate(object):
         remember = row_data._current_index
 
         if function == 'CountRows':
-            result1 += row_data.row_count
+            result1 += row_data.row_count()
             return [result1, None]
 
         row_data.move_first()
