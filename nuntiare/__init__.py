@@ -16,9 +16,9 @@ except ImportError:
 
 PROJECT_NAME = 'Nuntiare'
 AUTHOR = 'Fredy Ramirez'
-COPYRIGHT = '2013-2018, Fredy Ramirez - http://www.formateli.com'
+COPYRIGHT = '2013-2020, Fredy Ramirez - https://formateli.com'
 LICENSE = 'GNU GENERAL PUBLIC LICENSE V3'
-VERSION = '0.1.0'
+VERSION = '0.3.0'
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
