@@ -14,6 +14,60 @@ from .widget import UITabsObserver, UITabs
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 
+class TextChangedInfo():
+    def __init__(self):
+        self._change_type = None # inserted, deleted
+        self._text = None
+        self._line = None
+        self._column = None
+        self._affected_factor = None
+
+    def set_info(change_type, text_changed, line, column):
+        self._change_type = change_type		
+        self._text = text_changed
+        self._affected_factor = 1
+        if change_type == 'deleted':
+            self._affected_factor = -1
+            self._line = line
+            self._column = column
+
+
+class TextEvent(Text):
+    def __init__(self, parent, xscrollcommand, yscrollcommand):
+        super(TextEvent, self).__init__(parent,
+                wrap=NONE,
+                xscrollcommand=xscrollcommand,
+                yscrollcommand=yscrollcommand)
+
+        self._orig = self._w + "_orig"
+        self.tk.call("rename", self._w, self._orig)
+        self.tk.createcommand(self._w, self._proxy)
+
+    def _proxy(self, command, *args):
+        print('==================')
+        print('*** ' + command + ' ***')
+        print(args)
+
+        if command in ('insert', 'delete', 'replace'):
+            print('  ' + command + ' MARK: ' + self.index(args[0]))
+
+        cmd = (self._orig, command) + args
+        result = self.tk.call(cmd)
+
+        if command == "insert":
+            self.event_generate("<<TextInserted>>")
+        elif command == "delete":
+            self.event_generate("<<TextDeleted>>")
+        elif command == "replace":
+            raise Exception('<<TextReplaced>> NO IMPLEMENTADO')
+            self.event_generate("<<TextReplaced>>")
+
+        return result
+
+    def _get_mark_index(self, mark):
+        pass
+
+
 class PanedView(ttk.PanedWindow):
     def __init__(self, id_, root, tabs, file_name):
         self.id = id_
@@ -53,7 +107,7 @@ class XmlEditor(PanedView):
     def __init__(self, id_, root, tabs, file_name):
         super(XmlEditor, self).__init__(id_, root, tabs, file_name)
 
-        self.widget = Text(self.left_frame, wrap=NONE,
+        self.widget = TextEvent(self.left_frame, #wrap=NONE,
             xscrollcommand=self.xscrollbar.set,
             yscrollcommand=self.yscrollbar.set)
         self.widget.pack(fill=BOTH, expand=1)
@@ -61,11 +115,21 @@ class XmlEditor(PanedView):
         self.xscrollbar.config(command=self.widget.xview)
         self.yscrollbar.config(command=self.widget.yview)
 
+        self.widget.bind("<<TextInserted>>", self.onTextInserted)
+
         self.new_file()
 
+    def onTextInserted(self, event):
+        pass
+        #print('onTextInserted')
+        #chars = event.widget.get("1.0", "end-1c")
+        #print(chars)
+
     def new_file(self):
+        self.widget.delete(1.0, END)
         if self.file_name is None:
-            self.widget.insert(END, self.new_snipet())
+            self.widget.insert('1.0', self.new_snipet())
+            self.widget.insert(END, 'PRUEBA')
         else:
             self.get_file_content()
             self.tabs.set_title(self.id, self.file_name)
@@ -79,7 +143,6 @@ class XmlEditor(PanedView):
         return xml
 
     def get_file_content(self):
-        self.widget.delete(1.0, END)
         with open(self.file_name) as _file:
             self.widget.insert(1.0, _file.read())
 
