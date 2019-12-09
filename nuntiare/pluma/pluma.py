@@ -7,6 +7,8 @@ from tkinter import ttk
 import tkinter.messagebox
 import tkinter.filedialog
 import os
+from .image_manager import ImageManager
+from .menu_manager import MenuManager
 from .widget import UITabsObserver, UITabs
 
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -116,30 +118,44 @@ class Pluma(UITabsObserver):
         self.root.geometry('500x500')
 
         ICON = os.path.join(DIR, 'images', '24x24')
-        
-        new_file_icon = PhotoImage(file=ICON + '/new_file.png')
-        open_file_icon = PhotoImage(file=ICON + '/open_file.png')
-        save_file_icon = PhotoImage(file=ICON + '/save.png')
 
-        menu_bar = Menu(self.root)
-        file_menu = Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left',
-                              image=new_file_icon, underline=0, command=self.new_file)
-        file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left',
-                              image=open_file_icon, underline=0, command=self.open_file)
-        file_menu.add_command(label='Save', accelerator='Ctrl+S',
-                              compound='left', image=save_file_icon, underline=0, command=self.save)
-        file_menu.add_separator()
-        file_menu.add_command(label='Exit', accelerator='Alt+F4', command=self.exit_editor)
-        menu_bar.add_cascade(label='File', menu=file_menu)
+        image_manager = ImageManager()
+        image_manager.add_images([
+                ICON + '/new_file.png',
+                ICON + '/open_file.png',
+                ICON + '/save.png',
+                ICON + '/exit.png',
+                ICON + '/undo.png',
+                ICON + '/redo.png',
+            ])
 
-        self.root.config(menu=menu_bar)
-        self.root.grid_rowconfigure(1, weight=1)
+        menu = MenuManager(self.root, image_manager)
+
+        menu.new_menu('file', 'main')
+        menu.add_command('file', 'New', 'Ctrl+N', self.new_file, 'new_file')
+        menu.add_command('file', 'Open', 'Ctrl+O', self.open_file, 'open_file')
+        menu.add_command('file', 'Save', 'Ctrl+S', self.save, 'save')
+        menu.add_separator('file')
+        menu.add_command('file', 'Exit', 'Alt+F4', self.exit_editor, 'exit')
+
+        menu.add_cascade('File', 'main', 'file')
+
+        self.root.config(menu=menu.get_menu('main'))
+        self.root.grid_rowconfigure(2, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
+
+        menu.add_toolbar('file')
+        menu.add_toolbar_item('file', 'new', self.new_file, 'new_file')
+        menu.add_toolbar_item('file', 'open', self.open_file, 'open_file')
+        menu.add_toolbar_item('file', 'save', self.save, 'save')
+
+        menu.add_toolbar('undo_redo')
+        menu.add_toolbar_item('undo_redo', 'undo', self.undo, 'undo')
+        menu.add_toolbar_item('undo_redo', 'redo', self.redo, 'redo')
 
         self.tab_count = 1
         self.tabs = UITabs(self.root, self)
-        self.tabs.grid(column=0, row=0, sticky='ew')
+        self.tabs.grid(column=0, row=1, sticky='ew')
 
         self.views = {}
 
@@ -150,7 +166,7 @@ class Pluma(UITabsObserver):
             title='Untitled ' + str(self.tab_count),
             dirty=True)
         view = NuntiareView(self.tab_count, self.root, tabs, file_name)
-        view.grid(column=0, row=1, sticky='nwes')
+        view.grid(column=0, row=2, sticky='nwes')
         self.views[self.tab_count] = view
         self.tab_count += 1
 
@@ -167,7 +183,7 @@ class Pluma(UITabsObserver):
 
     def tab_selected(self, tabs, tabid):
         if tabid in self.views: 
-            self.views[tabid].grid(column=0, row=1, sticky='nwes')
+            self.views[tabid].grid(column=0, row=2, sticky='nwes')
 
     def new_file(self, event=None):
         self.handle_addtab(self.tabs)
@@ -183,6 +199,12 @@ class Pluma(UITabsObserver):
         pass
 
     def save_as(event=None):
+        pass
+
+    def undo(event=None):
+        pass
+
+    def redo(event=None):
         pass
 
     def exit_editor(self, event=None):
