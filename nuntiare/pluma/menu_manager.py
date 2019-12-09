@@ -12,7 +12,7 @@ class MenuManager():
         self._images = image_manager
 
         self._tool_bar = ttk.Frame(root,  height=25)
-        self._tool_bar.grid(column=0, row=0, sticky='ew')
+        self._tool_bar.grid(column=0, row=0, sticky='w')
         self._tool_bar.grid_rowconfigure(0, weight=1)
         self._tool_bar.grid_columnconfigure(0, weight=1)
         self._next_tb_id = 0
@@ -83,7 +83,7 @@ class ToolBar(ttk.Frame):
         self.id = id_
         self.name = name
         self._items = {}
-        self.grid(column=id_, row=0, sticky='ew')
+        self.grid(column=id_, row=0, sticky='w')
 
     def add_item(self, item_name, command, image):
         if item_name in self._items:
