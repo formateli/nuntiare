@@ -15,21 +15,24 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TextChangedInfo():
-    def __init__(self):
-        self._change_type = None # inserted, deleted
-        self._text = None
+    def __init__(self, type_, text, mark):
+        self._type = type_ # inserted, deleted
+        self._text = text
+        self._mark = mark
         self._line = None
         self._column = None
-        self._affected_factor = None
-
-    def set_info(change_type, text_changed, line, column):
-        self._change_type = change_type		
-        self._text = text_changed
         self._affected_factor = 1
-        if change_type == 'deleted':
+        if type_ == 'deleted':
             self._affected_factor = -1
-            self._line = line
-            self._column = column
+
+#    def set_info(change_type, text_changed, line, column):
+#        self._change_type = change_type		
+#        self._text = text_changed
+#        self._affected_factor = 1
+#        if change_type == 'deleted':
+#           self._affected_factor = -1
+#           self._line = line
+#            self._column = column
 
 
 class TextEvent(Text):
@@ -38,6 +41,8 @@ class TextEvent(Text):
                 wrap=NONE,
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
+
+        self.text_changed_info = None
 
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)
@@ -49,7 +54,10 @@ class TextEvent(Text):
         print(args)
 
         if command in ('insert', 'delete', 'replace'):
-            print('  ' + command + ' MARK: ' + self.index(args[0]))
+            mark = self.index(args[0])
+            print('  ' + command + ' MARK: ' + mark)
+            self.text_changed_info = TextChangedInfo(type_='inserted',
+                    text=args[1], mark=mark)
 
         cmd = (self._orig, command) + args
         result = self.tk.call(cmd)
@@ -63,9 +71,6 @@ class TextEvent(Text):
             self.event_generate("<<TextReplaced>>")
 
         return result
-
-    def _get_mark_index(self, mark):
-        pass
 
 
 class PanedView(ttk.PanedWindow):
@@ -107,9 +112,9 @@ class XmlEditor(PanedView):
     def __init__(self, id_, root, tabs, file_name):
         super(XmlEditor, self).__init__(id_, root, tabs, file_name)
 
-        self.widget = TextEvent(self.left_frame, #wrap=NONE,
-            xscrollcommand=self.xscrollbar.set,
-            yscrollcommand=self.yscrollbar.set)
+        self.widget = TextEvent(self.left_frame,
+                xscrollcommand=self.xscrollbar.set,
+                yscrollcommand=self.yscrollbar.set)
         self.widget.pack(fill=BOTH, expand=1)
 
         self.xscrollbar.config(command=self.widget.xview)
@@ -120,10 +125,7 @@ class XmlEditor(PanedView):
         self.new_file()
 
     def onTextInserted(self, event):
-        pass
-        #print('onTextInserted')
-        #chars = event.widget.get("1.0", "end-1c")
-        #print(chars)
+        print(event.widget.text_changed_info._mark)
 
     def new_file(self):
         self.widget.delete(1.0, END)
