@@ -17,7 +17,6 @@ class MementoCaretaker():
         if self.is_undo_possible():
             res = self._undo_stack.pop()
             self._redo_stack.append(res)
-            self._limit_stack()
         return res
 
     def get_redo_memento(self):
@@ -25,7 +24,6 @@ class MementoCaretaker():
         if self.is_redo_possible():
             res = self._redo_stack.pop()
             self._undo_stack.append(res)
-            self._limit_stack()
         return res
 
     def is_undo_possible(self):
@@ -56,14 +54,12 @@ class MementoCaretaker():
                 return
 
         self._undo_stack.append(memento)
-        self._redo_stack.clear()
         self._limit_stack()
 
     def _limit_stack(self):
         if len(self._undo_stack) > self._max_lenght:
             self._undo_stack.popleft()
-        if len(self._redo_stack) > self._max_lenght:
-            self._redo_stack.popleft()
+        self._redo_stack.clear()
 
     def _is_brake_word(self, s):
         return s in self._break_chars
