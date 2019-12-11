@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 
 from tkinter import Menu
+from tkinter import NORMAL, DISABLED
 from tkinter import ttk
 
 
@@ -71,10 +72,22 @@ class MenuManager():
             raise Exception("Toolbar '{0}' not found.".format(name))
         return self._tool_bars[name]
 
-    def add_toolbar_item(self, toolbar_name, item_name, command, image):
+    def add_toolbar_item(
+            self, toolbar_name, item_name,
+            command, image, state=DISABLED):
         image = self._images.get_image(image)
         tb = self.get_toolbar(toolbar_name)
-        tb.add_item(item_name, command, image)
+        tb.add_item(item_name, command, image, state)
+
+    def get_toolbar_item(self, toolbar_name, item_name):
+        tb = self.get_toolbar(toolbar_name)
+        item = tb.get_item(item_name)
+        return item
+
+    def set_toolbar_item_state(
+            self, toolbar_name, item_name, state):
+        item = self.get_toolbar_item(toolbar_name, item_name)
+        item['state'] = state
 
 
 class ToolBar(ttk.Frame):
@@ -85,11 +98,18 @@ class ToolBar(ttk.Frame):
         self._items = {}
         self.grid(column=id_, row=0, sticky='w')
 
-    def add_item(self, item_name, command, image):
+    def add_item(self, item_name, command, image, state):
         if item_name in self._items:
             raise Exception(
                 "Toolbar '{0}' already has an item '{1}'.".format(
                     self.name, item_name))
-        btn = ttk.Button(self, image=image, command=command)
+        btn = ttk.Button(self, image=image, command=command, state=state)
         btn.pack(side='left')
         self._items[item_name] = btn
+
+    def get_item(self, item_name):
+        if item_name not in self._items:
+            raise Exception(
+                "Toolbar '{0}' item '{1}' not found.".format(
+                    item_name))
+        return self._items[item_name]
