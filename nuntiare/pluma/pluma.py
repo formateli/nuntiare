@@ -84,8 +84,7 @@ class XmlEditor(PanedView):
                 event.widget.text_changed_info.copy())
         self.widget.is_undo_redo = None
         self._update_undo_redo()
-        self.pluma.menu.set_toolbar_item_state(
-            'file', 'save', NORMAL)
+        self.pluma.menu.link_set_state('save', NORMAL)
 
     def _update_undo_redo(self):
         self._update_undo_redo_item(
@@ -98,13 +97,14 @@ class XmlEditor(PanedView):
             state = NORMAL
         else:
             state = DISABLED
-        self.pluma.menu.set_toolbar_item_state(
-            'undo_redo', name, state)
+        #self.pluma.menu.set_toolbar_item_state(
+        #    'undo_redo', name, state)
+        self.pluma.menu.link_set_state(name, state)
 
     def new_file(self):
         self.widget.delete(1.0, END)
         if self.file_name is None:
-            self.widget.insert('1.0', self.new_snipet())
+            self.widget.insert('1.0', self.new_snipet(), True)
             state = NORMAL
         else:
             self.get_file_content()
@@ -112,8 +112,7 @@ class XmlEditor(PanedView):
             self.tabs.set_dirty(self.id, False)
             self.tabs.set_tooltip(self.id, self.file_name)
             state = DISABLED
-        self.pluma.menu.set_toolbar_item_state(
-            'file', 'save', state)
+        self.pluma.menu.link_set_state('save', state)
         self.clear_memento()
 
     def new_snipet(self):
@@ -123,8 +122,8 @@ class XmlEditor(PanedView):
         return xml
 
     def get_file_content(self):
-        with open(self.file_name) as _file:
-            self.widget.insert(1.0, _file.read())
+        with open(self.file_name) as file_:
+            self.widget.insert(1.0, file_.read(), True)
 
 
 class RunView(PanedView):
@@ -173,20 +172,39 @@ class Pluma(UITabsObserver):
                 ICON + '/redo.png',
             ])
 
+        # menu
+
         self.menu = MenuManager(self.root, image_manager)
 
         self.menu.new_menu('file', 'main')
-        self.menu.add_command('file', 'New', 'Ctrl+N', self.new_file, 'new_file')
-        self.menu.add_command('file', 'Open', 'Ctrl+O', self.open_file, 'open_file')
-        self.menu.add_command('file', 'Save', 'Ctrl+S', self.save, 'save')
+        self.menu.add_command(
+            'file', 'new', 'New', 'Ctrl+N', self.new_file,
+            image='new_file', state=NORMAL)
+        self.menu.add_command(
+            'file', 'open', 'Open', 'Ctrl+O', self.open_file,
+            image='open_file', state=NORMAL)
+        self.menu.add_command(
+            'file', 'save', 'Save', 'Ctrl+S', self.save, image='save')
         self.menu.add_separator('file')
-        self.menu.add_command('file', 'Exit', 'Alt+F4', self.exit_editor, 'exit')
+        self.menu.add_command(
+            'file', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
+            image='exit', state=NORMAL)
 
         self.menu.add_cascade('File', 'main', 'file')
+
+        self.menu.new_menu('edit', 'main')
+        self.menu.add_command(
+            'edit', 'undo', 'Undo', 'Ctrl+Z', self.undo, image='undo')
+        self.menu.add_command(
+            'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
+
+        self.menu.add_cascade('Edit', 'main', 'edit')
 
         self.root.config(menu=self.menu.get_menu('main'))
         self.root.grid_rowconfigure(2, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
+
+        # toolbar
 
         self.menu.add_toolbar('file')
         self.menu.add_toolbar_item('file', 'new', self.new_file, 'new_file', NORMAL)
@@ -196,6 +214,18 @@ class Pluma(UITabsObserver):
         self.menu.add_toolbar('undo_redo')
         self.menu.add_toolbar_item('undo_redo', 'undo', self.undo, 'undo')
         self.menu.add_toolbar_item('undo_redo', 'redo', self.redo, 'redo')
+
+        # link menu and toolbar items
+
+        self.menu.linK_menu_toolbar_item('save', 
+            'file', 'save', 'file', 'save')
+
+        self.menu.linK_menu_toolbar_item('undo', 
+            'edit', 'undo', 'undo_redo', 'undo')
+        self.menu.linK_menu_toolbar_item('redo', 
+            'edit', 'redo', 'undo_redo', 'redo')
+
+        # tabs
 
         self.tab_count = 1
         self.tabs = UITabs(self.root, self)
@@ -261,7 +291,6 @@ class Pluma(UITabsObserver):
             elif  history.type == 'deleted':
                 view.xml.widget.insert(
                     history.mark, history.text, True)
-        self._verify_undo_redo()
 
     def redo(self, event=None):
         view = self.current_view
@@ -274,7 +303,6 @@ class Pluma(UITabsObserver):
             elif  history.type == 'deleted':
                 view.xml.widget.delete(
                     history.mark, history.mark_end, True)
-        self._verify_undo_redo()
 
     def _verify_undo_redo(self):
         view = self.current_view
@@ -285,12 +313,12 @@ class Pluma(UITabsObserver):
             undo_state = NORMAL
         if memento.is_redo_possible():
             redo_state = NORMAL
-        self.menu.set_toolbar_item_state(
-            'undo_redo', 'undo', undo_state)
-        self.menu.set_toolbar_item_state(
-            'undo_redo', 'redo', redo_state)
 
-    def exit_editor(self, event=None):
+        self.menu.link_set_state('undo', undo_state)
+        self.menu.link_set_state('redo', redo_state)
+
+
+    def exit_pluma(self, event=None):
         if tkinter.messagebox.askokcancel("Quit?",
                 "Do you want to QUIT for sure?\n Make sure you've saved your current work."):
             self.root.destroy()
