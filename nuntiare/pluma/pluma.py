@@ -197,6 +197,16 @@ class Pluma(UITabsObserver):
             'edit', 'undo', 'Undo', 'Ctrl+Z', self.undo, image='undo')
         self.menu.add_command(
             'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
+        self.menu.add_separator('edit')
+        self.menu.add_command(
+            'edit', 'copy', 'Copy', 'Ctrl+C', self.copy)
+        self.menu.add_command(
+            'edit', 'paste', 'Paste', 'Ctrl+V', self.paste)
+        self.menu.add_command(
+            'edit', 'cut', 'Cut', 'Ctrl+X', self.cut)
+        self.menu.add_separator('edit')
+        self.menu.add_command(
+            'edit', 'select_all', 'Select All', 'Ctrl+A', self.select_all)
 
         self.menu.add_cascade('Edit', 'main', 'edit')
 
@@ -273,6 +283,18 @@ class Pluma(UITabsObserver):
                     filetypes=[("All Files", "*.*"), ("Xml Documents", "*.xml")])
         if input_file_name:
             self.handle_addtab(self.tabs, input_file_name)
+
+    def copy(self, event=None):
+        pass
+
+    def paste(self, event=None):
+        pass
+
+    def cut(self, event=None):
+        pass
+
+    def select_all(self, event=None):
+        pass
 
     def save(self, event=None):
         pass
