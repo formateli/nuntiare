@@ -16,14 +16,13 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class PanedView(ttk.PanedWindow):
-    def __init__(self, id_, pluma, view, tabs, file_name):
+    def __init__(self, id_, pluma, view, tabs):
         self.id = id_
         self.pluma = pluma
         self.view = view
         self.widget = None
         self.tabs = tabs
-        self.file_name = file_name
-        self.memento = MementoCaretaker()
+        self.type = None
 
         super(PanedView, self).__init__(view.notebook, orient=HORIZONTAL)
         self.pack(fill=BOTH, expand=1)
@@ -44,28 +43,23 @@ class PanedView(ttk.PanedWindow):
         self.right_frame.pack(fill=BOTH, expand=1)
         self.add(self.right_frame)
 
-    def clear_memento(self):
-        self.memento.clear()
-        self.pluma.menu.set_toolbar_item_state(
-            'undo_redo', 'undo', DISABLED)
-        self.pluma.menu.set_toolbar_item_state(
-            'undo_redo', 'redo', DISABLED)
-
 
 class DesignEditor(PanedView):
-    def __init__(self, id_, pluma, view, tabs, file_name):
+    def __init__(self, id_, pluma, view, tabs):
         super(DesignEditor, self).__init__(
-            id_, pluma, view, tabs, file_name)
+            id_, pluma, view, tabs)
 
+        self.type = 'designer'
         label = ttk.Label(self.left_frame, text='NOT IMPLEMENTED')
         label.pack(fill=BOTH, expand=1)
 
 
 class XmlEditor(PanedView):
-    def __init__(self, id_, pluma, view, tabs, file_name):
+    def __init__(self, id_, pluma, view, tabs):
         super(XmlEditor, self).__init__(
-            id_, pluma, view, tabs, file_name)
+            id_, pluma, view, tabs)
 
+        self.type = 'xml'
         self.widget = TextEvent(self.left_frame,
                 xscrollcommand=self.xscrollbar.set,
                 yscrollcommand=self.yscrollbar.set)
@@ -80,7 +74,7 @@ class XmlEditor(PanedView):
 
     def onTextModified(self, event):
         if not self.widget.is_undo_redo:
-            self.memento.insert_memento(
+            self.view.memento.insert_memento(
                 event.widget.text_changed_info.copy())
         self.widget.is_undo_redo = None
         self._update_undo_redo()
@@ -88,32 +82,30 @@ class XmlEditor(PanedView):
 
     def _update_undo_redo(self):
         self._update_undo_redo_item(
-            'undo', self.memento.is_undo_possible())
+            'undo', self.view.memento.is_undo_possible())
         self._update_undo_redo_item(
-            'redo', self.memento.is_redo_possible())
+            'redo', self.view.memento.is_redo_possible())
 
     def _update_undo_redo_item(self, name, possible):
         if possible:
             state = NORMAL
         else:
             state = DISABLED
-        #self.pluma.menu.set_toolbar_item_state(
-        #    'undo_redo', name, state)
         self.pluma.menu.link_set_state(name, state)
 
     def new_file(self):
         self.widget.delete(1.0, END)
-        if self.file_name is None:
+        if self.view.file_name is None:
             self.widget.insert('1.0', self.new_snipet(), True)
             state = NORMAL
         else:
             self.get_file_content()
-            self.tabs.set_title(self.id, self.file_name)
+            self.tabs.set_title(self.id, self.view.file_name)
             self.tabs.set_dirty(self.id, False)
-            self.tabs.set_tooltip(self.id, self.file_name)
+            self.tabs.set_tooltip(self.id, self.view.file_name)
             state = DISABLED
         self.pluma.menu.link_set_state('save', state)
-        self.clear_memento()
+        self.view.clear_memento()
 
     def new_snipet(self):
         xml = '''<?xml version="1.0" ?>
@@ -122,15 +114,16 @@ class XmlEditor(PanedView):
         return xml
 
     def get_file_content(self):
-        with open(self.file_name) as file_:
+        with open(self.view.file_name) as file_:
             self.widget.insert(1.0, file_.read(), True)
 
 
 class RunView(PanedView):
-    def __init__(self, id_, pluma, view, tabs, file_name):
+    def __init__(self, id_, pluma, view, tabs):
         super(RunView, self).__init__(
-            id_, pluma, view, tabs, file_name)
+            id_, pluma, view, tabs)
 
+        self.type = 'run'
         label = ttk.Label(self.left_frame, text='NOT IMPLEMENTED')
         label.pack(fill=BOTH, expand=1)
 
@@ -140,18 +133,47 @@ class NuntiareView(ttk.Frame):
         super(NuntiareView, self).__init__(pluma.root)
 
         self.id = id_
+        self.pluma = pluma
+        self.file_name = file_name
+        self.memento = MementoCaretaker()
         self.notebook = ttk.Notebook(self)
 
-        self.design = DesignEditor(id_, pluma, self, tabs, file_name)
+        self.design = DesignEditor(id_, pluma, self, tabs)
         self.notebook.add(self.design, text='Designer')
 
-        self.xml = XmlEditor(id_, pluma, self, tabs, file_name)
+        self.xml = XmlEditor(id_, pluma, self, tabs)
         self.notebook.add(self.xml, text='Xml')
 
-        self.run = RunView(id_, pluma, self, tabs, file_name)
+        self.run = RunView(id_, pluma, self, tabs)
         self.notebook.add(self.run, text='Run...')
 
+        self.current_paned_view = self.design
+
         self.notebook.pack(expand=1, fill="both")
+        self.notebook.bind("<<NotebookTabChanged>>", self.tab_changed)
+
+    def tab_changed(self, event):
+        nb = event.widget
+        name = nb.select()
+        obj = nb.nametowidget(name)
+        self.current_paned_view = obj
+        if obj.type == 'xml':
+            state_xml = NORMAL
+        else:
+            state_xml = DISABLED
+        self.pluma.menu.set_menu_command_state(
+            'edit', 'select_all', state_xml)
+        self.pluma.menu.set_menu_command_state(
+            'edit', 'copy', state_xml)
+        self.pluma.menu.set_menu_command_state(
+            'edit', 'paste', state_xml)
+        self.pluma.menu.set_menu_command_state(
+            'edit', 'cut', state_xml)
+
+    def clear_memento(self):
+        self.memento.clear()
+        self.pluma.menu.link_set_state('undo', DISABLED)
+        self.pluma.menu.link_set_state('redo', DISABLED)
 
 
 class Pluma(UITabsObserver):
@@ -263,6 +285,10 @@ class Pluma(UITabsObserver):
             del self.views[tabid]
         tabs.remove(tabid)
 
+        if len(tabs.tabs) == 0:
+            self.current_view = None
+            self._verify_undo_redo()
+
     def tab_deselected(self, tabs, tabid):
         if tabid in self.views:
             self.views[tabid].grid_forget()
@@ -294,7 +320,10 @@ class Pluma(UITabsObserver):
         pass
 
     def select_all(self, event=None):
-        pass
+        view = self.current_view
+        if view and \
+                view.current_paned_view.type == 'xml':
+            view.xml.widget.tag_add('sel', '1.0', 'end')
 
     def save(self, event=None):
         pass
@@ -304,7 +333,7 @@ class Pluma(UITabsObserver):
 
     def undo(self, event=None):
         view = self.current_view
-        memento = view.xml.memento
+        memento = view.memento
         if memento.is_undo_possible():
             history = memento.get_undo_memento()
             if history.type == 'inserted':
@@ -316,7 +345,7 @@ class Pluma(UITabsObserver):
 
     def redo(self, event=None):
         view = self.current_view
-        memento = view.xml.memento
+        memento = view.memento
         if memento.is_redo_possible():
             history = memento.get_redo_memento()
             if history.type == 'inserted':
@@ -328,17 +357,17 @@ class Pluma(UITabsObserver):
 
     def _verify_undo_redo(self):
         view = self.current_view
-        memento = view.xml.memento
         undo_state = DISABLED
         redo_state = DISABLED
-        if memento.is_undo_possible():
-            undo_state = NORMAL
-        if memento.is_redo_possible():
-            redo_state = NORMAL
+        if view is not None:
+            memento = view.memento
+            if memento.is_undo_possible():
+                undo_state = NORMAL
+            if memento.is_redo_possible():
+                redo_state = NORMAL
 
         self.menu.link_set_state('undo', undo_state)
         self.menu.link_set_state('redo', redo_state)
-
 
     def exit_pluma(self, event=None):
         if tkinter.messagebox.askokcancel("Quit?",

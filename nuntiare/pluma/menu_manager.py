@@ -47,7 +47,7 @@ class MenuManager():
     def set_menu_command_state(
             self, menu_name, item_name, state):
         menu = self.get_menu(menu_name)
-        menu.set_menu_command_state(item_name, state)
+        menu.set_command_state(item_name, state)
 
     def add_separator(self, menu_name):
         menu = self.get_menu(menu_name)
