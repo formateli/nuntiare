@@ -10,10 +10,13 @@ class MementoCaretaker():
         self._max_lenght = 15
         self._undo_stack = deque()
         self._redo_stack = deque()
-        self._break_chars = [' ', '_', '-', '\n', '\r']
+        #self._break_chars = [' ', '_', '-', '\n', '\r']
+        self._break_chars = [' ']
+        self._last_char = None
 
     def get_undo_memento(self):
         res = None
+        self._last_char = self._break_chars[0]
         if self.is_undo_possible():
             res = self._undo_stack.pop()
             self._redo_stack.append(res)
@@ -21,6 +24,7 @@ class MementoCaretaker():
 
     def get_redo_memento(self):
         res = None
+        self._last_char = self._break_chars[0]
         if self.is_redo_possible():
             res = self._redo_stack.pop()
             self._undo_stack.append(res)
@@ -36,24 +40,32 @@ class MementoCaretaker():
         self._undo_stack.clear()
         self._redo_stack.clear()
 
-    def insert_memento(self, memento):
-        if memento is None:
+    def insert_memento(self, text_info):
+        if text_info is None or len(text_info.text) == 0:
             return
 
-        # We ensure that undo for inserted text is manipulated as a whole word
-        if (memento.type == 'inserted' and not self._is_brake_word(memento.text) and			    
-                len(memento.text) == 1 and self.is_undo_possible()):								
+        if text_info.type == 'inserted':
+            end_char = None
+            c = text_info.text[-1]
+            if c in self._break_chars:
+                end_char = c
 
-            m = self._undo_stack[-1]
-
-            if (m.type == 'inserted' and not self._is_brake_word(m.text)):
-                # Append char to last memento and change Pos
-                m.text += memento.text
-                m.column_end += 1
+            if text_info.text == '\n':
+                self._undo_stack.append(text_info)
+            elif self.is_undo_possible() and (self._last_char is None or
+                    (self._last_char is not None and end_char is not None and
+                        len(text_info.text) == 1)):
+                # Append text to last text and change Pos
+                m = self._undo_stack[-1]
+                m.text += text_info.text
+                m.column_end += len(text_info.text)
                 m.mark_end = m._get_end_mark()
-                return
 
-        self._undo_stack.append(memento)
+            else:
+                self._undo_stack.append(text_info)
+
+            self._last_char = end_char
+
         self._limit_stack()
 
     def _limit_stack(self):

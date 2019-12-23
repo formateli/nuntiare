@@ -87,8 +87,9 @@ class TextEvent(Text):
             print(args)
 
             if command == 'insert':
+                print(args[0])
                 mark = self.index(args[0])
-                #print('  ' + command + ' MARK: ' + mark)
+                print('  ' + command + ' MARK: ' + mark)
                 self.text_changed_info.set_info(
                         type_='inserted',
                         text_changed=args[1], mark=mark)

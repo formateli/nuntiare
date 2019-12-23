@@ -339,7 +339,7 @@ class Pluma(UITabsObserver):
             if history.type == 'inserted':
                 view.xml.widget.delete(
                     history.mark, history.mark_end, True)
-            elif  history.type == 'deleted':
+            elif history.type == 'deleted':
                 view.xml.widget.insert(
                     history.mark, history.text, True)
 
@@ -351,7 +351,7 @@ class Pluma(UITabsObserver):
             if history.type == 'inserted':
                 view.xml.widget.insert(
                     history.mark, history.text, True)
-            elif  history.type == 'deleted':
+            elif history.type == 'deleted':
                 view.xml.widget.delete(
                     history.mark, history.mark_end, True)
 
