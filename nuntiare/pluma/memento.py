@@ -10,8 +10,7 @@ class MementoCaretaker():
         self._max_lenght = 15
         self._undo_stack = deque()
         self._redo_stack = deque()
-        #self._break_chars = [' ', '_', '-', '\n', '\r']
-        self._break_chars = [' ']
+        self._break_chars = [' ', '\n']
         self._last_char = None
 
     def get_undo_memento(self):
@@ -50,7 +49,7 @@ class MementoCaretaker():
             if c in self._break_chars:
                 end_char = c
 
-            if text_info.text == '\n':
+            if text_info.text == '\n' or self._last_char == '\n':
                 self._undo_stack.append(text_info)
             elif self.is_undo_possible() and (self._last_char is None or
                     (self._last_char is not None and end_char is not None and
@@ -60,7 +59,6 @@ class MementoCaretaker():
                 m.text += text_info.text
                 m.column_end += len(text_info.text)
                 m.mark_end = m._get_end_mark()
-
             else:
                 self._undo_stack.append(text_info)
 

@@ -63,6 +63,8 @@ class MementoTest(unittest.TestCase):
         self._check_memento_state(1, 0, True, False, 'abc def')
         self.text.insert('insert', '\n')
         self._check_memento_state(2, 0, True, False, 'abc def\n')
+        self.text.insert('insert', 'ghi')
+        self._check_memento_state(3, 0, True, False, 'abc def\nghi')
 
     def onTextModified(self, event):
         if not self.text.is_undo_redo:
@@ -92,6 +94,9 @@ class MementoTest(unittest.TestCase):
 
     def _check_memento_state(self, len_undo_stack, len_redo_stack,
                 undo_possible, redo_possible, text_text):
+        #print('## TEST ##')
+        #print(self.text.get(1.0, 'end-1c'))
+        #print('## END TEST ##')
         self.assertEqual(len(self.memento._undo_stack), len_undo_stack)
         self.assertEqual(len(self.memento._redo_stack), len_redo_stack)
         self.assertEqual(self.memento.is_undo_possible(), undo_possible)
