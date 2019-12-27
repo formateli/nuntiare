@@ -64,6 +64,10 @@ class MementoCaretaker():
 
             self._last_char = end_char
 
+        else:
+            self._undo_stack.append(text_info)
+            self._last_char = self._break_chars[0]
+
         self._limit_stack()
 
     def _limit_stack(self):
