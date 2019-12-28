@@ -1,0 +1,38 @@
+<highlightDefinition caseSensitive="false"  extensions="xml, build, page, rdl, rdlc, addin, nuntiare">
+
+	<styles>
+		<style name="reserved" foreColor="0,0,255" backColor="" bold="false" italic="false" />
+		<style name="comment" foreColor="7,125,7" backColor="" bold="false" italic="false" />
+		<style name="quote" foreColor="152,17,17" backColor="" bold="false" italic="false" />
+	</styles>
+
+	<separators>
+
+	</separators>
+
+	<descriptors>
+
+		<descriptor style="reserved" type="Contains" description="" >
+			<tokens>
+				<token value="&lt;"/>
+				<token value="&gt;"/>
+				<token value="&lt;/"/>
+				<token value="/&gt;"/>
+			</tokens>
+		</descriptor>
+
+		<descriptor style="quote" type="ToCloseToken" description="Close string between quotes">
+			<tokens>
+				<token value="&quot;" closeToken="&quot;"/>
+			</tokens>
+		</descriptor>
+
+		<descriptor style="comment" type="ToCloseToken" description="Comment block">
+			<tokens>
+				<token value="&lt;!--" closeToken="--&gt;" multiLine="True" />
+			</tokens>
+		</descriptor>
+
+	</descriptors>
+
+</highlightDefinition>

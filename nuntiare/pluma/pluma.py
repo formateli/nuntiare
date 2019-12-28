@@ -54,9 +54,9 @@ class DesignEditor(PanedView):
         label.pack(fill=BOTH, expand=1)
 
 
-class XmlEditor(PanedView):
+class TextEditor(PanedView):
     def __init__(self, id_, pluma, view, tabs):
-        super(XmlEditor, self).__init__(
+        super(TextEditor, self).__init__(
             id_, pluma, view, tabs)
 
         self.type = 'xml'
@@ -65,10 +65,10 @@ class XmlEditor(PanedView):
                 yscrollcommand=self.yscrollbar.set)
         self.widget.pack(fill=BOTH, expand=1)
 
+        self.widget.bind("<<TextModified>>", self.onTextModified)
+
         self.xscrollbar.config(command=self.widget.xview)
         self.yscrollbar.config(command=self.widget.yview)
-
-        self.widget.bind("<<TextModified>>", self.onTextModified)
 
         self.new_file()
 
@@ -136,14 +136,15 @@ class NuntiareView(ttk.Frame):
         self.pluma = pluma
         self.file_name = file_name
         self.memento = MementoCaretaker()
+        self.highlight = Highlight()
         self.copypaste = CopyPaste()
         self.notebook = ttk.Notebook(self)
 
         self.design = DesignEditor(id_, pluma, self, tabs)
         self.notebook.add(self.design, text='Designer')
 
-        self.xml = XmlEditor(id_, pluma, self, tabs)
-        self.notebook.add(self.xml, text='Xml')
+        self.xml = TextEditor(id_, pluma, self, tabs)
+        self.notebook.add(self.xml, text='Text Editor')
 
         self.run = RunView(id_, pluma, self, tabs)
         self.notebook.add(self.run, text='Run...')

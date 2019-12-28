@@ -2,9 +2,32 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
+import os
+from xml.dom import minidom
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+DIR = os.path.normpath(os.path.join(DIR, 'syntax'))
+
+
+class Highlight():
+    def __init__(self):
+        self._defs = []
+
+        files = os.listdir(DIR)
+        for f in files:
+            if os.path.isfile(f) and f.endswith('.xml'):
+                self.add_def(f)
+
+    def add_def(self, xml):
+        df = HighlightDefinition(xml)
+        self._defs.append(df)
+
 
 class HighlightDefinition():
-    def __init__(self):
+    def __init__(self, xml):
+        doc = minidom.parse(source)
+
+
         self._styles = {}
         self._separators = []
         self._descriptors = []
