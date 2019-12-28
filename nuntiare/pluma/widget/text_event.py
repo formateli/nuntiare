@@ -54,7 +54,7 @@ class TextChangedInfo():
     def _get_end_mark(self):
         txts = self.text.split('\n')
         if len(txts) > 1:
-            line = self.line + len(txts)
+            line = self.line + (len(txts) - 1)
             col = len(txts[-1])
         else:
             line = self.line

@@ -337,7 +337,7 @@ class Pluma(UITabsObserver):
             txt = copypaste.get_paste()
             if txt is not None:
                 view.xml.widget.insert(
-                    INSERT, txt)
+                    INSERT, txt[0])
         return 'break'
 
     def cut(self, event=None):
