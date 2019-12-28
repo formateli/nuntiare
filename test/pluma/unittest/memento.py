@@ -67,6 +67,14 @@ class MementoTest(unittest.TestCase):
         self.text.insert('insert', 'ghi')
         self._check_memento_state(3, 0, True, False, 'abc def\nghi')
 
+        self.text.delete(1.0, END, True)
+        self.memento.clear()
+
+        self.text.insert('insert', 'abc def\nghi jkl\nmno')
+        self._check_memento_state(1, 0, True, False, 'abc def\nghi jkl\nmno')
+        self._undo('abc def\nghi jkl\nmno')
+        self._check_memento_state(0, 1, False, True, '')
+
         # Test Copy / Paste
 
         copypaste = CopyPaste()
