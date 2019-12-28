@@ -4,7 +4,7 @@
 
 "Pluma memento test"
 
-from nuntiare.pluma.memento import MementoCaretaker
+from nuntiare.pluma.memento import MementoCaretaker, CopyPaste
 from nuntiare.pluma.widget import TextEvent
 from tkinter import Text, END
 import unittest
@@ -17,6 +17,7 @@ class MementoTest(unittest.TestCase):
 
         self.text.delete(1.0, END, True)
 
+        # Test Undo / Redo
         self.memento = MementoCaretaker()
         self._check_memento_state(0, 0, False, False, '')
 
@@ -65,6 +66,28 @@ class MementoTest(unittest.TestCase):
         self._check_memento_state(2, 0, True, False, 'abc def\n')
         self.text.insert('insert', 'ghi')
         self._check_memento_state(3, 0, True, False, 'abc def\nghi')
+
+        # Test Copy / Paste
+
+        copypaste = CopyPaste()
+        self.assertEqual(len(copypaste._copy_stack), 0)
+        self.assertEqual(copypaste.is_paste_possible(), False)
+        copypaste.add_copy('ABC')
+        self.assertEqual(len(copypaste._copy_stack), 1)
+        self.assertEqual(copypaste.is_paste_possible(), True)
+
+        res = copypaste.get_paste()
+        self.assertEqual(res[0], 'ABC')
+
+        # Allow to add a list of objets
+        copypaste.append_copy(
+                ['ABC', 'DEF', 'JKL']
+            )
+        self.assertEqual(len(copypaste._copy_stack), 3)
+        res = copypaste.get_paste()
+        self.assertEqual(res[0], 'ABC')
+        self.assertEqual(res[1], 'DEF')
+        self.assertEqual(res[2], 'JKL')
 
     def onTextModified(self, event):
         if not self.text.is_undo_redo:

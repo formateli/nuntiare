@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-from tkinter import Text, NONE
+from tkinter import Text, NONE, TclError
 
 
 class TextChangedInfo():
@@ -114,7 +114,11 @@ class TextEvent(Text):
                 raise Exception("Replace <<TextModified>> Not Implemented")
 
         cmd = (self._orig, command) + args
-        result = self.tk.call(cmd)
+        try:
+            result = self.tk.call(cmd)
+        except TclError as er:
+            result = None
+            #print(er)
 
         if command in ('insert', 'delete', 'replace'):
             self.event_generate("<<TextModified>>")

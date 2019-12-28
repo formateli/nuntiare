@@ -10,7 +10,7 @@ import os
 from .image_manager import ImageManager
 from .menu_manager import MenuManager
 from .widget import UITabsObserver, UITabs, TextEvent
-from .memento import MementoCaretaker
+from .memento import MementoCaretaker, CopyPaste
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -136,6 +136,7 @@ class NuntiareView(ttk.Frame):
         self.pluma = pluma
         self.file_name = file_name
         self.memento = MementoCaretaker()
+        self.copypaste = CopyPaste()
         self.notebook = ttk.Notebook(self)
 
         self.design = DesignEditor(id_, pluma, self, tabs)
@@ -278,6 +279,13 @@ class Pluma(UITabsObserver):
         self.current_view = view
         self.tab_count += 1
 
+        view.xml.widget.bind('<Control-c>', self.copy)
+        view.xml.widget.bind('<Control-C>', self.copy)
+        view.xml.widget.bind('<Control-v>', self.paste)
+        view.xml.widget.bind('<Control-V>', self.paste)
+        view.xml.widget.bind('<Control-x>', self.cut)
+        view.xml.widget.bind('<Control-X>', self.cut)
+
     def handle_closetab(self, tabs, tabid):
         if tabid in self.views:
             self.views[tabid].grid_forget()
@@ -311,13 +319,32 @@ class Pluma(UITabsObserver):
             self.handle_addtab(self.tabs, input_file_name)
 
     def copy(self, event=None):
-        pass
+        view = self.current_view
+        copypaste = view.copypaste
+        if view and \
+                view.current_paned_view.type == 'xml':
+            txt = view.xml.widget.get(SEL_FIRST, SEL_LAST)
+            if txt is not None:
+                copypaste.add_copy(txt)
+                return txt
+        return 'break'
 
     def paste(self, event=None):
-        pass
+        view = self.current_view
+        copypaste = view.copypaste
+        if view and \
+                view.current_paned_view.type == 'xml':
+            txt = copypaste.get_paste()
+            if txt is not None:
+                view.xml.widget.insert(
+                    INSERT, txt)
+        return 'break'
 
     def cut(self, event=None):
-        pass
+        txt = self.copy()
+        if txt is not None:
+            self.current_view.xml.widget.delete(SEL_FIRST, SEL_LAST)
+        return 'break'
 
     def select_all(self, event=None):
         view = self.current_view

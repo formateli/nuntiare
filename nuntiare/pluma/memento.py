@@ -77,3 +77,28 @@ class MementoCaretaker():
 
     def _is_brake_word(self, s):
         return s in self._break_chars
+
+
+class CopyPaste():
+    def __init__(self):
+        self._copy_stack = []
+
+    def is_paste_possible(self):
+        return len(self._copy_stack) > 0
+
+    def get_paste(self):
+        if self.is_paste_possible():
+            return self._copy_stack
+
+    def clear(self):
+        self._copy_stack.clear()
+
+    def append_copy(self, objs):
+        self.clear()
+        if not objs:
+            return
+        for obj in objs:
+            self._copy_stack.append(obj)
+
+    def add_copy(self, obj):
+        self.append_copy([obj])
