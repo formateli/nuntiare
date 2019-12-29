@@ -11,6 +11,7 @@ from .image_manager import ImageManager
 from .menu_manager import MenuManager
 from .widget import UITabsObserver, UITabs, TextEvent
 from .memento import MementoCaretaker, CopyPaste
+from .highlight import Highlight
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -95,14 +96,14 @@ class TextEditor(PanedView):
 
     def new_file(self):
         self.widget.delete(1.0, END)
-        if self.view.file_name is None:
+        if self.view.full_file_name is None:
             self.widget.insert('1.0', self.new_snipet(), True)
             state = NORMAL
         else:
             self.get_file_content()
             self.tabs.set_title(self.id, self.view.file_name)
             self.tabs.set_dirty(self.id, False)
-            self.tabs.set_tooltip(self.id, self.view.file_name)
+            self.tabs.set_tooltip(self.id, self.view.full_file_name)
             state = DISABLED
         self.pluma.menu.link_set_state('save', state)
         self.view.clear_memento()
@@ -114,7 +115,7 @@ class TextEditor(PanedView):
         return xml
 
     def get_file_content(self):
-        with open(self.view.file_name) as file_:
+        with open(self.view.full_file_name) as file_:
             self.widget.insert(1.0, file_.read(), True)
 
 
@@ -129,14 +130,24 @@ class RunView(PanedView):
 
 
 class NuntiareView(ttk.Frame):
-    def __init__(self, id_, pluma, tabs, file_name):
+    def __init__(self, id_, pluma, tabs, full_file_name):
         super(NuntiareView, self).__init__(pluma.root)
 
         self.id = id_
         self.pluma = pluma
-        self.file_name = file_name
+        self.full_file_name = full_file_name
+        if full_file_name is not None:
+            self.file_name = os.path.basename(full_file_name)
+            self.extension = self.file_name.split('.')
+            if len(self.extension) > 1:
+                self.extension = self.extension[1]
+            else:
+                self.extension = None
+        else:
+            self.file_name = full_file_name
+            self.extension = None
+
         self.memento = MementoCaretaker()
-        self.highlight = Highlight()
         self.copypaste = CopyPaste()
         self.notebook = ttk.Notebook(self)
 
@@ -183,6 +194,8 @@ class Pluma(UITabsObserver):
         self.root = Tk()
         self.root.title("Pluma - Nuntiare Report Designer")
         self.root.geometry('500x500')
+
+        self.highlight = Highlight()
 
         ICON = os.path.join(DIR, 'images', '24x24')
 

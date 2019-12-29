@@ -1,4 +1,4 @@
-<highlightDefinition caseSensitive="false"  extensions="xml, build, page, rdl, rdlc, addin, nuntiare">
+<highlightDefinition caseSensitive="false"  extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
 
 	<styles>
 		<style name="reserved" foreColor="0,0,255" backColor="" bold="false" italic="false" />
