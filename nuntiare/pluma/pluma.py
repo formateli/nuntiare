@@ -71,12 +71,14 @@ class TextEditor(PanedView):
         self.xscrollbar.config(command=self.widget.xview)
         self.yscrollbar.config(command=self.widget.yview)
 
+        self.hl = None # Highlight
         self.new_file()
 
     def onTextModified(self, event):
+        text_info = event.widget.text_changed_info.copy()
         if not self.widget.is_undo_redo:
-            self.view.memento.insert_memento(
-                event.widget.text_changed_info.copy())
+            self.view.memento.insert_memento(text_info)
+        self.hl.apply_hl(self.widget, text_info)
         self.widget.is_undo_redo = None
         self._update_undo_redo()
         self.pluma.menu.link_set_state('save', NORMAL)
@@ -97,9 +99,11 @@ class TextEditor(PanedView):
     def new_file(self):
         self.widget.delete(1.0, END)
         if self.view.full_file_name is None:
+            self.hl = self.pluma.highlight.get_hl_for_extension('xml')
             self.widget.insert('1.0', self.new_snipet(), True)
             state = NORMAL
         else:
+            self.hl = self.pluma.highlight.get_hl_for_extension(self.view.extension)
             self.get_file_content()
             self.tabs.set_title(self.id, self.view.file_name)
             self.tabs.set_dirty(self.id, False)

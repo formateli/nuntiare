@@ -71,6 +71,7 @@ class TextEvent(Text):
 
         self.text_changed_info = TextChangedInfo()
         self.is_undo_redo = None
+        self.tags_setted = False
 
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)
@@ -83,6 +84,14 @@ class TextEvent(Text):
     def delete(self, mark, mark_end, is_undo_redo=None):
         self.is_undo_redo = is_undo_redo
         super(TextEvent, self).delete(mark, mark_end)
+
+    def set_tags(self, styles):
+        if self.tags_setted:
+            return
+        for name, value in styles.items():
+            print(value.fore_color)
+            self.tag_configure(name, foreground=value.fore_color)
+            self.tags_setted = True
 
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):

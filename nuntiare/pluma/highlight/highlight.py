@@ -12,6 +12,7 @@ DIR = os.path.normpath(os.path.join(DIR, 'syntax'))
 class Highlight():
     def __init__(self):
         self._defs = []
+        self._def_by_name = {}
 
         files = os.listdir(DIR)
         for f in files:
@@ -21,6 +22,16 @@ class Highlight():
                 root = doc.getElementsByTagName('highlightDefinition')
                 if root:
                     self._add_def(root[0])
+
+    def get_hl_for_extension(self, extension):
+        if extension in self._def_by_name:
+            return self._def_by_name[extension]
+
+        for df in self._defs:
+            if extension in df.extensions:
+                print(extension)
+                self._def_by_name[extension] = df
+                return df
 
     def _add_def(self, xml):
         df = HighlightDefinition(xml)
@@ -68,6 +79,37 @@ class HighlightDefinition(XmlMixin):
                 self._get_separators(n)
             if n.nodeName == 'descriptors':
                 self._get_descriptors(n)
+
+    def apply_hl(self, text, text_info):
+        first_time = not text.tags_setted
+        if first_time:
+            text.set_tags(self._styles)
+
+        if first_time:
+            self._apply_hl_first_time(text)
+        else:
+            self._apply_hl_text_changed(text, text_info)
+
+    def _apply_hl_first_time(self, text):
+        cum = ''        
+        line = 1
+        col = 0
+
+        while True:
+            t = text.get('{0}.{1}'.format(line, col))
+
+            if t in self._separators:
+                col += 1
+                cum = ''
+                continue
+
+            for d in self._descriptors:
+            
+
+        text.tag_add('comment', '1.0', '1.3')
+
+    def _apply_hl_text_changed(self, text, text_info):
+        pass
 
     def _get_styles(self, node):
         for n in node.childNodes:
@@ -124,9 +166,11 @@ class HighlightStyle(XmlMixin):
                 node, 'name', None, True)
         self.fore_color = self.get_attr_value(
                 node, 'foreColor', None)
-        self.fore_color = bool(self.get_attr_value(
+        self.back_color = self.get_attr_value(
+                node, 'backColor', None) 
+        self.bold = bool(self.get_attr_value(
                 node, 'bold', False))
-        self.fore_color = bool(self.get_attr_value(
+        self.italic = bool(self.get_attr_value(
                 node, 'italic', False))
 
 
