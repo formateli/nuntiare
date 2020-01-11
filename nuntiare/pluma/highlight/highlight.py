@@ -64,7 +64,7 @@ class HighlightDefinition(XmlMixin):
         self._separators = []
         self._descriptors = []
 
-        self.case_sensitive = bool(self.get_attr_value(
+        case_sensitive = bool(self.get_attr_value(
                 node, 'caseSensitive', False))
         self.extensions = self.get_list(
                 self.get_attr_value(node, 'extensions', None, True)
@@ -78,7 +78,7 @@ class HighlightDefinition(XmlMixin):
             if n.nodeName == 'separators':
                 self._get_separators(n)
             if n.nodeName == 'descriptors':
-                self._get_descriptors(n)
+                self._get_descriptors(n, case_sensitive)
 
     def apply_hl(self, text, text_info):
         first_time = not text.tags_setted
@@ -91,22 +91,8 @@ class HighlightDefinition(XmlMixin):
             self._apply_hl_text_changed(text, text_info)
 
     def _apply_hl_first_time(self, text):
-        cum = ''        
-        line = 1
-        col = 0
-
-        while True:
-            t = text.get('{0}.{1}'.format(line, col))
-
-            if t in self._separators:
-                col += 1
-                cum = ''
-                continue
-
-            for d in self._descriptors:
-            
-
-        text.tag_add('comment', '1.0', '1.3')
+        for d in self._descriptors:
+            d.apply_regex(text)
 
     def _apply_hl_text_changed(self, text, text_info):
         pass
@@ -128,21 +114,23 @@ class HighlightDefinition(XmlMixin):
                         n, 'value', None, True)
                     )
 
-    def _get_descriptors(self, node):
+    def _get_descriptors(self, node, case_sensitive):
         for n in node.childNodes:
             if self.is_comment(n):
                 continue
             if n.nodeName == 'descriptor':
-                descriptor = HighlightDescriptor(n)
+                descriptor = HighlightDescriptor(n, case_sensitive)
                 self._descriptors.append(descriptor)
 
 
 class HighlightDescriptor(XmlMixin):
-    def __init__(self, node):
+    def __init__(self, node, case_sensitive):
         self._type = self.get_attr_value(
                 node, 'type', None, True)
         self._style = self.get_attr_value(
                 node, 'style', None, True)
+        self._multiLine = bool(self.get_attr_value(
+                node, 'multiLine', False))
         self._tokens = []
 
         for n in node.childNodes:
@@ -151,6 +139,52 @@ class HighlightDescriptor(XmlMixin):
             if n.nodeName == 'tokens':
                 self._add_tokens(n)
 
+        self._pattern, self._pattern_1, self._pattern_2 = \
+                    self._get_pattern()
+
+    def apply_regex(self, text):
+        if not self._pattern:
+            return
+
+        start = text.index('1.0')
+        end = text.index('end')
+        text.mark_set("matchStart", start)
+        text.mark_set("matchEnd", start)
+        text.mark_set("searchLimit", end)
+
+        count = text.new_int_var()
+        multiline_count = 0
+        while True:
+            index = text.search(self._pattern, 'matchEnd', 'searchLimit',
+                                count=count, regexp=True)
+            if index == '' or count.get() == 0:
+                if not self._multiLine:
+                    break
+                else:
+                    if multiline_count == 0:
+                        index = text.search(self._pattern_1,
+                                'matchEnd', 'searchLimit',
+                                count=count, regexp=True)
+                        if index == '' or count.get() == 0:
+                            break
+                        multiline_count += 1
+                        text.mark_set('matchStart', index)
+                        continue
+                    elif multiline_count == 1:
+                        index = text.search(self._pattern_2,
+                                'matchEnd', 'searchLimit',
+                                count=count, regexp=True)
+                        if index == '' or count.get() == 0:
+                            text.mark_set('matchEnd', 'end')
+                        else:
+                            text.mark_set('matchEnd', index + '+' + str(len(self._tokens[0].close_token)) + 'c')
+
+            text.mark_set('matchStart', index)
+            text.mark_set('matchEnd', "%s+%sc" % (index, count.get()))
+            text.tag_add(self._style, 'matchStart', 'matchEnd')
+
+            multiline_count = 0
+
     def _add_tokens(self, node):
         for n in node.childNodes:
             if self.is_comment(n):
@@ -158,6 +192,32 @@ class HighlightDescriptor(XmlMixin):
             if n.nodeName == 'token':
                 token = HighlightToken(n)
                 self._tokens.append(token)
+
+    def _get_pattern(self):
+        pattern = ''
+        pattern_1 = None # For 
+        pattern_2 = None # Multiline search
+        
+        if self._type == 'WholeWord':
+            for token in self._tokens:
+                if pattern != '':
+                    pattern += '|'
+                pattern += token.value
+            if pattern != '':
+                pattern = r'\y(' + pattern + r')\y'
+
+        elif self._type == 'ToEOL':
+            pattern = self._tokens[0].value
+            pattern += r'.*'
+
+        elif self._type == 'ToCloseToken':
+            pattern = self._tokens[0].value
+            pattern += r'.*'
+            pattern += self._tokens[0].close_token
+            pattern_1 = self._tokens[0].value + r'.*'
+            pattern_2 = r'.*' + self._tokens[0].close_token
+
+        return pattern, pattern_1, pattern_2
 
 
 class HighlightStyle(XmlMixin):
@@ -182,5 +242,3 @@ class HighlightToken(XmlMixin):
                 node, 'closeToken', None)
         self.escape_token = self.get_attr_value(
                 node, 'escapeToken', None)
-        self.multiLine = bool(self.get_attr_value(
-                node, 'multiLine', False))

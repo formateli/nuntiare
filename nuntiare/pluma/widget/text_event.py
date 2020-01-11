@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-from tkinter import Text, NONE, TclError
+from tkinter import Text, NONE, TclError, IntVar
 
 
 class TextChangedInfo():
@@ -92,6 +92,9 @@ class TextEvent(Text):
             print(value.fore_color)
             self.tag_configure(name, foreground=value.fore_color)
             self.tags_setted = True
+
+    def new_int_var(self):
+        return IntVar()
 
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):
