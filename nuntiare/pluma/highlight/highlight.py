@@ -29,7 +29,6 @@ class Highlight():
 
         for df in self._defs:
             if extension in df.extensions:
-                print(extension)
                 self._def_by_name[extension] = df
                 return df
 
@@ -153,7 +152,6 @@ class HighlightDescriptor(XmlMixin):
         text.mark_set("searchLimit", end)
 
         count = text.new_int_var()
-        multiline_count = 0
         while True:
             index = text.search(self._pattern, 'matchEnd', 'searchLimit',
                                 count=count, regexp=True)
@@ -161,29 +159,43 @@ class HighlightDescriptor(XmlMixin):
                 if not self._multiLine:
                     break
                 else:
-                    if multiline_count == 0:
-                        index = text.search(self._pattern_1,
-                                'matchEnd', 'searchLimit',
-                                count=count, regexp=True)
-                        if index == '' or count.get() == 0:
-                            break
-                        multiline_count += 1
-                        text.mark_set('matchStart', index)
-                        continue
-                    elif multiline_count == 1:
-                        index = text.search(self._pattern_2,
-                                'matchEnd', 'searchLimit',
-                                count=count, regexp=True)
-                        if index == '' or count.get() == 0:
-                            text.mark_set('matchEnd', 'end')
-                        else:
-                            text.mark_set('matchEnd', index + '+' + str(len(self._tokens[0].close_token)) + 'c')
+                    res_multiline = self._get_multiline_search(
+                            text, 'matchEnd', 'searchLimit', count)
+                    if not res_multiline:
+                        break
+                    self._apply_tag(text, res_multiline[0], res_multiline[1])
+            else:
+                self._apply_tag(text, index, count.get())
 
-            text.mark_set('matchStart', index)
-            text.mark_set('matchEnd', "%s+%sc" % (index, count.get()))
-            text.tag_add(self._style, 'matchStart', 'matchEnd')
+    def _get_multiline_search(self, text, start, end, count):
+        if self._type != 'ToCloseToken':
+            return
 
-            multiline_count = 0
+        index = text.search(self._pattern_1,
+                    start, end, count=count, regexp=True)
+        if index == '' or count.get() == 0:
+            return
+
+        start_index = index
+        text.mark_set('multilineStart', index)
+
+        index = text.search(self._pattern_2,
+                    start, end, count=count, regexp=True)
+        if index == '' or count.get() == 0:
+            return
+
+        text.mark_set('multilineEnd',
+            index + '+' + str(len(self._tokens[0].close_token)) + 'c')
+
+        txt = text.get('multilineStart', 'multilineEnd')
+        if txt:
+            return [start_index, len(txt)]
+
+
+    def _apply_tag(self, text, index, count):
+        text.mark_set('matchStart', index)
+        text.mark_set('matchEnd', "%s+%sc" % (index, count))
+        text.tag_add(self._style, 'matchStart', 'matchEnd')
 
     def _add_tokens(self, node):
         for n in node.childNodes:

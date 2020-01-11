@@ -27,9 +27,9 @@
 			</tokens>
 		</descriptor>
 
-		<descriptor style="comment" type="ToCloseToken" description="Comment block">
+		<descriptor style="comment" type="ToCloseToken" multiLine="True" description="Comment block">
 			<tokens>
-				<token value="&lt;!--" closeToken="--&gt;" multiLine="True" />
+				<token value="&lt;!--" closeToken="--&gt;" />
 			</tokens>
 		</descriptor>
 
