@@ -196,6 +196,7 @@ class HighlightDescriptor(XmlMixin):
         text.mark_set('matchStart', index)
         text.mark_set('matchEnd', "%s+%sc" % (index, count))
         text.tag_add(self._style, 'matchStart', 'matchEnd')
+        text.mark_set('matchEnd', "matchEnd+1c")
 
     def _add_tokens(self, node):
         for n in node.childNodes:
@@ -224,10 +225,10 @@ class HighlightDescriptor(XmlMixin):
 
         elif self._type == 'ToCloseToken':
             pattern = self._tokens[0].value
-            pattern += r'.*'
+            pattern += r'(.*?)'
             pattern += self._tokens[0].close_token
             pattern_1 = self._tokens[0].value + r'.*'
-            pattern_2 = r'.*' + self._tokens[0].close_token
+            pattern_2 = r'(.*?)' + self._tokens[0].close_token
 
         return pattern, pattern_1, pattern_2
 

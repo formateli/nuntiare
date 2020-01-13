@@ -11,13 +11,19 @@
 	</separators>
 
 	<descriptors>
-
+<!--
 		<descriptor style="reserved" type="Contains" description="" >
 			<tokens>
 				<token value="&lt;"/>
 				<token value="&gt;"/>
 				<token value="&lt;/"/>
 				<token value="/&gt;"/>
+			</tokens>
+		</descriptor>
+-->
+		<descriptor style="reserved" type="ToCloseToken" description="">
+			<tokens>
+				<token value="&lt;" closeToken="&gt;"/>
 			</tokens>
 		</descriptor>
 
