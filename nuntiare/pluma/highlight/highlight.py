@@ -91,7 +91,7 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl_first_time(self, text):
         for d in self._descriptors:
-            d.apply_regex(text)
+            d.apply_regex(text, text.index('1.0'), text.index('end'))
 
     def _apply_hl_text_changed(self, text, text_info):
         pass
@@ -130,6 +130,7 @@ class HighlightDescriptor(XmlMixin):
                 node, 'style', None, True)
         self._multiLine = bool(self.get_attr_value(
                 node, 'multiLine', False))
+        self._descriptors = [] # Sub drescriptors. Ex: xml attribute name/value
         self._tokens = []
 
         for n in node.childNodes:
@@ -137,37 +138,48 @@ class HighlightDescriptor(XmlMixin):
                 continue
             if n.nodeName == 'tokens':
                 self._add_tokens(n)
+            if n.nodeName == 'descriptors':
+                self._get_descriptors(n, case_sensitive)
 
         self._pattern, self._pattern_1, self._pattern_2 = \
                     self._get_pattern()
 
-    def apply_regex(self, text):
+    def apply_regex(self, text, start, end, prefix=''):
         if not self._pattern:
             return
 
-        start = text.index('1.0')
-        end = text.index('end')
-        text.mark_set("matchStart", start)
-        text.mark_set("matchEnd", start)
-        text.mark_set("searchLimit", end)
+        matchStart = prefix + 'matchStart'
+        matchEnd = prefix + 'matchEnd'
+        searchLimit = prefix + 'searchLimit'
+
+        text.mark_set(matchStart, start)
+        text.mark_set(matchEnd, start)
+        text.mark_set(searchLimit, end)
 
         count = text.new_int_var()
+
         while True:
-            index = text.search(self._pattern, 'matchEnd', 'searchLimit',
+            index = text.search(self._pattern, matchEnd, searchLimit,
                                 count=count, regexp=True)
             if index == '' or count.get() == 0:
                 if not self._multiLine:
                     break
                 else:
                     res_multiline = self._get_multiline_search(
-                            text, 'matchEnd', 'searchLimit', count)
+                            text, matchEnd, searchLimit, count, prefix)
                     if not res_multiline:
                         break
-                    self._apply_tag(text, res_multiline[0], res_multiline[1])
+                    self._apply_tag(text, res_multiline[0], res_multiline[1], prefix)
             else:
-                self._apply_tag(text, index, count.get())
+                self._apply_tag(text, index, count.get(), prefix)
 
-    def _get_multiline_search(self, text, start, end, count):
+            if self._descriptors: # Sub descriptors
+                for d in self._descriptors:
+                    d.apply_regex(text,
+                        text.index(matchStart), text.index(matchEnd + '-1c'),
+                        prefix='s')
+
+    def _get_multiline_search(self, text, start, end, count, prefix):
         if self._type != 'ToCloseToken':
             return
 
@@ -176,27 +188,31 @@ class HighlightDescriptor(XmlMixin):
         if index == '' or count.get() == 0:
             return
 
+        multilineStart = prefix + 'multilineStart'
+        multilineEnd = prefix + 'multilineEnd'
+
         start_index = index
-        text.mark_set('multilineStart', index)
+        text.mark_set(multilineStart, index)
 
         index = text.search(self._pattern_2,
                     start, end, count=count, regexp=True)
         if index == '' or count.get() == 0:
             return
 
-        text.mark_set('multilineEnd',
-            index + '+' + str(len(self._tokens[0].close_token)) + 'c')
+        text.mark_set(multilineEnd, '{0}+{1}c'.format(index, count.get()))
 
-        txt = text.get('multilineStart', 'multilineEnd')
+        txt = text.get(multilineStart, multilineEnd)
         if txt:
             return [start_index, len(txt)]
 
+    def _apply_tag(self, text, index, count, prefix):
+        matchStart = prefix + 'matchStart'
+        matchEnd = prefix + 'matchEnd'
 
-    def _apply_tag(self, text, index, count):
-        text.mark_set('matchStart', index)
-        text.mark_set('matchEnd', "%s+%sc" % (index, count))
-        text.tag_add(self._style, 'matchStart', 'matchEnd')
-        text.mark_set('matchEnd', "matchEnd+1c")
+        text.mark_set(matchStart, index)
+        text.mark_set(matchEnd, '%s+%sc' % (index, count))
+        text.tag_add(self._style, matchStart, matchEnd)
+        text.mark_set(matchEnd, matchEnd + '+1c')
 
     def _add_tokens(self, node):
         for n in node.childNodes:
@@ -208,7 +224,7 @@ class HighlightDescriptor(XmlMixin):
 
     def _get_pattern(self):
         pattern = ''
-        pattern_1 = None # For 
+        pattern_1 = None # For
         pattern_2 = None # Multiline search
         
         if self._type == 'WholeWord':
@@ -231,6 +247,14 @@ class HighlightDescriptor(XmlMixin):
             pattern_2 = r'(.*?)' + self._tokens[0].close_token
 
         return pattern, pattern_1, pattern_2
+
+    def _get_descriptors(self, node, case_sensitive):
+        for n in node.childNodes:
+            if self.is_comment(n):
+                continue
+            if n.nodeName == 'descriptor':
+                descriptor = HighlightDescriptor(n, case_sensitive)
+                self._descriptors.append(descriptor)
 
 
 class HighlightStyle(XmlMixin):

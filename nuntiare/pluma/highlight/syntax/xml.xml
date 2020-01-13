@@ -21,16 +21,17 @@
 			</tokens>
 		</descriptor>
 -->
-		<descriptor style="reserved" type="ToCloseToken" description="">
+		<descriptor style="reserved" type="ToCloseToken" description="Xml Element">
 			<tokens>
 				<token value="&lt;" closeToken="&gt;"/>
 			</tokens>
-		</descriptor>
-
-		<descriptor style="quote" type="ToCloseToken" description="Close string between quotes">
-			<tokens>
-				<token value="&quot;" closeToken="&quot;"/>
-			</tokens>
+	        <descriptors>
+		        <descriptor style="quote" type="ToCloseToken" description="Attribute value">
+			        <tokens>
+				        <token value="&quot;" closeToken="&quot;"/>
+			        </tokens>
+		        </descriptor>
+	        </descriptors>
 		</descriptor>
 
 		<descriptor style="comment" type="ToCloseToken" multiLine="True" description="Comment block">
