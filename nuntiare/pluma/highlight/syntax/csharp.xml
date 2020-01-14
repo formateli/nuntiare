@@ -109,7 +109,7 @@
 			</tokens>
 		</descriptor>
 
-		<descriptor style="quote" type="ToCloseToken" multiLine="False" description="String between quotes">
+		<descriptor style="quote" type="ToCloseToken" description="String between quotes">
 			<tokens>
 				<token value="&quot;" closeToken="&quot;" escapeToken="\" />
 			</tokens>
