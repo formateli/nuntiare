@@ -90,19 +90,94 @@ class HighlightDefinition(XmlMixin):
             self._apply_hl_text_changed(text, text_info, blocks)
 
     def _apply_hl_first_time(self, text, blocks):
-        #TODO must be line by line
-        for d in self._descriptors:
-            d.apply_regex(text, text.index('1.0'), text.index('end'))
+        lines = text.get('1.0', 'end').splitlines()
+        i = 1
+        start_letter = 0
+        while i <= len(lines):
+            line = lines[i - 1]
+
+            start_index = '{0}.{1}'.format(i, start_letter)
+            end_index = '{0}.{1}'.format(i, len(line[start_letter:]))
+
+            blks, descriptor = self._process_line(
+                text, start_index, end_index)
+
+            i += 1
+            start_letter = 0
+
+            if not blks:
+                continue
+
+            if descriptor is None:
+                self._apply_tags(blks)
+                continue
+
+            # Last block of blks is of 
+            # descriptor type 'ToCloseToken' and
+            # its state is 0 (open) and it is
+            # multi line
+
+            # Appy tags less the last block
+            self._apply_tags(blks, True)
+
+            last_blk = blks[-1]
+            last_index = self._find_multiline_last_index(last_blk)
+            self._apply_tags(last_blk)
+            if last_index is None:
+                # Close token not found, so tag is applied to EOF
+                break
+
+            i = last_blk.line_end
+            start_letter = last_blk.col_end
 
     def _apply_hl_text_changed(self, text, text_info, blocks):
         pass
 
-    def _process_line(self, text, txt, line_no, blocks):
-        start_index = '{0}.{1}'.format(line_no, 0)
-        end_index = '{0}.{1}'.format(line_no, len(txt))
+    def _process_line(self, text, start_index, end_index):
         blks = []
         for d in self._descriptors:
             blks += d.get_blocks(text, start_index, end_index)
+
+        if not blks:
+            return None, None
+
+        self._purge(blks)
+        last_blk = blks[-1]
+
+        if last_blk.descriptor.type == 'ToCloseToken' and \
+                last_blk.state == 0 and \
+                last_blk.descriptor.multi_line:
+            return blks, last_blk.descriptor
+
+        return blks, None
+
+    def _purge(self, blks):
+        if len(blks) in [0, 1]:
+            return blks
+
+        # order by start col
+        n_blks = []
+
+        z_list = []
+        for b in blks:
+            l = (b.col_start, b)
+            z_list.append(l)
+        res = sorted(z_list, key=lambda z: z[0])
+        for r in res:
+            n_blks.append(r[1])
+
+        # Verify if blocks intersecs each other and delete
+        for b in n_blks:
+            self._mark_for_delete(b, n_blks)
+
+        return n_blks
+
+    def _mark_for_delete(self, block, blks):
+        for b in blks:
+            if b == block:
+                continue
+            if block.block_intersect(b):
+                blks.remove(b)
 
     def _get_styles(self, node):
         for n in node.childNodes:
@@ -132,7 +207,7 @@ class HighlightDefinition(XmlMixin):
 
 class HighlightDescriptor(XmlMixin):
     def __init__(self, node, case_sensitive):
-        self._type = self.get_attr_value(
+        self.type = self.get_attr_value(
                 node, 'type', None, True)
         self._style = self.get_attr_value(
                 node, 'style', None, True)
@@ -172,7 +247,7 @@ class HighlightDescriptor(XmlMixin):
             index = text.search(self._pattern, matchEnd, searchLimit,
                                 count=count, regexp=True)
             if index == '' or count.get() == 0:
-                if self._type in {'WholeWord', 'ToEOL'}:
+                if self.type in {'WholeWord', 'ToEOL'}:
                     break
                 else:
                     res_multiline = self._to_close_token_search(
@@ -215,7 +290,7 @@ class HighlightDescriptor(XmlMixin):
             index = text.search(self._pattern, matchEnd, searchLimit,
                                 count=count, regexp=True)
             if index == '' or count.get() == 0:
-                if self._type in {'WholeWord', 'ToEOL'}:
+                if self.type in {'WholeWord', 'ToEOL'}:
                     break
                 else:
                     res_multiline = self._to_close_token_search(
@@ -234,7 +309,7 @@ class HighlightDescriptor(XmlMixin):
                         prefix='s')
 
     def _to_close_token_search(self, text, start, end, count, prefix):
-        if self._type not in {'ToCloseToken',}:
+        if self.type not in {'ToCloseToken',}:
             return
 
         index = text.search(self._pattern_1,
@@ -307,7 +382,7 @@ class HighlightDescriptor(XmlMixin):
                         prefix='s')
 
     def _get_multiline_search_XXX(self, text, start, end, count, prefix):
-        if self._type != 'ToCloseToken':
+        if self.type != 'ToCloseToken':
             return
 
         index = text.search(self._pattern_1,
@@ -355,7 +430,7 @@ class HighlightDescriptor(XmlMixin):
         pattern_1 = None # For
         pattern_2 = None # Multiline search
         
-        if self._type == 'WholeWord':
+        if self.type == 'WholeWord':
             for token in self._tokens:
                 if pattern != '':
                     pattern += '|'
@@ -363,11 +438,11 @@ class HighlightDescriptor(XmlMixin):
             if pattern != '':
                 pattern = r'\y(' + pattern + r')\y'
 
-        elif self._type == 'ToEOL':
+        elif self.type == 'ToEOL':
             pattern = self._tokens[0].value
             pattern += r'.*'
 
-        elif self._type == 'ToCloseToken':
+        elif self.type == 'ToCloseToken':
             pattern = self._tokens[0].value
             pattern += r'(.*?)'
             pattern += self._tokens[0].close_token
@@ -416,15 +491,33 @@ class HighlightBlocks():
 
 
 class HighlightBlock():
-    def __init__(self, start_index, end_index, descriptor, state='COMPLETED'):
+    def __init__(self, start_index, end_index, descriptor, state=1):
         self._descriptor = descriptor
-        self.state = state # OPEN, COMPLETED
+        self.state = state # 0: OPEN, 1: COMPLETED
 
-        self._line_start, self._col_start = \
+        self.line_start, self.col_start = \
             self._get_line_col(start_index)
-        self._line_end, self._col_end = \
+        self.line_end, self.col_end = \
             self._get_line_col(end_index)
 
     def _get_line_col(self, index):
         s = index.split('.')
         return s[0], s[1]
+
+    def block_intersect(self, block):
+        if block.line_start < self.line_start:
+            return
+        if block.line_start > self.line_end:
+            return
+        if block.line_end == self.line_start and \
+                block.col_start > self.col_end:
+            return
+        if block.line_start == self.line_start and \
+                block.col_start < self.col_start and \
+                block.col_end < self.col_start:
+            return
+        if block.line_start == self.line_start and \
+                block.col_start < self.col_start and \
+                block.descriptor.type != 'WholeWord':
+            return
+        return True
