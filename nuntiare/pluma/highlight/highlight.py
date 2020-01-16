@@ -124,6 +124,7 @@ class HighlightDefinition(XmlMixin):
             last_index = self._find_multiline_last_index(
                     text, last_blk)
             self._apply_tags(text, [last_blk])
+
             if last_index is None:
                 # Close token not found, so tag is applied to EOF
                 break
@@ -142,26 +143,20 @@ class HighlightDefinition(XmlMixin):
         count = text.new_int_var()
 
         index = text.search(block.descriptor._pattern_2,
-                    block.index_start, 'end', count=count, regexp=True)
-        #print(self._pattern_2)
-        #print(index)
-        #print(count.get())
+                    block.index_start(), 'end', count=count, regexp=True)
+
         state = 0
         if index == '' or count.get() == 0:
             res = None
             block.set_index_end(text.index('end'))
         else:
             res = text.index(
-                '{0}+{1}c'.format(block.index_start, count.get()))
+                '{0}+{1}c'.format(index, count.get()))
             block.set_index_end(res)
             block.state = 1 # Completed, because close_token was found.
         return res
 
     def _apply_tags(self, text, blocks, ommit_last_block=False):
-        #print("===========")
-        #print('ommit_last_block ' + str(ommit_last_block))
-        #print('len blocks ' + str(len(blocks)))
-
         i = len(blocks)
         if ommit_last_block:
             i -= 1
@@ -199,6 +194,8 @@ class HighlightDefinition(XmlMixin):
     def _purge(self, blks):
         if len(blks) in [0, 1]:
             return blks
+
+        print('************  Purge()')
 
         # order by start col
         n_blks = []
@@ -324,42 +321,6 @@ class HighlightDescriptor(XmlMixin):
 
         return blocks
 
-    def apply_regex(self, text, start, end, prefix=''):
-        if not self._pattern:
-            return
-
-        matchStart = prefix + 'matchStart'
-        matchEnd = prefix + 'matchEnd'
-        searchLimit = prefix + 'searchLimit'
-
-        text.mark_set(matchStart, start)
-        text.mark_set(matchEnd, start)
-        text.mark_set(searchLimit, end)
-
-        count = text.new_int_var()
-
-        while True:
-            index = text.search(self._pattern, matchEnd, searchLimit,
-                                count=count, regexp=True)
-            if index == '' or count.get() == 0:
-                if self.type in {'WholeWord', 'ToEOL'}:
-                    break
-                else:
-                    res_multiline = self._to_close_token_search(
-                            text, matchEnd, searchLimit, count, prefix)
-                    if not res_multiline:
-                        break
-                    self._apply_tag(text, res_multiline[0], res_multiline[1], prefix)
-            else:
-                self._apply_tag(text, index, count.get(), prefix)
-
-            if self._descriptors: # Sub descriptors
-                for d in self._descriptors:
-
-                    d.apply_regex(text,
-                        text.index(matchStart), text.index(matchEnd + '-1c'),
-                        prefix='s')
-
     def _to_close_token_open_search(self, text, start, end, count):
         '''
         This function finds a match of the 'ToCloseToken' descriptor that
@@ -374,11 +335,7 @@ class HighlightDescriptor(XmlMixin):
 
         index = text.search(self._pattern_1,
                     start, end, count=count, regexp=True)
-        #print('==========')
-        #print(self._pattern_1)
-        #print(self.multi_line)
-        #print(index)
-        #print(count.get())
+
         if index == '' or count.get() == 0:
             return
 
@@ -386,54 +343,6 @@ class HighlightDescriptor(XmlMixin):
                 index,
                 text.index('{0}+{1}c'.format(index, count.get())),
             ]
-
-    def _to_close_token_open_search_XXX(self, text, start, end, count, prefix):
-        if self.type not in {'ToCloseToken',}:
-            return
-
-        # Return a tuple
-        # [startIndex, endIndex, state]
-        # state: 0-Open, 1-Completed
-
-        index = text.search(self._pattern_1,
-                    start, end, count=count, regexp=True)
-        print('==========')
-        print(self._pattern_1)
-        print(self.multi_line)
-        print(index)
-        print(count.get())
-        if index == '' or count.get() == 0:
-            return
-
-        multilineStart = prefix + 'multilineStart'
-        multilineEnd = prefix + 'multilineEnd'
-
-        start_index = index
-        start_count = count.get()
-        text.mark_set(multilineStart, index)
-
-        if not self.multi_line:
-            return [
-                    start_index,
-                    text.index('{0}+{1}c'.format(start_index, start_count)),
-                    0 # State open
-                ]
-
-        index = text.search(self._pattern_2,
-                    start, end, count=count, regexp=True)
-        #print(self._pattern_2)
-        #print(index)
-        #print(count.get())
-        state = 0
-        if index == '' or count.get() == 0:
-            text.mark_set(multilineEnd, 'end')
-        else:
-            text.mark_set(multilineEnd, '{0}+{1}c'.format(index, count.get()))
-            state = 1 # Completed, because close_token was found.
-
-        txt = text.get(multilineStart, multilineEnd)
-        print(txt)
-        return [start_index, text.index('{0}+{1}c'.format(start_index, len(txt))), state]
 
     def _add_tokens(self, node):
         for n in node.childNodes:
@@ -533,7 +442,7 @@ class HighlightBlock():
 
     def _get_line_col(self, index):
         s = index.split('.')
-        return s[0], s[1]
+        return int(s[0]), int(s[1])
 
     def block_intersect(self, block):
         if block.line_start < self.line_start:
