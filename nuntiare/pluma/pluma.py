@@ -11,7 +11,7 @@ from .image_manager import ImageManager
 from .menu_manager import MenuManager
 from .widget import UITabsObserver, UITabs, TextEvent
 from .memento import MementoCaretaker, CopyPaste
-from .highlight import Highlight
+from .highlight import Highlight, HighlightBlocks
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -78,7 +78,7 @@ class TextEditor(PanedView):
         text_info = event.widget.text_changed_info.copy()
         if not self.widget.is_undo_redo:
             self.view.memento.insert_memento(text_info)
-        self.hl.apply_hl(self.widget, text_info)
+        self.hl.apply_hl(self.widget, text_info, self.view.hl_blocks)
         self.widget.is_undo_redo = None
         self._update_undo_redo()
         self.pluma.menu.link_set_state('save', NORMAL)
@@ -153,6 +153,7 @@ class NuntiareView(ttk.Frame):
 
         self.memento = MementoCaretaker()
         self.copypaste = CopyPaste()
+        self.hl_blocks = HighlightBlocks()
         self.notebook = ttk.Notebook(self)
 
         self.design = DesignEditor(id_, pluma, self, tabs)

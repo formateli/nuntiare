@@ -133,7 +133,7 @@
 			</tokens>
 		</descriptor>
 
-		<descriptor style="comment" type="ToCloseToken" multiLine="True" description="Comment block">
+		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Comment block">
 			<tokens>
 				<token value="/\*" closeToken="\*/"/>
 			</tokens>
