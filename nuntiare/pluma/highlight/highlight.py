@@ -181,7 +181,7 @@ class HighlightDefinition(XmlMixin):
         if not blks:
             return None, None
 
-        self._purge(blks)
+        blks = self._purge(blks)
         last_blk = blks[-1]
 
         if last_blk.descriptor.type == 'ToCloseToken' and \
@@ -195,8 +195,6 @@ class HighlightDefinition(XmlMixin):
         if len(blks) in [0, 1]:
             return blks
 
-        print('************  Purge()')
-
         # order by start col
         n_blks = []
 
@@ -208,18 +206,32 @@ class HighlightDefinition(XmlMixin):
         for r in res:
             n_blks.append(r[1])
 
-        # Verify if blocks intersecs each other and delete
         for b in n_blks:
-            self._mark_for_delete(b, n_blks)
+            print(b.descriptor.style)
+
+        # Verify if blocks intersecs each other and delete
+        res = []
+        for b in n_blks:
+            res += self._mark_for_delete(b, n_blks)
+
+        for r in res:
+            n_blks.remove(r)
+
+        for b in n_blks:
+            print(b.descriptor.style)
+
+        print(len(n_blks))
 
         return n_blks
 
     def _mark_for_delete(self, block, blks):
+        res = []
         for b in blks:
             if b == block:
                 continue
             if block.block_intersect(b):
-                blks.remove(b)
+                res.append(b)
+        return res
 
     def _get_styles(self, node):
         for n in node.childNodes:
@@ -450,14 +462,14 @@ class HighlightBlock():
         if block.line_start > self.line_end:
             return
         if block.line_end == self.line_start and \
-                block.col_start > self.col_end:
+                block.col_start >= self.col_end:
             return
         if block.line_start == self.line_start and \
                 block.col_start < self.col_start and \
-                block.col_end < self.col_start:
+                block.col_end <= self.col_start:
             return
         if block.line_start == self.line_start and \
-                block.col_start < self.col_start and \
+                block.col_start <= self.col_start and \
                 block.descriptor.type != 'WholeWord':
             return
         return True

@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-from tkinter import Text, NONE, TclError, IntVar
+from tkinter import Text, NONE, font, TclError, IntVar
 
 
 class TextChangedInfo():
@@ -64,8 +64,13 @@ class TextChangedInfo():
 
 class TextEvent(Text):
     def __init__(self, parent, xscrollcommand, yscrollcommand):
+
+        text_editor_font = font.Font(
+            family='Courier New', size=16)
+
         super(TextEvent, self).__init__(parent,
                 wrap=NONE,
+                font=text_editor_font,
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 

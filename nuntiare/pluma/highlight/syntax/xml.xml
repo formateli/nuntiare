@@ -1,9 +1,9 @@
-<highlightDefinition caseSensitive="false"  extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
+<highlightDefinition caseSensitive="0"  extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
 
 	<styles>
-		<style name="reserved" foreColor="green" backColor="" bold="false" italic="false" />
-		<style name="comment" foreColor="blue" backColor="" bold="false" italic="false" />
-		<style name="quote" foreColor="red" backColor="" bold="false" italic="false" />
+		<style name="reserved" foreColor="green" backColor="" bold="0" italic="0" />
+		<style name="comment" foreColor="blue" backColor="" bold="0" italic="0" />
+		<style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
 	</styles>
 
 	<separators>
@@ -11,16 +11,6 @@
 	</separators>
 
 	<descriptors>
-<!--
-		<descriptor style="reserved" type="Contains" description="" >
-			<tokens>
-				<token value="&lt;"/>
-				<token value="&gt;"/>
-				<token value="&lt;/"/>
-				<token value="/&gt;"/>
-			</tokens>
-		</descriptor>
--->
 		<descriptor style="reserved" type="ToCloseToken" description="Xml Element">
 			<tokens>
 				<token value="&lt;" closeToken="&gt;"/>
@@ -34,7 +24,7 @@
 	        </descriptors>
 		</descriptor>
 
-		<descriptor style="comment" type="ToCloseToken" multiLine="True" description="Comment block">
+		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Comment block">
 			<tokens>
 				<token value="&lt;!--" closeToken="--&gt;" />
 			</tokens>

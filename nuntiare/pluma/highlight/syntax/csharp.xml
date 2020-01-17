@@ -1,10 +1,10 @@
-<highlightDefinition caseSensitive="true" extensions="cs">
+<highlightDefinition caseSensitive="1" extensions="cs">
 
 	<styles>
-		<style name="reserved" foreColor="blue" backColor="" bold="false" italic="false" />
-		<style name="comment" foreColor="green" backColor="" bold="false" italic="false" />
-		<style name="region" foreColor="255,0,0" backColor="" bold="false" italic="false" />
-		<style name="quote" foreColor="red" backColor="" bold="false" italic="false" />
+		<style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
+		<style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
+		<style name="region" foreColor="orange" backColor="" bold="0" italic="0" />
+		<style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
 	</styles>
 
 	<separators>
