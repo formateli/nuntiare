@@ -171,6 +171,8 @@ class HighlightDefinition(XmlMixin):
                 b.descriptor.style, 
                 b.index_start(),
                 b.index_end())
+            if b.sub_blocks:
+                self._apply_tags(text, b.sub_blocks)
             x += 1
 
     def _process_line(self, text, start_index, end_index):
@@ -183,6 +185,12 @@ class HighlightDefinition(XmlMixin):
 
         blks = self._purge(blks)
         last_blk = blks[-1]
+
+        for b in blks:
+            if b.descriptor._descriptors: # Sub descriptors
+                for d in b.descriptor._descriptors:
+                    b.sub_blocks = d.get_blocks(
+                        text, b.index_start(), b.index_end())
 
         if last_blk.descriptor.type == 'ToCloseToken' and \
                 last_blk.state == 0 and \
@@ -209,29 +217,24 @@ class HighlightDefinition(XmlMixin):
         for b in n_blks:
             print(b.descriptor.style)
 
-        # Verify if blocks intersecs each other and delete
+        # Verify if blocks intersects each other and delete
         res = []
         for b in n_blks:
-            res += self._mark_for_delete(b, n_blks)
+            self._mark_for_delete(b, n_blks, res)
 
         for r in res:
+            print(r)
             n_blks.remove(r)
-
-        for b in n_blks:
-            print(b.descriptor.style)
-
-        print(len(n_blks))
 
         return n_blks
 
-    def _mark_for_delete(self, block, blks):
-        res = []
+    def _mark_for_delete(self, block, blks, found):
         for b in blks:
             if b == block:
                 continue
             if block.block_intersect(b):
-                res.append(b)
-        return res
+                if b not in found:
+                    found.append(b)
 
     def _get_styles(self, node):
         for n in node.childNodes:
@@ -281,31 +284,23 @@ class HighlightDescriptor(XmlMixin):
         self._pattern, self._pattern_1, self._pattern_2 = \
                     self._get_pattern()
 
-    def get_blocks(self, text, start, end, prefix=''):
+    def get_blocks(self, text, start, end):
         if not self._pattern:
             return
 
         blocks = []
-
-        matchStart = prefix + 'matchStart'
-        matchEnd = prefix + 'matchEnd'
-        searchLimit = prefix + 'searchLimit'
-
-        text.mark_set(matchStart, start)
-        text.mark_set(matchEnd, start)
-        text.mark_set(searchLimit, end)
-
+        text.mark_set('startIndex', start)
         count = text.new_int_var()
 
         while True:
-            index = text.search(self._pattern, matchEnd, searchLimit,
+            index = text.search(self._pattern, 'startIndex', end,
                                 count=count, regexp=True)
             if index == '' or count.get() == 0:
                 if self.type in {'WholeWord', 'ToEOL'}:
                     break
                 else:
                     res_multiline = self._to_close_token_open_search(
-                            text, matchEnd, searchLimit, count)
+                            text, 'startIndex', end, count)
                     if not res_multiline:
                         break
                     blocks.append(HighlightBlock(
@@ -315,7 +310,7 @@ class HighlightDescriptor(XmlMixin):
                             state=0 # open
                         )
                     )
-                    text.mark_set(matchEnd, res_multiline[1])
+                    text.mark_set('startIndex', res_multiline[1])
             else:
                 end_index = text.index('{0}+{1}c'.format(index, count.get()))
                 blocks.append(HighlightBlock(
@@ -323,13 +318,7 @@ class HighlightDescriptor(XmlMixin):
                         end_index,
                         descriptor=self)
                     )
-                text.mark_set(matchEnd, end_index)
-
-            #if self._descriptors: # Sub descriptors
-            #    for d in self._descriptors:
-            #        d.apply_regex(text,
-            #            text.index(matchStart), text.index(matchEnd + '-1c'),
-            #            prefix='s')
+                text.mark_set('startIndex', end_index)
 
         return blocks
 
@@ -438,6 +427,7 @@ class HighlightBlock():
             self._get_line_col(start_index)
         self.line_end, self.col_end = \
             self._get_line_col(end_index)
+        self.sub_blocks = [] # Sub blocks
 
     def index_start(self):
         return self._get_index(self.line_start, self.col_start)

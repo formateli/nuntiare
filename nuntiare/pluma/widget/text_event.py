@@ -66,7 +66,7 @@ class TextEvent(Text):
     def __init__(self, parent, xscrollcommand, yscrollcommand):
 
         text_editor_font = font.Font(
-            family='Courier New', size=16)
+            family='Courier New', size=14)
 
         super(TextEvent, self).__init__(parent,
                 wrap=NONE,
