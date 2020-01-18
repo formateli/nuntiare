@@ -219,9 +219,10 @@ class HighlightDefinition(XmlMixin):
         for r in res:
             n_blks.append(r[1])
 
+        print(len(n_blks))
         for b in n_blks:
             print(b.descriptor.style)
-            print(' ' + str(b.col_start))
+            print(' ' + str(b.col_start) + '-' + str(b.index_end()))
 
         # Verify if blocks intersects each other and delete
         res = []
@@ -234,6 +235,7 @@ class HighlightDefinition(XmlMixin):
 
         for b in n_blks:
             print(b.descriptor.style)
+        print(len(n_blks))
 
         return n_blks
 
@@ -327,6 +329,11 @@ class HighlightDescriptor(XmlMixin):
                         end_index,
                         descriptor=self)
                     )
+                if self.type == 'ToEOL':
+                    # Search again to EOL
+                    end_index = text.index('{0}+{1}c'.format(index, len(self._tokens[0].value)))
+                    print('-- ToEOL --')
+                    print(end_index)
                 text.mark_set('startIndex', end_index)
 
         return blocks
@@ -378,6 +385,7 @@ class HighlightDescriptor(XmlMixin):
         elif self.type == 'ToEOL':
             pattern = self._tokens[0].value
             pattern += r'.*'
+            #pattern += r'(.*?)\n'
 
         elif self.type == 'ToCloseToken':
             pattern = self._tokens[0].value
