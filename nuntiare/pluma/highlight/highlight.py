@@ -79,18 +79,19 @@ class HighlightDefinition(XmlMixin):
             if n.nodeName == 'descriptors':
                 self._get_descriptors(n, case_sensitive)
 
-    def apply_hl(self, text, text_info, blocks):
+    def apply_hl(self, text, text_info, blocks_gtw):
         first_time = not text.tags_setted
         if first_time:
             text.set_tags(self._styles)
 
         if first_time:
-            self._apply_hl_first_time(text, blocks)
+            self._apply_hl_first_time(text, blocks_gtw)
         else:
-            self._apply_hl_text_changed(text, text_info, blocks)
+            self._apply_hl_text_changed(text, text_info, blocks_gtw)
 
-    def _apply_hl_first_time(self, text, blocks):
+    def _apply_hl_first_time(self, text, blocks_gtw):
         lines = text.get('1.0', 'end').splitlines()
+        blocks_gtw.set_num_lines(len(lines))
         i = 1
         start_col = 0
         while i <= len(lines):
@@ -107,6 +108,8 @@ class HighlightDefinition(XmlMixin):
 
             if not blks:
                 continue
+
+            blocks_gtw.add_blocks(blks)
 
             if descriptor is None:
                 self._apply_tags(text, blks)
@@ -203,6 +206,8 @@ class HighlightDefinition(XmlMixin):
         if len(blks) in [0, 1]:
             return blks
 
+        print('*** PURGE')
+
         # order by start col
         n_blks = []
 
@@ -216,6 +221,7 @@ class HighlightDefinition(XmlMixin):
 
         for b in n_blks:
             print(b.descriptor.style)
+            print(' ' + str(b.col_start))
 
         # Verify if blocks intersects each other and delete
         res = []
@@ -225,6 +231,9 @@ class HighlightDefinition(XmlMixin):
         for r in res:
             print(r)
             n_blks.remove(r)
+
+        for b in n_blks:
+            print(b.descriptor.style)
 
         return n_blks
 
@@ -373,6 +382,7 @@ class HighlightDescriptor(XmlMixin):
         elif self.type == 'ToCloseToken':
             pattern = self._tokens[0].value
             pattern += r'(.*?)'
+            #pattern += r'(.*)'
             pattern += self._tokens[0].close_token
             pattern_1 = self._tokens[0].value + r'.*'
             pattern_2 = r'(.*?)' + self._tokens[0].close_token
@@ -414,8 +424,25 @@ class HighlightToken(XmlMixin):
 
 class HighlightBlocks():
     def __init__(self):
-        self._blocks = []
+        self._lines = None
+
+    def set_num_lines(self, count):
         self._lines = []
+        i = 0
+        while i < count:
+            self._lines.append([])
+            i += 1
+
+    def add_blocks(self, blocks):
+        for b in blocks:
+            l = self._lines[b.line_start - 1]
+            l.append(b)
+            if b.line_end > b.line_start: # Multiline
+                i = b.line_start
+                while i <= b.line_end:
+                    l = self._lines[i - 1]
+                    l.append(b)
+                    i += 1
 
 
 class HighlightBlock():
