@@ -240,6 +240,8 @@ class HighlightDefinition(XmlMixin):
         return n_blks
 
     def _mark_for_delete(self, block, blks, found):
+        if block in found:
+            return
         for b in blks:
             if b == block:
                 continue
@@ -330,10 +332,10 @@ class HighlightDescriptor(XmlMixin):
                         descriptor=self)
                     )
                 if self.type == 'ToEOL':
-                    # Search again to EOL
-                    end_index = text.index('{0}+{1}c'.format(index, len(self._tokens[0].value)))
-                    print('-- ToEOL --')
-                    print(end_index)
+                    # Search for
+                    # other 'ToEOL' blocks
+                    end_index = text.index(
+                        '{0}+{1}c'.format(index, len(self._tokens[0].value)))
                 text.mark_set('startIndex', end_index)
 
         return blocks
