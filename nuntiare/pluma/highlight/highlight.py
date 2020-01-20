@@ -454,6 +454,33 @@ class HighlightBlocks():
                     l.append(b)
                     i += 1
 
+    def blocks_affected(self, text_info):
+        res = []
+        i = text_info.line
+        for i <= text_info.line_end:
+            if i == text_info.line:
+                col_end = None
+                if text_info.line == text_info.line_end:
+                    col_end = text_info.column_end
+                self._blocks_affected(
+                    self._lines[i], text_info.column, col_end, res)
+            elif i == text_info.column_end:
+                self._blocks_affected(
+                    self._lines[i], None, text_info.column_end, res)
+            else:
+                self._blocks_affected(
+                    self._lines[i], None, None res)
+            i += 1
+        return res
+
+    def _blocks_affected(self, line, col_start, col_end, res):
+        for b in line:
+            if col_start is not None:
+                b.col_end <= col_start:
+                    continue
+            if b not in res:
+                res.append(b)
+
 
 class HighlightBlock():
     def __init__(self, start_index, end_index, descriptor, state=1):
