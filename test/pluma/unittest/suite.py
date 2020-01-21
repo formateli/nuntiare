@@ -15,13 +15,14 @@ if os.path.isdir(DIR):
 
 import logging
 import memento
+import highlight
 
 logging.basicConfig(filename='pluma_test.log', level=logging.DEBUG)
 
 LOADER = unittest.TestLoader()
 
 SUITE = LOADER.loadTestsFromModule(memento)
-#SUITE.addTests(LOADER.loadTestsFromModule(expression))
+SUITE.addTests(LOADER.loadTestsFromModule(highlight))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RESULT = RUNNER.run(SUITE)

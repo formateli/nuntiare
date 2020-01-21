@@ -5,23 +5,25 @@
 import os
 from xml.dom import minidom
 
-DIR = os.path.dirname(os.path.realpath(__file__))
-DIR = os.path.normpath(os.path.join(DIR, 'syntax'))
-
 
 class Highlight():
     def __init__(self):
         self._defs = []
         self._def_by_name = {}
 
-        files = os.listdir(DIR)
+    def load_syntax_files(self):
+        dir_ = os.path.dirname(os.path.realpath(__file__))
+        dir_ = os.path.normpath(os.path.join(dir_, 'syntax'))
+        files = os.listdir(dir_)
         for f in files:
-            f = os.path.join(DIR, f)
+            f = os.path.join(dir_, f)
             if os.path.isfile(f) and f.endswith('.xml'):
                 doc = minidom.parse(f)
-                root = doc.getElementsByTagName('highlightDefinition')
-                if root:
-                    self._add_def(root[0])
+                self._add_def(doc)
+
+    def set_syntax(self, str_syntax):
+        doc = minidom.parseString(str_syntax)
+        self._add_def(doc)
 
     def get_hl_for_extension(self, extension):
         if extension in self._def_by_name:
@@ -32,8 +34,11 @@ class Highlight():
                 self._def_by_name[extension] = df
                 return df
 
-    def _add_def(self, xml):
-        df = HighlightDefinition(xml)
+    def _add_def(self, doc):
+        root = doc.getElementsByTagName('highlightDefinition')
+        if not root:
+            return
+        df = HighlightDefinition(root[0])
         self._defs.append(df)
 
 
@@ -144,7 +149,7 @@ class HighlightDefinition(XmlMixin):
         if len(blks_affected) == 1:
             b = blks_affected[0]
             if b.descriptor.type == 'wholeword':
-                # remove tag
+                pass
 
     def _find_multiline_last_index(self, text, block):
         if block.descriptor.type not in {'toclosetoken',}:

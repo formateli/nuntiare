@@ -12,7 +12,7 @@ import unittest
 
 class MementoTest(unittest.TestCase):
     def test_memento(self):
-        self.text = TextEvent(None, None, None)
+        self.text = TextEvent(None, None, None, is_test=True)
         self.text.bind("<<TextModified>>", self.onTextModified)
 
         self.text.delete(1.0, END, True)

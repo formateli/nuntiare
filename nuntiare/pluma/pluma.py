@@ -201,6 +201,7 @@ class Pluma(UITabsObserver):
         self.root.geometry('500x500')
 
         self.highlight = Highlight()
+        self.highlight.load_syntax_files()
 
         ICON = os.path.join(DIR, 'images', '24x24')
 

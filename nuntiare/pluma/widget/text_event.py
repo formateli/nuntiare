@@ -63,10 +63,12 @@ class TextChangedInfo():
 
 
 class TextEvent(Text):
-    def __init__(self, parent, xscrollcommand, yscrollcommand):
+    def __init__(self, parent, xscrollcommand, yscrollcommand, is_test=False):
 
-        text_editor_font = font.Font(
-            family='Courier New', size=14)
+        text_editor_font = None
+        if not is_test:
+            text_editor_font = font.Font(
+                family='Courier New', size=14)
 
         super(TextEvent, self).__init__(parent,
                 wrap=NONE,
