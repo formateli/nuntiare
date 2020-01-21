@@ -3,11 +3,11 @@
 	<styles>
 		<style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
 		<style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
+		<style name="attr" foreColor="brown" backColor="" bold="0" italic="0" />
 		<style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
 	</styles>
 
 	<separators>
-
 	</separators>
 
 	<descriptors>
@@ -15,7 +15,13 @@
 			<tokens>
 				<token value="&lt;" closeToken="&gt;"/>
 			</tokens>
+            <!-- Sub descriptors -->
 	        <descriptors>
+                <descriptor style="attr" type="Regex" description="Attribute Name">
+                    <tokens>
+                        <token value="\s(.*)="/>
+                    </tokens>
+		        </descriptor>
 		        <descriptor style="quote" type="ToCloseToken" description="Attribute value">
 			        <tokens>
 				        <token value="&quot;" closeToken="&quot;"/>

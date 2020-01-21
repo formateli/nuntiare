@@ -11,6 +11,7 @@
 	<separators>
 		<separator value="." />
 		<separator value="," />
+		<separator value=":" />
 		<separator value="-" />
 		<separator value="+" />
 		<separator value="=" />
@@ -31,7 +32,7 @@
 				<token value="and"/>
 				<token value="as"/>
 				<token value="assert"/>
-				<token value="break"/>
+				<token value="break"/>-
 				<token value="class"/>
 				<token value="continue"/>
 				<token value="def"/>

@@ -135,11 +135,19 @@ class HighlightDefinition(XmlMixin):
             i = last_blk.line_end
             start_col = last_blk.col_end
 
-    def _apply_hl_text_changed(self, text, text_info, blocks):
-        pass
+    def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
+        blks_affected, avbl = blocks_gtw.blocks_affected(text_info)
+        if not blks_affected:
+            if len(text_info.text) == 1:
+                if text_info.text == ' ' or text_info.text in self._separators:
+                    return
+        if len(blks_affected) == 1:
+            b = blks_affected[0]
+            if b.descriptor.type == 'wholeword':
+                # remove tag
 
     def _find_multiline_last_index(self, text, block):
-        if block.descriptor.type not in {'ToCloseToken',}:
+        if block.descriptor.type not in {'toclosetoken',}:
             raise Exception(
                 "Descriptor must be type of 'ToCloseToken'")
 
@@ -192,10 +200,10 @@ class HighlightDefinition(XmlMixin):
         for b in blks:
             if b.descriptor._descriptors: # Sub descriptors
                 for d in b.descriptor._descriptors:
-                    b.sub_blocks = d.get_blocks(
+                    b.sub_blocks += d.get_blocks(
                         text, b.index_start(), b.index_end())
 
-        if last_blk.descriptor.type == 'ToCloseToken' and \
+        if last_blk.descriptor.type == 'toclosetoken' and \
                 last_blk.state == 0 and \
                 last_blk.descriptor.multi_line:
             return blks, last_blk.descriptor
@@ -206,7 +214,7 @@ class HighlightDefinition(XmlMixin):
         if len(blks) in [0, 1]:
             return blks
 
-        print('*** PURGE')
+        #print('*** PURGE')
 
         # order by start col
         n_blks = []
@@ -219,10 +227,10 @@ class HighlightDefinition(XmlMixin):
         for r in res:
             n_blks.append(r[1])
 
-        print(len(n_blks))
-        for b in n_blks:
-            print(b.descriptor.style)
-            print(' ' + str(b.col_start) + '-' + str(b.index_end()))
+        #print(len(n_blks))
+        #for b in n_blks:
+        #    print(b.descriptor.style)
+        #    print(' ' + str(b.col_start) + '-' + str(b.index_end()))
 
         # Verify if blocks intersects each other and delete
         res = []
@@ -230,12 +238,12 @@ class HighlightDefinition(XmlMixin):
             self._mark_for_delete(b, n_blks, res)
 
         for r in res:
-            print(r)
+            #print(r)
             n_blks.remove(r)
 
-        for b in n_blks:
-            print(b.descriptor.style)
-        print(len(n_blks))
+        #for b in n_blks:
+        #    print(b.descriptor.style)
+        #print(len(n_blks))
 
         return n_blks
 
@@ -286,6 +294,16 @@ class HighlightDescriptor(XmlMixin):
         self._descriptors = [] # Sub drescriptors. Ex: xml attribute name/value
         self._tokens = []
 
+        self.type = self.type.lower()
+        types = [
+                'wholeword',
+                'toclosetoken',
+                'toeol',
+                'regex'
+            ]
+        if self.type not in types:
+            raise Exception("Ivalid descriptor type: '{0}'".format(self.type))
+
         for n in node.childNodes:
             if self.is_comment(n):
                 continue
@@ -309,7 +327,7 @@ class HighlightDescriptor(XmlMixin):
             index = text.search(self._pattern, 'startIndex', end,
                                 count=count, regexp=True)
             if index == '' or count.get() == 0:
-                if self.type in {'WholeWord', 'ToEOL'}:
+                if self.type in {'wholeword', 'regex', 'toeol'}:
                     break
                 else:
                     res_multiline = self._to_close_token_open_search(
@@ -331,7 +349,7 @@ class HighlightDescriptor(XmlMixin):
                         end_index,
                         descriptor=self)
                     )
-                if self.type == 'ToEOL':
+                if self.type == 'toeol':
                     # Search for
                     # other 'ToEOL' blocks
                     end_index = text.index(
@@ -349,7 +367,7 @@ class HighlightDescriptor(XmlMixin):
         [startIndex, endIndex]
         '''
 
-        if self.type not in {'ToCloseToken',}:
+        if self.type not in {'toclosetoken',}:
             return
 
         index = text.search(self._pattern_1,
@@ -376,7 +394,7 @@ class HighlightDescriptor(XmlMixin):
         pattern_1 = None # For
         pattern_2 = None # Multiline search
         
-        if self.type == 'WholeWord':
+        if self.type == 'wholeword':
             for token in self._tokens:
                 if pattern != '':
                     pattern += '|'
@@ -384,15 +402,16 @@ class HighlightDescriptor(XmlMixin):
             if pattern != '':
                 pattern = r'\y(' + pattern + r')\y'
 
-        elif self.type == 'ToEOL':
+        elif self.type == 'regex':
+            pattern = self._tokens[0].value
+
+        elif self.type == 'toeol':
             pattern = self._tokens[0].value
             pattern += r'.*'
-            #pattern += r'(.*?)\n'
 
-        elif self.type == 'ToCloseToken':
+        elif self.type == 'toclosetoken':
             pattern = self._tokens[0].value
             pattern += r'(.*?)'
-            #pattern += r'(.*)'
             pattern += self._tokens[0].close_token
             pattern_1 = self._tokens[0].value + r'.*'
             pattern_2 = r'(.*?)' + self._tokens[0].close_token
@@ -405,6 +424,8 @@ class HighlightDescriptor(XmlMixin):
                 continue
             if n.nodeName == 'descriptor':
                 descriptor = HighlightDescriptor(n, case_sensitive)
+                if descriptor.multi_line:
+                    raise Exception("Sub descriptor can not be 'Multiline'")
                 self._descriptors.append(descriptor)
 
 
@@ -455,28 +476,72 @@ class HighlightBlocks():
                     i += 1
 
     def blocks_affected(self, text_info):
+        print('**** Blocks Affected')
         res = []
         i = text_info.line
-        for i <= text_info.line_end:
+        print('Chng Line Start: ' + str(i))
+        print('Chng Line End: ' + str(text_info.line_end))
+        while i <= text_info.line_end:
             if i == text_info.line:
                 col_end = None
                 if text_info.line == text_info.line_end:
                     col_end = text_info.column_end
+                print('Col Start ' + str(text_info.column))
+                print('Col End ' + str(col_end))
                 self._blocks_affected(
-                    self._lines[i], text_info.column, col_end, res)
+                    self._lines[i - 1], text_info.column, col_end, res)
             elif i == text_info.column_end:
                 self._blocks_affected(
-                    self._lines[i], None, text_info.column_end, res)
+                    self._lines[i - 1], None, text_info.column_end, res)
             else:
                 self._blocks_affected(
-                    self._lines[i], None, None res)
+                    self._lines[i - 1], None, None, res)
             i += 1
-        return res
+
+        available = None
+        if not res:
+            # Text changed is not in any block,
+            # so find and return available space info
+            previous = None
+            line_start = text_info.line
+            col_start = 0
+            line_end = text_info.line_end
+            col_end = 0
+
+            line = self._lines[line_start - 1]
+            for b in line:
+                if b.col_start > text_info.column + len(text_info.text):
+                    if previous is not None:
+                        col_start = previous.col_end
+                        break
+                previous = b
+
+            line = self._lines[line_end - 1]
+            for b in line:
+                if b.col_start > text_info.column_end:
+                    col_end = b.col_start
+                    break
+            available = [
+                    line_start, col_start,
+                    line_end, col_end
+                ]
+
+        return res, available
 
     def _blocks_affected(self, line, col_start, col_end, res):
         for b in line:
-            if col_start is not None:
-                b.col_end <= col_start:
+            print('b line start' + str(b.line_start))
+            print('b line end' + str(b.line_end))
+            print('b col start' + str(b.col_start))
+            print('b colend' + str(b.col_end))
+            if col_start is not None: # First line
+                if b.col_end <= col_start:
+                    continue
+                if col_end is not None:
+                    if b.col_start >= col_end:
+                        continue
+            if col_start is None and col_end is not None: # Last line
+                if b.col_start >= col_end:
                     continue
             if b not in res:
                 res.append(b)
@@ -524,6 +589,6 @@ class HighlightBlock():
             return
         if block.line_start == self.line_start and \
                 block.col_start <= self.col_start and \
-                block.descriptor.type != 'WholeWord':
+                block.descriptor.type not in {'wholeword', 'regex'}:
             return
         return True

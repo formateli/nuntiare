@@ -48,7 +48,7 @@ class TextChangedInfo():
         self.line_end, self.column_end = self._get_line_col(self.mark_end)
 
     def _get_line_col(self, mark):
-        c = self.mark.split('.')
+        c = mark.split('.')
         return int(c[0]), int(c[1])
 
     def _get_end_mark(self):
@@ -104,14 +104,14 @@ class TextEvent(Text):
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):
 
-            print('==================')
-            print('*** ' + command + ' ***')
-            print(args)
+            #print('==================')
+            #print('*** ' + command + ' ***')
+            #print(args)
 
             if command == 'insert':
-                print(args[0])
+                #print(args[0])
                 mark = self.index(args[0])
-                print('  ' + command + ' MARK: ' + mark)
+                #print('  ' + command + ' MARK: ' + mark)
                 self.text_changed_info.set_info(
                         type_='inserted',
                         text_changed=args[1], mark=mark)
@@ -123,8 +123,8 @@ class TextEvent(Text):
                 else:
                     mark_2 = self.index(args[1])
 
-                print(mark_1)
-                print(mark_2)
+                #print(mark_1)
+                #print(mark_2)
 
                 text_deleted = self._get_text_deleted(mark_1, mark_2)
                 self.text_changed_info.set_info(
