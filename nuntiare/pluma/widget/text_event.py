@@ -96,7 +96,6 @@ class TextEvent(Text):
         if self.tags_setted:
             return
         for name, value in styles.items():
-            print(value.fore_color)
             self.tag_configure(name, foreground=value.fore_color)
             self.tags_setted = True
 

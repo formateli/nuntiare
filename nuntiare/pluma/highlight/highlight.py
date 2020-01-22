@@ -131,6 +131,8 @@ class HighlightDefinition(XmlMixin):
             last_blk = blks[-1]
             last_index = self._find_multiline_last_index(
                     text, last_blk)
+            print('LAST INDEX: ' + last_index)
+            print('LAST INDEX: ' + last_blk.index_end())
             self._apply_tags(text, [last_blk])
 
             if last_index is None:
@@ -158,8 +160,11 @@ class HighlightDefinition(XmlMixin):
 
         count = text.new_int_var()
 
+        start = '{0}+{1}c'.format(
+            block.index_start(), len(block.descriptor._tokens[0].value))
+
         index = text.search(block.descriptor._pattern_2,
-                    block.index_start(), 'end', count=count, regexp=True)
+                    start, 'end', count=count, regexp=True)
 
         state = 0
         if index == '' or count.get() == 0:
@@ -219,7 +224,7 @@ class HighlightDefinition(XmlMixin):
         if len(blks) in [0, 1]:
             return blks
 
-        #print('*** PURGE')
+        print('*** PURGE')
 
         # order by start col
         n_blks = []
@@ -232,23 +237,25 @@ class HighlightDefinition(XmlMixin):
         for r in res:
             n_blks.append(r[1])
 
-        #print(len(n_blks))
-        #for b in n_blks:
-        #    print(b.descriptor.style)
-        #    print(' ' + str(b.col_start) + '-' + str(b.index_end()))
+        print(len(n_blks))
+        for b in n_blks:
+            print(b.descriptor.style)
+            print(' ' + str(b.index_start()) + '-' + str(b.index_end()))
 
         # Verify if blocks intersects each other and delete
         res = []
         for b in n_blks:
             self._mark_for_delete(b, n_blks, res)
 
+        print('REMOVING ...')
         for r in res:
             #print(r)
             n_blks.remove(r)
 
-        #for b in n_blks:
-        #    print(b.descriptor.style)
-        #print(len(n_blks))
+        for b in n_blks:
+            print(b.descriptor.style)
+            print(' ' + str(b.index_start()) + '-' + str(b.index_end()))
+        print(len(n_blks))
 
         return n_blks
 
@@ -343,6 +350,8 @@ class HighlightDescriptor(XmlMixin):
                             res_multiline[0],
                             res_multiline[1],
                             descriptor=self,
+                            length=len(text.get(
+                                res_multiline[0], res_multiline[1])),
                             state=0 # open
                         )
                     )
@@ -350,9 +359,11 @@ class HighlightDescriptor(XmlMixin):
             else:
                 end_index = text.index('{0}+{1}c'.format(index, count.get()))
                 blocks.append(HighlightBlock(
-                        index, 
-                        end_index,
-                        descriptor=self)
+                            index, 
+                            end_index,
+                            descriptor=self,
+                            length=len(text.get(index, end_index)),
+                        )
                     )
                 if self.type == 'toeol':
                     # Search for
@@ -553,7 +564,7 @@ class HighlightBlocks():
 
 
 class HighlightBlock():
-    def __init__(self, start_index, end_index, descriptor, state=1):
+    def __init__(self, start_index, end_index, descriptor, length, state=1):
         self.descriptor = descriptor
         self.state = state # 0: OPEN, 1: COMPLETED
 
@@ -561,6 +572,7 @@ class HighlightBlock():
             self._get_line_col(start_index)
         self.line_end, self.col_end = \
             self._get_line_col(end_index)
+        self._length = length #TODO It is necesary?
         self.sub_blocks = [] # Sub blocks
 
     def index_start(self):
@@ -581,6 +593,19 @@ class HighlightBlock():
         return int(s[0]), int(s[1])
 
     def block_intersect(self, block):
+        if block.col_end <= self.col_start:
+            return
+        if block.col_start >= self.col_end:
+            return
+        if block.col_start > self.col_start and \
+                block.col_end > self.col_end:
+            return True
+        if block.col_start >= self.col_start and \
+                block.col_end <= self.col_end:
+            return True
+
+
+    def block_intersect_BK(self, block):
         if block.line_start < self.line_start:
             return
         if block.line_start > self.line_end:

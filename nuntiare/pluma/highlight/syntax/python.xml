@@ -66,6 +66,12 @@
 			</tokens>
 		</descriptor>
 
+		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Multiline quote">
+			<tokens>
+				<token value="'''" closeToken="'''"/>
+			</tokens>
+		</descriptor>
+
 		<descriptor style="quote" type="ToCloseToken" description="String between quotes">
 			<tokens>
 				<token value="&quot;" closeToken="&quot;"/>

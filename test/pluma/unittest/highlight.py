@@ -21,16 +21,73 @@ class HighlightTest(unittest.TestCase):
         self.hl = highlight.get_hl_for_extension('py')
         self.hl_blocks = HighlightBlocks()
 
+        # Document not loaded, so no tags are set.
+        # Just one exists: 'sel'
+        self.assertEqual(len(self.text.tag_names()), 1)
+
+        # load document
         self.text.insert('1.0', self._get_python_sample())
 
+        # Document is loaded, so besides 'sel' tag
+        # 'reserved', 'comment' and 'quote' are set.
+        self.assertEqual(len(self.text.tag_names()), 4)
+
+        self._ranges = self._get_tag_ranges()
+        return
+
+
+
+
+        self._verify_tag('comment', '# one line comment', '1.0', '1.18')
+        self._verify_tag('reserved', 'class', '2.0', '2.5')
+        self._verify_tag('reserved', 'def', '3.4', '3.7')
+        self._verify_tag('quote', '"#str1"', '4.8', '4.15')
+        self._verify_tag('quote', '"#str2"', '4.17', '4.24')
+        self._verify_tag('quote', '"str1"', '5.13', '5.19')
+        self._verify_tag('quote', '"str2"', '5.22', '5.28')
+
+    def _verify_tag(self, tag_name, txt, start, end):
+        ranges = self._ranges[tag_name]
+        range_ok = None
+        for r in ranges:
+            if r[0] == start and r[1] == end:
+                range_ok = True
+                break
+
+        if not range_ok:
+            raise Exception("Tag '{0}' not in range. '{1}'-'{2}'".format(
+                tag_name, start, end))
+
+        self.assertEqual(self.text.get(start, end), txt)
+
+    def _get_tag_ranges(self):
+        res = {}
+        tags = self.text.tag_names()
+
+        for tag in tags:
+            if tag == 'sel':
+                continue
+            res[tag] = []
+            ranges = self.text.tag_ranges(tag)
+            i = 0
+            while i < len(ranges):                
+                res[tag].append(
+                        [ranges[i].string, ranges[i + 1].string]
+                    )
+                i += 2
+        #print(res)
+        return res
 
     def onTextModified(self, event):
         text_info = self.text.text_changed_info.copy()
         self.hl.apply_hl(self.text, text_info, self.hl_blocks)
 
     def _get_python_sample(self):
-        return '''
+        return '''# one line comment
 class ThisIsAClass():
+    def def_test():
+        "#str1", "#str2"
+        abcd "str1" + "str2"
         '''
 
     def _get_syntax_python(self):
