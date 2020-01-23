@@ -17,6 +17,7 @@ class HighlightTest(unittest.TestCase):
 
         highlight = Highlight()
         highlight.set_syntax(self._get_syntax_python())
+        highlight.set_syntax(self._get_syntax_xml())
 
         self.hl = highlight.get_hl_for_extension('py')
         self.hl_blocks = HighlightBlocks()
@@ -41,6 +42,19 @@ class HighlightTest(unittest.TestCase):
         self._verify_tag('quote', '"#str2"', '4.17', '4.24')
         self._verify_tag('quote', '"str1"', '5.13', '5.19')
         self._verify_tag('quote', '"str2"', '5.22', '5.28')
+
+        # Text changed
+
+        # Insert one separator char in a no blocks area
+        self.text.insert('5.12', ',')
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('comment', '# one line comment', '1.0', '1.18')
+        self._verify_tag('reserved', 'class', '2.0', '2.5')
+        self._verify_tag('reserved', 'def', '3.4', '3.7')
+        self._verify_tag('quote', '"#str1"', '4.8', '4.15')
+        self._verify_tag('quote', '"#str2"', '4.17', '4.24')
+        self._verify_tag('quote', '"str1"', '5.14', '5.20')
+        self._verify_tag('quote', '"str2"', '5.23', '5.29')
 
     def _verify_tag(self, tag_name, txt, start, end):
         ranges = self._ranges[tag_name]
@@ -84,6 +98,13 @@ class ThisIsAClass():
     def def_test():
         "#str1", "#str2"
         abcd "str1" + "str2"
+    """
+        Multiline 1
+        Multiline 2
+        Multiline 3
+    """
+    def other_function():
+        # other comment
         '''
 
     def _get_syntax_python(self):
@@ -149,6 +170,13 @@ class ThisIsAClass():
 				<token value="with"/>
 				<token value="yield"/>
 				<token value="self"/>
+                <token value="super"/>
+			</tokens>
+		</descriptor>
+
+		<descriptor style="quote" type="ToCloseToken" multiLine="1" description="Multiline quote">
+			<tokens>
+				<token value="&quot;&quot;&quot;" closeToken="&quot;&quot;&quot;"/>
 			</tokens>
 		</descriptor>
 
@@ -167,6 +195,50 @@ class ThisIsAClass():
 		<descriptor style="comment" type="ToEOL" description="Comment line" >
 			<tokens>
 				<token value="#"/>
+			</tokens>
+		</descriptor>
+
+	</descriptors>
+
+</highlightDefinition>
+        '''
+
+    def _get_syntax_xml(self):
+        return '''<highlightDefinition caseSensitive="0"  extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
+
+	<styles>
+		<style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
+		<style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
+		<style name="attr" foreColor="brown" backColor="" bold="0" italic="0" />
+		<style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
+	</styles>
+
+	<separators>
+	</separators>
+
+	<descriptors>
+		<descriptor style="reserved" type="ToCloseToken" description="Xml Element">
+			<tokens>
+				<token value="&lt;" closeToken="&gt;"/>
+			</tokens>
+            <!-- Sub descriptors -->
+	        <descriptors>
+                <descriptor style="attr" type="Regex" description="Attribute Name">
+                    <tokens>
+                        <token value="\s(.*)="/>
+                    </tokens>
+		        </descriptor>
+		        <descriptor style="quote" type="ToCloseToken" description="Attribute value">
+			        <tokens>
+				        <token value="&quot;" closeToken="&quot;"/>
+			        </tokens>
+		        </descriptor>
+	        </descriptors>
+		</descriptor>
+
+		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Comment block">
+			<tokens>
+				<token value="&lt;!--" closeToken="--&gt;" />
 			</tokens>
 		</descriptor>
 

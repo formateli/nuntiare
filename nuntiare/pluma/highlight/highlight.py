@@ -143,15 +143,27 @@ class HighlightDefinition(XmlMixin):
             start_col = last_blk.col_end
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
-        blks_affected, avbl = blocks_gtw.blocks_affected(text_info)
+        blks_affected, avbl_range = blocks_gtw.blocks_affected(text_info)
         if not blks_affected:
             if len(text_info.text) == 1:
                 if text_info.text == ' ' or text_info.text in self._separators:
+                    self._adjust_block_indexes(text_info)
                     return
+            else:
+                # get blocks in the available area and tags
+                # adjust_block_indexes
+                pass
         if len(blks_affected) == 1:
             b = blks_affected[0]
-            if b.descriptor.type == 'wholeword':
+            if b.descriptor.type in {'wholeword', 'regex'}:
+                # Alway affected
+                # remove tag
+                # remove block
+                # reblocks and retags the new available area
+                # adjust_block_indexes
                 pass
+            if b.descriptor.type in {'toeol', 'toclosetoken'}:
+                return
 
     def _find_multiline_last_index(self, text, block):
         if block.descriptor.type not in {'toclosetoken',}:
@@ -166,7 +178,6 @@ class HighlightDefinition(XmlMixin):
         index = text.search(block.descriptor._pattern_2,
                     start, 'end', count=count, regexp=True)
 
-        state = 0
         if index == '' or count.get() == 0:
             res = None
             block.set_index_end(text.index('end'))
@@ -487,6 +498,13 @@ class HighlightBlocks():
                     i += 1
 
     def blocks_affected(self, text_info):
+        '''This function return a list of two values:
+            0: list of blocks that were affected by
+               text changed, if any '[]' is returned.
+            1: If no blocks affected are found, return the available
+               range where text changed is located.
+               [line_start, col_start, line_end, col_end] 
+        '''
         print('**** Blocks Affected')
         res = []
         i = text_info.line

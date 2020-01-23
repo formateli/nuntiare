@@ -4,7 +4,6 @@
         <style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
         <style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
         <style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
-        <style name="attr" foreColor="brown" backColor="" bold="0" italic="0" />
 	</styles>
 
     <!--TODO: data types, Built in Functions, colorize after def and class -->
