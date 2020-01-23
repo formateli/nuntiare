@@ -373,11 +373,9 @@ class HighlightDescriptor(XmlMixin):
 
     def _to_close_token_open_search(self, text, start, end, count):
         '''
-        This function finds a match of the 'ToCloseToken' descriptor that
-        its close_token is not present in range, so its end match is the
-        end of range.
-        Return a tuple
-        [startIndex, endIndex]
+        This function finds a match for the 'ToCloseToken' descriptor when
+        close_token is not in same line.
+        Return a tuple: [startIndex, endIndex]
         '''
 
         if self.type not in {'toclosetoken',}:
