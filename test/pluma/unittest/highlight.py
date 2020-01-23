@@ -33,10 +33,6 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.text.tag_names()), 4)
 
         self._ranges = self._get_tag_ranges()
-        return
-
-
-
 
         self._verify_tag('comment', '# one line comment', '1.0', '1.18')
         self._verify_tag('reserved', 'class', '2.0', '2.5')
@@ -97,8 +93,6 @@ class ThisIsAClass():
         <style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
         <style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
 	</styles>
-
-    <!--TODO: data types, Built in Functions, colorize after def and class -->
 
 	<separators>
 		<separator value="." />
@@ -180,5 +174,3 @@ class ThisIsAClass():
 
 </highlightDefinition>
         '''
-
-

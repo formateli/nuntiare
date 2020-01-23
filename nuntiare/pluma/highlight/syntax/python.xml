@@ -4,6 +4,7 @@
         <style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
         <style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
         <style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
+        <style name="attr" foreColor="brown" backColor="" bold="0" italic="0" />
 	</styles>
 
     <!--TODO: data types, Built in Functions, colorize after def and class -->
@@ -62,11 +63,18 @@
 				<token value="while"/>
 				<token value="with"/>
 				<token value="yield"/>
-				<token value="self"/>
+                <token value="self"/>
+                <token value="super"/>
 			</tokens>
 		</descriptor>
 
-		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Multiline quote">
+		<descriptor style="quote" type="ToCloseToken" multiLine="1" description="Multiline quote">
+			<tokens>
+				<token value="&quot;&quot;&quot;" closeToken="&quot;&quot;&quot;"/>
+			</tokens>
+		</descriptor>
+
+		<descriptor style="quote" type="ToCloseToken" multiLine="1" description="Multiline quote">
 			<tokens>
 				<token value="'''" closeToken="'''"/>
 			</tokens>
