@@ -47,6 +47,14 @@ class HighlightTest(unittest.TestCase):
 
         # Insert one separator char in a no blocks area
         self.text.insert('5.12', ',')
+
+        line = self.hl_blocks.get_line(5)
+        self.assertEqual(len(line), 2)
+        self.assertEqual(
+            (line[0].col_start, line[0].col_end),
+            (14, 20)
+        )
+
         self._ranges = self._get_tag_ranges()
         self._verify_tag('comment', '# one line comment', '1.0', '1.18')
         self._verify_tag('reserved', 'class', '2.0', '2.5')

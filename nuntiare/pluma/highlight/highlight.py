@@ -95,11 +95,19 @@ class HighlightDefinition(XmlMixin):
             self._apply_hl_text_changed(text, text_info, blocks_gtw)
 
     def _apply_hl_first_time(self, text, blocks_gtw):
-        lines = text.get('1.0', 'end').splitlines()
-        blocks_gtw.set_num_lines(len(lines))
-        i = 1
-        start_col = 0
-        while i <= len(lines):
+        self._apply_hl(text, blocks_gtw, 1, 0, 'end', first_time=True)
+
+    def _apply_hl(
+            self, text, blocks_gtw, line_start, col_start, index_end, first_time=False):
+        lines = text.get(
+            '{0}.{1}'.format(line_start, col_start),
+            index_end).splitlines()
+        if first_time:
+            blocks_gtw.set_num_lines(len(lines))
+        i = line_start
+        end_line = line_start + (len(lines) - 1)
+        start_col = col_start
+        while i <= end_line:
             line = lines[i - 1]
 
             start_index = '{0}.{1}'.format(i, start_col)
@@ -114,7 +122,7 @@ class HighlightDefinition(XmlMixin):
             if not blks:
                 continue
 
-            blocks_gtw.add_blocks(blks)
+            blocks_gtw.add_blocks(blks, not_order=first_time)
 
             if descriptor is None:
                 self._apply_tags(text, blks)
@@ -144,12 +152,21 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected, avbl_range = blocks_gtw.blocks_affected(text_info)
+        print(blks_affected)
         if not blks_affected:
             if len(text_info.text) == 1:
-                if text_info.text == ' ' or text_info.text in self._separators:
-                    self._adjust_block_indexes(text_info)
+                self._adjust_block_indexes(blocks_gtw, text_info)
+                if self._is_separator(text_info.text):
                     return
+                else:
+                    print(avbl_range)
+                    self._apply_hl(
+                        text, blocks_gtw,
+                        avbl_range[0], avbl_range[1],
+                        '{0}.{1}'.format(avbl_range[2], avbl_range[3] + 1))
+
             else:
+                print(avbl_range)
                 # get blocks in the available area and tags
                 # adjust_block_indexes
                 pass
@@ -164,6 +181,18 @@ class HighlightDefinition(XmlMixin):
                 pass
             if b.descriptor.type in {'toeol', 'toclosetoken'}:
                 return
+
+    def _is_separator(self, txt):
+        return txt == ' ' or txt in self._separators
+
+    def _adjust_block_indexes(self, blocks_gtw, text_info):
+        line = blocks_gtw.get_line(text_info.line)
+        for b in line:
+            if b.col_start > text_info.column:
+                if b.line_start == text_info.line:
+                    b.col_start += text_info.length_affected()
+                if b.line_end == text_info.line:
+                    b.col_end += text_info.length_affected()
 
     def _find_multiline_last_index(self, text, block):
         if block.descriptor.type not in {'toclosetoken',}:
@@ -238,15 +267,7 @@ class HighlightDefinition(XmlMixin):
         #print('*** PURGE')
 
         # order by start col
-        n_blks = []
-
-        z_list = []
-        for b in blks:
-            l = (b.col_start, b)
-            z_list.append(l)
-        res = sorted(z_list, key=lambda z: z[0])
-        for r in res:
-            n_blks.append(r[1])
+        n_blks = HighlightBlocks.order_blocks(blks)
 
         #print(len(n_blks))
         #for b in n_blks:
@@ -303,6 +324,7 @@ class HighlightDefinition(XmlMixin):
                 continue
             if n.nodeName == 'descriptor':
                 descriptor = HighlightDescriptor(n, case_sensitive)
+                descriptor.is_separator = self._is_separator
                 self._descriptors.append(descriptor)
 
 
@@ -316,6 +338,7 @@ class HighlightDescriptor(XmlMixin):
                 node, 'multiLine', False))
         self._descriptors = [] # Sub drescriptors. Ex: xml attribute name/value
         self._tokens = []
+        self.is_separator = None
 
         self.type = self.type.lower()
         types = [
@@ -448,6 +471,7 @@ class HighlightDescriptor(XmlMixin):
                 descriptor = HighlightDescriptor(n, case_sensitive)
                 if descriptor.multi_line:
                     raise Exception("Sub descriptor can not be 'Multiline'")
+                descriptor.is_separator = self.is_separator
                 self._descriptors.append(descriptor)
 
 
@@ -486,7 +510,10 @@ class HighlightBlocks():
             self._lines.append([])
             i += 1
 
-    def add_blocks(self, blocks):
+    def add_blocks(self, blocks, not_order=False):
+        n_blks = blocks
+        if not not_order:
+            n_blks = self.order_blocks(blocks)
         for b in blocks:
             l = self._lines[b.line_start - 1]
             l.append(b)
@@ -497,6 +524,22 @@ class HighlightBlocks():
                     l.append(b)
                     i += 1
 
+    @staticmethod
+    def order_blocks(blks):
+        # order by index_start_int
+        n_blks = []
+        z_list = []
+        for b in blks:
+            l = (b.index_start_int(), b)
+            z_list.append(l)
+        res = sorted(z_list, key=lambda z: z[0])
+        for r in res:
+            n_blks.append(r[1])
+        return n_blks
+
+    def get_line(self, number):
+        return self._lines[number - 1]
+
     def blocks_affected(self, text_info):
         '''This function return a list of two values:
             0: list of blocks that were affected by
@@ -505,75 +548,67 @@ class HighlightBlocks():
                range where text changed is located.
                [line_start, col_start, line_end, col_end] 
         '''
+        def set_available(avl, i1, v1, i2, v2):
+            avl[i1] = v1
+            avl[i2] = v2
+
         print('**** Blocks Affected')
+
         res = []
-        i = text_info.line
-        print('Chng Line Start: ' + str(i))
-        print('Chng Line End: ' + str(text_info.line_end))
-        while i <= text_info.line_end:
-            if i == text_info.line:
-                col_end = None
-                if text_info.line == text_info.line_end:
-                    col_end = text_info.column_end
-                print('Col Start ' + str(text_info.column))
-                print('Col End ' + str(col_end))
-                self._blocks_affected(
-                    self._lines[i - 1], text_info.column, col_end, res)
-            elif i == text_info.column_end:
-                self._blocks_affected(
-                    self._lines[i - 1], None, text_info.column_end, res)
-            else:
-                self._blocks_affected(
-                    self._lines[i - 1], None, None, res)
+        available = [None, None, None, None]
+        m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
+                HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
+        l1, l2 = text_info.line, text_info.line_end
+        print(m1)
+        print(m2)
+        i = l1
+        while i <= l2:
+            line = self.get_line(i)
+            print('LINE = ' + str(i) + ' ' + str(line))
+            for b in line:
+                if available[0] is None:
+                    set_available(
+                        available, 0, b.line_end, 1, b.col_end)
+
+                if b in res:
+                    continue
+
+                f1, f2 = b.index_start_int(), b.index_end_int()
+                print(f1)
+                print(f2)
+
+                if b.descriptor.type in {'wholeword', 'regex'}:
+                    if (m1 < f1 and m2 > f1) and \
+                            not b.descriptor.is_separator(text_info.text):
+                        print('m1 < f1 and m2 > f1')
+                        res.append(b)
+                        continue
+                    if m1 >= f1 and m1 <= f2:
+                        print('m1 >= f1 and m1 <= f2')
+                        res.append(b)
+                        continue
+                else:
+                    if m1 < f1 and m2 > f1:
+                        print('m1 < f1 and m2 > f1')
+                        res.append(b)
+                        continue
+                    if m1 >= f1 and m1 < f2:
+                        print('m1 >= f1 and m1 < f2')
+                        res.append(b)
+                        continue
+
+                set_available(
+                    available, 2, b.line_start, 3, b.col_start)
+
             i += 1
 
-        available = None
-        if not res:
-            # Text changed is not in any block,
-            # so find and return available space info
-            previous = None
-            line_start = text_info.line
-            col_start = 0
-            line_end = text_info.line_end
-            col_end = 0
+        if res:
+            available = None
 
-            line = self._lines[line_start - 1]
-            for b in line:
-                if b.col_start > text_info.column + len(text_info.text):
-                    if previous is not None:
-                        col_start = previous.col_end
-                        break
-                previous = b
-
-            line = self._lines[line_end - 1]
-            for b in line:
-                if b.col_start > text_info.column_end:
-                    col_end = b.col_start
-                    break
-            available = [
-                    line_start, col_start,
-                    line_end, col_end
-                ]
+        print(res)
+        print(available)
 
         return res, available
-
-    def _blocks_affected(self, line, col_start, col_end, res):
-        for b in line:
-            print('b line start' + str(b.line_start))
-            print('b line end' + str(b.line_end))
-            print('b col start' + str(b.col_start))
-            print('b colend' + str(b.col_end))
-            if col_start is not None: # First line
-                if b.col_end <= col_start:
-                    continue
-                if col_end is not None:
-                    if b.col_start >= col_end:
-                        continue
-            if col_start is None and col_end is not None: # Last line
-                if b.col_start >= col_end:
-                    continue
-            if b not in res:
-                res.append(b)
 
 
 class HighlightBlock():
@@ -597,14 +632,28 @@ class HighlightBlock():
         self.line_end, self.col_end = \
             self._get_line_col(index)
 
+    def index_start_int(self):
+        return self.get_index_int(
+            self.line_start, self.col_start)
+
+    def index_end_int(self):
+        return self.get_index_int(
+            self.line_end, self.col_end)
+
     def _get_index(self, line, col):
         return '{0}.{1}'.format(line, col)
+
+    @staticmethod
+    def get_index_int(line, col):
+        factor = 1000
+        return (factor * line) + col
 
     def _get_line_col(self, index):
         s = index.split('.')
         return int(s[0]), int(s[1])
 
     def block_intersect(self, block):
+        '''Blocks in same line'''
         if block.col_end <= self.col_start:
             return
         if block.col_start >= self.col_end:

@@ -28,6 +28,12 @@ class TextChangedInfo():
 
         self._set_mark_info()
 
+    def length(self):
+        return len(self.text)
+
+    def length_affected(self):
+        return self.length() * self._affected_factor
+
     def copy(self):
         tci = TextChangedInfo()
         tci.type = self.type		
