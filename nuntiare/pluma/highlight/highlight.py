@@ -97,59 +97,6 @@ class HighlightDefinition(XmlMixin):
     def _apply_hl_first_time(self, text, blocks_gtw):
         self._apply_hl(text, blocks_gtw, 1, 0, 'end', first_time=True)
 
-    def _apply_hl(
-            self, text, blocks_gtw, line_start, col_start, index_end, first_time=False):
-        lines = text.get(
-            '{0}.{1}'.format(line_start, col_start),
-            index_end).splitlines()
-        if first_time:
-            blocks_gtw.set_num_lines(len(lines))
-        i = line_start
-        end_line = line_start + (len(lines) - 1)
-        start_col = col_start
-        while i <= end_line:
-            line = lines[i - 1]
-
-            start_index = '{0}.{1}'.format(i, start_col)
-            end_index = '{0}.{1}'.format(i, len(line[start_col:]))
-
-            blks, descriptor = self._process_line(
-                text, start_index, end_index)
-
-            i += 1
-            start_col = 0
-
-            if not blks:
-                continue
-
-            blocks_gtw.add_blocks(blks, not_order=first_time)
-
-            if descriptor is None:
-                self._apply_tags(text, blks)
-                continue
-
-            # Last block of blks is of 
-            # descriptor type 'ToCloseToken' and
-            # its state is 0 (open) and it is
-            # multi line
-
-            # Appy tags less the last block
-            self._apply_tags(text, blks, True)
-
-            last_blk = blks[-1]
-            last_index = self._find_multiline_last_index(
-                    text, last_blk)
-            #print('LAST INDEX: ' + last_index)
-            #print('LAST INDEX: ' + last_blk.index_end())
-            self._apply_tags(text, [last_blk])
-
-            if last_index is None:
-                # Close token not found, so tag is applied to EOF
-                break
-
-            i = last_blk.line_end
-            start_col = last_blk.col_end
-
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected, avbl_range = blocks_gtw.blocks_affected(text_info)
         print(blks_affected)
@@ -181,6 +128,74 @@ class HighlightDefinition(XmlMixin):
                 pass
             if b.descriptor.type in {'toeol', 'toclosetoken'}:
                 return
+
+    def _apply_hl(
+            self, text, blocks_gtw, line_start, col_start,
+            index_end, first_time=False):
+        print('APLY HL() ***')
+        
+        lines = text.get(
+            '{0}.{1}'.format(line_start, col_start),
+            index_end).splitlines()
+
+        if first_time:
+            blocks_gtw.set_num_lines(len(lines))
+
+        i = line_start
+        end_line = line_start + (len(lines) - 1)
+        start_col = col_start
+        first_iter = True
+        while i <= end_line:
+            line = lines[i - 1]
+
+            print('  ' + line)
+            start_index = '{0}.{1}'.format(i, start_col)
+            if first_iter:
+                end_index = '{0}.{1}'.format(i, start_col + len(line))
+            else:
+                end_index = '{0}.{1}'.format(i, len(line[start_col:]))
+            first_iter = False
+
+            print('  ' + start_index)
+            print('  ' + end_index)
+
+            blks, descriptor = self._process_line(
+                text, start_index, end_index)
+
+            i += 1
+            start_col = 0
+
+            print('  blks: ' + str(blks))
+            if not blks:
+                continue
+
+            blocks_gtw.add_blocks(blks, order=not first_time)
+
+            if descriptor is None:
+                self._apply_tags(text, blks)
+                continue
+
+            # Last block of blks is of 
+            # descriptor type 'ToCloseToken' and
+            # its state is 0 (open) and it is
+            # multi line
+
+            # Appy tags less the last block
+            self._apply_tags(text, blks, True)
+
+            last_blk = blks[-1]
+            last_index = self._find_multiline_last_index(
+                    text, last_blk)
+            #print('LAST INDEX: ' + last_index)
+            #print('LAST INDEX: ' + last_blk.index_end())
+            self._apply_tags(text, [last_blk])
+
+            if last_index is None:
+                # Close token not found, so tag is applied to EOF
+                break
+
+            i = last_blk.line_end
+            start_col = last_blk.col_end
 
     def _is_separator(self, txt):
         return txt == ' ' or txt in self._separators
@@ -510,9 +525,9 @@ class HighlightBlocks():
             self._lines.append([])
             i += 1
 
-    def add_blocks(self, blocks, not_order=False):
+    def add_blocks(self, blocks, order=True):
         n_blks = blocks
-        if not not_order:
+        if order:
             n_blks = self.order_blocks(blocks)
         for b in blocks:
             l = self._lines[b.line_start - 1]
@@ -548,14 +563,10 @@ class HighlightBlocks():
                range where text changed is located.
                [line_start, col_start, line_end, col_end] 
         '''
-        def set_available(avl, i1, v1, i2, v2):
-            avl[i1] = v1
-            avl[i2] = v2
 
         print('**** Blocks Affected')
 
         res = []
-        available = [None, None, None, None]
         m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
                 HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
         l1, l2 = text_info.line, text_info.line_end
@@ -564,12 +575,7 @@ class HighlightBlocks():
         i = l1
         while i <= l2:
             line = self.get_line(i)
-            print('LINE = ' + str(i) + ' ' + str(line))
             for b in line:
-                if available[0] is None:
-                    set_available(
-                        available, 0, b.line_end, 1, b.col_end)
-
                 if b in res:
                     continue
 
@@ -583,7 +589,8 @@ class HighlightBlocks():
                         print('m1 < f1 and m2 > f1')
                         res.append(b)
                         continue
-                    if m1 >= f1 and m1 <= f2:
+                    if (m1 >= f1 and m1 <= f2) and \
+                            not b.descriptor.is_separator(text_info.text):
                         print('m1 >= f1 and m1 <= f2')
                         res.append(b)
                         continue
@@ -596,14 +603,31 @@ class HighlightBlocks():
                         print('m1 >= f1 and m1 < f2')
                         res.append(b)
                         continue
-
-                set_available(
-                    available, 2, b.line_start, 3, b.col_start)
-
             i += 1
 
-        if res:
-            available = None
+        available = None
+        if not res:
+            available = [None, None, None, None]
+            line = self.get_line(text_info.line)
+            for b in line:
+                if b.col_end <= text_info.column:
+                    available[0] = b.line_end
+                    available[1] = b.col_end
+                else:
+                    break
+            if available[0] is None:
+                available[0] = text_info.line
+                available[1] = 0
+
+            line = self.get_line(text_info.line_end)
+            for b in line:
+                if b.col_start >= text_info.column_end:
+                    available[2] = b.line_start
+                    available[3] = b.col_start
+                    break
+            if available[2] is None:
+                available[2] = text_info.line_end
+                available[3] = text_info.column_end
 
         print(res)
         print(available)
