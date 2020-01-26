@@ -5,22 +5,22 @@
 
 class HighlightBlocks():
     def __init__(self):
-        self._lines = None
-
-    def set_num_lines(self, count):
         self._lines = []
-        i = 0
-        while i < count:
-            self._lines.append([])
-            i += 1
 
-    def add_blocks(self, blocks, order=True):
+    def add_blocks(self, blocks):
         lines_afected = []
         for b in blocks:
+            if b.line_start > len(self._lines):
+                i = len(self._lines)
+                while i < b.line_start:
+                    self._lines.append([])
+                    i += 1
+
             l = self._lines[b.line_start - 1]
             l.append(b)
             if l not in lines_afected:
                 lines_afected.append(b.line_start - 1)
+
             if b.line_end > b.line_start: # Multiline
                 i = b.line_start
                 while i <= b.line_end:
@@ -29,10 +29,9 @@ class HighlightBlocks():
                     if l not in lines_afected:
                         lines_afected.append(i - 1)
                     i += 1
-
-        if order:
-            for l in lines_afected:
-                self._lines[l] = self.order_blocks(self._lines[l])
+        # Order
+        for l in lines_afected:
+            self._lines[l] = self.order_blocks(self._lines[l])
 
     @staticmethod
     def order_blocks(blks):
@@ -47,16 +46,71 @@ class HighlightBlocks():
             n_blks.append(r[1])
         return n_blks
 
+    def adjust_block_indexes(self, text_info):
+        if text_info.type == 'inserted':
+            line_start = self.get_line(text_info.line)
+            lines_count = text_info.line_end - text_info.line
+
+            i = 0
+            last_block = None
+            for b in line_start:
+                if b.col_start > text_info.column:
+                    b.col_start += text_info.length_last_line_affected()
+                    b.col_end += text_info.length_last_line_affected()
+                    if last_block is None:
+                        last_block = line_start[i - 1]
+                i += 1
+
+            if last_block is None:
+                if len(line_start) == 1:
+                    last_block = line_start[0]
+
+            if lines_count > 0:
+                self._adjust_lines(
+                    text_info.line, lines_count, last_block)
+                self._resize_lines(text_info.line)
+
+    def _adjust_lines(self, start_line, count, ignore_block):
+        i = start_line
+        while i <= len(self._lines):
+            line = self.get_line(i)
+            for b in line:
+                if b == ignore_block:
+                    continue
+                b.col_start += count
+                b.col_end += count
+            i += 1
+
+    def _resize_lines(self, start_line):
+        i = start_line
+        while True:
+            if i > len(self._lines):
+                break
+            line = self.get_line(i)
+            res = []
+            for b in line:
+                if b.line_start != i:
+                    res.append(b)
+            for r in res:
+                line.remove(r)
+                if r.line_start > len(self._lines):
+                    i = len(self._lines)
+                    while i < r.line_start:
+                        self._lines.append([])
+                        i += 1
+                line = self.get_line(r.line_start)
+                line.append(r)
+
+            i += 1
+
     def get_line(self, number):
+        if number - 1 not in self._lines:
+            return []
         return self._lines[number - 1]
 
     def blocks_affected(self, text_info):
-        '''This function return a list of two values:
-            0: list of blocks that were affected by
-               text changed, if any '[]' is returned.
-            1: If no blocks affected are found, return the available
-               range where text changed is located.
-               [line_start, col_start, line_end, col_end] 
+        '''Returns the list of blocks that were affected by
+        text changed, '[]' if no blocks found. 
         '''
 
         print('**** Blocks Affected')
@@ -111,34 +165,41 @@ class HighlightBlocks():
 
             i += 1
 
-        available = None
-        if not res:
-            available = [None, None, None, None]
-            line = self.get_line(text_info.line)
-            for b in line:
-                if b.col_end <= text_info.column:
-                    available[0] = b.line_end
-                    available[1] = b.col_end
-                else:
-                    break
-            if available[0] is None:
-                available[0] = text_info.line
-                available[1] = 0
-
-            line = self.get_line(text_info.line_end)
-            for b in line:
-                if b.col_start >= text_info.column_end:
-                    available[2] = b.line_start
-                    available[3] = b.col_start
-                    break
-            if available[2] is None:
-                available[2] = text_info.line_end
-                available[3] = text_info.column_end
-
         print(res)
+
+        return res
+
+    def get_available_space(self, text_info):
+        '''Returns list with available range info where text changed is located.
+        [line_start, col_start, line_end, col_end] 
+        '''
+
+        available = [None, None, None, None]
+        line = self.get_line(text_info.line)
+
+        for b in line:
+            if b.col_end <= text_info.column:
+                available[0] = b.line_end
+                available[1] = b.col_end
+            else:
+                break
+        if available[0] is None:
+            available[0] = text_info.line
+            available[1] = 0
+
+        line = self.get_line(text_info.line_end)
+        for b in line:
+            if b.col_start >= text_info.column_end:
+                available[2] = b.line_start
+                available[3] = b.col_start
+                break
+        if available[2] is None:
+            available[2] = text_info.line_end
+            available[3] = text_info.column_end
+
         print(available)
 
-        return res, available
+        return available
 
 
 class HighlightBlock():

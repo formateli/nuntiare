@@ -96,21 +96,27 @@ class HighlightDefinition(XmlMixin):
             self._apply_hl_text_changed(text, text_info, blocks_gtw)
 
     def _apply_hl_first_time(self, text, blocks_gtw):
-        self._apply_hl(text, blocks_gtw, 1, 0, 'end', first_time=True)
+        self._apply_hl(text, blocks_gtw, 1, 0, 'end')
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
-        blks_affected, avbl_range = blocks_gtw.blocks_affected(text_info)
+        blks_affected = blocks_gtw.blocks_affected(text_info)
         print(blks_affected)
 
         if not blks_affected:
-            self._adjust_block_indexes(blocks_gtw, text_info)
-            avbl_range[3] += text_info.length_affected()
+            blocks_gtw.adjust_block_indexes(text_info)
+            avbl_range = blocks_gtw.get_available_space(text_info)
 
-            if self._is_separator(text_info.text) and \
-                    text_info.type == 'inserted':
-                return
-            else:
-                print(avbl_range)
+            if text_info.type == 'inserted':
+                if self._is_separator(text_info.text):
+                    return
+                else:
+                    print(avbl_range)
+                    self._apply_hl(
+                        text, blocks_gtw,
+                        avbl_range[0], avbl_range[1],
+                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
+
+            else: # deleted
                 self._apply_hl(
                     text, blocks_gtw,
                     avbl_range[0], avbl_range[1],
@@ -128,31 +134,29 @@ class HighlightDefinition(XmlMixin):
             if b.descriptor.type in {'toeol', 'toclosetoken'}:
                 return
 
-    def _apply_hl(
-            self, text, blocks_gtw, line_start, col_start,
-            index_end, first_time=False):
+    def _apply_hl(self, text, blocks_gtw,
+                line_start, col_start, index_end):
         print('APLY HL() ***')
-        
+
         lines = text.get(
             '{0}.{1}'.format(line_start, col_start),
             index_end).splitlines()
 
-        if first_time:
-            blocks_gtw.set_num_lines(len(lines))
-
-        i = line_start
+        cur_line = line_start
+        line_count = 0
         end_line = line_start + (len(lines) - 1)
         start_col = col_start
         first_iter = True
-        while i <= end_line:
-            line = lines[i - 1]
+
+        while cur_line <= end_line:
+            line = lines[line_count]
 
             print('  ' + line)
-            start_index = '{0}.{1}'.format(i, start_col)
+            start_index = '{0}.{1}'.format(cur_line, start_col)
             if first_iter:
-                end_index = '{0}.{1}'.format(i, start_col + len(line))
+                end_index = '{0}.{1}'.format(cur_line, start_col + len(line))
             else:
-                end_index = '{0}.{1}'.format(i, len(line[start_col:]))
+                end_index = '{0}.{1}'.format(cur_line, len(line[start_col:]))
             first_iter = False
 
             print('  ' + start_index)
@@ -161,14 +165,15 @@ class HighlightDefinition(XmlMixin):
             blks, descriptor = self._process_line(
                 text, start_index, end_index)
 
-            i += 1
+            cur_line += 1
             start_col = 0
+            line_count += 1
 
             print('  blks: ' + str(blks))
             if not blks:
                 continue
 
-            blocks_gtw.add_blocks(blks, order=not first_time)
+            blocks_gtw.add_blocks(blks)
 
             if descriptor is None:
                 self._apply_tags(text, blks)
@@ -193,22 +198,14 @@ class HighlightDefinition(XmlMixin):
                 # Close token not found, so tag is applied to EOF
                 break
 
-            i = last_blk.line_end
+            cur_line = last_blk.line_end
             start_col = last_blk.col_end
+            line_count = last_blk.line_end - line_start
 
     def _is_separator(self, txt):
         if len(txt) != 1:
             return
         return txt == ' ' or txt in self._separators
-
-    def _adjust_block_indexes(self, blocks_gtw, text_info):
-        line = blocks_gtw.get_line(text_info.line)
-        for b in line:
-            if b.col_start > text_info.column:
-                if b.line_start == text_info.line:
-                    b.col_start += text_info.length_affected()
-                if b.line_end == text_info.line:
-                    b.col_end += text_info.length_affected()
 
     def _find_multiline_last_index(self, text, block):
         if block.descriptor.type not in {'toclosetoken',}:

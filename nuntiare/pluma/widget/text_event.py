@@ -34,6 +34,11 @@ class TextChangedInfo():
     def length_affected(self):
         return self.length() * self._affected_factor
 
+    def length_last_line_affected(self):
+        if self.line == self.line_end:
+            return self.length_affected()
+        return self.column_end * self._affected_factor
+
     def copy(self):
         tci = TextChangedInfo()
         tci.type = self.type		
@@ -59,8 +64,9 @@ class TextChangedInfo():
 
     def _get_end_mark(self):
         txts = self.text.split('\n')
-        if len(txts) > 1:
-            line = self.line + (len(txts) - 1)
+        line_count = len(txts)
+        if line_count > 1:
+            line = self.line + (line_count - 1)
             col = len(txts[-1])
         else:
             line = self.line
