@@ -7,15 +7,16 @@ class HighlightBlocks():
     def __init__(self):
         self._lines = []
 
+    def set_line(self, line):
+        if line > len(self._lines):
+            i = len(self._lines)
+            while i < line:
+                self._lines.append([])
+                i += 1
+
     def add_blocks(self, blocks):
         lines_afected = []
         for b in blocks:
-            if b.line_start > len(self._lines):
-                i = len(self._lines)
-                while i < b.line_start:
-                    self._lines.append([])
-                    i += 1
-
             l = self._lines[b.line_start - 1]
             l.append(b)
             if l not in lines_afected:
@@ -93,11 +94,7 @@ class HighlightBlocks():
                     res.append(b)
             for r in res:
                 line.remove(r)
-                if r.line_start > len(self._lines):
-                    i = len(self._lines)
-                    while i < r.line_start:
-                        self._lines.append([])
-                        i += 1
+                self.set_line(r.line_start)
                 line = self.get_line(r.line_start)
                 line.append(r)
 
