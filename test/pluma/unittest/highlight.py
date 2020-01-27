@@ -43,6 +43,12 @@ class HighlightTest(unittest.TestCase):
         self._verify_tag('quote', '"str1"', '5.13', '5.19')
         self._verify_tag('quote', '"str2"', '5.22', '5.28')
 
+        # Text widget append a new line at the end
+        self.assertEqual(len(self.hl_blocks._lines), 13)
+
+        line = self.hl_blocks.get_line(5)
+        self.assertEqual(len(line), 2)
+
         # Text changed
 
         # Insert one separator char in a no blocks area
@@ -50,9 +56,13 @@ class HighlightTest(unittest.TestCase):
 
         line = self.hl_blocks.get_line(5)
         self.assertEqual(len(line), 2)
+
         self.assertEqual(
-            (line[0].col_start, line[0].col_end),
-            (14, 20)
+            (
+                line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end
+            ),
+            (5, 14, 5, 20)
         )
 
         self._ranges = self._get_tag_ranges()
@@ -63,6 +73,22 @@ class HighlightTest(unittest.TestCase):
         self._verify_tag('quote', '"#str2"', '4.17', '4.24')
         self._verify_tag('quote', '"str1"', '5.14', '5.20')
         self._verify_tag('quote', '"str2"', '5.23', '5.29')
+
+        # insert a new line, so all lines below this sums 1
+        self.text.insert('3.19', '\n')
+
+        self.assertEqual(len(self.hl_blocks._lines), 14)
+
+        line = self.hl_blocks.get_line(6)
+        self.assertEqual(len(line), 2)
+
+        self.assertEqual(
+            (
+                line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end
+            ),
+            (6, 14, 6, 20)
+        )
 
     def _verify_tag(self, tag_name, txt, start, end):
         ranges = self._ranges[tag_name]

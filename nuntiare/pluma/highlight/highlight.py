@@ -136,7 +136,7 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
-        print('APLY HL() ***')
+        print('_APLY HL() ***')
 
         lines = text.get(
             '{0}.{1}'.format(line_start, col_start),

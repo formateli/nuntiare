@@ -7,12 +7,24 @@ class HighlightBlocks():
     def __init__(self):
         self._lines = []
 
-    def set_line(self, line):
-        if line > len(self._lines):
+    def set_line(self, number):
+        if number > len(self._lines):
             i = len(self._lines)
-            while i < line:
+            while i < number:
                 self._lines.append([])
                 i += 1
+
+    def add_lines(self, count):
+        i = 0
+        while i < count:
+            self._lines.append([])
+            i += 1
+
+    def remove_lines(self, line_start, line_end):
+        pass
+
+    def get_line(self, number):
+        return self._lines[number - 1]
 
     def add_blocks(self, blocks):
         lines_afected = []
@@ -50,7 +62,9 @@ class HighlightBlocks():
     def adjust_block_indexes(self, text_info):
         if text_info.type == 'inserted':
             line_start = self.get_line(text_info.line)
-            lines_count = text_info.line_end - text_info.line
+            line_count = text_info.line_end - text_info.line
+
+            self.add_lines(line_count)
 
             i = 0
             last_block = None
@@ -66,9 +80,9 @@ class HighlightBlocks():
                 if len(line_start) == 1:
                     last_block = line_start[0]
 
-            if lines_count > 0:
+            if line_count > 0:
                 self._adjust_lines(
-                    text_info.line, lines_count, last_block)
+                    text_info.line, line_count, last_block)
                 self._resize_lines(text_info.line)
 
     def _adjust_lines(self, start_line, count, ignore_block):
@@ -99,11 +113,6 @@ class HighlightBlocks():
                 line.append(r)
 
             i += 1
-
-    def get_line(self, number):
-        if number - 1 not in self._lines:
-            return []
-        return self._lines[number - 1]
 
     def blocks_affected(self, text_info):
         '''Returns the list of blocks that were affected by
