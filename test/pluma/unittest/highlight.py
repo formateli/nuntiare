@@ -27,7 +27,61 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.text.tag_names()), 1)
 
         # load document
-        self.text.insert('1.0', self._get_python_sample())
+        self.text.insert('1.0', self._get_python_sample_1())
+
+        # Document is loaded, so besides 'sel' tag
+        # 'reserved', 'comment' and 'quote' are set.
+        self.assertEqual(len(self.text.tag_names()), 4)
+
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'from', '1.4', '1.8')
+
+        # One line 'abc from fgh'
+        self.assertEqual(len(self.hl_blocks._lines), 1)
+
+        line = self.hl_blocks.get_line(1)
+        # Just one block for 'from' reserved word
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (1, 4, 1, 8))
+
+        # Add letter 'd' to non block area
+        self.text.insert('1.3', 'd')
+        # Remain one line
+        self.assertEqual(len(self.hl_blocks._lines), 1)
+        line = self.hl_blocks.get_line(1)
+        # Remain one block
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (1, 5, 1, 9))
+
+        # Break line at position 4
+        self.text.insert('1.4', '\n')
+        # Two lines now
+        self.assertEqual(len(self.hl_blocks._lines), 2)
+
+        # Tags
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'from', '2.1', '2.5')
+
+        line = self.hl_blocks.get_line(2)
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (2, 1, 2, 5))
+
+
+
+
+        return
+
+        # load document
+        self.text.insert('1.0', self._get_python_sample_2())
 
         # Document is loaded, so besides 'sel' tag
         # 'reserved', 'comment' and 'quote' are set.
@@ -126,7 +180,10 @@ class HighlightTest(unittest.TestCase):
         text_info = self.text.text_changed_info.copy()
         self.hl.apply_hl(self.text, text_info, self.hl_blocks)
 
-    def _get_python_sample(self):
+    def _get_python_sample_1(self):
+        return '''abc from fgh'''
+
+    def _get_python_sample_2(self):
         return '''# one line comment
 class ThisIsAClass():
     def def_test():
@@ -278,5 +335,4 @@ class ThisIsAClass():
 
 	</descriptors>
 
-</highlightDefinition>
-        '''
+</highlightDefinition>'''

@@ -100,7 +100,6 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected = blocks_gtw.blocks_affected(text_info)
-        print(blks_affected)
 
         if not blks_affected:
             blocks_gtw.adjust_block_indexes(text_info)
@@ -110,7 +109,6 @@ class HighlightDefinition(XmlMixin):
                 if self._is_separator(text_info.text):
                     return
                 else:
-                    print(avbl_range)
                     self._apply_hl(
                         text, blocks_gtw,
                         avbl_range[0], avbl_range[1],

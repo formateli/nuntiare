@@ -14,7 +14,7 @@ class HighlightBlocks():
                 self._lines.append([])
                 i += 1
 
-    def add_lines(self, count):
+    def check_lines_number(self, count):
         i = 0
         while i < count:
             self._lines.append([])
@@ -60,20 +60,33 @@ class HighlightBlocks():
         return n_blks
 
     def adjust_block_indexes(self, text_info):
+        print('**** Adjust indexes')
+
         if text_info.type == 'inserted':
             line_start = self.get_line(text_info.line)
             line_count = text_info.line_end - text_info.line
 
-            self.add_lines(line_count)
+            print('  line_start: ' + str(text_info.line))
+            print('  line_count: ' + str(line_count))
+            print('  line_object: ' + str(line_start))
+
+            #self.check_lines_number(line_count)
 
             i = 0
             last_block = None
             for b in line_start:
                 if b.col_start > text_info.column:
-                    b.col_start += text_info.length_last_line_affected()
-                    b.col_end += text_info.length_last_line_affected()
+                    print('  b.col_start > text_info.column')
+                    print('  ' + str(text_info.length_last_line_affected()))
+                    if line_count > 0:
+                        b.col_start -= text_info.column_end
+                        b.col_end -= text_info.column_end
+                    else:
+                        b.col_start += text_info.length_last_line_affected()
+                        b.col_end += text_info.length_last_line_affected()
                     if last_block is None:
-                        last_block = line_start[i - 1]
+                        if i - 1 > -1:
+                            last_block = line_start[i - 1]
                 i += 1
 
             if last_block is None:
@@ -86,6 +99,7 @@ class HighlightBlocks():
                 self._resize_lines(text_info.line)
 
     def _adjust_lines(self, start_line, count, ignore_block):
+        print('**** _Adjust lines')
         i = start_line
         while i <= len(self._lines):
             line = self.get_line(i)
@@ -125,8 +139,12 @@ class HighlightBlocks():
         m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
                 HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
         l1, l2 = text_info.line, text_info.line_end
-        print(m1)
-        print(m2)
+        print('  m1: ' + str(m1))
+        print('  m2: ' + str(m2))
+
+        if text_info.type == 'inserted':
+            self.check_lines_number(l2 - l1)
+
         i = l1
         while i <= l2:
             line = self.get_line(i)
@@ -135,17 +153,17 @@ class HighlightBlocks():
                     continue
 
                 f1, f2 = b.index_start_int(), b.index_end_int()
-                print(f1)
-                print(f2)
+                print('  f1: ' + str(f1))
+                print('  f2: ' + str(f2))
 
                 if b.descriptor.type in {'wholeword', 'regex'}:
                     if text_info.type == 'inserted':
                         if (m1 == f1 or m1 == f2) and \
                                 not b.descriptor.is_separator(text_info.text):
-                            print('m1 == f1 or m1 == f2')
+                            print('  m1 == f1 or m1 == f2')
                             res.append(b)
                         if m1 > f1 and m1 < f2:
-                            print('m1 > f1 and m1 < f2')
+                            print('  m1 > f1 and m1 < f2')
                             res.append(b)
 
                     else: # deleted
@@ -154,7 +172,7 @@ class HighlightBlocks():
                 elif b.descriptor.type in {'toeol',}:
                     if text_info.type == 'inserted':
                         if m1 > f1 and m1 <= f2:
-                            print('m1 > f1 and m1 <= f2')
+                            print('  m1 > f1 and m1 <= f2')
                             res.append(b)
 
                     else: # deleted
@@ -163,7 +181,7 @@ class HighlightBlocks():
                 elif b.descriptor.type in {'toclosetoken',}:
                     if text_info.type == 'inserted':
                         if m1 > f1 and m1 < f2:
-                            print('m1 > f1 and m1 < f2')
+                            print('  m1 > f1 and m1 < f2')
                             res.append(b)
 
                     else: # deleted
@@ -171,7 +189,7 @@ class HighlightBlocks():
 
             i += 1
 
-        print(res)
+        print('  res: ' + str(res))
 
         return res
 
@@ -179,6 +197,8 @@ class HighlightBlocks():
         '''Returns list with available range info where text changed is located.
         [line_start, col_start, line_end, col_end] 
         '''
+
+        print('**** Available Space')
 
         available = [None, None, None, None]
         line = self.get_line(text_info.line)
@@ -203,7 +223,7 @@ class HighlightBlocks():
             available[2] = text_info.line_end
             available[3] = text_info.column_end
 
-        print(available)
+        print('  res: ' + str(available))
 
         return available
 
