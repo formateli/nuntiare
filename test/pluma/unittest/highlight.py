@@ -75,6 +75,35 @@ class HighlightTest(unittest.TestCase):
             (l.line_start, l.col_start, l.line_end, l.col_end),
             (2, 1, 2, 5))
 
+        # Insert two lines text
+        # ab
+        # def xyz
+        # pqrcd
+        #  from fgh
+        self.text.insert('1.2', '\ndef xyz\npqr')
+        # four lines now
+        self.assertEqual(len(self.hl_blocks._lines), 4)
+
+        # Tags
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'def', '2.0', '2.3')
+
+        line = self.hl_blocks.get_line(2)
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (2, 0, 2, 3))
+
+        self._verify_tag('reserved', 'from', '4.1', '4.5')
+        line = self.hl_blocks.get_line(4)
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (4, 1, 4, 5))
+
+
 
 
 

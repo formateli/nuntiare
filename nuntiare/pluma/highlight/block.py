@@ -73,44 +73,41 @@ class HighlightBlocks():
             #self.check_lines_number(line_count)
 
             i = 0
-            last_block = None
             for b in line_start:
                 if b.col_start > text_info.column:
                     print('  b.col_start > text_info.column')
                     print('  ' + str(text_info.length_last_line_affected()))
+                    print("  Col start before: {0}".format(b.col_start))
+                    print("  Col end before: {0}".format(b.col_end))
                     if line_count > 0:
-                        b.col_start -= text_info.column_end
-                        b.col_end -= text_info.column_end
+                        print("  Changed col start: {0}".format(text_info.column))
+                        b.col_start -= text_info.column
+                        b.col_end -= text_info.column
                     else:
                         b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
-                    if last_block is None:
-                        if i - 1 > -1:
-                            last_block = line_start[i - 1]
+                    print("  Col start after: {0}".format(b.col_start))
+                    print("  Col end after: {0}".format(b.col_end))
+                    
                 i += 1
-
-            if last_block is None:
-                if len(line_start) == 1:
-                    last_block = line_start[0]
 
             if line_count > 0:
                 self._adjust_lines(
-                    text_info.line, line_count, last_block)
+                    text_info.line, line_count)
                 self._resize_lines(text_info.line)
 
-    def _adjust_lines(self, start_line, count, ignore_block):
+    def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')
         i = start_line
         while i <= len(self._lines):
             line = self.get_line(i)
             for b in line:
-                if b == ignore_block:
-                    continue
-                b.col_start += count
-                b.col_end += count
+                b.line_start += count
+                b.line_end += count
             i += 1
 
     def _resize_lines(self, start_line):
+        print('**** _Resize lines')
         i = start_line
         while True:
             if i > len(self._lines):

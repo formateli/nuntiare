@@ -150,7 +150,7 @@ class HighlightDefinition(XmlMixin):
             line = lines[line_count]
             blocks_gtw.set_line(cur_line)
 
-            print('  ' + line)
+            print("  '{0}'".format(line))
             start_index = '{0}.{1}'.format(cur_line, start_col)
             if first_iter:
                 end_index = '{0}.{1}'.format(cur_line, start_col + len(line))
