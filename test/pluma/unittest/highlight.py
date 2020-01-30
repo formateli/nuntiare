@@ -26,6 +26,8 @@ class HighlightTest(unittest.TestCase):
         # Just one exists: 'sel'
         self.assertEqual(len(self.text.tag_names()), 1)
 
+        ###############################################
+
         # load document
         self.text.insert('1.0', self._get_python_sample_1())
 
@@ -63,7 +65,6 @@ class HighlightTest(unittest.TestCase):
         self.text.insert('1.4', '\n')
         # Two lines now
         self.assertEqual(len(self.hl_blocks._lines), 2)
-
         # Tags
         self._ranges = self._get_tag_ranges()
         self._verify_tag('reserved', 'from', '2.1', '2.5')
@@ -83,7 +84,6 @@ class HighlightTest(unittest.TestCase):
         self.text.insert('1.2', '\ndef xyz\npqr')
         # four lines now
         self.assertEqual(len(self.hl_blocks._lines), 4)
-
         # Tags
         self._ranges = self._get_tag_ranges()
         self._verify_tag('reserved', 'def', '2.0', '2.3')
@@ -103,7 +103,42 @@ class HighlightTest(unittest.TestCase):
             (l.line_start, l.col_start, l.line_end, l.col_end),
             (4, 1, 4, 5))
 
+        # Test reserved 
+        # insert just before: Nothimg happens because char is a separator
+        self.text.insert('4.1', ' ')
+        # Tags
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'from', '4.2', '4.6')
 
+        line = self.hl_blocks.get_line(4)
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (4, 2, 4, 6))
+
+        # insert just after: Nothimg happens because char is a separator
+        self.text.insert('4.7', ' ')
+        # Tags
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'from', '4.2', '4.6')
+
+        line = self.hl_blocks.get_line(4)
+        self.assertEqual(len(line), 1)
+        l = line[0]
+        self.assertEqual(
+            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (4, 2, 4, 6))
+
+        # insert between: clear tag
+        self.text.insert('4.3', ' ')
+        # Tags
+        self._ranges = self._get_tag_ranges()
+        self._verify_tag('reserved', 'f rom', '4.2', '4.7', exists=False)
+
+        line = self.hl_blocks.get_line(4)
+        # No blocks
+        self.assertEqual(len(line), 0)
 
 
 
@@ -173,7 +208,7 @@ class HighlightTest(unittest.TestCase):
             (6, 14, 6, 20)
         )
 
-    def _verify_tag(self, tag_name, txt, start, end):
+    def _verify_tag(self, tag_name, txt, start, end, exists=True):
         ranges = self._ranges[tag_name]
         range_ok = None
         for r in ranges:
@@ -181,8 +216,11 @@ class HighlightTest(unittest.TestCase):
                 range_ok = True
                 break
 
-        if not range_ok:
+        if not range_ok and exists:
             raise Exception("Tag '{0}' not in range. '{1}'-'{2}'".format(
+                tag_name, start, end))
+        elif range_ok and not exists:
+            raise Exception("Tag '{0}' in range. '{1}'-'{2}'".format(
                 tag_name, start, end))
 
         self.assertEqual(self.text.get(start, end), txt)

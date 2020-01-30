@@ -100,9 +100,9 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected = blocks_gtw.blocks_affected(text_info)
+        blocks_gtw.adjust_block_indexes(text_info)
 
         if not blks_affected:
-            blocks_gtw.adjust_block_indexes(text_info)
             avbl_range = blocks_gtw.get_available_space(text_info)
 
             if text_info.type == 'inserted':
@@ -120,17 +120,22 @@ class HighlightDefinition(XmlMixin):
                     avbl_range[0], avbl_range[1],
                     '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
 
-        if len(blks_affected) == 1:
-            b = blks_affected[0]
-            if b.descriptor.type in {'wholeword', 'regex'}:
-                # Alway affected
-                # remove tag
-                # remove block
-                # reblocks and retags the new available area
-                # adjust_block_indexes
-                pass
-            if b.descriptor.type in {'toeol', 'toclosetoken'}:
-                return
+        else: # There are blocks affected
+            if text_info.type == 'inserted':
+                if len(blks_affected) == 1:
+                    b = blks_affected[0]
+                    if b.descriptor.type in {'wholeword', 'regex'}:
+                        # Alway affected
+                        self._remove_tags(text, [b])
+                        blocks_gtw.remove_blocks([b])
+                        avbl_range = \
+                            blocks_gtw.get_available_space(text_info)
+                        self._apply_hl(
+                            text, blocks_gtw,
+                            avbl_range[0], avbl_range[1],
+                            '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
+                    elif b.descriptor.type in {'toeol', 'toclosetoken'}:
+                        pass
 
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
@@ -228,6 +233,17 @@ class HighlightDefinition(XmlMixin):
             block.set_index_end(res)
             block.state = 1 # Completed, because close_token was found.
         return res
+
+    def _remove_tags(self, text, blocks):
+        print('  **** Remove tag')
+        for b in blocks:
+            #TODO remove sub blocks tags
+            print('    ' + b.index_end())
+            text.tag_remove(
+                    b.descriptor.style,
+                    b.index_start(),
+                    b.index_end()
+                )
 
     def _apply_tags(self, text, blocks, ommit_last_block=False):
         i = len(blocks)

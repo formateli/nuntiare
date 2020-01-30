@@ -26,6 +26,14 @@ class HighlightBlocks():
     def get_line(self, number):
         return self._lines[number - 1]
 
+    def remove_blocks(self, blocks):
+        for b in blocks:
+            x = b.line_start
+            while x <= b.line_end:
+                l = self.get_line(x)
+                l.remove(b)
+                x += 1
+
     def add_blocks(self, blocks):
         lines_afected = []
         for b in blocks:
@@ -70,21 +78,21 @@ class HighlightBlocks():
             print('  line_count: ' + str(line_count))
             print('  line_object: ' + str(line_start))
 
-            #self.check_lines_number(line_count)
-
             i = 0
             for b in line_start:
-                if b.col_start > text_info.column:
+                if b.col_end >= text_info.column:
                     print('  b.col_start > text_info.column')
                     print('  ' + str(text_info.length_last_line_affected()))
                     print("  Col start before: {0}".format(b.col_start))
                     print("  Col end before: {0}".format(b.col_end))
+                    print("  Changed col start: {0}".format(text_info.column))
+                    print("  Changed col end: {0}".format(text_info.column_end))
                     if line_count > 0:
-                        print("  Changed col start: {0}".format(text_info.column))
                         b.col_start -= text_info.column
                         b.col_end -= text_info.column
                     else:
-                        b.col_start += text_info.length_last_line_affected()
+                        if b.col_start >= text_info.column:
+                            b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
                     print("  Col start after: {0}".format(b.col_start))
                     print("  Col end after: {0}".format(b.col_end))
