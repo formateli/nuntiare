@@ -2,6 +2,8 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
+from ..widget import TextInfoMixin
+
 
 class HighlightBlocks():
     def __init__(self):
@@ -71,27 +73,27 @@ class HighlightBlocks():
         print('**** Adjust indexes')
 
         if text_info.type == 'inserted':
-            line_start = self.get_line(text_info.line)
-            line_count = text_info.line_end - text_info.line
+            line_start = self.get_line(text_info.line_start)
+            line_count = text_info.line_end - text_info.line_start
 
-            print('  line_start: ' + str(text_info.line))
+            print('  line_start: ' + str(text_info.line_start))
             print('  line_count: ' + str(line_count))
             print('  line_object: ' + str(line_start))
 
             i = 0
             for b in line_start:
-                if b.col_end >= text_info.column:
+                if b.col_end >= text_info.col_start:
                     print('  b.col_start > text_info.column')
                     print('  ' + str(text_info.length_last_line_affected()))
                     print("  Col start before: {0}".format(b.col_start))
                     print("  Col end before: {0}".format(b.col_end))
-                    print("  Changed col start: {0}".format(text_info.column))
-                    print("  Changed col end: {0}".format(text_info.column_end))
+                    print("  Changed col start: {0}".format(text_info.col_start))
+                    print("  Changed col end: {0}".format(text_info.col_end))
                     if line_count > 0:
-                        b.col_start -= text_info.column
-                        b.col_end -= text_info.column
+                        b.col_start -= text_info.col_start
+                        b.col_end -= text_info.col_start
                     else:
-                        if b.col_start >= text_info.column:
+                        if b.col_start >= text_info.col_start:
                             b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
                     print("  Col start after: {0}".format(b.col_start))
@@ -101,8 +103,8 @@ class HighlightBlocks():
 
             if line_count > 0:
                 self._adjust_lines(
-                    text_info.line, line_count)
-                self._resize_lines(text_info.line)
+                    text_info.line_start, line_count)
+                self._resize_lines(text_info.line_start)
 
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')
@@ -141,9 +143,12 @@ class HighlightBlocks():
         print('**** Blocks Affected')
 
         res = []
-        m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
-                HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
-        l1, l2 = text_info.line, text_info.line_end
+#        m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
+#                HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
+
+        m1, m2 = text_info.index_start_int(), text_info.index_end_int() 
+
+        l1, l2 = text_info.line_start, text_info.line_end
         print('  m1: ' + str(m1))
         print('  m2: ' + str(m2))
 
@@ -206,73 +211,48 @@ class HighlightBlocks():
         print('**** Available Space')
 
         available = [None, None, None, None]
-        line = self.get_line(text_info.line)
+        line = self.get_line(text_info.line_start)
 
         for b in line:
-            if b.col_end <= text_info.column:
+            if b.col_end <= text_info.col_start:
                 available[0] = b.line_end
                 available[1] = b.col_end
             else:
                 break
         if available[0] is None:
-            available[0] = text_info.line
+            available[0] = text_info.line_start
             available[1] = 0
 
         line = self.get_line(text_info.line_end)
         for b in line:
-            if b.col_start >= text_info.column_end:
+            if b.col_start >= text_info.col_end:
                 available[2] = b.line_start
                 available[3] = b.col_start
                 break
         if available[2] is None:
             available[2] = text_info.line_end
-            available[3] = text_info.column_end
+            available[3] = text_info.col_end
 
         print('  res: ' + str(available))
 
         return available
 
 
-class HighlightBlock():
+class HighlightBlock(TextInfoMixin):
     def __init__(self, start_index, end_index, descriptor, state=1):
+        super(HighlightBlock, self).__init__()
+
         self.descriptor = descriptor
         self.state = state # 0: OPEN, 1: COMPLETED
-
         self.line_start, self.col_start = \
             self._get_line_col(start_index)
         self.line_end, self.col_end = \
             self._get_line_col(end_index)
         self.sub_blocks = [] # Sub blocks
 
-    def index_start(self):
-        return self._get_index(self.line_start, self.col_start)
-
-    def index_end(self):
-        return self._get_index(self.line_end, self.col_end)
-
     def set_index_end(self, index):
         self.line_end, self.col_end = \
             self._get_line_col(index)
-
-    def index_start_int(self):
-        return self.get_index_int(
-            self.line_start, self.col_start)
-
-    def index_end_int(self):
-        return self.get_index_int(
-            self.line_end, self.col_end)
-
-    def _get_index(self, line, col):
-        return '{0}.{1}'.format(line, col)
-
-    @staticmethod
-    def get_index_int(line, col):
-        factor = 1000
-        return (factor * line) + col
-
-    def _get_line_col(self, index):
-        s = index.split('.')
-        return int(s[0]), int(s[1])
 
     def block_intersect(self, block):
         '''Blocks in same line'''

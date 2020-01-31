@@ -108,20 +108,20 @@ class MementoTest(unittest.TestCase):
         self.assertEqual(history.text, check_text)
         if history.type == 'inserted':
             self.text.delete(
-                history.mark, history.mark_end, True)
+                history.index_start(), history.index_end(), True)
         elif history.type == 'deleted':
             self.text.insert(
-                history.mark, history.text, True)
+                history.index_start(), history.text, True)
 
     def _redo(self, check_text):
         history = self.memento.get_redo_memento()
         self.assertEqual(history.text, check_text)
         if history.type == 'inserted':
             self.text.insert(
-                history.mark, history.text, True)
+                history.index_start(), history.text, True)
         elif history.type == 'deleted':
             self.text.delete(
-                history.mark, history.mark_end, True)
+                history.index_start(), history.index_end(), True)
 
     def _check_memento_state(self, len_undo_stack, len_redo_stack,
                 undo_possible, redo_possible, text_text):

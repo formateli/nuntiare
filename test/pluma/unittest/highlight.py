@@ -12,8 +12,7 @@ import unittest
 
 class HighlightTest(unittest.TestCase):
     def test_highlight(self):
-        self.text = TextEvent(None, None, None, is_test=True)
-        self.text.bind("<<TextModified>>", self.onTextModified)
+        self.text = self._reset_text_widget()
 
         highlight = Highlight()
         highlight.set_syntax(self._get_syntax_python())
@@ -140,7 +139,15 @@ class HighlightTest(unittest.TestCase):
         # No blocks
         self.assertEqual(len(line), 0)
 
+        ####################################
 
+        self.text = self._reset_text_widget()
+        # load sample_1 again
+        # abc from fgh
+        self.text.insert('1.0', self._get_python_sample_1())
+
+        # Insert new line between reserved
+        self.text.insert('1.6', '\n')
 
         return
 
@@ -225,6 +232,11 @@ class HighlightTest(unittest.TestCase):
 
         self.assertEqual(self.text.get(start, end), txt)
 
+    def _no_tag_in_range(self, tag_name, txt, start, end):
+        ranges = self._ranges[tag_name]
+        for r in ranges:
+            pass
+
     def _get_tag_ranges(self):
         res = {}
         tags = self.text.tag_names()
@@ -242,6 +254,11 @@ class HighlightTest(unittest.TestCase):
                 i += 2
         #print(res)
         return res
+
+    def _reset_text_widget(self):
+        text = TextEvent(None, None, None, is_test=True)
+        text.bind("<<TextModified>>", self.onTextModified)
+        return text
 
     def onTextModified(self, event):
         text_info = self.text.text_changed_info.copy()

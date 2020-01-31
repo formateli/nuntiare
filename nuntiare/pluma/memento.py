@@ -57,8 +57,7 @@ class MementoCaretaker():
                 # Append text to last text and change Pos
                 m = self._undo_stack[-1]
                 m.text += text_info.text
-                m.column_end += len(text_info.text)
-                m.mark_end = m._get_end_mark()
+                m.col_end += len(text_info.text)
             else:
                 self._undo_stack.append(text_info)
 

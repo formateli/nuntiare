@@ -3,4 +3,4 @@
 # contains the full copyright notices and license terms.
 
 from .uitabs import UITabsObserver, UITabs
-from .text_event import TextEvent
+from .text_event import TextEvent, TextInfoMixin

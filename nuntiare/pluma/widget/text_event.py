@@ -5,28 +5,57 @@
 from tkinter import Text, NONE, font, TclError, IntVar
 
 
-class TextChangedInfo():
+class TextInfoMixin():
     def __init__(self):
+        self.line_start = None
+        self.col_start = None
+        self.line_end = None
+        self.col_end = None
+
+    def index_start(self):
+        return self._get_index(self.line_start, self.col_start)
+
+    def index_end(self):
+        return self._get_index(self.line_end, self.col_end)
+
+    def index_start_int(self):
+        return self._get_index_int(
+            self.line_start, self.col_start)
+
+    def index_end_int(self):
+        return self._get_index_int(
+            self.line_end, self.col_end)
+
+    def _get_index(self, line, col):
+        return '{0}.{1}'.format(line, col)
+
+    def _get_index_int(self, line, col):
+        factor = 1000
+        return (factor * line) + col
+
+    def _get_line_col(self, index):
+        s = index.split('.')
+        return int(s[0]), int(s[1])
+
+
+class TextChangedInfo(TextInfoMixin):
+    def __init__(self):
+        super(TextChangedInfo, self).__init__()
         self.type = None # inserted, deleted
         self.text = None
-        self.mark = None
-        self.line = None
-        self.column = None
-        self.mark_end = None
-        self.line_end = None
-        self.column_end = None
-        self._affected_factor = None
 
-    def set_info(self, type_, text_changed, mark, mark_end=None):
+    def set_info(self, type_, text_changed, index_start, index_end=None):
         self.type = type_		
         self.text = text_changed
-        self.mark = mark
-        self.mark_end = mark_end
+
+        self.line_start, self.col_start = \
+            self._get_line_col(index_start)
+
         self._affected_factor = 1
         if type_ == 'deleted':
            self._affected_factor = -1
 
-        self._set_mark_info()
+        self._set_index_end_info(index_end)
 
     def length(self):
         return len(self.text)
@@ -35,43 +64,39 @@ class TextChangedInfo():
         return self.length() * self._affected_factor
 
     def length_last_line_affected(self):
-        if self.line == self.line_end:
+        if self.line_start == self.line_end:
             return self.length_affected()
-        return self.column_end * self._affected_factor
+        return self.col_end * self._affected_factor
 
     def copy(self):
         tci = TextChangedInfo()
-        tci.type = self.type		
+        tci.type = self.type
         tci.text = self.text
-        tci.mark = self.mark
-        tci.line = self.line
-        tci.column = self.column
-        tci.mark_end = self.mark_end
+        tci.line_start = self.line_start
+        tci.col_start = self.col_start
         tci.line_end = self.line_end
-        tci.column_end = self.column_end
+        tci.col_end = self.col_end
         tci._affected_factor = self._affected_factor
         return tci
 
-    def _set_mark_info(self):
-        self.line, self.column = self._get_line_col(self.mark)
-        if self.mark_end is None:
-            self.mark_end = self._get_end_mark()
-        self.line_end, self.column_end = self._get_line_col(self.mark_end)
+    def _set_index_end_info(self, index_end):
+        if index_end is None:
+            self.line_end, self.col_end = \
+                self._get_end_line_col()
+        else:
+            self.line_end, self.col_end = \
+                self._get_line_col(index_end)
 
-    def _get_line_col(self, mark):
-        c = mark.split('.')
-        return int(c[0]), int(c[1])
-
-    def _get_end_mark(self):
+    def _get_end_line_col(self):
         txts = self.text.split('\n')
         line_count = len(txts)
         if line_count > 1:
-            line = self.line + (line_count - 1)
+            line = self.line_start + (line_count - 1)
             col = len(txts[-1])
         else:
-            line = self.line
-            col = self.column + len(self.text)
-        return '{0}.{1}'.format(line, col)
+            line = self.line_start
+            col = self.col_start + len(self.text)
+        return line, col
 
 
 class TextEvent(Text):
@@ -127,7 +152,7 @@ class TextEvent(Text):
                 print('  ' + command + ' MARK: ' + mark)
                 self.text_changed_info.set_info(
                         type_='inserted',
-                        text_changed=args[1], mark=mark)
+                        text_changed=args[1], index_start=mark)
 
             elif command == 'delete':
                 mark_1 = self.index(args[0])
@@ -143,7 +168,7 @@ class TextEvent(Text):
                 self.text_changed_info.set_info(
                         type_='deleted',
                         text_changed=text_deleted,
-                        mark=mark_1, mark_end=mark_2)
+                        index_start=mark_1, index_end=mark_2)
 
             elif command == 'replace':
                 raise Exception("Replace <<TextModified>> Not Implemented")
