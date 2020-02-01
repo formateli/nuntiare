@@ -58,6 +58,8 @@ class HighlightBlocks():
 
     @staticmethod
     def order_blocks(blks):
+        if len(blks) < 2:
+            return blks
         # order by index_start_int
         n_blks = []
         z_list = []
@@ -90,8 +92,13 @@ class HighlightBlocks():
                     print("  Changed col start: {0}".format(text_info.col_start))
                     print("  Changed col end: {0}".format(text_info.col_end))
                     if line_count > 0:
-                        b.col_start -= text_info.col_start
+                        b.adjust_line_start = False
+                        if text_info.col_start <= b.col_start:
+                            b.col_start -= text_info.col_start
+                            b.col_start += text_info.length_last_line_affected()
+                            b.adjust_line_start = True
                         b.col_end -= text_info.col_start
+                        b.col_end += text_info.length_last_line_affected()
                     else:
                         if b.col_start >= text_info.col_start:
                             b.col_start += text_info.length_last_line_affected()
@@ -109,24 +116,71 @@ class HighlightBlocks():
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')
         i = start_line
+        multiline = []
+        print('  Total lines: ' + str(len(self._lines)))
         while i <= len(self._lines):
             line = self.get_line(i)
+            print('  Line: {0}'.format(i))
             for b in line:
-                b.line_start += count
+                if b.line_count() > 0:
+                    print('  Multiline')
+                    if b in multiline: # Already adjusted
+                        print('   Already adjusted')
+                        continue
+
+                    print('   Verifying multiline')
+                    x = b.line_start + 1
+                    while x <= b.line_end:
+                        l = self.get_line(x)
+                        if b in l:
+                            l.remove(b)
+                        x += 1
+                    multiline.append(b)
+
+                print('  cur line start: {0}'.format(b.line_start))
+                print('  cur line end: {0}'.format(b.line_end))
+
+                if b.adjust_line_start:
+                    b.line_start += count
+                b.adjust_line_start = True
                 b.line_end += count
+
+                print('  new line start: {0}'.format(b.line_start))
+                print('  new line end: {0}'.format(b.line_end))
+
             i += 1
 
     def _resize_lines(self, start_line):
         print('**** _Resize lines')
+        multiline = []
+        line_to_order = []
         i = start_line
         while True:
+            print('  Line: ' + str(i))
             if i > len(self._lines):
                 break
             line = self.get_line(i)
+            print(line)
             res = []
             for b in line:
+                if b.line_count() > 0:
+                    if b in multiline: # Already check
+                        continue
+
                 if b.line_start != i:
+                    print('  {0} != {1}'.format(b.line_start, i))
                     res.append(b)
+
+                if b.line_count() > 0:
+                    x = b.line_start + 1
+                    while x <= b.line_end:
+                        print('  Multiline: ' + str(x))
+                        self.set_line(x)
+                        l = self.get_line(x)
+                        l.append(b)
+                        x += 1
+                    multiline.append(b)
+
             for r in res:
                 line.remove(r)
                 self.set_line(r.line_start)
@@ -143,9 +197,6 @@ class HighlightBlocks():
         print('**** Blocks Affected')
 
         res = []
-#        m1, m2 = HighlightBlock.get_index_int(text_info.line, text_info.column), \
-#                HighlightBlock.get_index_int(text_info.line_end, text_info.column_end)
-
         m1, m2 = text_info.index_start_int(), text_info.index_end_int() 
 
         l1, l2 = text_info.line_start, text_info.line_end
@@ -243,12 +294,16 @@ class HighlightBlock(TextInfoMixin):
         super(HighlightBlock, self).__init__()
 
         self.descriptor = descriptor
-        self.state = state # 0: OPEN, 1: COMPLETED
+        # 0: OPEN, 1: COMPLETED
+        self.state = state
         self.line_start, self.col_start = \
             self._get_line_col(start_index)
         self.line_end, self.col_end = \
             self._get_line_col(end_index)
-        self.sub_blocks = [] # Sub blocks
+        # Sub blocks
+        self.sub_blocks = []
+        # Flags for line adjustment
+        self.adjust_line_start = True
 
     def set_index_end(self, index):
         self.line_end, self.col_end = \

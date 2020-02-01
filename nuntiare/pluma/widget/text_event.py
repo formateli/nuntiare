@@ -26,14 +26,20 @@ class TextInfoMixin():
         return self._get_index_int(
             self.line_end, self.col_end)
 
-    def _get_index(self, line, col):
+    def line_count(self):
+        return self.line_end - self.line_start
+
+    @staticmethod
+    def _get_index(line, col):
         return '{0}.{1}'.format(line, col)
 
-    def _get_index_int(self, line, col):
-        factor = 1000
+    @staticmethod
+    def _get_index_int(line, col):
+        factor = 10000
         return (factor * line) + col
 
-    def _get_line_col(self, index):
+    @staticmethod
+    def _get_line_col(index):
         s = index.split('.')
         return int(s[0]), int(s[1])
 

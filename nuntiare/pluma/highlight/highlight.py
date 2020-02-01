@@ -238,7 +238,8 @@ class HighlightDefinition(XmlMixin):
         print('  **** Remove tag')
         for b in blocks:
             #TODO remove sub blocks tags
-            print('    ' + b.index_end())
+            print('    start: ' + b.index_start())
+            print('    end: ' + b.index_end())
             text.tag_remove(
                     b.descriptor.style,
                     b.index_start(),

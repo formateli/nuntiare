@@ -5,13 +5,28 @@
 "Pluma Highlight test"
 
 from nuntiare.pluma.highlight import Highlight, HighlightBlocks
-from nuntiare.pluma.widget import TextEvent
+from nuntiare.pluma.widget import TextEvent, TextInfoMixin
 from tkinter import Text, END
 import unittest
 
 
+class TagRange(TextInfoMixin):
+    def __init__(self, start_index, end_index):
+        super(TagRange, self).__init__()
+        self.line_start, self.col_start = \
+            self._get_line_col(start_index)
+        self.line_end, self.col_end = \
+            self._get_line_col(end_index)
+
+    @staticmethod
+    def get_int_from_index(index):
+        l, c = TagRange._get_line_col(index)
+        return TagRange._get_index_int(l, c)
+
+
 class HighlightTest(unittest.TestCase):
     def test_highlight(self):
+        self.hl_blocks = None
         self.text = self._reset_text_widget()
 
         highlight = Highlight()
@@ -19,7 +34,6 @@ class HighlightTest(unittest.TestCase):
         highlight.set_syntax(self._get_syntax_xml())
 
         self.hl = highlight.get_hl_for_extension('py')
-        self.hl_blocks = HighlightBlocks()
 
         # Document not loaded, so no tags are set.
         # Just one exists: 'sel'
@@ -34,8 +48,8 @@ class HighlightTest(unittest.TestCase):
         # 'reserved', 'comment' and 'quote' are set.
         self.assertEqual(len(self.text.tag_names()), 4)
 
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'from', '1.4', '1.8')
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'from', '1.4', '1.8')
 
         # One line 'abc from fgh'
         self.assertEqual(len(self.hl_blocks._lines), 1)
@@ -49,6 +63,7 @@ class HighlightTest(unittest.TestCase):
             (1, 4, 1, 8))
 
         # Add letter 'd' to non block area
+        # abcd from fgh
         self.text.insert('1.3', 'd')
         # Remain one line
         self.assertEqual(len(self.hl_blocks._lines), 1)
@@ -61,12 +76,15 @@ class HighlightTest(unittest.TestCase):
             (1, 5, 1, 9))
 
         # Break line at position 4
+        # abcd
+        #  from fgh
         self.text.insert('1.4', '\n')
         # Two lines now
         self.assertEqual(len(self.hl_blocks._lines), 2)
         # Tags
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'from', '2.1', '2.5')
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '2.0')
+        self._tag_in_range('reserved', 'from', '2.1', '2.5')
 
         line = self.hl_blocks.get_line(2)
         self.assertEqual(len(line), 1)
@@ -84,8 +102,8 @@ class HighlightTest(unittest.TestCase):
         # four lines now
         self.assertEqual(len(self.hl_blocks._lines), 4)
         # Tags
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'def', '2.0', '2.3')
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'def', '2.0', '2.3')
 
         line = self.hl_blocks.get_line(2)
         self.assertEqual(len(line), 1)
@@ -94,7 +112,7 @@ class HighlightTest(unittest.TestCase):
             (l.line_start, l.col_start, l.line_end, l.col_end),
             (2, 0, 2, 3))
 
-        self._verify_tag('reserved', 'from', '4.1', '4.5')
+        self._tag_in_range('reserved', 'from', '4.1', '4.5')
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
         l = line[0]
@@ -106,8 +124,8 @@ class HighlightTest(unittest.TestCase):
         # insert just before: Nothimg happens because char is a separator
         self.text.insert('4.1', ' ')
         # Tags
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'from', '4.2', '4.6')
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'from', '4.2', '4.6')
 
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
@@ -119,8 +137,8 @@ class HighlightTest(unittest.TestCase):
         # insert just after: Nothimg happens because char is a separator
         self.text.insert('4.7', ' ')
         # Tags
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'from', '4.2', '4.6')
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'from', '4.2', '4.6')
 
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
@@ -132,8 +150,8 @@ class HighlightTest(unittest.TestCase):
         # insert between: clear tag
         self.text.insert('4.3', ' ')
         # Tags
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('reserved', 'f rom', '4.2', '4.7', exists=False)
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '4.2', '4.7')
 
         line = self.hl_blocks.get_line(4)
         # No blocks
@@ -148,6 +166,15 @@ class HighlightTest(unittest.TestCase):
 
         # Insert new line between reserved
         self.text.insert('1.6', '\n')
+        # Tags
+        self._get_tag_ranges()
+        print(self.text.tag_ranges('reserved'))
+        self._tag_no_in_range('reserved', '1.0', '2.6')
+
+
+
+
+
 
         return
 
@@ -158,15 +185,15 @@ class HighlightTest(unittest.TestCase):
         # 'reserved', 'comment' and 'quote' are set.
         self.assertEqual(len(self.text.tag_names()), 4)
 
-        self._ranges = self._get_tag_ranges()
+        self._get_tag_ranges()
 
-        self._verify_tag('comment', '# one line comment', '1.0', '1.18')
-        self._verify_tag('reserved', 'class', '2.0', '2.5')
-        self._verify_tag('reserved', 'def', '3.4', '3.7')
-        self._verify_tag('quote', '"#str1"', '4.8', '4.15')
-        self._verify_tag('quote', '"#str2"', '4.17', '4.24')
-        self._verify_tag('quote', '"str1"', '5.13', '5.19')
-        self._verify_tag('quote', '"str2"', '5.22', '5.28')
+        self._tag_in_range('comment', '# one line comment', '1.0', '1.18')
+        self._tag_in_range('reserved', 'class', '2.0', '2.5')
+        self._tag_in_range('reserved', 'def', '3.4', '3.7')
+        self._tag_in_range('quote', '"#str1"', '4.8', '4.15')
+        self._tag_in_range('quote', '"#str2"', '4.17', '4.24')
+        self._tag_in_range('quote', '"str1"', '5.13', '5.19')
+        self._tag_in_range('quote', '"str2"', '5.22', '5.28')
 
         # Text widget append a new line at the end
         self.assertEqual(len(self.hl_blocks._lines), 13)
@@ -190,14 +217,14 @@ class HighlightTest(unittest.TestCase):
             (5, 14, 5, 20)
         )
 
-        self._ranges = self._get_tag_ranges()
-        self._verify_tag('comment', '# one line comment', '1.0', '1.18')
-        self._verify_tag('reserved', 'class', '2.0', '2.5')
-        self._verify_tag('reserved', 'def', '3.4', '3.7')
-        self._verify_tag('quote', '"#str1"', '4.8', '4.15')
-        self._verify_tag('quote', '"#str2"', '4.17', '4.24')
-        self._verify_tag('quote', '"str1"', '5.14', '5.20')
-        self._verify_tag('quote', '"str2"', '5.23', '5.29')
+        self._get_tag_ranges()
+        self._tag_in_range('comment', '# one line comment', '1.0', '1.18')
+        self._tag_in_range('reserved', 'class', '2.0', '2.5')
+        self._tag_in_range('reserved', 'def', '3.4', '3.7')
+        self._tag_in_range('quote', '"#str1"', '4.8', '4.15')
+        self._tag_in_range('quote', '"#str2"', '4.17', '4.24')
+        self._tag_in_range('quote', '"str1"', '5.14', '5.20')
+        self._tag_in_range('quote', '"str2"', '5.23', '5.29')
 
         # insert a new line, so all lines below this sums 1
         self.text.insert('3.19', '\n')
@@ -215,27 +242,29 @@ class HighlightTest(unittest.TestCase):
             (6, 14, 6, 20)
         )
 
-    def _verify_tag(self, tag_name, txt, start, end, exists=True):
+    def _tag_in_range(self, tag_name, txt, start, end):
         ranges = self._ranges[tag_name]
         range_ok = None
         for r in ranges:
-            if r[0] == start and r[1] == end:
+            if r.index_start() == start and r.index_end() == end:
                 range_ok = True
                 break
 
-        if not range_ok and exists:
+        if not range_ok:
             raise Exception("Tag '{0}' not in range. '{1}'-'{2}'".format(
-                tag_name, start, end))
-        elif range_ok and not exists:
-            raise Exception("Tag '{0}' in range. '{1}'-'{2}'".format(
                 tag_name, start, end))
 
         self.assertEqual(self.text.get(start, end), txt)
 
-    def _no_tag_in_range(self, tag_name, txt, start, end):
+    def _tag_no_in_range(self, tag_name, start, end):
+        start_int = TagRange.get_int_from_index(start)
+        end_int = TagRange.get_int_from_index(end)
         ranges = self._ranges[tag_name]
         for r in ranges:
-            pass
+            idxs = r.index_start_int()
+            if idxs >= start_int and idxs <= end_int:
+                raise Exception("Found in range for tag '{0}'. {1} - {2}".format(
+                    tag_name, r.index_start(), r.index_end()))
 
     def _get_tag_ranges(self):
         res = {}
@@ -247,17 +276,17 @@ class HighlightTest(unittest.TestCase):
             res[tag] = []
             ranges = self.text.tag_ranges(tag)
             i = 0
-            while i < len(ranges):                
+            while i < len(ranges):           
                 res[tag].append(
-                        [ranges[i].string, ranges[i + 1].string]
+                        TagRange(ranges[i].string, ranges[i + 1].string)
                     )
                 i += 2
-        #print(res)
-        return res
+        self._ranges = res
 
     def _reset_text_widget(self):
         text = TextEvent(None, None, None, is_test=True)
         text.bind("<<TextModified>>", self.onTextModified)
+        self.hl_blocks = HighlightBlocks()
         return text
 
     def onTextModified(self, event):
