@@ -168,12 +168,41 @@ class HighlightTest(unittest.TestCase):
         self.text.insert('1.6', '\n')
         # Tags
         self._get_tag_ranges()
-        print(self.text.tag_ranges('reserved'))
         self._tag_no_in_range('reserved', '1.0', '2.6')
 
+        ####################################
 
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc fromclass fgh')
 
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.17')
 
+        # Break so two new 'reserved' words appera in two lines
+        self.text.insert('1.8', '\n')
+        # Tags
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'from', '1.4', '1.8')
+        self._tag_in_range('reserved', 'class', '2.0', '2.5')
+
+        ####################################
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc fromclass fgh\nclass abc def deh')
+
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.17')
+        self._tag_in_range('reserved', 'class', '2.0', '2.5')
+        self._tag_in_range('reserved', 'def', '2.10', '2.13')
+
+        self.text.insert('1.8', '\n')
+        self.assertEqual(len(self.hl_blocks._lines), 3)
+        # Tags
+        self._get_tag_ranges()
+        self._tag_in_range('reserved', 'from', '1.4', '1.8')
+        self._tag_in_range('reserved', 'class', '2.0', '2.5')
+        self._tag_in_range('reserved', 'class', '3.0', '3.5')
+        self._tag_in_range('reserved', 'def', '3.10', '3.13')
 
 
         return

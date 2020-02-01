@@ -105,7 +105,7 @@ class HighlightBlocks():
                         b.col_end += text_info.length_last_line_affected()
                     print("  Col start after: {0}".format(b.col_start))
                     print("  Col end after: {0}".format(b.col_end))
-                    
+
                 i += 1
 
             if line_count > 0:
@@ -184,8 +184,8 @@ class HighlightBlocks():
             for r in res:
                 line.remove(r)
                 self.set_line(r.line_start)
-                line = self.get_line(r.line_start)
-                line.append(r)
+                l = self.get_line(r.line_start)
+                l.append(r)
 
             i += 1
 
@@ -282,7 +282,7 @@ class HighlightBlocks():
                 break
         if available[2] is None:
             available[2] = text_info.line_end
-            available[3] = text_info.col_end
+            available[3] = 10000 # Ensure to EOL
 
         print('  res: ' + str(available))
 
