@@ -309,6 +309,22 @@ class HighlightBlock(TextInfoMixin):
         self.line_end, self.col_end = \
             self._get_line_col(index)
 
+    def in_range(self, text_info):
+        if self.descriptor.type not in {'toclosetoken', 'toeol'}:
+            return
+
+        s = text_info.index_start_int()
+        e = text_info.index_end_int() 
+        ms = self.index_start_int()
+        me = self.index_end_int()
+
+        if s >= (ms + len(self.descriptor._tokens[0].value)):
+            if self.descriptor.type == 'toclosetoken':
+                if e <= (me - len(self.descriptor._tokens[0].close_token)):
+                    return True
+            else:
+                return True
+
     def block_intersect(self, block):
         '''Blocks in same line'''
         if block.col_end <= self.col_start:

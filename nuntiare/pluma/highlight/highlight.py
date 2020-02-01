@@ -122,20 +122,30 @@ class HighlightDefinition(XmlMixin):
 
         else: # There are blocks affected
             if text_info.type == 'inserted':
-                if len(blks_affected) == 1:
-                    b = blks_affected[0]
-                    if b.descriptor.type in {'wholeword', 'regex'}:
-                        # Alway affected
-                        self._remove_tags(text, [b])
-                        blocks_gtw.remove_blocks([b])
-                        avbl_range = \
-                            blocks_gtw.get_available_space(text_info)
-                        self._apply_hl(
-                            text, blocks_gtw,
-                            avbl_range[0], avbl_range[1],
-                            '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
-                    elif b.descriptor.type in {'toeol', 'toclosetoken'}:
-                        pass
+                if len(blks_affected) > 1:
+                    raise Exception(
+                        'Oops!!! We do not know what to do.')
+
+                b = blks_affected[0]
+                if b.descriptor.type in {'wholeword', 'regex'}:
+                    # Alway affected
+                    self._remove_tags(text, [b])
+                    blocks_gtw.remove_blocks([b])
+                    avbl_range = \
+                        blocks_gtw.get_available_space(text_info)
+                    self._apply_hl(
+                        text, blocks_gtw,
+                        avbl_range[0], avbl_range[1],
+                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
+
+                elif b.descriptor.type in {'toclosetoken', 'toeol'}:
+                    if b.in_range(text_info):
+                        if b.descriptor.type == 'toeol' and \
+                                text_info.index_end_int() <= b.index_end_int():
+                            self._remove_tags(text, [b])
+                            self._apply_tags(text, [b])
+                        return
+
 
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
