@@ -146,7 +146,6 @@ class HighlightDefinition(XmlMixin):
                             self._apply_tags(text, [b])
                         return
 
-
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
         print('_APLY HL() ***')
@@ -155,33 +154,40 @@ class HighlightDefinition(XmlMixin):
             '{0}.{1}'.format(line_start, col_start),
             index_end).splitlines()
 
+        print('line_start: {0}'.format(line_start))
+
         cur_line = line_start
-        line_count = 0
         end_line = line_start + (len(lines) - 1)
         start_col = col_start
         first_iter = True
 
         while cur_line <= end_line:
-            line = lines[line_count]
+            print('cur_line: {0}'.format(cur_line))
+
+            line = lines[cur_line - line_start]
             blocks_gtw.set_line(cur_line)
 
             print("  '{0}'".format(line))
+            print("  First iter: {0}".format(first_iter))
+
             start_index = '{0}.{1}'.format(cur_line, start_col)
+            print("  Start index before: '{0}'".format(start_index))
             if first_iter:
                 end_index = '{0}.{1}'.format(cur_line, start_col + len(line))
             else:
-                end_index = '{0}.{1}'.format(cur_line, len(line[start_col:]))
+                #end_index = '{0}.{1}'.format(cur_line, len(line[start_col:]))
+                end_index = '{0}.{1}'.format(cur_line, start_col + len(line[start_col:]))
             first_iter = False
 
-            print('  ' + start_index)
-            print('  ' + end_index)
+            print("  Start index after: '{0}'".format(start_index))
+            print("  End index after: '{0}'".format(end_index))
+
 
             blks, descriptor = self._process_line(
                 text, start_index, end_index)
 
             cur_line += 1
             start_col = 0
-            line_count += 1
 
             print('  blks: ' + str(blks))
             if not blks:
@@ -193,19 +199,22 @@ class HighlightDefinition(XmlMixin):
                 self._apply_tags(text, blks)
                 continue
 
+            print('  Multiline')
+
             # Last block of blks is of 
             # descriptor type 'ToCloseToken' and
             # its state is 0 (open) and it is
             # multi line
 
-            # Appy tags less the last block
+            # Appy tags less last block
             self._apply_tags(text, blks, True)
 
             last_blk = blks[-1]
             last_index = self._find_multiline_last_index(
                     text, last_blk)
-            #print('LAST INDEX: ' + last_index)
-            #print('LAST INDEX: ' + last_blk.index_end())
+            print('  LAST INDEX: ' + last_index)
+            print('  LAST INDEX blk: ' + last_blk.index_end())
+            blocks_gtw.add_blocks([last_blk]) # Update lines
             self._apply_tags(text, [last_blk])
 
             if last_index is None:
@@ -214,7 +223,6 @@ class HighlightDefinition(XmlMixin):
 
             cur_line = last_blk.line_end
             start_col = last_blk.col_end
-            line_count = last_blk.line_end - line_start
 
     def _is_separator(self, txt):
         if len(txt) != 1:
@@ -257,16 +265,20 @@ class HighlightDefinition(XmlMixin):
                 )
 
     def _apply_tags(self, text, blocks, ommit_last_block=False):
+        print('  **** _Apply tag')
         i = len(blocks)
         if ommit_last_block:
             i -= 1
         if i <= 0:
+            print('   i < 0')
             return
 
         i -= 1
         x = 0
         while x <= i: 
             b = blocks[x]
+            print('   {0}: {1} - {2}'.format(
+                b.descriptor.style, b.index_start(), b.index_end()))
             text.tag_add(
                 b.descriptor.style, 
                 b.index_start(),

@@ -204,8 +204,81 @@ class HighlightTest(unittest.TestCase):
         self._tag_in_range('reserved', 'class', '3.0', '3.5')
         self._tag_in_range('reserved', 'def', '3.10', '3.13')
 
+        ####################################
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0',
+            '''"""\nline 1\nline 2\nline 3\n"""''')
+
+        self.assertEqual(len(self.hl_blocks._lines), 5)
+        i = 1
+        while i <= len(self.hl_blocks._lines):
+            #print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (1, 0, 5, 3))
+            i += 1
+
+        self.text.insert('5.3', 'c')
+
+        self.text.insert('1.0', '\n')
+        self.assertEqual(len(self.hl_blocks._lines), 6)
+        i = 2
+        while i <= len(self.hl_blocks._lines):
+            #print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (2, 0, 6, 3))
+            i += 1
+        #return
+        self.text.insert('3.1', '\n')
+        self.assertEqual(len(self.hl_blocks._lines), 7)
+        i = 2
+        while i <= len(self.hl_blocks._lines):
+            #print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (2, 0, 7, 3))
+            i += 1
+
+        #####################################
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', '# comment')
+
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 1)
+
+        self._get_tag_ranges()
+        self._tag_in_range('comment', '# comment', '1.0', '1.9')
+
+        self.assertEqual(
+            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (1, 0, 1, 9))
+
+        self.text.insert('1.9', 'x')
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 1)
+
+        self.assertEqual(
+            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (1, 0, 1, 10))
+
+        self._get_tag_ranges()
+        self._tag_in_range('comment', '# commentx', '1.0', '1.10')
 
         return
+
+
+
+
+
 
         # load document
         self.text.insert('1.0', self._get_python_sample_2())

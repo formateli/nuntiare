@@ -385,10 +385,10 @@ class Pluma(UITabsObserver):
             history = memento.get_undo_memento()
             if history.type == 'inserted':
                 view.xml.widget.delete(
-                    history.mark, history.mark_end, True)
+                    history.index_start(), history.index_end(), True)
             elif history.type == 'deleted':
                 view.xml.widget.insert(
-                    history.mark, history.text, True)
+                    history.index_start(), history.text, True)
 
     def redo(self, event=None):
         view = self.current_view
@@ -397,10 +397,10 @@ class Pluma(UITabsObserver):
             history = memento.get_redo_memento()
             if history.type == 'inserted':
                 view.xml.widget.insert(
-                    history.mark, history.text, True)
+                    history.index_start(), history.text, True)
             elif history.type == 'deleted':
                 view.xml.widget.delete(
-                    history.mark, history.mark_end, True)
+                    history.index_start(), history.index_end(), True)
 
     def _verify_undo_redo(self):
         view = self.current_view

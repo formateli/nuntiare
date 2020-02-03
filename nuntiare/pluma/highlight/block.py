@@ -39,18 +39,22 @@ class HighlightBlocks():
     def add_blocks(self, blocks):
         lines_afected = []
         for b in blocks:
-            l = self._lines[b.line_start - 1]
-            l.append(b)
-            if l not in lines_afected:
-                lines_afected.append(b.line_start - 1)
+            line = self.get_line(b.line_start)
+            if not b in line:
+                line.append(b)
+                if b.line_start - 1 not in lines_afected:
+                    lines_afected.append(b.line_start - 1)
 
-            if b.line_end > b.line_start: # Multiline
-                i = b.line_start
+            if b.line_count() > 1: # Multiline
+                print('  Line count(): ' + str(b.line_count()))
+                i = b.line_start + 1
                 while i <= b.line_end:
-                    l = self._lines[i - 1]
-                    l.append(b)
-                    if l not in lines_afected:
-                        lines_afected.append(i - 1)
+                    self.set_line(i)
+                    l = self.get_line(i)
+                    if b not in l:
+                        l.append(b)
+                        if l not in lines_afected:
+                            lines_afected.append(i - 1)
                     i += 1
         # Order
         for l in lines_afected:
@@ -72,43 +76,51 @@ class HighlightBlocks():
         return n_blks
 
     def adjust_block_indexes(self, text_info):
+        def adjust(block):
+            if block.descriptor.type == 'toeol':
+                if block.index_end_int() >= text_info.index_start_int():
+                    return True
+            else:
+                if block.index_end_int() > text_info.index_start_int():
+                    return True
+
         print('**** Adjust indexes')
 
         if text_info.type == 'inserted':
             line_start = self.get_line(text_info.line_start)
-            line_count = text_info.line_end - text_info.line_start
+            line_count = text_info.line_count()
 
             print('  line_start: ' + str(text_info.line_start))
             print('  line_count: ' + str(line_count))
             print('  line_object: ' + str(line_start))
 
-            i = 0
             for b in line_start:
-                if b.col_end >= text_info.col_start:
-                    print('  b.col_start > text_info.column')
-                    print('  ' + str(text_info.length_last_line_affected()))
-                    print("  Col start before: {0}".format(b.col_start))
-                    print("  Col end before: {0}".format(b.col_end))
-                    print("  Changed col start: {0}".format(text_info.col_start))
-                    print("  Changed col end: {0}".format(text_info.col_end))
-                    if line_count > 0:
+                print("  b.index_start_int(): {0}".format(b.index_start_int()))
+                print("  b.index_end_int(): {0}".format(b.index_end_int()))
+                print("  tchg.index_start_int(): {0}".format(text_info.index_start_int()))
+                print("  tchg.index_end_int(): {0}".format(text_info.index_end_int()))
+
+                if adjust(b):
+                    print('  -- b.index_end_int() > text_info.index_start_int() --')
+                    if line_count > 1:
                         b.adjust_line_start = False
-                        if text_info.col_start <= b.col_start:
+                        if text_info.index_start_int() <= b.index_start_int():
                             b.col_start -= text_info.col_start
                             b.col_start += text_info.length_last_line_affected()
                             b.adjust_line_start = True
-                        b.col_end -= text_info.col_start
-                        b.col_end += text_info.length_last_line_affected()
+                        if b.line_end  > text_info.line_start:
+                            pass
+                        else:
+                            b.col_end -= text_info.col_start
+                            b.col_end += text_info.length_last_line_affected()
                     else:
-                        if b.col_start >= text_info.col_start:
+                        if b.index_start_int() >= text_info.index_start_int():
                             b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
-                    print("  Col start after: {0}".format(b.col_start))
-                    print("  Col end after: {0}".format(b.col_end))
+                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
+                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
-                i += 1
-
-            if line_count > 0:
+            if line_count > 1:
                 self._adjust_lines(
                     text_info.line_start, line_count)
                 self._resize_lines(text_info.line_start)
@@ -122,7 +134,7 @@ class HighlightBlocks():
             line = self.get_line(i)
             print('  Line: {0}'.format(i))
             for b in line:
-                if b.line_count() > 0:
+                if b.line_count() > 1:
                     print('  Multiline')
                     if b in multiline: # Already adjusted
                         print('   Already adjusted')
@@ -133,6 +145,7 @@ class HighlightBlocks():
                     while x <= b.line_end:
                         l = self.get_line(x)
                         if b in l:
+                            print('   Removing b from line: ' + str(x))
                             l.remove(b)
                         x += 1
                     multiline.append(b)
@@ -140,10 +153,14 @@ class HighlightBlocks():
                 print('  cur line start: {0}'.format(b.line_start))
                 print('  cur line end: {0}'.format(b.line_end))
 
+                if b.line_start < start_line:
+                    print('  Adding again b to line: ' + str(start_line))
+                    l = self.get_line(start_line)
+                    l.append(b)
                 if b.adjust_line_start:
-                    b.line_start += count
+                    b.line_start += (count - 1)
                 b.adjust_line_start = True
-                b.line_end += count
+                b.line_end += (count - 1)
 
                 print('  new line start: {0}'.format(b.line_start))
                 print('  new line end: {0}'.format(b.line_end))
@@ -163,16 +180,19 @@ class HighlightBlocks():
             print(line)
             res = []
             for b in line:
-                if b.line_count() > 0:
+                if b.line_count() > 1:
                     if b in multiline: # Already check
                         continue
 
-                if b.line_start != i:
+                if b.line_start > i:
                     print('  {0} != {1}'.format(b.line_start, i))
                     res.append(b)
 
-                if b.line_count() > 0:
-                    x = b.line_start + 1
+                if b.line_count() > 1:
+                    if b.line_start > i:
+                        x = b.line_start + 1
+                    else:
+                        x = start_line + 1
                     while x <= b.line_end:
                         print('  Multiline: ' + str(x))
                         self.set_line(x)
@@ -263,8 +283,14 @@ class HighlightBlocks():
 
         available = [None, None, None, None]
         line = self.get_line(text_info.line_start)
+        print('  len line: {0}'.format(len(line)))
 
         for b in line:
+            print('  Txt changed col start: {0}'.format(text_info.col_start))
+            print('  Line end: {0}'.format(b.line_end))
+            print('  Col end: {0}'.format(b.col_end))
+            print('  Index start: {0}'.format(b.index_start()))
+            print('  Index end: {0}'.format(b.index_end()))
             if b.col_end <= text_info.col_start:
                 available[0] = b.line_end
                 available[1] = b.col_end

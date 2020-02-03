@@ -27,7 +27,7 @@ class TextInfoMixin():
             self.line_end, self.col_end)
 
     def line_count(self):
-        return self.line_end - self.line_start
+        return self.line_end - self.line_start + 1
 
     @staticmethod
     def _get_index(line, col):
