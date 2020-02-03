@@ -86,14 +86,14 @@ class HighlightBlocks():
 
         print('**** Adjust indexes')
 
+        line_start = self.get_line(text_info.line_start)
+        line_count = text_info.line_count()
+
+        print('  line_start: ' + str(text_info.line_start))
+        print('  line_count: ' + str(line_count))
+        print('  line_object: ' + str(line_start))
+
         if text_info.type == 'inserted':
-            line_start = self.get_line(text_info.line_start)
-            line_count = text_info.line_count()
-
-            print('  line_start: ' + str(text_info.line_start))
-            print('  line_count: ' + str(line_count))
-            print('  line_object: ' + str(line_start))
-
             for b in line_start:
                 print("  b.index_start_int(): {0}".format(b.index_start_int()))
                 print("  b.index_end_int(): {0}".format(b.index_end_int()))
@@ -124,6 +124,10 @@ class HighlightBlocks():
                 self._adjust_lines(
                     text_info.line_start, line_count)
                 self._resize_lines(text_info.line_start)
+
+        if text_info.type == 'deleted':
+            pass
+
 
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')
@@ -217,11 +221,11 @@ class HighlightBlocks():
         print('**** Blocks Affected')
 
         res = []
-        m1, m2 = text_info.index_start_int(), text_info.index_end_int() 
+        chg1, chg2 = text_info.index_start_int(), text_info.index_end_int() 
 
         l1, l2 = text_info.line_start, text_info.line_end
-        print('  m1: ' + str(m1))
-        print('  m2: ' + str(m2))
+        print('  chg1: ' + str(chg1))
+        print('  chg2: ' + str(chg2))
 
         if text_info.type == 'inserted':
             self.check_lines_number(l2 - l1)
@@ -239,12 +243,12 @@ class HighlightBlocks():
 
                 if b.descriptor.type in {'wholeword', 'regex'}:
                     if text_info.type == 'inserted':
-                        if (m1 == f1 or m1 == f2) and \
+                        if (chg1 == f1 or chg1 == f2) and \
                                 not b.descriptor.is_separator(text_info.text):
-                            print('  m1 == f1 or m1 == f2')
+                            print('  chg1 == f1 or chg1 == f2')
                             res.append(b)
-                        if m1 > f1 and m1 < f2:
-                            print('  m1 > f1 and m1 < f2')
+                        if chg1 > f1 and chg1 < f2:
+                            print('  chg1 > f1 and chg1 < f2')
                             res.append(b)
 
                     else: # deleted
@@ -252,8 +256,8 @@ class HighlightBlocks():
 
                 elif b.descriptor.type in {'toeol',}:
                     if text_info.type == 'inserted':
-                        if m1 > f1 and m1 <= f2:
-                            print('  m1 > f1 and m1 <= f2')
+                        if chg1 > f1 and chg1 <= f2:
+                            print('  chg1 > f1 and chg1 <= f2')
                             res.append(b)
 
                     else: # deleted
@@ -261,8 +265,8 @@ class HighlightBlocks():
 
                 elif b.descriptor.type in {'toclosetoken',}:
                     if text_info.type == 'inserted':
-                        if m1 > f1 and m1 < f2:
-                            print('  m1 > f1 and m1 < f2')
+                        if chg1 > f1 and chg1 < f2:
+                            print('  chg1 > f1 and chg1 < f2')
                             res.append(b)
 
                     else: # deleted

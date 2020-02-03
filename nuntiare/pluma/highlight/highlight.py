@@ -146,6 +146,12 @@ class HighlightDefinition(XmlMixin):
                             self._apply_tags(text, [b])
                         return
 
+            else: # deleted
+                if b.descriptor.type in {'toclosetoken', 'toeol'}:
+                    if b.in_range(text_info):
+                        return
+
+
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
         print('_APLY HL() ***')
