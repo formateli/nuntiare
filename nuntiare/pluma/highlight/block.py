@@ -92,13 +92,13 @@ class HighlightBlocks():
         print('  line_start: ' + str(text_info.line_start))
         print('  line_count: ' + str(line_count))
         print('  line_object: ' + str(line_start))
+        print("  tchg.index_start_int(): {0}".format(text_info.index_start_int()))
+        print("  tchg.index_end_int(): {0}".format(text_info.index_end_int()))
 
         if text_info.type == 'inserted':
             for b in line_start:
                 print("  b.index_start_int(): {0}".format(b.index_start_int()))
                 print("  b.index_end_int(): {0}".format(b.index_end_int()))
-                print("  tchg.index_start_int(): {0}".format(text_info.index_start_int()))
-                print("  tchg.index_end_int(): {0}".format(text_info.index_end_int()))
 
                 if adjust(b):
                     print('  -- b.index_end_int() > text_info.index_start_int() --')
@@ -126,7 +126,13 @@ class HighlightBlocks():
                 self._resize_lines(text_info.line_start)
 
         if text_info.type == 'deleted':
-            pass
+            for b in line_start:
+                if b.descriptor.type == 'toclosetoken':
+                    if text_info.index_start_int() > b.index_start_int() and \
+                            text_info.index_end_int() <= b.index_end_int():
+                        b.col_end -= len(text_info.text)
+                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
+                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
 
     def _adjust_lines(self, start_line, count):
@@ -261,7 +267,8 @@ class HighlightBlocks():
                             res.append(b)
 
                     else: # deleted
-                        pass
+                        if chg1 > f1 and chg1 <= f2:
+                            res.append(b)
 
                 elif b.descriptor.type in {'toclosetoken',}:
                     if text_info.type == 'inserted':
@@ -270,7 +277,8 @@ class HighlightBlocks():
                             res.append(b)
 
                     else: # deleted
-                        pass
+                        if chg1 > f1 and chg1 < f2:
+                            res.append(b)
 
             i += 1
 

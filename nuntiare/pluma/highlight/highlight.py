@@ -147,6 +147,7 @@ class HighlightDefinition(XmlMixin):
                         return
 
             else: # deleted
+                b = blks_affected[0]
                 if b.descriptor.type in {'toclosetoken', 'toeol'}:
                     if b.in_range(text_info):
                         return
