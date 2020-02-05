@@ -223,36 +223,34 @@ class HighlightTest(unittest.TestCase):
             (1, 12, 1, 19))
 
         # Delete
-        self.text.delete('1.14', '1.15')
+        self.text.delete('1.13', '1.14')
 
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
         self._get_tag_ranges()
-        self._tag_in_range('quote', '"car2"', '1.12', '1.18')
+        self._tag_in_range('quote', '"har2"', '1.12', '1.18')
         self.assertEqual(
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 18))
 
-        self.text.delete('1.13', '1.14')
+        self.text.delete('1.16', '1.17')
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
         self._get_tag_ranges()
-        self._tag_in_range('quote', '"ar2"', '1.12', '1.17')
+        self._tag_in_range('quote', '"har"', '1.12', '1.17')
         self.assertEqual(
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 17))
 
-        self.text.delete('1.15', '1.16')
+        self.text.delete('1.14', '1.15')
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
         self._get_tag_ranges()
-        self._tag_in_range('quote', '"ar"', '1.12', '1.16')
+        self._tag_in_range('quote', '"hr"', '1.12', '1.16')
         self.assertEqual(
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 16))
 
-
-        return
 
         ####################################
 

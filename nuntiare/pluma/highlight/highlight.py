@@ -97,6 +97,13 @@ class HighlightDefinition(XmlMixin):
 
     def _apply_hl_first_time(self, text, blocks_gtw):
         self._apply_hl(text, blocks_gtw, 1, 0, 'end')
+        #i = 1
+        #while True:
+        #    line = blocks_gtw.get_line(i)
+        #    for b in line:
+        #        print(b.descriptor.style)
+        #        print(b.state)
+        #    i += 1
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected = blocks_gtw.blocks_affected(text_info)
@@ -152,7 +159,6 @@ class HighlightDefinition(XmlMixin):
                     if b.in_range(text_info):
                         return
 
-
     def _apply_hl(self, text, blocks_gtw,
                 line_start, col_start, index_end):
         print('_APLY HL() ***')
@@ -188,7 +194,6 @@ class HighlightDefinition(XmlMixin):
 
             print("  Start index after: '{0}'".format(start_index))
             print("  End index after: '{0}'".format(end_index))
-
 
             blks, descriptor = self._process_line(
                 text, start_index, end_index)
@@ -434,18 +439,18 @@ class HighlightDescriptor(XmlMixin):
                 if self.type in {'wholeword', 'regex', 'toeol'}:
                     break
                 else:
-                    res_multiline = self._to_close_token_open_search(
+                    is_toclosetoken = self._to_close_token_open_search(
                             text, 'startIndex', end, count)
-                    if not res_multiline:
+                    if not is_toclosetoken:
                         break
                     blocks.append(HighlightBlock(
-                            res_multiline[0],
-                            res_multiline[1],
+                            is_toclosetoken[0],
+                            is_toclosetoken[1],
                             descriptor=self,
                             state=0 # open
                         )
                     )
-                    text.mark_set('startIndex', res_multiline[1])
+                    text.mark_set('startIndex', is_toclosetoken[1])
             else:
                 end_index = text.index('{0}+{1}c'.format(index, count.get()))
                 blocks.append(HighlightBlock(
@@ -466,10 +471,9 @@ class HighlightDescriptor(XmlMixin):
     def _to_close_token_open_search(self, text, start, end, count):
         '''
         This function finds a match for the 'ToCloseToken' descriptor when
-        close_token is not in same line.
+        close_token is not in same line or it does not exist.
         Return a tuple: [startIndex, endIndex]
         '''
-
         if self.type not in {'toclosetoken',}:
             return
 
