@@ -42,7 +42,7 @@ class HighlightTest(unittest.TestCase):
         ###############################################
 
         # load document
-        self.text.insert('1.0', self._get_python_sample_1())
+        self.text.insert('1.0', 'abc from fgh')
 
         # Document is loaded, so besides 'sel' tag
         # 'reserved', 'comment' and 'quote' are set.
@@ -160,9 +160,7 @@ class HighlightTest(unittest.TestCase):
         ####################################
 
         self.text = self._reset_text_widget()
-        # load sample_1 again
-        # abc from fgh
-        self.text.insert('1.0', self._get_python_sample_1())
+        self.text.insert('1.0', 'abc from fgh')
 
         # Insert new line between reserved
         self.text.insert('1.6', '\n')
@@ -203,6 +201,17 @@ class HighlightTest(unittest.TestCase):
         self._tag_in_range('reserved', 'class', '2.0', '2.5')
         self._tag_in_range('reserved', 'class', '3.0', '3.5')
         self._tag_in_range('reserved', 'def', '3.10', '3.13')
+
+        #####################################
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc from fgh')
+        self.text.delete('1.3', '1.4')
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 0) # No blocks
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.11')
+
 
         #####################################
 
@@ -250,7 +259,6 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 16))
-
 
         ####################################
 
@@ -324,21 +332,25 @@ class HighlightTest(unittest.TestCase):
         self.text.delete('1.9', '1.10')
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 1)
-
         self.assertEqual(
             (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
             (1, 0, 1, 10))
         self._get_tag_ranges()
-        self._tag_in_range('comment', '# comment x', '1.0', '1.10')
+        self._tag_in_range('comment', '# commentx', '1.0', '1.10')
 
-        return
+        self.text.delete('1.9', '1.10')
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 1)
+        self.assertEqual(
+            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (1, 0, 1, 9))
+        self._get_tag_ranges()
+        self._tag_in_range('comment', '# comment', '1.0', '1.9')
 
 
+        ###################################
 
-
-
-
-        # load document
+        self.text = self._reset_text_widget()
         self.text.insert('1.0', self._get_python_sample_2())
 
         # Document is loaded, so besides 'sel' tag
@@ -452,9 +464,6 @@ class HighlightTest(unittest.TestCase):
     def onTextModified(self, event):
         text_info = self.text.text_changed_info.copy()
         self.hl.apply_hl(self.text, text_info, self.hl_blocks)
-
-    def _get_python_sample_1(self):
-        return '''abc from fgh'''
 
     def _get_python_sample_2(self):
         return '''# one line comment

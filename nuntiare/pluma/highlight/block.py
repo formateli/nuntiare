@@ -8,6 +8,7 @@ from ..widget import TextInfoMixin
 class HighlightBlocks():
     def __init__(self):
         self._lines = []
+        self._to_remove = []
 
     def set_line(self, number):
         if number > len(self._lines):
@@ -22,19 +23,20 @@ class HighlightBlocks():
             self._lines.append([])
             i += 1
 
-    def remove_lines(self, line_start, line_end):
-        pass
-
-    def get_line(self, number):
-        return self._lines[number - 1]
-
-    def remove_blocks(self, blocks):
-        for b in blocks:
+    def remove_blocks(self):
+        for b in self._to_remove:
             x = b.line_start
             while x <= b.line_end:
                 l = self.get_line(x)
                 l.remove(b)
                 x += 1
+        self._to_remove = []
+
+    def remove_lines(self, line_start, line_end):
+        pass
+
+    def get_line(self, number):
+        return self._lines[number - 1]
 
     def add_blocks(self, blocks):
         lines_afected = []
@@ -127,13 +129,24 @@ class HighlightBlocks():
 
         if text_info.type == 'deleted':
             for b in line_start:
+                if b.descriptor.type in {'wholeword', 'regex'}:
+                    if text_info.index_start_int() > b.index_start_int() and \
+                            text_info.index_end_int() < b.index_end_int():
+                        b.col_end -= len(text_info.text)
+
                 if b.descriptor.type == 'toclosetoken':
+                    if text_info.index_start_int() > b.index_start_int() and \
+                            text_info.index_end_int() < b.index_end_int():
+                        b.col_end -= len(text_info.text)
+                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
+                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
+
+                elif b.descriptor.type == 'toeol':
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() <= b.index_end_int():
                         b.col_end -= len(text_info.text)
                     print("  After b.index_start_int(): {0}".format(b.index_start_int()))
                     print("  After b.index_end_int(): {0}".format(b.index_end_int()))
-
 
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')
@@ -252,13 +265,19 @@ class HighlightBlocks():
                         if (chg1 == f1 or chg1 == f2) and \
                                 not b.descriptor.is_separator(text_info.text):
                             print('  chg1 == f1 or chg1 == f2')
+                            self._to_remove.append(b)
                             res.append(b)
                         if chg1 > f1 and chg1 < f2:
                             print('  chg1 > f1 and chg1 < f2')
+                            self._to_remove.append(b)
                             res.append(b)
 
                     else: # deleted
-                        pass
+                        if (chg1 < f1 and chg2 >= f1 or
+                                chg1 >= f1 and chg2 <= f2 or
+                                chg2 >= f2):
+                            self._to_remove.append(b)
+                            res.append(b)
 
                 elif b.descriptor.type in {'toeol',}:
                     if text_info.type == 'inserted':
@@ -332,7 +351,7 @@ class HighlightBlock(TextInfoMixin):
         super(HighlightBlock, self).__init__()
 
         self.descriptor = descriptor
-        # 0: OPEN, 1: COMPLETED
+        # state -> 0: OPEN, 1: COMPLETED
         self.state = state
         self.line_start, self.col_start = \
             self._get_line_col(start_index)

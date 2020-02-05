@@ -108,6 +108,7 @@ class HighlightDefinition(XmlMixin):
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected = blocks_gtw.blocks_affected(text_info)
         blocks_gtw.adjust_block_indexes(text_info)
+        self._remove_blocks(text, blocks_gtw)
 
         if not blks_affected:
             avbl_range = blocks_gtw.get_available_space(text_info)
@@ -134,18 +135,8 @@ class HighlightDefinition(XmlMixin):
                         'Oops!!! We do not know what to do.')
 
                 b = blks_affected[0]
-                if b.descriptor.type in {'wholeword', 'regex'}:
-                    # Alway affected
-                    self._remove_tags(text, [b])
-                    blocks_gtw.remove_blocks([b])
-                    avbl_range = \
-                        blocks_gtw.get_available_space(text_info)
-                    self._apply_hl(
-                        text, blocks_gtw,
-                        avbl_range[0], avbl_range[1],
-                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
 
-                elif b.descriptor.type in {'toclosetoken', 'toeol'}:
+                if b.descriptor.type in {'toclosetoken', 'toeol'}:
                     if b.in_range(text_info):
                         if b.descriptor.type == 'toeol' and \
                                 text_info.index_end_int() <= b.index_end_int():
@@ -240,6 +231,10 @@ class HighlightDefinition(XmlMixin):
         if len(txt) != 1:
             return
         return txt == ' ' or txt in self._separators
+
+    def _remove_blocks(self, text, blocks_gtw):
+        self._remove_tags(text, blocks_gtw._to_remove)
+        blocks_gtw.remove_blocks()
 
     def _find_multiline_last_index(self, text, block):
         if block.descriptor.type not in {'toclosetoken',}:
