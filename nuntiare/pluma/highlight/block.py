@@ -23,17 +23,24 @@ class HighlightBlocks():
             self._lines.append([])
             i += 1
 
-    def remove_blocks(self):
+    def remove_blocks(self, blocks=None):
+        # '_to_remove' is set in blocks_affected() function.
+        # 'blocks' is a list of blocks passed in adjust_block_indexes() function
+        #   for blocks that disappear in delete action.
+        #   each block in 'blocks' must exists in '_to_remove' list
         for b in self._to_remove:
+            if blocks and b not in blocks:
+                continue
             x = b.line_start
             while x <= b.line_end:
                 l = self.get_line(x)
                 l.remove(b)
                 x += 1
-        self._to_remove = []
-
-    def remove_lines(self, line_start, line_end):
-        pass
+        if blocks:
+            for b in blocks:
+                self._to_remove.remove(b)
+        else:
+            self._to_remove = []
 
     def get_line(self, number):
         return self._lines[number - 1]
@@ -128,25 +135,39 @@ class HighlightBlocks():
                 self._resize_lines(text_info.line_start)
 
         if text_info.type == 'deleted':
-            for b in line_start:
-                if b.descriptor.type in {'wholeword', 'regex'}:
-                    if text_info.index_start_int() > b.index_start_int() and \
-                            text_info.index_end_int() < b.index_end_int():
-                        b.col_end -= len(text_info.text)
+            to_remove = []
 
-                if b.descriptor.type == 'toclosetoken':
+            for b in line_start:
+                if text_info.index_start_int() <= b.index_start_int() and \
+                        text_info.index_end_int() >= b.index_end_int():
+                    to_remove.append(b)
+                    continue
+
+                if b.descriptor.type in {'wholeword', 'regex'}:
+                    if text_info.index_end_int() <= b.index_start_int():
+                        b.col_start += text_info.length_last_line_affected()
+                        b.col_end += text_info.length_last_line_affected()
+
+                    if text_info.index_start_int() > b.index_start_int() and \
+                            text_info.index_end_int() < b.index_end_int():
+                        b.col_end += text_info.length_last_line_affected()
+
+                elif b.descriptor.type == 'toclosetoken':
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() < b.index_end_int():
                         b.col_end -= len(text_info.text)
-                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
-                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
                 elif b.descriptor.type == 'toeol':
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() <= b.index_end_int():
                         b.col_end -= len(text_info.text)
-                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
-                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
+
+                print("  After b.index_start_int(): {0}".format(b.index_start_int()))
+                print("  After b.index_end_int(): {0}".format(b.index_end_int()))
+
+
+            if to_remove:
+                self.remove_blocks(to_remove)
 
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')

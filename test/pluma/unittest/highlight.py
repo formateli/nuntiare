@@ -207,11 +207,38 @@ class HighlightTest(unittest.TestCase):
         self.text = self._reset_text_widget()
         self.text.insert('1.0', 'abc from fgh')
         self.text.delete('1.3', '1.4')
+        # 'abcfrom fgh'
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 0) # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.11')
 
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc from fgh')
+        self.text.delete('1.8', '1.9')
+        # 'abc fromfgh'
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 0) # No blocks
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.11')
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc from fgh')
+        self.text.delete('1.5', '1.6')
+        # 'abc fom fgh'
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 0) # No blocks
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.11')
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'abc from fgh')
+        self.text.delete('1.4', '1.8')
+        # 'abc  fgh'
+        line = self.hl_blocks.get_line(1)
+        self.assertEqual(len(line), 0) # No blocks
+        self._get_tag_ranges()
+        self._tag_no_in_range('reserved', '1.0', '1.8')
 
         #####################################
 
@@ -233,6 +260,7 @@ class HighlightTest(unittest.TestCase):
 
         # Delete
         self.text.delete('1.13', '1.14')
+        # '"char1" abc "har2" deh'
 
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
@@ -243,6 +271,7 @@ class HighlightTest(unittest.TestCase):
             (1, 12, 1, 18))
 
         self.text.delete('1.16', '1.17')
+        # '"char1" abc "har" deh'
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
         self._get_tag_ranges()
@@ -252,6 +281,7 @@ class HighlightTest(unittest.TestCase):
             (1, 12, 1, 17))
 
         self.text.delete('1.14', '1.15')
+        # '"char1" abc "ar" deh'
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 2)
         self._get_tag_ranges()
@@ -259,6 +289,9 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 16))
+
+        self.text.delete('1.14', '1.15')
+        # '"char1" abc "ar" deh'
 
         ####################################
 
@@ -290,7 +323,7 @@ class HighlightTest(unittest.TestCase):
                 (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
                 (2, 0, 6, 3))
             i += 1
-        #return
+
         self.text.insert('3.1', '\n')
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
