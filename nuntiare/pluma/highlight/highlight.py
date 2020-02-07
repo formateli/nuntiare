@@ -177,10 +177,11 @@ class HighlightDefinition(XmlMixin):
             start_index = '{0}.{1}'.format(cur_line, start_col)
             print("  Start index before: '{0}'".format(start_index))
             if first_iter:
-                end_index = '{0}.{1}'.format(cur_line, start_col + len(line))
+                end_index = '{0}.{1}'.format(
+                    cur_line, start_col + len(line))
             else:
-                #end_index = '{0}.{1}'.format(cur_line, len(line[start_col:]))
-                end_index = '{0}.{1}'.format(cur_line, start_col + len(line[start_col:]))
+                end_index = '{0}.{1}'.format(
+                    cur_line, start_col + len(line[start_col:]))
             first_iter = False
 
             print("  Start index after: '{0}'".format(start_index))
@@ -215,7 +216,7 @@ class HighlightDefinition(XmlMixin):
             last_blk = blks[-1]
             last_index = self._find_multiline_last_index(
                     text, last_blk)
-            print('  LAST INDEX: ' + last_index)
+            print('  LAST INDEX: ' + str(last_index))
             print('  LAST INDEX blk: ' + last_blk.index_end())
             blocks_gtw.add_blocks([last_blk]) # Update lines
             self._apply_tags(text, [last_blk])
@@ -251,7 +252,10 @@ class HighlightDefinition(XmlMixin):
 
         if index == '' or count.get() == 0:
             res = None
-            block.set_index_end(text.index('end'))
+            text.mark_set('insert_remember', 'insert')
+            text.mark_set('insert', 'end')
+            block.set_index_end(text.index('insert'))
+            text.mark_set('insert', 'insert_remember')
         else:
             res = text.index(
                 '{0}+{1}c'.format(index, count.get()))
@@ -433,7 +437,7 @@ class HighlightDescriptor(XmlMixin):
             if index == '' or count.get() == 0:
                 if self.type in {'wholeword', 'regex', 'toeol'}:
                     break
-                else:
+                else: # toclosetoken
                     is_toclosetoken = self._to_close_token_open_search(
                             text, 'startIndex', end, count)
                     if not is_toclosetoken:
