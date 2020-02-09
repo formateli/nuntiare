@@ -148,14 +148,15 @@ class TextEvent(Text):
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):
 
-            #print('==================')
+            print('==================')
             #print('*** ' + command + ' ***')
             #print(args)
 
+
             if command == 'insert':
-                print(args[0])
+                #print(args[0])
                 mark = self.index(args[0])
-                print('  ' + command + ' MARK: ' + mark)
+                print('{0} {1}'.format(command, mark))
                 self.text_changed_info.set_info(
                         type_='inserted',
                         text_changed=args[1], index_start=mark)
@@ -170,6 +171,8 @@ class TextEvent(Text):
                 #print(mark_1)
                 #print(mark_2)
 
+                print('[--[ {0} {1}-{2} ]--]'.format(command, mark_1, mark_2))
+
                 text_deleted = self._get_text_deleted(mark_1, mark_2)
                 self.text_changed_info.set_info(
                         type_='deleted',
@@ -178,6 +181,8 @@ class TextEvent(Text):
 
             elif command == 'replace':
                 raise Exception("Replace <<TextModified>> Not Implemented")
+
+            print('==================')
 
         cmd = (self._orig, command) + args
         try:

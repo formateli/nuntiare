@@ -85,6 +85,7 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '2.0')
         self._tag_in_range('reserved', 'from', '2.1', '2.5')
+        self._tag_no_in_range('reserved', '2.6', '2.9')
 
         line = self.hl_blocks.get_line(2)
         self.assertEqual(len(line), 1)
@@ -164,6 +165,12 @@ class HighlightTest(unittest.TestCase):
 
         # Insert new line between reserved
         self.text.insert('1.6', '\n')
+        self.assertEqual(len(self.hl_blocks._lines), 2)
+        i = 1
+        while i <= 2:
+            l = self.hl_blocks.get_line(1)
+            self.assertEqual(len(l), 0)
+            i += 1
         # Tags
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '2.6')
@@ -290,9 +297,6 @@ class HighlightTest(unittest.TestCase):
             (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
             (1, 12, 1, 16))
 
-        self.text.delete('1.14', '1.15')
-        # '"char1" abc "ar" deh'
-
         ####################################
 
         self.text = self._reset_text_widget()
@@ -302,7 +306,6 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 5)
         i = 1
         while i <= len(self.hl_blocks._lines):
-            #print(i)
             l = self.hl_blocks.get_line(i)
             self.assertEqual(len(l), 1)
             self.assertEqual(
@@ -314,9 +317,9 @@ class HighlightTest(unittest.TestCase):
 
         self.text.insert('1.0', '\n')
         self.assertEqual(len(self.hl_blocks._lines), 6)
+        self.assertEqual(len(self.hl_blocks.get_line(1)), 0)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            #print(i)
             l = self.hl_blocks.get_line(i)
             self.assertEqual(len(l), 1)
             self.assertEqual(
@@ -328,13 +331,46 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            #print(i)
             l = self.hl_blocks.get_line(i)
             self.assertEqual(len(l), 1)
             self.assertEqual(
                 (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
                 (2, 0, 7, 3))
             i += 1
+
+        self.text.delete('7.3', '7.4')
+        self._get_tag_ranges()
+        self._tag_in_range(
+            'quote', '"""\nl\nine 1\nline 2\nline 3\n"""', '2.0', '7.3')
+        self._tag_no_in_range('quote', '1.0', '1.1000')
+        self.assertEqual(len(self.hl_blocks._lines), 7)
+        i = 2
+        while i <= len(self.hl_blocks._lines):
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (2, 0, 7, 3))
+            i += 1
+
+        self.text.insert('7.0', '\nabc')
+        self.assertEqual(len(self.hl_blocks._lines), 8)
+        i = 2
+        while i <= len(self.hl_blocks._lines):
+            print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (2, 0, 8, 6))
+            i += 1
+
+        #self.text.delete('3.1', '4.0')
+        #print(self.text.get('1.0', '10.0'))
+        #self._get_tag_ranges()
+        #self._tag_in_range(
+        #    'quote', '"""\nline 1\nline 2\nline 3\n"""', '2.0', '7.3')
+
 
         #####################################
 
@@ -379,7 +415,6 @@ class HighlightTest(unittest.TestCase):
             (1, 0, 1, 9))
         self._get_tag_ranges()
         self._tag_in_range('comment', '# comment', '1.0', '1.9')
-
 
         ###################################
 

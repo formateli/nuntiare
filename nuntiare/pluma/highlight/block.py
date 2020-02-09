@@ -110,9 +110,9 @@ class HighlightBlocks():
                 print("  b.index_end_int(): {0}".format(b.index_end_int()))
 
                 if adjust(b):
-                    print('  -- b.index_end_int() > text_info.index_start_int() --')
+                    print('  -- Adjust index --')
                     if line_count > 1:
-                        b.adjust_line_start = False
+                        #b.adjust_line_start = False
                         if text_info.index_start_int() <= b.index_start_int():
                             b.col_start -= text_info.col_start
                             b.col_start += text_info.length_last_line_affected()
@@ -165,7 +165,6 @@ class HighlightBlocks():
                 print("  After b.index_start_int(): {0}".format(b.index_start_int()))
                 print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
-
             if to_remove:
                 self.remove_blocks(to_remove)
 
@@ -174,6 +173,7 @@ class HighlightBlocks():
         i = start_line
         multiline = []
         print('  Total lines: ' + str(len(self._lines)))
+        print('  start_line: ' + str(start_line))
         while i <= len(self._lines):
             line = self.get_line(i)
             print('  Line: {0}'.format(i))
@@ -185,7 +185,7 @@ class HighlightBlocks():
                         continue
 
                     print('   Verifying multiline')
-                    x = b.line_start + 1
+                    x = i + 1
                     while x <= b.line_end:
                         l = self.get_line(x)
                         if b in l:
@@ -194,20 +194,19 @@ class HighlightBlocks():
                         x += 1
                     multiline.append(b)
 
-                print('  cur line start: {0}'.format(b.line_start))
-                print('  cur line end: {0}'.format(b.line_end))
+                print('   cur b info: {0} - {1} - {2}'.format(
+                    b.descriptor.style, b.index_start_int(), b.index_end_int()))
 
-                if b.line_start < start_line:
-                    print('  Adding again b to line: ' + str(start_line))
-                    l = self.get_line(start_line)
-                    l.append(b)
-                if b.adjust_line_start:
+                if b.adjust_line_start or \
+                        b.line_start > start_line:
+                    print('    Adjusting b start line')
                     b.line_start += (count - 1)
-                b.adjust_line_start = True
-                b.line_end += (count - 1)
+                    b.adjust_line_start = None
 
-                print('  new line start: {0}'.format(b.line_start))
-                print('  new line end: {0}'.format(b.line_end))
+                b.line_end += count - 1
+
+                print('   new b info: {0} - {1} - {2}'.format(
+                    b.descriptor.style, b.index_start_int(), b.index_end_int()))
 
             i += 1
 
@@ -381,7 +380,7 @@ class HighlightBlock(TextInfoMixin):
         # Sub blocks
         self.sub_blocks = []
         # Flags for line adjustment
-        self.adjust_line_start = True
+        self.adjust_line_start = None
 
     def set_index_end(self, index):
         self.line_end, self.col_end = \
