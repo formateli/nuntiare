@@ -134,7 +134,7 @@ class HighlightBlocks():
                     text_info.line_start, line_count)
                 self._resize_lines(text_info.line_start)
 
-        if text_info.type == 'deleted':
+        else: # deleted
             to_remove = []
 
             for b in line_start:
@@ -167,6 +167,11 @@ class HighlightBlocks():
 
             if to_remove:
                 self.remove_blocks(to_remove)
+
+            if line_count > 1:
+                self._adjust_lines(
+                    text_info.line_start, line_count)
+                self._resize_lines(text_info.line_start)
 
     def _adjust_lines(self, start_line, count):
         print('**** _Adjust lines')

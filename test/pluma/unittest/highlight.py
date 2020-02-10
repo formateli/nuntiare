@@ -364,12 +364,16 @@ class HighlightTest(unittest.TestCase):
                 (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
                 (2, 0, 8, 6))
             i += 1
+        self._get_tag_ranges()
+        self._tag_in_range(
+            'quote', '"""\nl\nine 1\nline 2\nline 3\n\nabc"""', '2.0', '8.6')
 
-        #self.text.delete('3.1', '4.0')
-        #print(self.text.get('1.0', '10.0'))
-        #self._get_tag_ranges()
-        #self._tag_in_range(
-        #    'quote', '"""\nline 1\nline 2\nline 3\n"""', '2.0', '7.3')
+
+        self.text.delete('3.1', '4.0')
+        self.assertEqual(len(self.hl_blocks._lines), 7)
+        self._get_tag_ranges()
+        self._tag_in_range(
+            'quote', '"""\nline 1\nline 2\nline 3\n\nabc"""', '2.0', '7.6')
 
 
         #####################################
