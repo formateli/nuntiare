@@ -97,6 +97,7 @@ class HighlightBlocks():
 
         line_start = self.get_line(text_info.line_start)
         line_count = text_info.line_count()
+        to_remove = []
 
         print('  line_start: ' + str(text_info.line_start))
         print('  line_count: ' + str(line_count))
@@ -104,15 +105,14 @@ class HighlightBlocks():
         print("  tchg.index_start_int(): {0}".format(text_info.index_start_int()))
         print("  tchg.index_end_int(): {0}".format(text_info.index_end_int()))
 
-        if text_info.type == 'inserted':
-            for b in line_start:
-                print("  b.index_start_int(): {0}".format(b.index_start_int()))
-                print("  b.index_end_int(): {0}".format(b.index_end_int()))
+        for b in line_start:
+            print("  Cur b.index_start_int(): {0}".format(b.index_start_int()))
+            print("  Cur b.index_end_int(): {0}".format(b.index_end_int()))
 
+            if text_info.type == 'inserted':
                 if adjust(b):
                     print('  -- Adjust index --')
                     if line_count > 1:
-                        #b.adjust_line_start = False
                         if text_info.index_start_int() <= b.index_start_int():
                             b.col_start -= text_info.col_start
                             b.col_start += text_info.length_last_line_affected()
@@ -126,18 +126,8 @@ class HighlightBlocks():
                         if b.index_start_int() >= text_info.index_start_int():
                             b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
-                    print("  After b.index_start_int(): {0}".format(b.index_start_int()))
-                    print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
-            if line_count > 1:
-                self._adjust_lines(
-                    text_info.line_start, line_count)
-                self._resize_lines(text_info.line_start)
-
-        else: # deleted
-            to_remove = []
-
-            for b in line_start:
+            else: # Deleted
                 if text_info.index_start_int() <= b.index_start_int() and \
                         text_info.index_end_int() >= b.index_end_int():
                     to_remove.append(b)
@@ -148,32 +138,41 @@ class HighlightBlocks():
                         b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
 
-                    if text_info.index_start_int() > b.index_start_int() and \
+                    elif text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() < b.index_end_int():
-                        b.col_end += text_info.length_last_line_affected()
+                        if line_count == 1:
+                            b.col_end += text_info.length_last_line_affected()
+                        else:
+                            if text_info.line_end == b.line_end:
+                                b.col_end += text_info.col_start
 
                 elif b.descriptor.type == 'toclosetoken':
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() < b.index_end_int():
-                        b.col_end -= len(text_info.text)
+                        if line_count == 1:
+                            b.col_end -= len(text_info.text)
+                        else:
+                            if text_info.line_end == b.line_end:
+                                b.col_end += text_info.col_start
 
                 elif b.descriptor.type == 'toeol':
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() <= b.index_end_int():
                         b.col_end -= len(text_info.text)
 
-                print("  After b.index_start_int(): {0}".format(b.index_start_int()))
-                print("  After b.index_end_int(): {0}".format(b.index_end_int()))
+            print("  After b.index_start_int(): {0}".format(b.index_start_int()))
+            print("  After b.index_end_int(): {0}".format(b.index_end_int()))
 
-            if to_remove:
-                self.remove_blocks(to_remove)
+        if to_remove:
+            self.remove_blocks(to_remove)
 
-            if line_count > 1:
-                self._adjust_lines(
-                    text_info.line_start, line_count)
-                self._resize_lines(text_info.line_start)
+        if line_count > 1:
+            self._adjust_lines(
+                text_info.type, text_info.line_start, line_count)
+            self._resize_lines(
+                text_info.type, text_info.line_start, line_count)
 
-    def _adjust_lines(self, start_line, count):
+    def _adjust_lines(self, type_, start_line, count):
         print('**** _Adjust lines')
         i = start_line
         multiline = []
@@ -202,20 +201,23 @@ class HighlightBlocks():
                 print('   cur b info: {0} - {1} - {2}'.format(
                     b.descriptor.style, b.index_start_int(), b.index_end_int()))
 
-                if b.adjust_line_start or \
-                        b.line_start > start_line:
-                    print('    Adjusting b start line')
-                    b.line_start += (count - 1)
-                    b.adjust_line_start = None
+                if type_ == 'inserted':
+                    if b.adjust_line_start or \
+                            b.line_start > start_line:
+                        print('    Adjusting b start line')
+                        b.line_start += (count - 1)
+                        b.adjust_line_start = None
+                    b.line_end += count - 1
 
-                b.line_end += count - 1
+                else: # deleted
+                    b.line_end -= count - 1
 
                 print('   new b info: {0} - {1} - {2}'.format(
                     b.descriptor.style, b.index_start_int(), b.index_end_int()))
 
             i += 1
 
-    def _resize_lines(self, start_line):
+    def _resize_lines(self, type_, start_line, count):
         print('**** _Resize lines')
         multiline = []
         line_to_order = []
@@ -225,7 +227,7 @@ class HighlightBlocks():
             if i > len(self._lines):
                 break
             line = self.get_line(i)
-            print(line)
+            #print(line)
             res = []
             for b in line:
                 if b.line_count() > 1:
@@ -256,6 +258,13 @@ class HighlightBlocks():
                 l.append(r)
 
             i += 1
+
+        if type_ == 'deleted':
+            i = count
+            while i <= count:
+                l = self.get_line(len(self._lines))
+                self._lines.remove(l)
+                i += 1
 
     def blocks_affected(self, text_info):
         '''Returns the list of blocks that were affected by
