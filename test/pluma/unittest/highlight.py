@@ -346,6 +346,7 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
         while i <= len(self.hl_blocks._lines):
+            print(i)
             l = self.hl_blocks.get_line(i)
             self.assertEqual(len(l), 1)
             self.assertEqual(
@@ -386,6 +387,15 @@ class HighlightTest(unittest.TestCase):
 
         self.text.delete('1.0', '2.0')
         self.assertEqual(len(self.hl_blocks._lines), 6)
+        i = 1
+        while i <= len(self.hl_blocks._lines):
+            print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (1, 0, 6, 6))
+            i += 1
         self._get_tag_ranges()
         self._tag_in_range(
             'quote', '"""\nline 1\nline 2\nline 3\n\nabc"""', '1.0', '6.6')

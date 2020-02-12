@@ -137,7 +137,6 @@ class HighlightBlocks():
                     if text_info.index_end_int() <= b.index_start_int():
                         b.col_start += text_info.length_last_line_affected()
                         b.col_end += text_info.length_last_line_affected()
-
                     elif text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() < b.index_end_int():
                         if line_count == 1:
@@ -147,6 +146,17 @@ class HighlightBlocks():
                                 b.col_end += text_info.col_start
 
                 elif b.descriptor.type == 'toclosetoken':
+                    if text_info.index_end_int() <= b.index_start_int():
+                        if line_count == 1:
+                            b.col_start -= len(text_info.text)
+                            if b.line_count() == 1:
+                                b.col_end -= len(text_info.text)
+                        else:
+                            b.adjust_line_start = True
+                            b.col_start -= len(text_info.text)
+                            #if b.line_count() == 1:
+                            #    b.col_end -= len(text_info.text)
+
                     if text_info.index_start_int() > b.index_start_int() and \
                             text_info.index_end_int() < b.index_end_int():
                         if line_count == 1:
@@ -176,8 +186,13 @@ class HighlightBlocks():
         print('**** _Adjust lines')
         i = start_line
         multiline = []
+        factor = 1
+        if type_ == 'deleted':
+            factor = -1
+
         print('  Total lines: ' + str(len(self._lines)))
         print('  start_line: ' + str(start_line))
+
         while i <= len(self._lines):
             line = self.get_line(i)
             print('  Line: {0}'.format(i))
@@ -201,16 +216,12 @@ class HighlightBlocks():
                 print('   cur b info: {0} - {1} - {2}'.format(
                     b.descriptor.style, b.index_start_int(), b.index_end_int()))
 
-                if type_ == 'inserted':
-                    if b.adjust_line_start or \
-                            b.line_start > start_line:
-                        print('    Adjusting b start line')
-                        b.line_start += (count - 1)
-                        b.adjust_line_start = None
-                    b.line_end += count - 1
-
-                else: # deleted
-                    b.line_end -= count - 1
+                if b.adjust_line_start or \
+                        b.line_start > start_line:
+                    print('    Adjusting b start line')
+                    b.line_start += factor * (count - 1)
+                    b.adjust_line_start = None
+                b.line_end += factor * (count - 1)
 
                 print('   new b info: {0} - {1} - {2}'.format(
                     b.descriptor.style, b.index_start_int(), b.index_end_int()))
@@ -223,11 +234,13 @@ class HighlightBlocks():
         line_to_order = []
         i = start_line
         while True:
-            print('  Line: ' + str(i))
             if i > len(self._lines):
                 break
+
+            print('  Line: ' + str(i))
             line = self.get_line(i)
             #print(line)
+
             res = []
             for b in line:
                 if b.line_count() > 1:
@@ -239,12 +252,14 @@ class HighlightBlocks():
                     res.append(b)
 
                 if b.line_count() > 1:
+                    print('  Multiline:')
                     if b.line_start > i:
-                        x = b.line_start + 1
+                        x = b.line_start + (count - 1)
                     else:
-                        x = start_line + 1
+                        x = start_line + (count - 1)
+
                     while x <= b.line_end:
-                        print('  Multiline: ' + str(x))
+                        print('   Appending: ' + str(x))
                         self.set_line(x)
                         l = self.get_line(x)
                         l.append(b)
@@ -252,6 +267,7 @@ class HighlightBlocks():
                     multiline.append(b)
 
             for r in res:
+                print('  Reonrding')
                 line.remove(r)
                 self.set_line(r.line_start)
                 l = self.get_line(r.line_start)
@@ -259,12 +275,22 @@ class HighlightBlocks():
 
             i += 1
 
+        y = 1
+        while y <= len(self._lines):
+            print(self.get_line(y))
+            y += 1
+
         if type_ == 'deleted':
             i = count
-            while i <= count:
-                l = self.get_line(len(self._lines))
-                self._lines.remove(l)
-                i += 1
+            while i > 1:
+                self._lines.pop()
+                i -= 1
+
+        print('-------')
+        y = 1
+        while y <= len(self._lines):
+            print(self.get_line(y))
+            y += 1
 
     def blocks_affected(self, text_info):
         '''Returns the list of blocks that were affected by
