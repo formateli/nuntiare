@@ -400,6 +400,37 @@ class HighlightTest(unittest.TestCase):
         self._tag_in_range(
             'quote', '"""\nline 1\nline 2\nline 3\n\nabc"""', '1.0', '6.6')
 
+        self.text.insert('1.0', '\n\n')
+        self.assertEqual(len(self.hl_blocks._lines), 8)
+        i = 3
+        while i <= len(self.hl_blocks._lines):
+            print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (3, 0, 8, 6))
+            i += 1
+
+        self._get_tag_ranges()
+        self._tag_in_range(
+            'quote', '"""\nline 1\nline 2\nline 3\n\nabc"""', '3.0', '8.6')
+
+        self.text.insert('4.0', '\n\n')
+        self.assertEqual(len(self.hl_blocks._lines), 10)
+        i = 3
+        while i <= len(self.hl_blocks._lines):
+            print(i)
+            l = self.hl_blocks.get_line(i)
+            self.assertEqual(len(l), 1)
+            self.assertEqual(
+                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (3, 0, 10, 6))
+            i += 1
+        self._get_tag_ranges()
+        self._tag_in_range(
+            'quote', '"""\n\n\nline 1\nline 2\nline 3\n\nabc"""', '3.0', '10.6')
+
         #####################################
 
         self.text = self._reset_text_widget()

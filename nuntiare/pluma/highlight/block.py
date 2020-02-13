@@ -221,6 +221,8 @@ class HighlightBlocks():
                     print('    Adjusting b start line')
                     b.line_start += factor * (count - 1)
                     b.adjust_line_start = None
+                    if type_ == 'deleted':
+                        self._reasign_blokcs(line, [b])
                 b.line_end += factor * (count - 1)
 
                 print('   new b info: {0} - {1} - {2}'.format(
@@ -254,9 +256,9 @@ class HighlightBlocks():
                 if b.line_count() > 1:
                     print('  Multiline:')
                     if b.line_start > i:
-                        x = b.line_start + (count - 1)
+                        x = b.line_start + 1
                     else:
-                        x = start_line + (count - 1)
+                        x = start_line + 1
 
                     while x <= b.line_end:
                         print('   Appending: ' + str(x))
@@ -266,12 +268,7 @@ class HighlightBlocks():
                         x += 1
                     multiline.append(b)
 
-            for r in res:
-                print('  Reonrding')
-                line.remove(r)
-                self.set_line(r.line_start)
-                l = self.get_line(r.line_start)
-                l.append(r)
+            self._reasign_blokcs(line, res)
 
             i += 1
 
@@ -291,6 +288,14 @@ class HighlightBlocks():
         while y <= len(self._lines):
             print(self.get_line(y))
             y += 1
+
+    def _reasign_blokcs(self, line, blocks):
+        for b in blocks:
+            print('  Reording')
+            line.remove(b)
+            self.set_line(b.line_start)
+            l = self.get_line(b.line_start)
+            l.append(b)
 
     def blocks_affected(self, text_info):
         '''Returns the list of blocks that were affected by
