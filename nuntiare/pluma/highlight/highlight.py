@@ -91,19 +91,13 @@ class HighlightDefinition(XmlMixin):
             text.set_tags(self._styles)
 
         if first_time:
-            self._apply_hl_first_time(text, blocks_gtw)
+            self._apply_hl_first_time(text, text_info, blocks_gtw)
         else:
             self._apply_hl_text_changed(text, text_info, blocks_gtw)
 
-    def _apply_hl_first_time(self, text, blocks_gtw):
+    def _apply_hl_first_time(self, text, text_info, blocks_gtw):
+        blocks_gtw.check_lines_number(text_info.line_count()) # TODO to remove
         self._apply_hl(text, blocks_gtw, 1, 0, 'end')
-        #i = 1
-        #while True:
-        #    line = blocks_gtw.get_line(i)
-        #    for b in line:
-        #        print(b.descriptor.style)
-        #        print(b.state)
-        #    i += 1
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
         blks_affected = blocks_gtw.blocks_affected(text_info)
@@ -465,6 +459,9 @@ class HighlightDescriptor(XmlMixin):
                         '{0}+{1}c'.format(index, len(self._tokens[0].value)))
                 text.mark_set('startIndex', end_index)
 
+        for b in blocks:
+            print('    Block Found {0} {1}-{2}'.format(
+                b.descriptor.style, b.index_start_int(), b.index_end_int()))
         return blocks
 
     def _to_close_token_open_search(self, text, start, end, count):

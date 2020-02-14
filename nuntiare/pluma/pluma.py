@@ -121,6 +121,10 @@ class TextEditor(PanedView):
     def get_file_content(self):
         with open(self.view.full_file_name) as file_:
             self.widget.insert(1.0, file_.read(), True)
+            self.widget.mark_set('insert_remember', 'insert')
+            self.widget.mark_set('insert', 'end')
+            self.widget.delete('insert-1c', 'insert', True)
+            self.widget.mark_set('insert', 'insert_remember')
 
 
 class RunView(PanedView):
