@@ -222,10 +222,13 @@ class HighlightDefinition(XmlMixin):
             cur_line = last_blk.line_end
             start_col = last_blk.col_end
 
-    def _is_separator(self, txt):
+    def _is_separator(self, txt, include_new_line=False):
         if len(txt) != 1:
             return
-        return txt == ' ' or txt in self._separators
+        extra = [' ']
+        if include_new_line:
+            extra.append('\n')
+        return txt in extra or txt in self._separators
 
     def _remove_blocks(self, text, blocks_gtw):
         self._remove_tags(text, blocks_gtw._to_remove)

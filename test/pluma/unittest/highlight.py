@@ -183,7 +183,7 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.17')
 
-        # Break so two new 'reserved' words appera in two lines
+        # Break so two new 'reserved' words appears in two lines
         self.text.insert('1.8', '\n')
         # Tags
         self._get_tag_ranges()
@@ -246,6 +246,14 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(line), 0) # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.8')
+
+        #####################################
+
+        self.text = self._reset_text_widget()
+        self.text.insert('1.0', 'from tkinter import ttk\nfrom tkinter.font import Font\n')
+        self.assertEqual(len(self.hl_blocks._lines), 3)
+        self.text.delete('2.29', '3.0')
+        self.assertEqual(len(self.hl_blocks._lines), 2)
 
         #####################################
 

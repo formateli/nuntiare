@@ -328,7 +328,7 @@ class HighlightBlocks():
                 if b.descriptor.type in {'wholeword', 'regex'}:
                     if text_info.type == 'inserted':
                         if (chg1 == f1 or chg1 == f2) and \
-                                not b.descriptor.is_separator(text_info.text):
+                                not b.descriptor.is_separator(text_info.text, True):
                             print('  chg1 == f1 or chg1 == f2')
                             self._to_remove.append(b)
                             res.append(b)
@@ -366,7 +366,7 @@ class HighlightBlocks():
 
             i += 1
 
-        print('  res: ' + str(res))
+        print('  Affected: ' + str(res))
 
         return res
 
