@@ -463,8 +463,8 @@ class HighlightDescriptor(XmlMixin):
                 text.mark_set('startIndex', end_index)
 
         for b in blocks:
-            print('    Block Found {0} {1}-{2}'.format(
-                b.descriptor.style, b.index_start_int(), b.index_end_int()))
+            print('    Block Found {0}'.format(b))
+
         return blocks
 
     def _to_close_token_open_search(self, text, start, end, count):

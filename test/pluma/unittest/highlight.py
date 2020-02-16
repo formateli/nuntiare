@@ -252,8 +252,39 @@ class HighlightTest(unittest.TestCase):
         self.text = self._reset_text_widget()
         self.text.insert('1.0', 'from tkinter import ttk\nfrom tkinter.font import Font\n')
         self.assertEqual(len(self.hl_blocks._lines), 3)
+        self._get_tag_ranges()
+        l = self.hl_blocks.get_line(1)
+        self._tag_in_range('reserved', 'from', '1.0', '1.4')
+        self.assertEqual((l[0].index_start(),  l[0].index_end()),
+            ('1.0', '1.4'))
+        self._tag_in_range('reserved', 'import', '1.13', '1.19')
+        self.assertEqual((l[1].index_start(),  l[1].index_end()),
+            ('1.13', '1.19'))
+        l = self.hl_blocks.get_line(2)
+        self._tag_in_range('reserved', 'from', '2.0', '2.4')
+        self.assertEqual((l[0].index_start(),  l[0].index_end()),
+            ('2.0', '2.4'))
+        self._tag_in_range('reserved', 'import', '2.18', '2.24')
+        self.assertEqual((l[1].index_start(),  l[1].index_end()),
+            ('2.18', '2.24'))
+
         self.text.delete('2.29', '3.0')
         self.assertEqual(len(self.hl_blocks._lines), 2)
+        self._get_tag_ranges()
+        l = self.hl_blocks.get_line(1)
+        self._tag_in_range('reserved', 'from', '1.0', '1.4')
+        self.assertEqual((l[0].index_start(),  l[0].index_end()),
+            ('1.0', '1.4'))
+        self._tag_in_range('reserved', 'import', '1.13', '1.19')
+        self.assertEqual((l[1].index_start(),  l[1].index_end()),
+            ('1.13', '1.19'))
+        l = self.hl_blocks.get_line(2)
+        self._tag_in_range('reserved', 'from', '2.0', '2.4')
+        self.assertEqual((l[0].index_start(),  l[0].index_end()),
+            ('2.0', '2.4'))
+        self._tag_in_range('reserved', 'import', '2.18', '2.24')
+        self.assertEqual((l[1].index_start(),  l[1].index_end()),
+            ('2.18', '2.24'))
 
         #####################################
 

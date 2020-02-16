@@ -106,8 +106,7 @@ class HighlightBlocks():
         print("  tchg.index_end_int(): {0}".format(text_info.index_end_int()))
 
         for b in line_start:
-            print("  Cur b.index_start_int(): {0}".format(b.index_start_int()))
-            print("  Cur b.index_end_int(): {0}".format(b.index_end_int()))
+            print("  Cur b:   {0}".format(b))
 
             if text_info.type == 'inserted':
                 if adjust(b):
@@ -170,29 +169,29 @@ class HighlightBlocks():
                             text_info.index_end_int() <= b.index_end_int():
                         b.col_end -= len(text_info.text)
 
-            print("  After b.index_start_int(): {0}".format(b.index_start_int()))
-            print("  After b.index_end_int(): {0}".format(b.index_end_int()))
+            print("  After b: {0}".format(b))
 
         if to_remove:
             self.remove_blocks(to_remove)
 
         if line_count > 1:
-            self._adjust_lines(
-                text_info.type, text_info.line_start, line_count)
-            self._resize_lines(
-                text_info.type, text_info.line_start, line_count)
+            self._adjust_lines(text_info)
+            self._resize_lines(text_info)
 
-    def _adjust_lines(self, type_, start_line, count):
+    def _adjust_lines(self, text_info):
         print('**** _Adjust lines')
-        i = start_line
+
         multiline = []
+        start_line = text_info.line_start
+        count = text_info.line_count()
         factor = 1
-        if type_ == 'deleted':
+        if text_info.type == 'deleted':
             factor = -1
 
         print('  Total lines: ' + str(len(self._lines)))
         print('  start_line: ' + str(start_line))
 
+        i = start_line
         while i <= len(self._lines):
             line = self.get_line(i)
             print('  Line: {0}'.format(i))
@@ -213,27 +212,30 @@ class HighlightBlocks():
                         x += 1
                     multiline.append(b)
 
-                print('   cur b info: {0} - {1} - {2}'.format(
-                    b.descriptor.style, b.index_start_int(), b.index_end_int()))
+                print('   cur b info: {0}'.format(b))
 
                 if b.adjust_line_start or \
                         b.line_start > start_line:
                     print('    Adjusting b start line')
                     b.line_start += factor * (count - 1)
                     b.adjust_line_start = None
-                    if type_ == 'deleted':
+                    if text_info.type == 'deleted':
                         self._reasign_blokcs(line, [b])
-                b.line_end += factor * (count - 1)
+                if text_info.type == 'deleted' and \
+                    text_info.index_start_int() >= b.index_end_int():
+                        pass
+                else:
+                    b.line_end += factor * (count - 1)
 
-                print('   new b info: {0} - {1} - {2}'.format(
-                    b.descriptor.style, b.index_start_int(), b.index_end_int()))
+                print('   new b info: {0}'.format(b))
 
             i += 1
 
-    def _resize_lines(self, type_, start_line, count):
+    def _resize_lines(self, text_info):
         print('**** _Resize lines')
         multiline = []
         line_to_order = []
+        start_line = text_info.line_start
         i = start_line
         while True:
             if i > len(self._lines):
@@ -241,7 +243,6 @@ class HighlightBlocks():
 
             print('  Line: ' + str(i))
             line = self.get_line(i)
-            #print(line)
 
             res = []
             for b in line:
@@ -277,8 +278,8 @@ class HighlightBlocks():
             print(self.get_line(y))
             y += 1
 
-        if type_ == 'deleted':
-            i = count
+        if text_info.type == 'deleted':
+            i = text_info.line_count()
             while i > 1:
                 self._lines.pop()
                 i -= 1
@@ -291,7 +292,7 @@ class HighlightBlocks():
 
     def _reasign_blokcs(self, line, blocks):
         for b in blocks:
-            print('  Reording')
+            print('  Reording...')
             line.remove(b)
             self.set_line(b.line_start)
             l = self.get_line(b.line_start)
@@ -339,8 +340,7 @@ class HighlightBlocks():
 
                     else: # deleted
                         if (chg1 < f1 and chg2 >= f1 or
-                                chg1 >= f1 and chg2 <= f2 or
-                                chg2 >= f2):
+                                chg1 >= f1 and chg1 <= f2):
                             self._to_remove.append(b)
                             res.append(b)
 
@@ -366,7 +366,10 @@ class HighlightBlocks():
 
             i += 1
 
-        print('  Affected: ' + str(res))
+        if res:
+            print('  Affected')
+            for b in res:
+                print('   ' + str(b))
 
         return res
 
@@ -396,14 +399,24 @@ class HighlightBlocks():
             available[0] = text_info.line_start
             available[1] = 0
 
-        line = self.get_line(text_info.line_end)
+        if text_info.type == 'deleted' and \
+                text_info.line_count() > 1:
+            line = self.get_line(
+                text_info.line_end - text_info.line_count() - 1)
+        else:
+            line = self.get_line(text_info.line_end)
+
         for b in line:
             if b.col_start >= text_info.col_end:
                 available[2] = b.line_start
                 available[3] = b.col_start
                 break
         if available[2] is None:
-            available[2] = text_info.line_end
+            if text_info.type == 'deleted' and \
+                    text_info.line_count() > 1:
+                available[2] = text_info.line_end - text_info.line_count() - 1
+            else:
+                available[2] = text_info.line_end
             available[3] = 10000 # Ensure to EOL
 
         print('  res: ' + str(available))
@@ -459,3 +472,11 @@ class HighlightBlock(TextInfoMixin):
         if block.col_start >= self.col_start and \
                 block.col_end <= self.col_end:
             return True
+
+    def __str__(self):
+        res = '<Block {0} {1}-{2}>'.format(
+                self.descriptor.style,
+                self.index_start_int(),
+                self.index_end_int()
+            )
+        return res
