@@ -85,21 +85,21 @@ class HighlightDefinition(XmlMixin):
             if n.nodeName == 'descriptors':
                 self._get_descriptors(n, case_sensitive)
 
-    def apply_hl(self, text, text_info, blocks_gtw):
+    def apply_hl(self, text, text_info, blocks_gtw, progressbar):
         first_time = not text.tags_setted
         if first_time:
             text.set_tags(self._styles)
 
         if first_time:
-            self._apply_hl_first_time(text, text_info, blocks_gtw)
+            self._apply_hl_first_time(text, text_info, blocks_gtw, progressbar)
         else:
-            self._apply_hl_text_changed(text, text_info, blocks_gtw)
+            self._apply_hl_text_changed(text, text_info, blocks_gtw, progressbar)
 
-    def _apply_hl_first_time(self, text, text_info, blocks_gtw):
+    def _apply_hl_first_time(self, text, text_info, blocks_gtw, progressbar):
         blocks_gtw.check_lines_number(text_info.line_count()) # TODO to remove
-        self._apply_hl(text, blocks_gtw, 1, 0, 'end')
+        self._apply_hl(text, blocks_gtw, 1, 0, 'end', progressbar)
 
-    def _apply_hl_text_changed(self, text, text_info, blocks_gtw):
+    def _apply_hl_text_changed(self, text, text_info, blocks_gtw, progressbar):
         blks_affected = blocks_gtw.blocks_affected(text_info)
         blocks_gtw.adjust_block_indexes(text_info)
         self._remove_blocks(text, blocks_gtw)
@@ -114,13 +114,13 @@ class HighlightDefinition(XmlMixin):
                     self._apply_hl(
                         text, blocks_gtw,
                         avbl_range[0], avbl_range[1],
-                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
+                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]), progressbar)
 
             else: # deleted
                 self._apply_hl(
                     text, blocks_gtw,
                     avbl_range[0], avbl_range[1],
-                    '{0}.{1}'.format(avbl_range[2], avbl_range[3]))
+                    '{0}.{1}'.format(avbl_range[2], avbl_range[3]), progressbar)
 
         else: # There are blocks affected
             if text_info.type == 'inserted':
@@ -145,7 +145,7 @@ class HighlightDefinition(XmlMixin):
                         return
 
     def _apply_hl(self, text, blocks_gtw,
-                line_start, col_start, index_end):
+                line_start, col_start, index_end, progressbar):
         print('_APLY HL() ***')
 
         lines = text.get(
@@ -160,6 +160,9 @@ class HighlightDefinition(XmlMixin):
         first_iter = True
 
         while cur_line <= end_line:
+            progressbar.step()
+            progressbar.update_idletasks()
+
             print('cur_line: {0}'.format(cur_line))
 
             line = lines[cur_line - line_start]

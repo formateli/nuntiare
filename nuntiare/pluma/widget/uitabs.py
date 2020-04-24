@@ -29,10 +29,10 @@ A UITabsObserver (see below) must be provided to the widget, and is
 used to notify the caller when changes are made that must be reflected
 in other parts of the user interface.
 """
-
 from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
+from materialtheme import Theme
 
 
 class UITabs(ttk.Frame):
@@ -148,12 +148,13 @@ class UITabs(ttk.Frame):
         self.drag_conclude(ev)
 
     def define_appearance(self):
-        self.height = 22
+        self.height = 25
         self.minwidth = 130
         self.maxwidth = 300
         self.addiconwidth = 24
         self.gapwidth = 15
         self.bg = '#c4c4c4'
+        self.bg = Theme._curr_theme.config['primary_variant_color']
         self.selbg = '#d3d3d3'
         self.dividerbg = '#b0b0b0'
         self.textcolor = '#424242'

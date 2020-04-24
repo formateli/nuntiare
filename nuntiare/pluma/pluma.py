@@ -5,115 +5,157 @@
 from tkinter import *
 import tkinter.messagebox
 import tkinter.filedialog
+import tkinter as tk
+from tkinter import ttk
 import os
-from .image_manager import ImageManager
+from materialtheme import TkMaterialTheme, Theme, ImageManager
+from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
+from materialtheme.widgets import UITabsTheme as UITabs 
 from .menu_manager import MenuManager
-from .widget import UITabsObserver, UITabs
+#from .widget import UITabsObserver, UITabs
 from .highlight import Highlight
 from .view import NuntiareView
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-class Pluma(UITabsObserver):
+class Pluma(TkMaterialTheme):
     def __init__(self):
-        self.root = Tk()
-        self.root.title("Pluma - Nuntiare Report Designer")
-        self.root.geometry('500x500')
+        super(Pluma, self).__init__()
+        self.title('Pluma - Nuntiare Report Designer')
+        self.geometry('800x500')
+        self.protocol("WM_DELETE_WINDOW", self.exit_pluma)
+        try:
+            self.state('zoomed')
+        except:
+            self.state('-zoomed') # ubuntu?
+        #self.wm_attributes('-toolwindow', True)
+
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         self.highlight = Highlight()
         self.highlight.load_syntax_files()
 
-        ICON = os.path.join(DIR, 'images', '24x24')
+        Theme.bind('theme_changed', self._on_theme_changed)
+        ImageManager.add_image_path(os.path.join(DIR, 'images'))
 
-        image_manager = ImageManager()
-        image_manager.add_images([
-                ICON + '/new_file.png',
-                ICON + '/open_file.png',
-                ICON + '/save.png',
-                ICON + '/exit.png',
-                ICON + '/undo.png',
-                ICON + '/redo.png',
-            ])
+        toolbar = GroupToolBar(self, 48)
+        toolbar.add_toolbar('file')
+        toolbar.add_toolbar_item(
+                'file', 'new', self.new_file, 'note_add-24px')
+        toolbar.add_toolbar_item(
+                'file', 'open', self.open_file, 'folder-24px')
+        toolbar.add_toolbar_item(
+                'file', 'save', self.open_file, 'save_alt-24px')
+
+        toolbar.add_toolbar('undo_redo')
+        toolbar.add_toolbar_item(
+            'undo_redo', 'undo', self.undo, 'undo-24px')
+        toolbar.add_toolbar_item(
+            'undo_redo', 'redo', self.redo, 'redo-24px')
+
+        toolbar.add_toolbar('right')
+        toolbar.add_toolbar_item(
+                'right', 'toggle', self._toggle_right_pane, 'menu-black-24dp', side='right')
+        btn_menu = toolbar.add_toolbar_item(
+                'right', 'more', None, 'more_vert-24px', side='right')
+        btn_menu.bind('<Button-1>', self._show_main_menu)
+        toolbar.grid(column=0, row=0, sticky='we')
+
 
         # menu
 
-        self.menu = MenuManager(self.root, image_manager)
+        self._main_menu = MenuManager.new_menu('main', None, parent=self)
 
-        self.menu.new_menu('file', 'main')
-        self.menu.add_command(
-            'file', 'new', 'New', 'Ctrl+N', self.new_file,
-            image='new_file', state=NORMAL)
-        self.menu.add_command(
-            'file', 'open', 'Open', 'Ctrl+O', self.open_file,
-            image='open_file', state=NORMAL)
-        self.menu.add_command(
-            'file', 'save', 'Save', 'Ctrl+S', self.save, image='save')
-        self.menu.add_separator('file')
-        self.menu.add_command(
-            'file', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
-            image='exit', state=NORMAL)
+        MenuManager.new_menu('file', 'main')
+        MenuManager.add_command(
+                'file', 'new', 'New', 'Ctrl+N', self.new_file,
+                image='note_add-24px', state=NORMAL)
+        MenuManager.add_command(
+                'file', 'open', 'Open', 'Ctrl+O', self.open_file,
+                image='folder-24px', state=NORMAL)
+        MenuManager.add_command(
+                'file', 'save', 'Save', 'Ctrl+S', self.save,
+                image='save_alt-24px')
+        MenuManager.add_separator('file')
 
-        self.menu.add_cascade('File', 'main', 'file')
+        MenuManager.add_cascade('File', 'main', 'file')
 
-        self.menu.new_menu('edit', 'main')
-        self.menu.add_command(
-            'edit', 'undo', 'Undo', 'Ctrl+Z', self.undo, image='undo')
-        self.menu.add_command(
-            'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
-        self.menu.add_separator('edit')
-        self.menu.add_command(
-            'edit', 'copy', 'Copy', 'Ctrl+C', self.copy)
-        self.menu.add_command(
-            'edit', 'paste', 'Paste', 'Ctrl+V', self.paste)
-        self.menu.add_command(
-            'edit', 'cut', 'Cut', 'Ctrl+X', self.cut)
-        self.menu.add_separator('edit')
-        self.menu.add_command(
-            'edit', 'select_all', 'Select All', 'Ctrl+A', self.select_all)
+        MenuManager.new_menu('edit', 'main')
+        MenuManager.add_command(
+            'edit', 'undo', 'Undo', 'Ctrl+Z',
+            self.undo, image='undo-24px')
+        #self.menu.add_command(
+        #    'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
+        #self.menu.add_separator('edit')
+        #self.menu.add_command(
+        #    'edit', 'copy', 'Copy', 'Ctrl+C', self.copy)
+        #self.menu.add_command(
+        #    'edit', 'paste', 'Paste', 'Ctrl+V', self.paste)
+        #self.menu.add_command(
+        #    'edit', 'cut', 'Cut', 'Ctrl+X', self.cut)
+        #self.menu.add_separator('edit')
+        #self.menu.add_command(
+        #    'edit', 'select_all', 'Select All', 'Ctrl+A', self.select_all)
 
-        self.menu.add_cascade('Edit', 'main', 'edit')
+        MenuManager.add_cascade('Edit', 'main', 'edit')
 
-        self.root.config(menu=self.menu.get_menu('main'))
-        self.root.grid_rowconfigure(2, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
-
-        # toolbar
-
-        self.menu.add_toolbar('file')
-        self.menu.add_toolbar_item('file', 'new', self.new_file, 'new_file', NORMAL)
-        self.menu.add_toolbar_item('file', 'open', self.open_file, 'open_file', NORMAL)
-        self.menu.add_toolbar_item('file', 'save', self.save, 'save')
-
-        self.menu.add_toolbar('undo_redo')
-        self.menu.add_toolbar_item('undo_redo', 'undo', self.undo, 'undo')
-        self.menu.add_toolbar_item('undo_redo', 'redo', self.redo, 'redo')
+        MenuManager.add_command(
+            'main', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
+            image='close-24px', state=NORMAL)
 
         # link menu and toolbar items
 
-        self.menu.linK_menu_toolbar_item('save', 
-            'file', 'save', 'file', 'save')
+        #self.menu.linK_menu_toolbar_item('save', 
+        #    'file', 'save', 'file', 'save')
 
-        self.menu.linK_menu_toolbar_item('undo', 
-            'edit', 'undo', 'undo_redo', 'undo')
-        self.menu.linK_menu_toolbar_item('redo', 
-            'edit', 'redo', 'undo_redo', 'redo')
+        #self.menu.linK_menu_toolbar_item('undo', 
+        #    'edit', 'undo', 'undo_redo', 'undo')
+        #self.menu.linK_menu_toolbar_item('redo', 
+        #    'edit', 'redo', 'undo_redo', 'redo')
 
         # tabs
 
         self.tab_count = 1
-        self.tabs = UITabs(self.root, self)
+        self.tabs = UITabs(self)
+        self.tabs.bind('tab_added', self._tab_added)
+        self.tabs.bind('tab_closed', self._tab_closed)
+        self.tabs.bind('tab_selected', self._tab_selected)
+        self.tabs.bind('tab_deselected', self._tab_deselected)
         self.tabs.grid(column=0, row=1, sticky='ew')
 
         self.views = {}
         self.current_view = None
 
-        self.root.mainloop()
+        self.progressbar = ttk.Progressbar(self, orient='horizontal')
+        self.progressbar.grid(column=0, row=3, sticky='swe')
+        self.progressbar.grid_remove()
 
-    def handle_addtab(self, tabs, file_name=None):
+        self.set_theme('material')
+        self.mainloop()
+
+    def _toggle_right_pane(self):
+        if self.current_view:
+            self.current_view.current_paned_view.toggle_right_pane()
+
+    def _show_main_menu(self, event):
+        try:
+            self._main_menu.tk_popup(event.x_root, event.y_root, 0)
+        finally:
+            # make sure to release the grab (Tk 8.0a1 only)
+            self._main_menu.grab_release()
+
+    def _on_theme_changed(self, theme):
+        pass
+
+    def _tab_added(self, tabs, tabid=None, file_name=None):
+        self.progressbar.grid()
+        self.progressbar['mode'] = 'indeterminate'
+        self.progressbar.start()
+
         tabs.add(tabid=self.tab_count,
-            title='Untitled ' + str(self.tab_count),
-            dirty=True)
+            title='Untitled ' + str(self.tab_count), dirty=True)
         view = NuntiareView(self.tab_count, self, tabs, file_name)
         view.grid(column=0, row=2, sticky='nwes')
         self.views[self.tab_count] = view
@@ -127,7 +169,10 @@ class Pluma(UITabsObserver):
         view.xml.widget.bind('<Control-x>', self.cut)
         view.xml.widget.bind('<Control-X>', self.cut)
 
-    def handle_closetab(self, tabs, tabid):
+        self.progressbar.stop()
+        self.progressbar.grid_remove()
+
+    def _tab_closed(self, tabs, tabid):
         if tabid in self.views:
             self.views[tabid].grid_forget()
             self.views[tabid].destroy()
@@ -138,11 +183,11 @@ class Pluma(UITabsObserver):
             self.current_view = None
             self._verify_undo_redo()
 
-    def tab_deselected(self, tabs, tabid):
+    def _tab_deselected(self, tabs, tabid):
         if tabid in self.views:
             self.views[tabid].grid_forget()
 
-    def tab_selected(self, tabs, tabid):
+    def _tab_selected(self, tabs, tabid):
         if tabid in self.views: 
             view = self.views[tabid]
             view.grid(column=0, row=2, sticky='nwes')
@@ -150,14 +195,14 @@ class Pluma(UITabsObserver):
             self._verify_undo_redo()
 
     def new_file(self, event=None):
-        self.handle_addtab(self.tabs)
+        self._tab_added(self.tabs)
 
     def open_file(self, event=None):
         input_file_name = tkinter.filedialog.askopenfilename(
-                    defaultextension=".txt",
+                    defaultextension='.txt',
                     filetypes=[("All Files", "*.*"), ("Xml Documents", "*.xml")])
         if input_file_name:
-            self.handle_addtab(self.tabs, input_file_name)
+            self._tab_added(self.tabs, file_name=input_file_name)
 
     def copy(self, event=None):
         view = self.current_view
@@ -238,13 +283,9 @@ class Pluma(UITabsObserver):
         self.menu.link_set_state('redo', redo_state)
 
     def exit_pluma(self, event=None):
-        if tkinter.messagebox.askokcancel("Quit?",
-                "Do you want to QUIT for sure?\n Make sure you've saved your current work."):
-            self.root.destroy()
+        if tkinter.messagebox.askokcancel("Exit Pluma",
+                "Do you want to exit?\n Make sure you've saved your current work."):
+            self.destroy()
 
     def run(self):
-        self.root.mainloop()
-        try:
-            self.root.destroy()
-        except:
-            pass
+        self.mainloop()

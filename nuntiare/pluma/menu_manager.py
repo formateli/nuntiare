@@ -1,61 +1,71 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from tkinter import Menu
 from tkinter import NORMAL, DISABLED
 from tkinter import ttk
+from materialtheme import Theme, ImageManager
 
 
 class MenuManager():
-    def __init__(self, root, image_manager):
-        self._menues = {}
-        self._images = image_manager
 
-        self._tool_bar = ttk.Frame(root,  height=25)
-        self._tool_bar.grid(column=0, row=0, sticky='w')
-        self._tool_bar.grid_rowconfigure(0, weight=1)
-        self._tool_bar.grid_columnconfigure(0, weight=1)
-        self._next_tb_id = 0
-        self._tool_bars = {}
+    _menues = {}
 
-        self._links = {}
+    def __init__(self, root):
+        pass
+        #self._menues = {}
+        #self._images = image_manager
 
-        self.new_menu('main', None, parent=root)
+        #self._tool_bar = ttk.Frame(root,  height=25)
+        #self._tool_bar.grid(column=0, row=0, sticky='w')
+        #self._tool_bar.grid_rowconfigure(0, weight=1)
+        #self._tool_bar.grid_columnconfigure(0, weight=1)
+        #self._next_tb_id = 0
+        #self._tool_bars = {}
 
-    def new_menu(self, name, parent_name, parent=None):
-        if name in self._menues:
+        #self._links = {}
+
+        #self.new_menu('main', None, parent=root)
+
+    @classmethod
+    def new_menu(cls, name, parent_name, parent=None):
+        if name in cls._menues:
             raise Exception("Menu '{0}' already exists.".format(name))
         if parent is None:
-            parent = self.get_menu(parent_name)
+            parent = cls.get_menu(parent_name)
         menu = PlumaMenu(parent, name)
-        self._menues[name] = menu
+        cls._menues[name] = menu
         return menu
 
-    def get_menu(self, name):
-        if name not in self._menues:
+    @classmethod
+    def get_menu(cls, name):
+        if name not in cls._menues:
             raise Exception("Menu '{0}' not found.".format(name))
-        return self._menues[name]
+        return cls._menues[name]
 
-    def add_command(self, menu_name, item_name,
+    @classmethod
+    def add_command(cls, menu_name, item_name,
                 label, acc, command, image=None, state=DISABLED):
-        menu = self.get_menu(menu_name)
+        menu = cls.get_menu(menu_name)
         if image is not None:
-            image = self._images.get_image(image)
+            image = ImageManager.get_image(image)
         menu.add_command(item_name, label, acc, command, image, state)
 
+    @classmethod
     def set_menu_command_state(
-            self, menu_name, item_name, state):
-        menu = self.get_menu(menu_name)
+            cls, menu_name, item_name, state):
+        menu = cls.get_menu(menu_name)
         menu.set_command_state(item_name, state)
 
-    def add_separator(self, menu_name):
-        menu = self.get_menu(menu_name)
+    @classmethod
+    def add_separator(cls, menu_name):
+        menu = cls.get_menu(menu_name)
         menu.add_separator()
 
-    def add_cascade(self, label, parent_name, menu_name):
-        parent = self.get_menu(parent_name)
-        menu = self.get_menu(menu_name)
+    @classmethod
+    def add_cascade(cls, label, parent_name, menu_name):
+        parent = cls.get_menu(parent_name)
+        menu = cls.get_menu(menu_name)
         parent.add_cascade(label=label, menu=menu)
 
     def add_toolbar(self, name):
