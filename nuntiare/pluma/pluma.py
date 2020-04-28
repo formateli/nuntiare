@@ -10,7 +10,7 @@ from tkinter import ttk
 import os
 from materialtheme import TkMaterialTheme, Theme, ImageManager
 from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
-from materialtheme.widgets import UITabsTheme as UITabs 
+from materialtheme.widgets import UITabsTheme as UITabs
 from .menu_manager import MenuManager
 #from .widget import UITabsObserver, UITabs
 from .highlight import Highlight
