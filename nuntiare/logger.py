@@ -1,14 +1,13 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
 import os
 import logging
 import logging.handlers
 
 
-class NuntiareLog(object):
+class NuntiareLog:
     def __init__(self, default_level="WARNING"):
         default_level = self._get_level_from_string(default_level)
         self._logger = logging.getLogger('Nuntiare')
@@ -42,7 +41,7 @@ class NuntiareLog(object):
             message, logging.CRITICAL, raise_error, error_type)
 
     def _raise_error_with_log(
-            self, message, log_type, raise_error, error_type):
+                self, message, log_type, raise_error, error_type):
         if log_type == logging.ERROR:
             self._logger.error(message)
         else:

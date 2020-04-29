@@ -1,12 +1,12 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
+from PIL import ImageColor
 from .. import LOGGER
 from .. data.data_type import DataType
 
 
-class Expression(object):
+class Expression:
     def __init__(
             self, expression, lnk, must_be_constant):
         self.lnk = lnk
@@ -126,15 +126,21 @@ class Color(Expression):
         result = []
         Color._validate_hex_color(hex_color)
         hex_color = hex_color[1:]  # Remove '#'
-        result.append(int(hex_color[0:2] + hex_color[0:2], 16))
-        result.append(int(hex_color[2:4] + hex_color[2:4], 16))
-        result.append(int(hex_color[4:] + hex_color[4:], 16))
+
+#        result.append(int(hex_color[0:2] + hex_color[0:2], 16))
+#        result.append(int(hex_color[2:4] + hex_color[2:4], 16))
+#        result.append(int(hex_color[4:] + hex_color[4:], 16))
+
+        result.append(int(hex_color[0:2], 16))
+        result.append(int(hex_color[2:4], 16))
+        result.append(int(hex_color[4:], 16))
+
         return result
 
     @staticmethod
     def _get_color_by_name(name):
         name = name.lower()
-        # See http://www.w3schools.com/html/html_colornames.asp
+        # See https://www.w3schools.com/colors/colors_names.asp
         if name == "aliceblue":
             return "#F0F8FF"
         if name == "antiquewhite":

@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import os
 import datetime
 from xml.dom import minidom
@@ -26,10 +25,9 @@ class Parameters(Collection):
         super(Parameters, self).__init__()
 
 
-class Report(object):
-    def __init__(
-            self, definition_source, output_name=None,
-            output_directory=None):
+class Report:
+    def __init__(self, definition_source, output_name=None,
+                output_directory=None):
 
         self.definition_source = definition_source
         self.result = None
@@ -82,7 +80,6 @@ class Report(object):
         self.data_sources = self._get_data_sources()
 
         LOGGER.info('Running DataSets...')
-        self.data_sets = {}
         self.data_groups = {}
         self.data_sets = self._get_data_sets()
 

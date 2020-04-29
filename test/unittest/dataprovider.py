@@ -1,12 +1,11 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
-"Nuntiare dataprovider test"
-
 from nuntiare.data.data import DataSource, DataSet
 from nuntiare.data.dataprovider import get_data_provider
 import unittest
+
+"Nuntiare dataprovider test"
 
 
 class DataProvidersTest(unittest.TestCase):
@@ -120,7 +119,7 @@ class DataProvidersTest(unittest.TestCase):
         self.assertEqual(data_set.EOF, False)
         self.assertEqual(data_set.fields['id'], 6)
 
-        data_set.move(20)  # TODO raise error
+        data_set.move(20)  # TODO Should raise error?
         self.assertEqual(data_set.EOF, True)
 
     @staticmethod

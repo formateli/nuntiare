@@ -1,15 +1,13 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
-from sys import version_info
 from dateutil import parser
 from datetime import date, datetime
 from decimal import Decimal
 from .. import LOGGER
 
 
-class DataType():
+class DataType:
     @staticmethod
     def get_value(data_type, value):
         def _to_bool(value):
@@ -67,28 +65,7 @@ class DataType():
             if data_type == 'Integer':
                 result = int(value)
             if data_type == 'String':
-                try:
-                    result = str(value)  # Python3 always return unicode
-                except UnicodeEncodeError:
-                    result = value.encode('utf-8')
-
-                if version_info[0] == 2:  # if python2
-                    if isinstance(value, unicode):
-                        result = value.encode('utf-8')
-
-
-#                try:
-#                    result = str(value)  # Python3 always return unicode
-#                except UnicodeEncodeError:
-#                    result = value.encode('utf-8')
-#                if version_info[0] == 2:  # if python2, Convert to unicode
-#                    if isinstance(result, unicode):
-#                        pass
-#                    elif isinstance(result, str):
-#                        result = unicode(result, 'utf-8')
-#                    else:
-#                        result = unicode(str(result), 'utf-8')
-
+                result = str(value)
             if data_type == 'Float':
                 result = float(value)
             if data_type == 'Decimal':

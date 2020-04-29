@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import unittest
 import os
 import dateutil
@@ -47,12 +46,12 @@ class DataTest(unittest.TestCase):
         report.run(parameters)
 
         country_group = report.data_groups["Country"]
-        self.assertEqual(len(country_group.instance), 6)
+        self.assertEqual(len(country_group.instances), 6)
         i = 0
         country_group.move_first()
         while not country_group.EOF:
             data1 = country_group.current_instance().data
-            data2 = country_group.instance[i].data
+            data2 = country_group.instances[i].data
             self.assertEqual(data1, data2)
             data3 = country_group.current_instance().sub_instance[0].data
             if i == 0:
@@ -96,15 +95,13 @@ class DataTest(unittest.TestCase):
 
     def _verify(self, report):
         self.assertNotEqual(report.data_sources['DataSourceTest'], None)
-        self.assertEqual(
-            report.data_sources['DataSourceTest'].name,
-            'DataSourceTest')
+        self.assertEqual(report.data_sources['DataSourceTest'].name,
+                            'DataSourceTest')
 
         # DataSet without filter
         data = report.data_sets['DataSet1']  # It is the DataInterface object
         # It is appended to the data_groups colecction too
-        self.assertEqual(
-            'DataSet1' in report.data_sets, 'DataSet1' in report.data_groups)
+        self.assertEqual('DataSet1' in report.data_sets, 'DataSet1' in report.data_groups)
         self.assertEqual(len(data.rows), 830)
         data.move_first()  # Move to first row
         self.assertEqual(data.EOF, False)
@@ -151,28 +148,25 @@ class DataTest(unittest.TestCase):
 
         data.move_first()
         self.assertEqual(data.fields['customer'], 'WOLZA')
-        self.assertEqual(
-            data.fields['date'], dateutil.parser.parse('1996-12-05'))
+        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-12-05'))
 
         data.move(100)
         self.assertEqual(data.fields['customer'], 'TORTU')
-        self.assertEqual(
-            data.fields['date'], dateutil.parser.parse('1996-10-02'))
+        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-10-02'))
         data.move_last()
         self.assertEqual(data.fields['customer'], 'ALFKI')
-        self.assertEqual(
-            data.fields['date'], dateutil.parser.parse('1998-04-09'))
+        self.assertEqual(data.fields['date'], dateutil.parser.parse('1998-04-09'))
 
         # ========== Groups ==================
 
         # Group is created automatically for each DataSet
         datasetgroup = report.data_groups['DataSet1']
-        self.assertEqual(len(datasetgroup.instance), 1)
+        self.assertEqual(len(datasetgroup.instances), 1)
         self.assertEqual(len(datasetgroup.sub_group), 1)  # Tablix1 group
         self.assertEqual(datasetgroup.parent, None)  # Top Group
         self.assertEqual(datasetgroup.is_detail_group, False)
         # Orderred by id (defined in sql query)
-        data = datasetgroup.instance[0].data
+        data = datasetgroup.instances[0].data
         self.assertEqual(data.row_count(), 830)
         data.move_first()
         self.assertEqual(data.fields.customer, "VINET")
@@ -190,10 +184,10 @@ class DataTest(unittest.TestCase):
         # Data is sortered customer Descending and freight Ascending
         tablixgroup = report.data_groups['Tablix1']
         self.assertEqual(tablixgroup.parent, datasetgroup)
-        self.assertEqual(len(tablixgroup.instance), 1)
+        self.assertEqual(len(tablixgroup.instances), 1)
         self.assertEqual(len(tablixgroup.sub_group), 2)  # Group1 and Group2
         self.assertEqual(tablixgroup.is_detail_group, False)
-        data = tablixgroup.instance[0].data
+        data = tablixgroup.instances[0].data
         self.assertEqual(data.row_count(), 577)
         data.move_first()
         self.assertEqual(data.fields.customer, "WOLZA")
@@ -208,12 +202,12 @@ class DataTest(unittest.TestCase):
         # Group1
         group1 = report.data_groups['Group1']
         self.assertEqual(group1.parent, tablixgroup)
-        self.assertEqual(len(group1.instance), 1)
+        self.assertEqual(len(group1.instances), 1)
         self.assertEqual(len(group1.sub_group), 0)
         self.assertEqual(tablixgroup.sub_group[0], group1)
         self.assertEqual(group1.is_detail_group, True)
         # Data equal to parent (Tablix1)
-        data = group1.instance[0].data
+        data = group1.instances[0].data
         self.assertEqual(data.row_count(), 577)
         data.move_first()
         self.assertEqual(data.fields.customer, "WOLZA")
@@ -229,13 +223,13 @@ class DataTest(unittest.TestCase):
         group2 = report.data_groups['Group2']
         # Adjacent group of Group1
         self.assertEqual(group2.parent, tablixgroup)
-        self.assertEqual(len(group2.instance), 281)
+        self.assertEqual(len(group2.instances), 281)
         # DetailGroup
         self.assertEqual(len(group2.sub_group), 1)
         self.assertEqual(group2.is_detail_group, False)
         row_count = 0
         i = 0
-        for ins in group2.instance:
+        for ins in group2.instances:
             row_count += ins.data.row_count()
             if i == 0:
                 self._check_instance_data(ins.data, [
@@ -261,12 +255,12 @@ class DataTest(unittest.TestCase):
         # customer sorted Descending
         detailgroup = report.data_groups['DetailGroup']
         self.assertEqual(detailgroup.parent, group2)
-        self.assertEqual(len(detailgroup.instance), 281)
+        self.assertEqual(len(detailgroup.instances), 281)
         self.assertEqual(len(detailgroup.sub_group), 0)
         self.assertEqual(detailgroup.is_detail_group, True)
         row_count = 0
         i = 0
-        for ins in detailgroup.instance:
+        for ins in detailgroup.instances:
             row_count += ins.data.row_count()
             if i == 0:
                 self._check_instance_data(ins.data, [
@@ -277,7 +271,6 @@ class DataTest(unittest.TestCase):
                         ['QUEDE', 45.54], ['HUNGO', 142.33]
                     ])
             if i == 203:
-                ins.data.move_first()
                 self._check_instance_data(ins.data, [
                         ['TRADH', 35.43], ['LINOD', 2.71]
                     ])

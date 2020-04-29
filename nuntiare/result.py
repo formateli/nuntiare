@@ -1,12 +1,11 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from . outcome.page_item import PageItemsInfo
 from . import LOGGER
 
 
-class Result(object):
+class Result:
     def __init__(self, report):
         self.report = report
         self.page_def = report.definition.Page
@@ -49,7 +48,7 @@ class Result(object):
         self.body.run_items()
 
 
-class _SectionInfo(object):
+class _SectionInfo:
     def __init__(self, report, definition, has_height):
         self.report = report
         self.definition = definition

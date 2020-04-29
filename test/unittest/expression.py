@@ -1,10 +1,9 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import unittest
-from nuntiare.definition.expression import String, Boolean, \
-        Integer, Color, Size
+from nuntiare.definition.expression import (String, Boolean,
+        Integer, Color, Size)
 from nuntiare.report import Report
 
 
@@ -94,12 +93,12 @@ class ElementTypeTest(unittest.TestCase):
             err_message, "Color '#FFCD5C5C' not in correct format.")
 
         rgb = Color.to_rgb('#CD5C5C')
-#        self.assertEqual(rgb[0], 205)
-#        self.assertEqual(rgb[1], 92)
-#        self.assertEqual(rgb[2], 92)
+        self.assertEqual(rgb[0], 205)
+        self.assertEqual(rgb[1], 92)
+        self.assertEqual(rgb[2], 92)
 
         s = Color("SlateBlue", True)
         rgb = Color.to_rgb(s.value(report))
-#        self.assertEqual(rgb[0], 106)
-#        self.assertEqual(rgb[1], 90)
-#        self.assertEqual(rgb[2], 205)
+        self.assertEqual(rgb[0], 106)
+        self.assertEqual(rgb[1], 90)
+        self.assertEqual(rgb[2], 205)

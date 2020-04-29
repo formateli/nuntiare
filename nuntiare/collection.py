@@ -1,11 +1,10 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from . import LOGGER
 
 
-class CollectionItem(object):
+class CollectionItem:
     def __init__(self, name):
         self.name = name
         self.value = None
@@ -14,7 +13,7 @@ class CollectionItem(object):
         return self.value
 
 
-class Collection(object):
+class Collection:
     def __init__(self):
         self._items = []
         self._items_dict = {}

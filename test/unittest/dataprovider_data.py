@@ -16,6 +16,7 @@ class City(object):
         self.population = population
         self.is_capital = is_capital
 
+
 CITIES_OBJ = []
 CITIES_OBJ.append(City(1, "Santiago de Veraguas", "Veraguas", 80000, True))
 CITIES_OBJ.append(City(2, "Atalaya", "Veraguas", 8916, False))

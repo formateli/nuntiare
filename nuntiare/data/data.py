@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from . data_type import DataType
 from . dataprovider import get_data_provider
 from .. import LOGGER
@@ -60,9 +59,8 @@ class Fields(Collection):
         self.current_data = data
 
     def add_field(self, name, data_field, field_value, data_type):
-        field = Field(
-            self._field_index, self,
-            name, data_field, field_value, data_type)
+        field = Field(self._field_index, self,
+                name, data_field, field_value, data_type)
         super(Fields, self).add_item(field)
         self._field_index += 1
 
@@ -89,15 +87,14 @@ class Fields(Collection):
                 name, self.__class__.__name__), True)
 
 
-class FieldsDataInterface(object):
+class FieldsDataInterface:
     def __init__(self, parent):
         self.parent = parent
         self.fields = None
         self.count = 0
 
-    def add_field(
-            self, name, data_field=None,
-            field_value=None, data_type=None):
+    def add_field(self, name, data_field=None,
+                field_value=None, data_type=None):
         'Must be call only for DataSet'
         if not self.fields:
             self.fields = Fields(self.parent.report)
@@ -121,7 +118,7 @@ class FieldsDataInterface(object):
         self.fields[key] = value
 
 
-class DataInterface(object):
+class DataInterface:
     def __init__(self, report, name):
         self.report = report
         self.name = name
@@ -135,12 +132,12 @@ class DataInterface(object):
         if report:
             if name in report.data_interfaces:
                 LOGGER.error(
-                    "DataInterface '{0}' already exists.".format(name))
+                    "'{0}' '{1}' already exists.".format(
+                        self.__class__.__name__, name))
             report.data_interfaces[name] = self
 
-    def add_field(
-            self, name, data_field=None,
-            field_value=None, data_type=None):
+    def add_field(self, name, data_field=None,
+                    field_value=None, data_type=None):
         self.fields.add_field(
             name, data_field, field_value, data_type)
 
@@ -188,7 +185,7 @@ class DataInterface(object):
         return self.rows[self._current_index]
 
     def copy(self):
-        result = DataInterface(self.report, "data_copy_" + self.name)
+        result = DataInterface(self.report, 'data_copy_' + self.name)
         result.fields.fields = self.fields.fields
         for r in self.rows:
             result.add_row(r)
@@ -217,7 +214,7 @@ class DataInterface(object):
             i += limit
 
 
-class DataSource(object):
+class DataSource:
     def __init__(self, name, data_provider):
         self.name = name
         self.data_provider = data_provider
@@ -227,24 +224,24 @@ class DataSource(object):
         self.cursor = None
         if not self.data_provider:
             LOGGER.error(
-                "Invalid DataProvider '{0}' for DataSource '{1}'".format(
+                    "Invalid DataProvider '{0}' for DataSource '{1}'".format(
                     self.data_provider, self.name))
             return False
 
         if connection_object is None:
             LOGGER.error(
-                "Invalid connection object for DataSource '{0}'.".format(
+                    "Invalid connection object for DataSource '{0}'.".format(
                     self.name))
             return False
 
         try:
             LOGGER.debug(
-                "Connecting Data Source '{0}'".format(self.name))
+                    "Connecting Data Source '{0}'".format(self.name))
             conn = self.data_provider.connect(connection_object)
             self.cursor = conn.cursor()
         except Exception as e:
             LOGGER.error(
-                "Error while connecting to database. '{0}'".format(e.args[0]))
+                    "Error while connecting to database. '{0}'".format(e.args[0]))
             return False
 
         return True
@@ -349,9 +346,8 @@ class DataGroupInstance(DataInterface):
             self.data_parent.move_next()
 
     @staticmethod
-    def get_groups(
-            data, expression, sub_groups=[],
-            sort_descending=None, page_break=None):
+    def get_groups(data, expression, sub_groups=[],
+                sort_descending=None, page_break=None):
 
         group_list = []  # List of DataInterface objects
 
@@ -373,16 +369,13 @@ class DataGroupInstance(DataInterface):
 
                 if exp_key not in groups_exp:
                     groups_exp[exp_key] = DataGroupInstance(
-                            dt,
-                            "{0}-{1}".format(dt.name, exp_key),
-                            page_break)
+                        dt, "{0}-{1}".format(dt.name, exp_key), page_break)
                     group_exp_list.append([exp_key, groups_exp[exp_key]])
                 groups_exp[exp_key].add_row(r)
                 dt.move_next()
             if sort_descending is not None:
                 group_exp_list = sorted(
                     group_exp_list,
-                    #key=lambda z: z[0],
                     key=lambda z: (z[0] is None, z[0]),
                     reverse=sort_descending)
             group_list.extend(group_exp_list)
@@ -446,9 +439,7 @@ class DataSetObject(DataSet):
                 command_text)
         else:
             # Connection failed, try to load data appended to report
-            LOGGER.info(
-                "Trying to load embedded data for data set '{0}'".format(
-                    self.name))
+            LOGGER.info("Trying to load embedded data for data set '{0}'".format(self.name))
             if not self.report.definition.data:
                 err_msg = "DataSource connection failed and " \
                     "no data embedded in defintion file for DataSet: '{0}'."
@@ -472,8 +463,8 @@ class DataSetObject(DataSet):
         dg.add_data_instance(self)
 
 
-class FiltersObject(object):
-    class _FilterObject(object):
+class FiltersObject:
+    class _FilterObject:
         def __init__(self, filter_def):
             self.filter_values = []
             self.filter_expression = filter_def.get_element(
@@ -579,8 +570,8 @@ class FiltersObject(object):
             return current_row
 
 
-class SortingObject(object):
-    class _SortByObject(object):
+class SortingObject:
+    class _SortByObject:
         def __init__(self, sortby_def, report):
             self.sort_expression = None
             self.direction = 'Ascending'
@@ -628,8 +619,8 @@ class SortingObject(object):
             del data.report.data_interfaces[g[1].name]
 
 
-class DataGroupObject(object):
-    class GroupInstance(object):
+class DataGroupObject:
+    class GroupInstance:
         def __init__(self, group, data):
             self.group = group
             self.data = data
@@ -641,7 +632,7 @@ class DataGroupObject(object):
     def __init__(self, report, name, parent, location=None):
         self.name = name
         self.report = report
-        self.instance = []      # List of GroupInstance objects.
+        self.instances = []     # List of GroupInstance objects.
         self.top_group = None   # Top group. Normally the data set.
         self.parent = parent    # Parent group. 'None' for Dataset.
         self.sub_group = []     # List of DataGroupObject defining sub groups.
@@ -669,15 +660,14 @@ class DataGroupObject(object):
             return
 
         self.data_element_name = self.report.get_value(
-            group_def, 'DataElementName', self.name)
+                group_def, 'DataElementName', self.name)
         self.data_element_output = self.report.get_value(
-            group_def, 'DataElementOutput', 'Auto')
+                group_def, 'DataElementOutput', 'Auto')
 
         if self.parent and self.parent.is_detail_group:
             err_msg = "Group '{0}' could not be created. " \
                 "Parent group '{1}' is a detail group."
-            LOGGER.error(
-                err_msg.format(
+            LOGGER.error(err_msg.format(
                     group_def.Name, self.parent.name), True)
 
         exp_def = group_def.get_element('GroupExpressions')
@@ -690,26 +680,21 @@ class DataGroupObject(object):
         if sort_def:
             srt = SortingObject(self.report, sort_def)
         class_name = group_def.__class__.__name__
-        for parent_instance in self.parent.instance:
+        for parent_instance in self.parent.instances:
             groups = []
-            data = self._get_filtered_and_sorted(
-                parent_instance.data, flt, srt)
+            data = self._get_filtered_and_sorted(parent_instance.data, flt, srt)
             if class_name == 'Group' and not exp_def:
-                groups.append(
-                    [None, self._create_one_group(data)])
+                groups.append([None, self._create_one_group(data)])
                 self.is_detail_group = True
             elif exp_def:
                 if len(exp_def.expression_list) == 0:
-                    groups.append(
-                        [None, self._create_one_group(data)])
+                    groups.append([None, self._create_one_group(data)])
                     self.is_detail_group = True
                 else:
                     for exp in exp_def.expression_list:
-                        groups = DataGroupInstance.get_groups(
-                            data, exp, groups)
+                        groups = DataGroupInstance.get_groups(data, exp, groups)
             else:
-                groups.append(
-                    [None, self._create_one_group(data)])
+                groups.append([None, self._create_one_group(data)])
 
             if data != parent_instance.data:
                 del self.report.data_interfaces[data.name]
@@ -722,24 +707,23 @@ class DataGroupObject(object):
         self.parent.sub_group.append(self)
 
     def add_data_instance(self, data):
-        instance = self.GroupInstance(self, data)
-        self.instance.append(instance)
+        instance = DataGroupObject.GroupInstance(self, data)
+        self.instances.append(instance)
         return instance
 
     def current_instance(self):
-        return self.instance[self._current_instance_index]
+        return self.instances[self._current_instance_index]
 
     def move_first(self):
         self.move(0)
 
     def move_next(self):
-        self.move(
-            self._current_instance_index + 1)
+        self.move(self._current_instance_index + 1)
 
     def move(self, index):
         self.EOF = True
         self._current_instance_index = -1
-        if not self.instance or index > len(self.instance) - 1:
+        if not self.instances or index > len(self.instances) - 1:
             return
         self.EOF = False
         self._current_instance_index = index

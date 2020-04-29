@@ -1,13 +1,12 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from . page_item import PageItem, PageItemsInfo
 from .. import LOGGER
 from .. data.data import DataGroupObject
 
 
-class HeaderItem(object):
+class HeaderItem:
     def __init__(self, type_, member, parent):
         self.type = type_
         self.member = member
@@ -114,8 +113,7 @@ class PageTablix(PageItem):
 
         data_set = None
         tablix_group = None
-        data_set_name = report.get_value(
-            tablix_def, 'DataSetName', None)
+        data_set_name = report.get_value(tablix_def, 'DataSetName', None)
 
         if data_set_name:
             if data_set_name not in report.data_sets:
@@ -428,15 +426,15 @@ class PageTablix(PageItem):
     def all_to_first(self, members):
         for member in members:
             if member.group:
-                if member.group.instance:
+                if member.group.instances:
                     member.group.move_first()
-                    for instance in member.group.instance:
+                    for instance in member.group.instances:
                         instance.data.move_first()
             if member.members:
                 self.all_to_first(member.members)
 
 
-class TablixHierarchy(object):
+class TablixHierarchy:
     def __init__(self, type_, report, definition, tablix_group):
         self.type = type_
         self.members = []
@@ -517,7 +515,7 @@ class TablixHierarchy(object):
                     self.type, len(items) - 1, index, err), True)
 
 
-class TablixCell(object):
+class TablixCell:
     def __init__(self, report, definition, height):
         self.report = report
         self.height = height
@@ -539,7 +537,7 @@ class TablixCell(object):
         return self.items_info
 
 
-class TablixMember(object):
+class TablixMember:
     class Header():
         def __init__(self, member):
             self.member = member
@@ -720,7 +718,7 @@ class TablixMember(object):
         self.hierarchy.rows_columns.append(self.def_object)
 
 
-class Grid(object):
+class Grid:
     '''
     Thought as a spreadsheet,
     zero to one cell per row/column coordinate.
@@ -728,7 +726,7 @@ class Grid(object):
     in number and others cells may span.
     '''
 
-    class Column(object):
+    class Column:
         def __init__(self, index, member, instance):
             self.width = 0.0
             self.index = index
@@ -736,8 +734,8 @@ class Grid(object):
             self.member = member
             self.instance = instance
 
-    class Row(object):
-        class Cell(object):
+    class Row:
+        class Cell:
             def __init__(
                     self, grow_direction, row, column, cell_object,
                     row_instance, col_instance):
