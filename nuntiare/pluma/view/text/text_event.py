@@ -1,47 +1,8 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
-from tkinter import Text, NONE, font, TclError, IntVar
-
-
-class TextInfoMixin():
-    def __init__(self):
-        self.line_start = None
-        self.col_start = None
-        self.line_end = None
-        self.col_end = None
-
-    def index_start(self):
-        return self._get_index(self.line_start, self.col_start)
-
-    def index_end(self):
-        return self._get_index(self.line_end, self.col_end)
-
-    def index_start_int(self):
-        return self._get_index_int(
-            self.line_start, self.col_start)
-
-    def index_end_int(self):
-        return self._get_index_int(
-            self.line_end, self.col_end)
-
-    def line_count(self):
-        return self.line_end - self.line_start + 1
-
-    @staticmethod
-    def _get_index(line, col):
-        return '{0}.{1}'.format(line, col)
-
-    @staticmethod
-    def _get_index_int(line, col):
-        factor = 10000
-        return (factor * line) + col
-
-    @staticmethod
-    def _get_line_col(index):
-        s = index.split('.')
-        return int(s[0]), int(s[1])
+import tkinter as tk
+from ...common import TextInfoMixin
 
 
 class TextChangedInfo(TextInfoMixin):
@@ -105,16 +66,16 @@ class TextChangedInfo(TextInfoMixin):
         return line, col
 
 
-class TextEvent(Text):
+class TextEvent(tk.Text):
     def __init__(self, parent, xscrollcommand, yscrollcommand, is_test=False):
 
         text_editor_font = None
         if not is_test:
-            text_editor_font = font.Font(
+            text_editor_font = tk.font.Font(
                 family='Courier New', size=14)
 
         super(TextEvent, self).__init__(parent,
-                wrap=NONE,
+                wrap=tk.NONE,
                 font=text_editor_font,
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
@@ -143,7 +104,7 @@ class TextEvent(Text):
             self.tags_setted = True
 
     def new_int_var(self):
-        return IntVar()
+        return tk.IntVar()
 
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):
@@ -181,7 +142,7 @@ class TextEvent(Text):
         cmd = (self._orig, command) + args
         try:
             result = self.tk.call(cmd)
-        except TclError as er:
+        except tk.TclError as er:
             result = None
             #print(er)
 
