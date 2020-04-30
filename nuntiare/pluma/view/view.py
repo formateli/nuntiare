@@ -53,6 +53,14 @@ class NuntiareView(ttk.Frame):
         self.notebook.grid(row=0, column=0, sticky='ewns')
         self.notebook.bind("<<NotebookTabChanged>>", self.tab_changed)
 
+    def get_view(self, type_):
+        if type_ == 'text':
+            return self.xml
+        if type_ == 'run':
+            return self.run
+        if type_ == 'designer':
+            return self.design 
+
     def tab_changed(self, event):
         nb = event.widget
         name = nb.select()

@@ -13,19 +13,6 @@ class MenuManager():
 
     def __init__(self, root):
         pass
-        #self._menues = {}
-        #self._images = image_manager
-
-        #self._tool_bar = ttk.Frame(root,  height=25)
-        #self._tool_bar.grid(column=0, row=0, sticky='w')
-        #self._tool_bar.grid_rowconfigure(0, weight=1)
-        #self._tool_bar.grid_columnconfigure(0, weight=1)
-        #self._next_tb_id = 0
-        #self._tool_bars = {}
-
-        #self._links = {}
-
-        #self.new_menu('main', None, parent=root)
 
     @classmethod
     def new_menu(cls, name, parent_name, parent=None):

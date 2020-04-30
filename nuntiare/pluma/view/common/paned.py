@@ -27,7 +27,6 @@ class PanedView(ttk.PanedWindow):
         self.id = id_
         self.pluma = pluma
         self.view = view
-        self.widget = None
         self.tabs = tabs
         self.type = None
 

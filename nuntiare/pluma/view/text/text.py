@@ -12,15 +12,16 @@ class TextView(PanedView):
             id_, pluma, view, tabs)
         self.type = 'xml'
         frame = self.get_frame()
-        self.widget = TextEvent(frame,
+        self.text = TextEvent(
+                frame,
                 xscrollcommand=frame.xscrollbar.set,
                 yscrollcommand=frame.yscrollbar.set)
-        self.widget.grid(row=0, column=0, sticky='wens')
+        self.text.grid(row=0, column=0, sticky='wens')
 
-        self.widget.bind("<<TextModified>>", self.onTextModified)
+        self.text.bind("<<TextModified>>", self.onTextModified)
 
-        frame.xscrollbar.config(command=self.widget.xview)
-        frame.yscrollbar.config(command=self.widget.yview)
+        frame.xscrollbar.config(command=self.text.xview)
+        frame.yscrollbar.config(command=self.text.yview)
 
         self.left_window.add(frame, weight=1)
 
@@ -29,11 +30,12 @@ class TextView(PanedView):
 
     def onTextModified(self, event):
         text_info = event.widget.text_changed_info.copy()
-        if not self.widget.is_undo_redo:
+        if not self.text.is_undo_redo:
             self.view.memento.insert_memento(text_info)
         self.hl.apply_hl(
-            self.widget, text_info, self.view.hl_blocks, self.pluma.progressbar)
-        self.widget.is_undo_redo = None
+                self.text, text_info, self.view.hl_blocks,
+                self.pluma.progressbar)
+        self.text.is_undo_redo = None
         self._update_undo_redo()
         self.pluma.menu.link_set_state('save', tk.NORMAL)
 
@@ -51,10 +53,10 @@ class TextView(PanedView):
         self.pluma.menu.link_set_state(name, state)
 
     def new_file(self):
-        self.widget.delete(1.0, tk.END)
+        self.text.delete(1.0, tk.END)
         if self.view.full_file_name is None:
             self.hl = self.pluma.highlight.get_hl_for_extension('xml')
-            self.widget.insert('1.0', self.new_snipet(), True)
+            self.text.insert('1.0', self.new_snipet(), True)
             state = tk.NORMAL
         else:
             self.hl = self.pluma.highlight.get_hl_for_extension(self.view.extension)
@@ -74,8 +76,8 @@ class TextView(PanedView):
 
     def get_file_content(self):
         with open(self.view.full_file_name) as file_:
-            self.widget.insert(1.0, file_.read(), True)
-            self.widget.mark_set('insert_remember', 'insert')
-            self.widget.mark_set('insert', 'end')
-            self.widget.delete('insert-1c', 'insert', True)
-            self.widget.mark_set('insert', 'insert_remember')
+            self.text.insert(1.0, file_.read(), True)
+            self.text.mark_set('insert_remember', 'insert')
+            self.text.mark_set('insert', 'end')
+            self.text.delete('insert-1c', 'insert', True)
+            self.text.mark_set('insert', 'insert_remember')

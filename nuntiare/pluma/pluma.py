@@ -11,7 +11,6 @@ from materialtheme import TkMaterialTheme, Theme, ImageManager
 from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
 from materialtheme.widgets import UITabsTheme as UITabs
 from .menu_manager import MenuManager
-#from .widget import UITabsObserver, UITabs
 from .highlight import Highlight
 from .view import NuntiareView
 
@@ -23,7 +22,7 @@ class Pluma(TkMaterialTheme):
         super(Pluma, self).__init__()
         self.title('Pluma - Nuntiare Report Designer')
         self.geometry('800x500')
-        self.protocol("WM_DELETE_WINDOW", self.exit_pluma)
+        self.protocol('WM_DELETE_WINDOW', self.exit_pluma)
         try:
             self.state('zoomed')
         except:
@@ -161,12 +160,12 @@ class Pluma(TkMaterialTheme):
         self.current_view = view
         self.tab_count += 1
 
-        view.xml.widget.bind('<Control-c>', self.copy)
-        view.xml.widget.bind('<Control-C>', self.copy)
-        view.xml.widget.bind('<Control-v>', self.paste)
-        view.xml.widget.bind('<Control-V>', self.paste)
-        view.xml.widget.bind('<Control-x>', self.cut)
-        view.xml.widget.bind('<Control-X>', self.cut)
+        view.xml.text.bind('<Control-c>', self.copy)
+        view.xml.text.bind('<Control-C>', self.copy)
+        view.xml.text.bind('<Control-v>', self.paste)
+        view.xml.text.bind('<Control-V>', self.paste)
+        view.xml.text.bind('<Control-x>', self.cut)
+        view.xml.text.bind('<Control-X>', self.cut)
 
         self.progressbar.stop()
         self.progressbar.grid_remove()
@@ -208,7 +207,7 @@ class Pluma(TkMaterialTheme):
         copypaste = view.copypaste
         if view and \
                 view.current_paned_view.type == 'xml':
-            txt = view.xml.widget.get(SEL_FIRST, SEL_LAST)
+            txt = view.xml.text.get(SEL_FIRST, SEL_LAST)
             if txt is not None:
                 copypaste.add_copy(txt)
                 return txt
@@ -221,21 +220,20 @@ class Pluma(TkMaterialTheme):
                 view.current_paned_view.type == 'xml':
             txt = copypaste.get_paste()
             if txt is not None:
-                view.xml.widget.insert(
-                    INSERT, txt[0])
+                view.xml.text.insert(INSERT, txt[0])
         return 'break'
 
     def cut(self, event=None):
         txt = self.copy()
         if txt is not None:
-            self.current_view.xml.widget.delete(SEL_FIRST, SEL_LAST)
+            self.current_view.xml.text.delete(SEL_FIRST, SEL_LAST)
         return 'break'
 
     def select_all(self, event=None):
         view = self.current_view
         if view and \
                 view.current_paned_view.type == 'xml':
-            view.xml.widget.tag_add('sel', '1.0', 'end')
+            view.xml.text.tag_add('sel', '1.0', 'end')
 
     def save(self, event=None):
         pass
@@ -249,10 +247,10 @@ class Pluma(TkMaterialTheme):
         if memento.is_undo_possible():
             history = memento.get_undo_memento()
             if history.type == 'inserted':
-                view.xml.widget.delete(
+                view.xml.text.delete(
                     history.index_start(), history.index_end(), True)
             elif history.type == 'deleted':
-                view.xml.widget.insert(
+                view.xml.text.insert(
                     history.index_start(), history.text, True)
 
     def redo(self, event=None):
@@ -261,10 +259,10 @@ class Pluma(TkMaterialTheme):
         if memento.is_redo_possible():
             history = memento.get_redo_memento()
             if history.type == 'inserted':
-                view.xml.widget.insert(
+                view.xml.text.insert(
                     history.index_start(), history.text, True)
             elif history.type == 'deleted':
-                view.xml.widget.delete(
+                view.xml.text.delete(
                     history.index_start(), history.index_end(), True)
 
     def _verify_undo_redo(self):
