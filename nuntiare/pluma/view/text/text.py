@@ -2,26 +2,33 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import tkinter as tk
-from ...memento import MementoCaretaker
-from ..common import PanedView
+from ..common import PanedView, MementoCaretaker
 from .text_event import TextEvent
+from .highlight import Highlight, HighlightBlocks
 
 
 class TextView(PanedView):
 
-    _tool_bar = None
+    _title = None
+    _highlight = None
 
-    def __init__(self, id_, pluma, view, tabs):
-        super(TextView, self).__init__(
-            id_, pluma, view, tabs)
+    def __init__(self, view):
+        super(TextView, self).__init__(view)
         self.type = 'text'
         frame = self.get_frame()
+
         self.text = TextEvent(
                 frame,
                 xscrollcommand=frame.xscrollbar.set,
                 yscrollcommand=frame.yscrollbar.set)
         self.text.grid(row=0, column=0, sticky='wens')
         self.text.bind("<<TextModified>>", self.onTextModified)
+        self.text.bind('<Control-c>', self._copy)
+        self.text.bind('<Control-C>', self._copy)
+        self.text.bind('<Control-v>', self._paste)
+        self.text.bind('<Control-V>', self._paste)
+        self.text.bind('<Control-x>', self._cut)
+        self.text.bind('<Control-X>', self._cut)
 
         self._memento = MementoCaretaker()
 
@@ -30,35 +37,28 @@ class TextView(PanedView):
 
         self.left_window.add(frame, weight=1)
 
-        self.hl = None # Highlight
+        self._hl = None # Highlight
+        self._hl_blocks = HighlightBlocks()
         self.new_file()
 
     def onTextModified(self, event):
         text_info = event.widget.text_changed_info.copy()
         if not self.text.is_undo_redo:
             self._memento.insert_memento(text_info)
-        self.hl.apply_hl(
-                self.text, text_info, self.view.hl_blocks,
-                self.pluma.progressbar)
+        self._hl.apply_hl(
+                self.text, text_info, self._hl_blocks,
+                self.view.pluma.progressbar)
         self.text.is_undo_redo = None
         self._verify_undo_redo()
-        self.pluma.menu.link_set_state('save', tk.NORMAL)
-
 
     def new_file(self):
         self.text.delete(1.0, tk.END)
         if self.view.full_file_name is None:
-            self.hl = self.pluma.highlight.get_hl_for_extension('xml')
+            self._hl = TextView._highlight.get_hl_for_extension('xml')
             self.text.insert('1.0', self.new_snipet(), True)
-            state = tk.NORMAL
         else:
-            self.hl = self.pluma.highlight.get_hl_for_extension(self.view.extension)
+            self._hl = TextView._highlight.get_hl_for_extension(self.view.extension)
             self.get_file_content()
-            self.tabs.set_title(self.id, self.view.file_name)
-            self.tabs.set_dirty(self.id, False)
-            self.tabs.set_tooltip(self.id, self.view.full_file_name)
-            state = tk.DISABLED
-        #self.pluma.menu.link_set_state('save', state)
         self._clear_memento()
 
     def new_snipet(self):
@@ -75,8 +75,21 @@ class TextView(PanedView):
             self.text.delete('insert-1c', 'insert', True)
             self.text.mark_set('insert', 'insert_remember')
 
-    def update_toolbar(self):
-        tb = self.pluma.toolbar
+    def selected(self):
+        tb = self.view.pluma.toolbar
+        tb.show('text', True)
+        tb.show('undo_redo', True)
+        self._update_toolbar()
+
+    def deselected(self):
+        tb = self.view.pluma.toolbar
+        tb.show('text', False)
+
+    def close(self):
+        pass
+
+    def _update_toolbar(self):
+        tb = self.view.pluma.toolbar
         tb.set_command('undo_redo', 'undo', self._undo)
         tb.set_command('undo_redo', 'redo', self._redo)
         tb.set_command('text', 'copy', self._copy)
@@ -118,13 +131,18 @@ class TextView(PanedView):
         self._verify_undo_redo()
 
     def _verify_undo_redo(self):
-        tb = self.pluma.toolbar
+        tb = self.view.pluma.toolbar
         tb.enable('undo_redo', 'undo', self._memento.is_undo_possible())
         tb.enable('undo_redo', 'redo', self._memento.is_redo_possible())
 
-    def _set_tool_bar(self):
-        if TextView._tool_bar is None:
-            tb = self.pluma.toolbar
+    def _init_class(self):
+        if TextView._title is None:
+            TextView._title = 'Text Editor'
+
+            TextView._highlight = Highlight()
+            TextView._highlight.load_syntax_files()
+
+            tb = self.view.pluma.toolbar
             tb.add_toolbar('text', after='file')
             tb.add_toolbar_item(
                     'text', 'copy', None, 'file_copy-24px')
@@ -133,4 +151,3 @@ class TextView(PanedView):
             tb.add_toolbar_item(
                     'text', 'cut', None, 'file_cut-24px')
             tb.show('text', False)
-            TextView._tool_bar = 'text'

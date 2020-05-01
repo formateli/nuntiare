@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import tkinter as tk
-from ...common import TextInfoMixin
+from ..common import TextInfoMixin
 
 
 class TextChangedInfo(TextInfoMixin):

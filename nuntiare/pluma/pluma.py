@@ -9,7 +9,6 @@ from materialtheme import TkMaterialTheme, Theme, ImageManager
 from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
 from materialtheme.widgets import UITabsTheme as UITabs
 from .menu_manager import MenuManager
-from .highlight import Highlight
 from .view import NuntiareView
 
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -30,9 +29,6 @@ class Pluma(TkMaterialTheme):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.highlight = Highlight()
-        self.highlight.load_syntax_files()
-
         Theme.bind('theme_changed', self._on_theme_changed)
         ImageManager.add_image_path(os.path.join(DIR, 'images'))
 
@@ -44,13 +40,6 @@ class Pluma(TkMaterialTheme):
                 'file', 'open', self.open_file, 'folder-24px')
         self.toolbar.add_toolbar_item(
                 'file', 'save', self.open_file, 'save_alt-24px')
-
-        self.toolbar.add_toolbar('undo_redo')
-        self.toolbar.add_toolbar_item(
-                'undo_redo', 'undo', self.undo, 'undo-24px')
-        self.toolbar.add_toolbar_item(
-                'undo_redo', 'redo', self.redo, 'redo-24px')
-
         self.toolbar.add_toolbar('right')
         self.toolbar.add_toolbar_item(
                 'right', 'toggle', self._toggle_right_pane,
@@ -163,13 +152,6 @@ class Pluma(TkMaterialTheme):
         self.current_view = view
         self.tab_count += 1
 
-        view.xml.text.bind('<Control-c>', self.copy)
-        view.xml.text.bind('<Control-C>', self.copy)
-        view.xml.text.bind('<Control-v>', self.paste)
-        view.xml.text.bind('<Control-V>', self.paste)
-        view.xml.text.bind('<Control-x>', self.cut)
-        view.xml.text.bind('<Control-X>', self.cut)
-
         self.progressbar.stop()
         self.progressbar.grid_remove()
 
@@ -182,7 +164,6 @@ class Pluma(TkMaterialTheme):
 
         if len(tabs.tabs) == 0:
             self.current_view = None
-            self._verify_undo_redo()
 
     def _tab_deselected(self, tabs, tabid):
         if tabid in self.views:
@@ -193,8 +174,7 @@ class Pluma(TkMaterialTheme):
             view = self.views[tabid]
             view.grid(column=0, row=2, sticky='nwes')
             self.current_view = view
-            view.update_toolbar()
-            self._verify_undo_redo()
+            view.update_views()
 
     def new_file(self, event=None):
         self._tab_added(self.tabs)
@@ -244,41 +224,6 @@ class Pluma(TkMaterialTheme):
 
     def save_as(self, event=None):
         pass
-
-    def undo(self, event=None):
-        view = self.current_view
-        memento = view.memento
-        if memento.is_undo_possible():
-            history = memento.get_undo_memento()
-            if history.type == 'inserted':
-                view.xml.text.delete(
-                    history.index_start(), history.index_end(), True)
-            elif history.type == 'deleted':
-                view.xml.text.insert(
-                    history.index_start(), history.text, True)
-
-    def redo(self, event=None):
-        view = self.current_view
-        memento = view.memento
-        if memento.is_redo_possible():
-            history = memento.get_redo_memento()
-            if history.type == 'inserted':
-                view.xml.text.insert(
-                    history.index_start(), history.text, True)
-            elif history.type == 'deleted':
-                view.xml.text.delete(
-                    history.index_start(), history.index_end(), True)
-
-    def _verify_undo_redo(self):
-        view = self.current_view
-        undo_state = tk.DISABLED
-        redo_state = tk.DISABLED
-        if view is not None:
-            memento = view.memento
-            if memento.is_undo_possible():
-                undo_state = tk.NORMAL
-            if memento.is_redo_possible():
-                redo_state = tk.NORMAL
 
     def exit_pluma(self, event=None):
         if tkinter.messagebox.askokcancel("Exit Pluma",

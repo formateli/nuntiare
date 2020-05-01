@@ -23,11 +23,8 @@ class FrameScrolled(ttk.Frame):
 
 
 class PanedView(ttk.PanedWindow):
-    def __init__(self, id_, pluma, view, tabs):
-        self.id = id_
-        self.pluma = pluma
+    def __init__(self, view):
         self.view = view
-        self.tabs = tabs
         self.type = None
 
         super(PanedView, self).__init__(view.notebook, orient=tk.HORIZONTAL)
@@ -38,8 +35,20 @@ class PanedView(ttk.PanedWindow):
         self.right_window = ttk.PanedWindow(self, orient=tk.VERTICAL)
         self.add(self.right_window, weight=1)
 
-        self._set_tool_bar()
+        self._init_class()
         self._right_hidden = False
+
+    def selected(self):
+        raise NotImplementedError("'selected' must be " 
+                "implemente by '{}'".format(self.__class__.__name__))
+
+    def deselected(self):
+        raise NotImplementedError("'deselected' must be " 
+                "implemente by '{}'".format(self.__class__.__name__))
+
+    def close(self):
+        raise NotImplementedError("'close' must be " 
+                "implemente by '{}'".format(self.__class__.__name__))
 
     def toggle_right_pane(self):
         if self._right_hidden:
@@ -51,6 +60,6 @@ class PanedView(ttk.PanedWindow):
     def get_frame(self):
         return FrameScrolled(self.view.notebook)
 
-    def _set_tool_bar(self):
-        raise NotImplementedError("'get_tool_bar' must be " 
+    def _init_class(self):
+        raise NotImplementedError("'_init_class' must be " 
                 "implemente by '{}'".format(self.__class__.__name__))

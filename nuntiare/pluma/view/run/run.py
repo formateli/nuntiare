@@ -108,8 +108,11 @@ class LogWindow(tk.Text):
 
 
 class RunView(PanedView):
-    def __init__(self, id_, pluma, view, tabs):
-        super(RunView, self).__init__(id_, pluma, view, tabs)
+
+    _title = None
+
+    def __init__(self, view):
+        super(RunView, self).__init__(view)
         self.type = 'run'
 
         up_frame = self.get_frame()
@@ -140,8 +143,17 @@ class RunView(PanedView):
         render = Render.get_render('html')
         render.render(report, overwrite=True)
 
-    def update_toolbar(self):
+    def selected(self):
+        tb = self.view.pluma.toolbar
+        tb.show('text', False)
+        tb.show('undo_redo', False)
+
+    def deselected(self):
         pass
 
-    def _set_tool_bar(self):
+    def close(self):
         pass
+
+    def _init_class(self):
+        if RunView._title is None:
+            RunView._title = 'Run'
