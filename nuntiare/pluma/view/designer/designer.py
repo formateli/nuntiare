@@ -14,3 +14,9 @@ class DesignerView(PanedView):
         label = ttk.Label(frame, text='NOT IMPLEMENTED')
         label.grid(row=0, column=0, sticky='wens')
         self.left_window.add(frame, weight=1)
+
+    def update_toolbar(self):
+        pass
+
+    def _set_tool_bar(self):
+        pass

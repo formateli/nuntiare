@@ -3,6 +3,8 @@
 # contains the full copyright notices and license terms.
 import tkinter as tk
 from tkinter import ttk
+import logging
+from nuntiare import LOGGER
 from nuntiare.report import Report
 from nuntiare.render.render import Render
 from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
@@ -45,7 +47,6 @@ class RunBar(GroupToolBar):
                     command=lambda x=r: self._run_render(x))
             i += 1
 
-
         #TODO destroy menu when pluma.tab close
 
     def _run(self):
@@ -68,13 +69,42 @@ class RunBar(GroupToolBar):
 
 
 class LogWindow(tk.Text):
+
+    _handler = None
+
     def __init__(self, parent, xscrollcommand, yscrollcommand):
-        fnt = tk.font.Font(family='Courier New', size=14)
+        fnt = tk.font.Font(family='Courier New', size=12)
         super(LogWindow, self).__init__(parent, wrap=tk.NONE,
                                         font=fnt,
                                         xscrollcommand=xscrollcommand,
                                         yscrollcommand=yscrollcommand,
-                                        bg='black', fg='white')
+                                        bg='black', fg='white',
+                                        state=tk.DISABLED)
+        LogWindow._set_log_handler()
+
+    def clear(self):
+        self.config(state=tk.NORMAL)
+        self.delete(1.0, 'end')
+        self.config(state=tk.DISABLED)
+        LogWindow._handler.setStream(self)
+
+    def write(self, txt):
+        self.config(state=tk.NORMAL)
+        self.insert('insert', txt)
+        self.see('insert')
+        self.update_idletasks()
+
+    def flush(self):
+        self.config(state=tk.DISABLED)
+
+    @classmethod
+    def _set_log_handler(cls):
+        if cls._handler is None:
+            cls._handler = logging.StreamHandler()
+            LOGGER.add_handler(
+                    cls._handler,
+                    level='DEBUG',
+                    formatter='%(levelname)s: %(message)s')
 
 
 class RunView(PanedView):
@@ -88,14 +118,14 @@ class RunView(PanedView):
         self.left_window.add(up_frame, weight=4)
 
         down_frame = self.get_frame()
-        log = LogWindow(
+        self.log = LogWindow(
                 down_frame,
                 xscrollcommand=down_frame.xscrollbar.set,
                 yscrollcommand=down_frame.yscrollbar.set)
-        log.grid(row=0, column=0, sticky='wens')
+        self.log.grid(row=0, column=0, sticky='wens')
         self.left_window.add(down_frame, weight=1)
-        down_frame.xscrollbar.config(command=log.xview)
-        down_frame.yscrollbar.config(command=log.yview)
+        down_frame.xscrollbar.config(command=self.log.xview)
+        down_frame.yscrollbar.config(command=self.log.yview)
 
         r_frame = self.get_frame()
         runbar = RunBar(r_frame, self)
@@ -103,9 +133,15 @@ class RunView(PanedView):
         self.right_window.add(r_frame, weight=1)
 
     def run(self):
+        self.log.clear()
         text = self.view.get_view('text')
         report = Report(text.text.get(1.0, tk.END))
         report.run()
         render = Render.get_render('html')
         render.render(report, overwrite=True)
-        print('Finished')
+
+    def update_toolbar(self):
+        pass
+
+    def _set_tool_bar(self):
+        pass

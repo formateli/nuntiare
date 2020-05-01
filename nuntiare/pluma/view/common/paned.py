@@ -38,6 +38,7 @@ class PanedView(ttk.PanedWindow):
         self.right_window = ttk.PanedWindow(self, orient=tk.VERTICAL)
         self.add(self.right_window, weight=1)
 
+        self._set_tool_bar()
         self._right_hidden = False
 
     def toggle_right_pane(self):
@@ -49,3 +50,7 @@ class PanedView(ttk.PanedWindow):
 
     def get_frame(self):
         return FrameScrolled(self.view.notebook)
+
+    def _set_tool_bar(self):
+        raise NotImplementedError("'get_tool_bar' must be " 
+                "implemente by '{}'".format(self.__class__.__name__))

@@ -1,11 +1,9 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-from tkinter import *
-import tkinter.messagebox
-import tkinter.filedialog
 import tkinter as tk
 from tkinter import ttk
+import tkinter.messagebox
 import os
 from materialtheme import TkMaterialTheme, Theme, ImageManager
 from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
@@ -38,28 +36,29 @@ class Pluma(TkMaterialTheme):
         Theme.bind('theme_changed', self._on_theme_changed)
         ImageManager.add_image_path(os.path.join(DIR, 'images'))
 
-        toolbar = GroupToolBar(self, 48)
-        toolbar.add_toolbar('file')
-        toolbar.add_toolbar_item(
+        self.toolbar = GroupToolBar(self, 48)
+        self.toolbar.add_toolbar('file')
+        self.toolbar.add_toolbar_item(
                 'file', 'new', self.new_file, 'note_add-24px')
-        toolbar.add_toolbar_item(
+        self.toolbar.add_toolbar_item(
                 'file', 'open', self.open_file, 'folder-24px')
-        toolbar.add_toolbar_item(
+        self.toolbar.add_toolbar_item(
                 'file', 'save', self.open_file, 'save_alt-24px')
 
-        toolbar.add_toolbar('undo_redo')
-        toolbar.add_toolbar_item(
-            'undo_redo', 'undo', self.undo, 'undo-24px')
-        toolbar.add_toolbar_item(
-            'undo_redo', 'redo', self.redo, 'redo-24px')
+        self.toolbar.add_toolbar('undo_redo')
+        self.toolbar.add_toolbar_item(
+                'undo_redo', 'undo', self.undo, 'undo-24px')
+        self.toolbar.add_toolbar_item(
+                'undo_redo', 'redo', self.redo, 'redo-24px')
 
-        toolbar.add_toolbar('right')
-        toolbar.add_toolbar_item(
-                'right', 'toggle', self._toggle_right_pane, 'menu-black-24dp', side='right')
-        btn_menu = toolbar.add_toolbar_item(
+        self.toolbar.add_toolbar('right')
+        self.toolbar.add_toolbar_item(
+                'right', 'toggle', self._toggle_right_pane,
+                'menu-black-24dp', side='right')
+        btn_menu = self.toolbar.add_toolbar_item(
                 'right', 'more', None, 'more_vert-24px', side='right')
         btn_menu.bind('<Button-1>', self._show_main_menu)
-        toolbar.grid(column=0, row=0, sticky='we')
+        self.toolbar.grid(column=0, row=0, sticky='we')
 
 
         # menu
@@ -68,22 +67,26 @@ class Pluma(TkMaterialTheme):
 
         MenuManager.new_menu('file', 'main')
         MenuManager.add_command(
-                'file', 'new', 'New', 'Ctrl+N', self.new_file,
-                image='note_add-24px', state=NORMAL)
-        MenuManager.add_command(
-                'file', 'open', 'Open', 'Ctrl+O', self.open_file,
-                image='folder-24px', state=NORMAL)
-        MenuManager.add_command(
-                'file', 'save', 'Save', 'Ctrl+S', self.save,
-                image='save_alt-24px')
-        MenuManager.add_separator('file')
+                'file', 'select_all', 'Select All', 'Ctrl+A',
+                command=self.select_all, state=tk.NORMAL)
+
+        #MenuManager.add_command(
+        #        'file', 'new', 'New', 'Ctrl+N', self.new_file,
+        #        image='note_add-24px', state=tk.NORMAL)
+        #MenuManager.add_command(
+        #        'file', 'open', 'Open', 'Ctrl+O', self.open_file,
+        #        image='folder-24px', state=tk.NORMAL)
+        #MenuManager.add_command(
+        #        'file', 'save', 'Save', 'Ctrl+S', self.save,
+        #        image='save_alt-24px')
+        #MenuManager.add_separator('file')
 
         MenuManager.add_cascade('File', 'main', 'file')
 
-        MenuManager.new_menu('edit', 'main')
-        MenuManager.add_command(
-            'edit', 'undo', 'Undo', 'Ctrl+Z',
-            self.undo, image='undo-24px')
+        #MenuManager.new_menu('edit', 'main')
+        #MenuManager.add_command(
+        #    'edit', 'undo', 'Undo', 'Ctrl+Z',
+        #    self.undo, image='undo-24px')
         #self.menu.add_command(
         #    'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
         #self.menu.add_separator('edit')
@@ -97,11 +100,11 @@ class Pluma(TkMaterialTheme):
         #self.menu.add_command(
         #    'edit', 'select_all', 'Select All', 'Ctrl+A', self.select_all)
 
-        MenuManager.add_cascade('Edit', 'main', 'edit')
+        #MenuManager.add_cascade('Edit', 'main', 'edit')
 
         MenuManager.add_command(
             'main', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
-            image='close-24px', state=NORMAL)
+            image='close-24px', state=tk.NORMAL)
 
         # link menu and toolbar items
 
@@ -135,7 +138,7 @@ class Pluma(TkMaterialTheme):
 
     def _toggle_right_pane(self):
         if self.current_view:
-            self.current_view.current_paned_view.toggle_right_pane()
+            self.current_view.current_view.toggle_right_pane()
 
     def _show_main_menu(self, event):
         try:
@@ -190,15 +193,16 @@ class Pluma(TkMaterialTheme):
             view = self.views[tabid]
             view.grid(column=0, row=2, sticky='nwes')
             self.current_view = view
+            view.update_toolbar()
             self._verify_undo_redo()
 
     def new_file(self, event=None):
         self._tab_added(self.tabs)
 
     def open_file(self, event=None):
-        input_file_name = tkinter.filedialog.askopenfilename(
-                    defaultextension='.txt',
-                    filetypes=[("All Files", "*.*"), ("Xml Documents", "*.xml")])
+        input_file_name = tk.filedialog.askopenfilename(
+                defaultextension='.txt',
+                filetypes=[("All Files", "*.*"), ("Xml Documents", "*.xml")])
         if input_file_name:
             self._tab_added(self.tabs, file_name=input_file_name)
 
@@ -206,8 +210,8 @@ class Pluma(TkMaterialTheme):
         view = self.current_view
         copypaste = view.copypaste
         if view and \
-                view.current_paned_view.type == 'xml':
-            txt = view.xml.text.get(SEL_FIRST, SEL_LAST)
+                view.current_view.type == 'text':
+            txt = view.xml.text.get(tk.SEL_FIRST, tk.SEL_LAST)
             if txt is not None:
                 copypaste.add_copy(txt)
                 return txt
@@ -217,22 +221,22 @@ class Pluma(TkMaterialTheme):
         view = self.current_view
         copypaste = view.copypaste
         if view and \
-                view.current_paned_view.type == 'xml':
+                view.current_view.type == 'xml':
             txt = copypaste.get_paste()
             if txt is not None:
-                view.xml.text.insert(INSERT, txt[0])
+                view.xml.text.insert(tk.INSERT, txt[0])
         return 'break'
 
     def cut(self, event=None):
         txt = self.copy()
         if txt is not None:
-            self.current_view.xml.text.delete(SEL_FIRST, SEL_LAST)
+            self.current_view.xml.text.delete(tk.SEL_FIRST, tk.SEL_LAST)
         return 'break'
 
     def select_all(self, event=None):
         view = self.current_view
         if view and \
-                view.current_paned_view.type == 'xml':
+                view.current_view.type == 'text':
             view.xml.text.tag_add('sel', '1.0', 'end')
 
     def save(self, event=None):
@@ -267,21 +271,19 @@ class Pluma(TkMaterialTheme):
 
     def _verify_undo_redo(self):
         view = self.current_view
-        undo_state = DISABLED
-        redo_state = DISABLED
+        undo_state = tk.DISABLED
+        redo_state = tk.DISABLED
         if view is not None:
             memento = view.memento
             if memento.is_undo_possible():
-                undo_state = NORMAL
+                undo_state = tk.NORMAL
             if memento.is_redo_possible():
-                redo_state = NORMAL
-
-        self.menu.link_set_state('undo', undo_state)
-        self.menu.link_set_state('redo', redo_state)
+                redo_state = tk.NORMAL
 
     def exit_pluma(self, event=None):
         if tkinter.messagebox.askokcancel("Exit Pluma",
-                "Do you want to exit?\n Make sure you've saved your current work."):
+                    "Do you want to exit?\n"
+                    "Make sure you've saved your current work."):
             self.destroy()
 
     def run(self):

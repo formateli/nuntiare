@@ -16,12 +16,13 @@ class NuntiareLog:
 
     def add_handler(self, handler, level=None, formatter=None):
         if level:
-            handler.setLevel(
-                self._get_level_from_string(level))
+            handler.setLevel(self._get_level_from_string(level))
         if formatter:
-            handler.setFormatter(
-                logging.Formatter(formatter))
+            handler.setFormatter(logging.Formatter(formatter))
         self._logger.addHandler(handler)
+
+    def remove_handler(self, handler):
+        self._logger.removeHandler(handler)
 
     def debug(self, message):
         self._logger.debug(message)
@@ -38,10 +39,11 @@ class NuntiareLog:
 
     def critical(self, message, raise_error=False, error_type=None):
         self._raise_error_with_log(
-            message, logging.CRITICAL, raise_error, error_type)
+                message, logging.CRITICAL,
+                raise_error, error_type)
 
-    def _raise_error_with_log(
-                self, message, log_type, raise_error, error_type):
+    def _raise_error_with_log(self, message, log_type,
+                              raise_error, error_type):
         if log_type == logging.ERROR:
             self._logger.error(message)
         else:
@@ -52,7 +54,7 @@ class NuntiareLog:
             elif error_type == 'IOError':
                 raise IOError(message)
             # TODO other types
-            raise ValueError(message)
+            raise Exception(message)
 
     def _get_level_from_string(self, level):
         if level == "DEBUG":

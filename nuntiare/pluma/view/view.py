@@ -48,7 +48,8 @@ class NuntiareView(ttk.Frame):
         self.run = RunView(id_, pluma, self, tabs)
         self.notebook.add(self.run, text='Run...')
 
-        self.current_paned_view = self.design
+        self.current_view = self.design
+        self.last_view = None
 
         self.notebook.grid(row=0, column=0, sticky='ewns')
         self.notebook.bind("<<NotebookTabChanged>>", self.tab_changed)
@@ -65,19 +66,42 @@ class NuntiareView(ttk.Frame):
         nb = event.widget
         name = nb.select()
         obj = nb.nametowidget(name)
-        self.current_paned_view = obj
-        if obj.type == 'xml':
-            state_xml = tk.NORMAL
-        else:
-            state_xml = tk.DISABLED
-        self.pluma.menu.set_menu_command_state(
-            'edit', 'select_all', state_xml)
-        self.pluma.menu.set_menu_command_state(
-            'edit', 'copy', state_xml)
-        self.pluma.menu.set_menu_command_state(
-            'edit', 'paste', state_xml)
-        self.pluma.menu.set_menu_command_state(
-            'edit', 'cut', state_xml)
+        self.last_view = self.current_view
+        self.current_view = obj
+
+        self.update_toolbar()
+
+#        if obj.type == 'xml':
+#            state_xml = tk.NORMAL
+#        else:
+#            state_xml = tk.DISABLED
+#        self.pluma.menu.set_menu_command_state(
+#            'edit', 'select_all', state_xml)
+#        self.pluma.menu.set_menu_command_state(
+#            'edit', 'copy', state_xml)
+#        self.pluma.menu.set_menu_command_state(
+#            'edit', 'paste', state_xml)
+#        self.pluma.menu.set_menu_command_state(
+#            'edit', 'cut', state_xml)
+
+    def update_toolbar(self):
+        obj = self.current_view
+
+        kws = {'undo_redo': True}
+        if obj.type == 'text':
+            kws['text'] = True
+        elif obj.type == 'run':
+            kws['text'] = False
+            kws['undo_redo'] = False
+        elif obj.type == 'designer':
+            kws['text'] = False
+        obj.update_toolbar()
+        self._show_tool_bar(**kws)
+
+    def _show_tool_bar(self, **kw):
+        toolbar = self.pluma.toolbar
+        for tb, show in kw.items():
+            toolbar.show(tb, show)
 
     def clear_memento(self):
         self.memento.clear()

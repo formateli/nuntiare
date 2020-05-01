@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
 import os
 import logging
@@ -51,7 +50,7 @@ if log_file != '':
 
     try:
         rotating_fh = logging.handlers.RotatingFileHandler(
-            log_file, maxBytes=max_bytes, backupCount=count)
+                log_file, maxBytes=max_bytes, backupCount=count)
     except IOError:
         rotating_fh = None
 

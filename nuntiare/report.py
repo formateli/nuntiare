@@ -65,7 +65,7 @@ class Report:
 
     def run(self, parameters={}):
         if not self.definition:
-            LOGGER.critical("No definition found in report.", True)
+            LOGGER.critical('No definition found in report.', True)
 
         LOGGER.info("Running Report '{0}'".format(self.definition.Name))
 
