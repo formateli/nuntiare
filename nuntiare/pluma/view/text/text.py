@@ -98,13 +98,17 @@ class TextView(PanedView):
         self._verify_undo_redo()
 
     def _copy(self):
-        print('COPY')
+        self.text.clipboard_clear()
+        txt = self.text.get('sel.first', 'sel.last')
+        self.text.clipboard_append(txt)
 
     def _paste(self):
-        print('PASTE')
+        txt = self.text.selection_get(selection='CLIPBOARD')
+        self.text.insert('insert', txt)
 
     def _cut(self):
-        print('CUT')
+        self._copy()
+        self.text.delete('sel.first', 'sel.last')
 
     def _undo(self):
         if self._memento.is_undo_possible():
