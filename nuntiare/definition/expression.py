@@ -7,8 +7,7 @@ from .. data.data_type import DataType
 
 
 class Expression:
-    def __init__(
-            self, expression, lnk, must_be_constant):
+    def __init__(self, expression, lnk, must_be_constant):
         self.lnk = lnk
         self.must_be_constant = must_be_constant
         self.expression, self.is_constant = self.set_expression(expression)
@@ -49,9 +48,9 @@ class Expression:
 
     @staticmethod
     def get_value_or_default(
-            report, element,
-            expression_name, default_value,
-            direct_expression=None):
+                report, element,
+                expression_name, default_value,
+                direct_expression=None):
         '''
         Gets the value of a report element of type expression,
         or its default value

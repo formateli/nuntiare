@@ -120,6 +120,7 @@ class FieldsDataInterface:
 
 class DataInterface:
     def __init__(self, report, name):
+        LOGGER.debug("Init DataInterface '{}'.".format(name))
         self.report = report
         self.name = name
         self.original_rows = []  # Not Filtered nor sorted
@@ -185,6 +186,8 @@ class DataInterface:
         return self.rows[self._current_index]
 
     def copy(self):
+        LOGGER.debug("Copy data from '{0}' "
+                "to 'data_copy_{0}'".format(self.name))
         result = DataInterface(self.report, 'data_copy_' + self.name)
         result.fields.fields = self.fields.fields
         for r in self.rows:
@@ -347,7 +350,7 @@ class DataGroupInstance(DataInterface):
 
     @staticmethod
     def get_groups(data, expression, sub_groups=[],
-                sort_descending=None, page_break=None):
+                   sort_descending=None, page_break=None):
 
         group_list = []  # List of DataInterface objects
 
@@ -367,9 +370,14 @@ class DataGroupInstance(DataInterface):
                             direct_expression=expression
                         )
 
+                exp_key = "{0}-{1}".format(dt.name, exp_key)
                 if exp_key not in groups_exp:
+#                    groups_exp[exp_key] = DataGroupInstance(
+#                            dt, "{0}-{1}".format(dt.name, exp_key),
+#                            page_break)
                     groups_exp[exp_key] = DataGroupInstance(
-                        dt, "{0}-{1}".format(dt.name, exp_key), page_break)
+                            dt, exp_key,
+                            page_break)
                     group_exp_list.append([exp_key, groups_exp[exp_key]])
                 groups_exp[exp_key].add_row(r)
                 dt.move_next()
@@ -439,7 +447,8 @@ class DataSetObject(DataSet):
                 command_text)
         else:
             # Connection failed, try to load data appended to report
-            LOGGER.info("Trying to load embedded data for data set '{0}'".format(self.name))
+            LOGGER.info("Trying to load embedded data"
+                    "for data set '{0}'".format(self.name))
             if not self.report.definition.data:
                 err_msg = "DataSource connection failed and " \
                     "no data embedded in defintion file for DataSet: '{0}'."
@@ -498,11 +507,11 @@ class FiltersObject:
         data.move_first()
         while not data.EOF:
             val = Expression.get_value_or_default(
-                self.report, None, None, None,
-                direct_expression=flt.filter_expression)
+                    self.report, None, None, None,
+                    direct_expression=flt.filter_expression)
             operator = Expression.get_value_or_default(
-                self.report, None, None, None,
-                direct_expression=flt.operator)
+                    self.report, None, None, None,
+                    direct_expression=flt.operator)
             if operator is None:
                 raise_error_with_log(
                     "No Operator for Filter in Data '{0}'".format(data.name))
@@ -591,21 +600,30 @@ class SortingObject:
         if len(self.sortby_list) == 0:
             return
 
+        LOGGER.debug("Begin data sorting for '{}'.".format(data.name))
+
         groups = []
+        to_delete = []
         i = 0
         for sortby in self.sortby_list:
+            LOGGER.debug("sortby...")
             reverse = False if sortby.direction == 'Ascending' else True
             if i == 0:
                 groups = DataGroupInstance.get_groups(
-                    data, sortby.sort_value, sub_groups=[])
+                        data, sortby.sort_value, sub_groups=[])
                 groups = sorted(
-                    groups, key=lambda z: z[0], reverse=reverse)
+                        groups, key=lambda z: z[0], reverse=reverse)
             else:
                 # Sort is made in get_groups function.
                 groups = DataGroupInstance.get_groups(
                         data, sortby.sort_value,
                         sub_groups=groups,
                         sort_descending=reverse)
+
+            for g in groups:
+                if not g[1].name in to_delete:
+                    to_delete.append(g[1].name)
+
             i += 1
 
         if len(groups) == 0:
@@ -615,8 +633,12 @@ class SortingObject:
         for g in groups:
             for r in g[1].rows:
                 data.rows.append(r)
+
+        for g in to_delete:
             # Delete from global collection
-            del data.report.data_interfaces[g[1].name]
+            del data.report.data_interfaces[g]
+
+        LOGGER.debug("End data sorting for '{}'.".format(data.name))
 
 
 class DataGroupObject:
@@ -747,6 +769,9 @@ class DataGroupObject:
         if check:
             del self.report.data_interfaces[check + name]
             self.report.data_interfaces[name] = data
+        if data.name != name:
+            LOGGER.debug("Modifying data name "
+                    "form '{}' to '{}'".format(data.name, name))
         data.name = name
 
     def _create_one_group(self, data):
