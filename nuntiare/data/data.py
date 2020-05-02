@@ -370,13 +370,9 @@ class DataGroupInstance(DataInterface):
                             direct_expression=expression
                         )
 
-                exp_key = "{0}-{1}".format(dt.name, exp_key)
                 if exp_key not in groups_exp:
-#                    groups_exp[exp_key] = DataGroupInstance(
-#                            dt, "{0}-{1}".format(dt.name, exp_key),
-#                            page_break)
                     groups_exp[exp_key] = DataGroupInstance(
-                            dt, exp_key,
+                            dt, "{0}-{1}".format(dt.name, exp_key),
                             page_break)
                     group_exp_list.append([exp_key, groups_exp[exp_key]])
                 groups_exp[exp_key].add_row(r)
