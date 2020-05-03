@@ -12,8 +12,8 @@ def run():
     setup(
         name="Nuntiare",
         version=get_version(),
-        url="http://www.formateli.com/nuntiare/",
-        download_url="",  # TODO
+        url="https://formateli.com/nuntiare/",
+        download_url="https://github.com/formateli/nuntiare",
         description="Python report toolkit.",
         author="Fredy Ramirez",
         author_email="",  # TODO
@@ -35,7 +35,7 @@ def run():
             "nuntiare.template", "nuntiare.render", "nuntiare.render.html"
         ],
         package_data={'nuntiare': ['nuntiare.cfg']},
-        scripts=['scripts/nuntiare'],
+        scripts=['scripts/nuntiare', 'scripts/pluma'],
         data_files=[("docs", ["README", "LICENSE", "COPYRIGHT"])],
     )
 
