@@ -1,12 +1,12 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from datetime import datetime
 from .. data.data_type import DataType
 
 
 # Conversion functions
+
 def CBool(value):
     'Converts to boolean'
     return DataType.get_value('Boolean', value)
@@ -38,6 +38,7 @@ def CStr(value):
 
 
 # Conditional functions
+
 def Iif(bool_exp, exp1, exp2):
     '''
     Evaluates bool_exp.
@@ -71,6 +72,7 @@ def Choose(int_exp, *result):
 
 
 # Date funtions
+
 def Day(date):
     'Returns the integer day of date.'
     return date.day
@@ -107,12 +109,17 @@ def Today():
 
 
 def DayOfWeek(date_time):
-    days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-    dayNumber=date_time.weekday()
+    days = [
+            "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday",
+            "Sunday"
+        ]
+    dayNumber = date_time.weekday()
     return days[dayNumber]
 
 
 # String funtions
+
 def Format(value, format_exp):
     'Formats value according to format_exp.'
     return format_exp.format(value)

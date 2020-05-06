@@ -2,7 +2,6 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import os
-import tkinter as tk 
 from tkinter import ttk
 from .designer import DesignerView
 from .text import TextView

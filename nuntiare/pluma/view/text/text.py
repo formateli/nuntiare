@@ -37,7 +37,7 @@ class TextView(PanedView):
 
         self.left_window.add(frame, weight=1)
 
-        self._hl = None # Highlight
+        self._hl = None  # Highlight
         self._hl_blocks = HighlightBlocks()
         self.new_file()
 
@@ -57,7 +57,8 @@ class TextView(PanedView):
             self._hl = TextView._highlight.get_hl_for_extension('xml')
             self.text.insert('1.0', self.new_snipet(), True)
         else:
-            self._hl = TextView._highlight.get_hl_for_extension(self.view.extension)
+            self._hl = TextView._highlight.get_hl_for_extension(
+                                        self.view.extension)
             self.get_file_content()
         self._clear_memento()
 

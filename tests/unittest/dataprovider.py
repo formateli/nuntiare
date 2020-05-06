@@ -59,7 +59,8 @@ class DataProvidersTest(unittest.TestCase):
         ]
 
         data_provider = get_data_provider(test_param['data_provider_name'])
-        self.assertNotEqual(data_provider, None, test_param['data_provider_name'])
+        self.assertNotEqual(data_provider, None,
+                            test_param['data_provider_name'])
         self.assertEqual(data_provider.apilevel, '2.0')
 
         data_source = DataSource(

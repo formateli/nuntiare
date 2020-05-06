@@ -1,12 +1,10 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import cairo
 from . pages import Pages
 from . cairo_item import CairoItem
 from .. render import Render
-from ... import LOGGER
 
 
 class CairoRender(Render):

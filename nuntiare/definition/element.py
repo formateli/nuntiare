@@ -1,15 +1,16 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
-from . expression import Expression, String, Boolean, \
-        Integer, Variant, Size, Color
-from . enum import BorderStyle, FontStyle, FontWeight, TextDecoration, \
-        TextAlign, VerticalAlign, TextDirection, WritingMode, \
-        BackgroundRepeat, BackgroundGradientType, \
-        DataType, SortDirection, Operator, BreakLocation, \
-        DataElementStyle, DataElementOutput
+from . expression import (Expression, String, Boolean,  # noqa: F401
+        Integer, Variant, Size, Color)                  # noqa: F401
+from . enum import (BorderStyle, FontStyle,             # noqa: F401
+        FontWeight, TextDecoration, TextAlign,          # noqa: F401
+        VerticalAlign, TextDirection, WritingMode,      # noqa: F401
+        BackgroundRepeat, BackgroundGradientType,       # noqa: F401
+        DataType, SortDirection, Operator,              # noqa: F401
+        BreakLocation, DataElementStyle,                # noqa: F401
+        DataElementOutput)                              # noqa: F401
 from .. import LOGGER
 from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
@@ -194,8 +195,8 @@ class Element(object):
         if len(items_by_name) > 0:
             z_list = []
             for key, it in items_by_name.items():
-                l = (it[1], it[0])  # zindex, reportitem
-                z_list.append(l)
+                ls = (it[1], it[0])  # zindex, reportitem
+                z_list.append(ls)
             res = sorted(z_list, key=lambda z: z[0])
             for r in res:
                 reportitems_list.append(r[1])
@@ -241,7 +242,7 @@ class Element(object):
             return self.__dict__[name]
         self._verify_element(name)
         return Expression.get_value_or_default(
-            report, self, name, default_value)
+                report, self, name, default_value)
 
     @staticmethod
     def extend_element_list(class_, additional_elements):
@@ -922,15 +923,15 @@ class BackgroundImage(Element):
         super(Image, self).__init__('Image', node, lnk, self.elements)
 
 
-class BackgroundImage(Element):
-    elements = {
-        'ImageSource': [Element.ENUM, 1, True],
-        'BorderStyle': [Element.ENUM],
-        'Width': [Element.SIZE],
-    }
-
-    def __init__(self, node, lnk):
-        super(Border, self).__init__(node, self.elements, lnk)
+# class BackgroundImage(Element):
+#     elements = {
+#         'ImageSource': [Element.ENUM, 1, True],
+#         'BorderStyle': [Element.ENUM],
+#         'Width': [Element.SIZE],
+#     }
+#
+#     def __init__(self, node, lnk):
+#         super(Border, self).__init__(node, self.elements, lnk)
 
 
 class ReportItems(Element):

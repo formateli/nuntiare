@@ -14,9 +14,10 @@ except ImportError:
 
 
 PROJECT_NAME = 'Nuntiare'
-AUTHOR = 'Fredy Ramirez'
-COPYRIGHT = '2013-2020, Fredy Ramirez - https://formateli.com'
-LICENSE = 'GNU GENERAL PUBLIC LICENSE V3'
+DESCRIPTION = 'Python report toolkit'
+AUTHOR = 'Fredy Ramirez - https://formateli.com'
+COPYRIGHT = '2013-2020, ' + AUTHOR
+LICENSE = 'GNU GENERAL PUBLIC LICENSE v3'
 VERSION = '0.3.0'
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -36,6 +37,8 @@ def get_config_value(section, option, default_value):
         result = default_value
     return result
 
+
+# TODO remove
 __pixels_per_inch__ = float(
     get_config_value('general', 'pixels_per_inch', 72.0))
 

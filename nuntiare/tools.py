@@ -1,8 +1,7 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
-from . import logger, __pixels_per_inch__
+from . import LOGGER, __pixels_per_inch__
 from xml.parsers import expat
 
 
@@ -86,7 +85,7 @@ def get_size_in_unit(size, unit):
     elif unit == "dot" or 'px':
         return int((size * __pixels_per_inch__) / size_25_4)
 
-    raise_error_with_log("Unknown unit '{0}'".format(unit))
+    LOGGER.error("Unknown unit '{0}'".format(unit), True)
 
 
 def get_float_rgba(c):

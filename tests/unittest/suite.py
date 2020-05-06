@@ -7,21 +7,22 @@
 import os
 import sys
 import unittest
+import logging
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 DIR = os.path.normpath(os.path.join(DIR, '..', '..', 'nuntiare'))
 if os.path.isdir(DIR):
     sys.path.insert(0, os.path.dirname(DIR))
 
-import logging
-import dataprovider
-import expression
-import parameter
-import grid
-import data
-import aggregate
-import render_pdf   # TODO should be a diferent library
-                    # because it depends on GTK
+import dataprovider     # noqa: E402
+import expression       # noqa: E402
+import parameter        # noqa: E402
+import grid             # noqa: E402
+import data             # noqa: E402
+import aggregate        # noqa: E402
+# TODO should be a diferent library
+# because it depends on GTK
+import render_pdf       # noqa: E402
 
 
 logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)

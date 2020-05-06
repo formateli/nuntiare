@@ -22,9 +22,9 @@ class Pluma(TkMaterialTheme):
         self.protocol('WM_DELETE_WINDOW', self.exit_pluma)
         try:
             self.state('zoomed')
-        except:
-            self.state('-zoomed') # ubuntu?
-        #self.wm_attributes('-toolwindow', True)
+        except Exception:
+            self.state('-zoomed')  # ubuntu?
+        # self.wm_attributes('-toolwindow', True)
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -49,7 +49,6 @@ class Pluma(TkMaterialTheme):
         btn_menu.bind('<Button-1>', self._show_main_menu)
         self.toolbar.grid(column=0, row=0, sticky='we')
 
-
         # menu
 
         self._main_menu = MenuManager.new_menu('main', None, parent=self)
@@ -58,52 +57,10 @@ class Pluma(TkMaterialTheme):
         MenuManager.add_command(
                 'file', 'select_all', 'Select All', 'Ctrl+A',
                 command=self.select_all, state=tk.NORMAL)
-
-        #MenuManager.add_command(
-        #        'file', 'new', 'New', 'Ctrl+N', self.new_file,
-        #        image='note_add-24px', state=tk.NORMAL)
-        #MenuManager.add_command(
-        #        'file', 'open', 'Open', 'Ctrl+O', self.open_file,
-        #        image='folder-24px', state=tk.NORMAL)
-        #MenuManager.add_command(
-        #        'file', 'save', 'Save', 'Ctrl+S', self.save,
-        #        image='save_alt-24px')
-        #MenuManager.add_separator('file')
-
         MenuManager.add_cascade('File', 'main', 'file')
-
-        #MenuManager.new_menu('edit', 'main')
-        #MenuManager.add_command(
-        #    'edit', 'undo', 'Undo', 'Ctrl+Z',
-        #    self.undo, image='undo-24px')
-        #self.menu.add_command(
-        #    'edit', 'redo', 'Redo', 'Ctrl+Y', self.redo, image='redo')
-        #self.menu.add_separator('edit')
-        #self.menu.add_command(
-        #    'edit', 'copy', 'Copy', 'Ctrl+C', self.copy)
-        #self.menu.add_command(
-        #    'edit', 'paste', 'Paste', 'Ctrl+V', self.paste)
-        #self.menu.add_command(
-        #    'edit', 'cut', 'Cut', 'Ctrl+X', self.cut)
-        #self.menu.add_separator('edit')
-        #self.menu.add_command(
-        #    'edit', 'select_all', 'Select All', 'Ctrl+A', self.select_all)
-
-        #MenuManager.add_cascade('Edit', 'main', 'edit')
-
         MenuManager.add_command(
-            'main', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
-            image='close-24px', state=tk.NORMAL)
-
-        # link menu and toolbar items
-
-        #self.menu.linK_menu_toolbar_item('save', 
-        #    'file', 'save', 'file', 'save')
-
-        #self.menu.linK_menu_toolbar_item('undo', 
-        #    'edit', 'undo', 'undo_redo', 'undo')
-        #self.menu.linK_menu_toolbar_item('redo', 
-        #    'edit', 'redo', 'undo_redo', 'redo')
+                'main', 'exit', 'Exit', 'Alt+F4', self.exit_pluma,
+                image='close-24px', state=tk.NORMAL)
 
         # tabs
 
@@ -145,7 +102,8 @@ class Pluma(TkMaterialTheme):
         self.progressbar.start()
 
         tabs.add(tabid=self.tab_count,
-            title='Untitled ' + str(self.tab_count), dirty=True)
+                 title='Untitled ' + str(self.tab_count),
+                 dirty=True)
         view = NuntiareView(self.tab_count, self, tabs, file_name)
         view.grid(column=0, row=2, sticky='nwes')
         self.views[self.tab_count] = view
@@ -170,7 +128,7 @@ class Pluma(TkMaterialTheme):
             self.views[tabid].grid_forget()
 
     def _tab_selected(self, tabs, tabid):
-        if tabid in self.views: 
+        if tabid in self.views:
             view = self.views[tabid]
             view.grid(column=0, row=2, sticky='nwes')
             self.current_view = view
@@ -226,7 +184,8 @@ class Pluma(TkMaterialTheme):
         pass
 
     def exit_pluma(self, event=None):
-        if tkinter.messagebox.askokcancel("Exit Pluma",
+        if tkinter.messagebox.askokcancel(
+                    "Exit Pluma",
                     "Do you want to exit?\n"
                     "Make sure you've saved your current work."):
             self.destroy()

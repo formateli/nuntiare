@@ -64,7 +64,7 @@ class Connect(object):
             if (i < 0):
                 raise OperationalError(con_error)
             self.parameters_dict = self._get_parameters(connection_object)
-        except:
+        except Exception:
             pass
         self.is_closed = False
         self.cursors = []

@@ -6,7 +6,7 @@
 
 from nuntiare.pluma.memento import MementoCaretaker, CopyPaste
 from nuntiare.pluma.widget import TextEvent
-from tkinter import Text, END
+from tkinter import END
 import unittest
 
 
@@ -24,22 +24,22 @@ class MementoTest(unittest.TestCase):
         self.text.insert('1.0', 'abc')
         self._check_memento_state(1, 0, True, False, 'abc')
 
-        self.text.insert('insert', 'd') # 'abc' --> 'abcd'
+        self.text.insert('insert', 'd')  # 'abc' --> 'abcd'
         self._check_memento_state(1, 0, True, False, 'abcd')
 
-        self.text.insert('insert', ' ') # 'abcd' --> 'abcd '
+        self.text.insert('insert', ' ')  # 'abcd' --> 'abcd '
         self._check_memento_state(1, 0, True, False, 'abcd ')
 
-        self.text.insert('insert', ' ') # 'abcd ' --> 'abcd  '
+        self.text.insert('insert', ' ')  # 'abcd ' --> 'abcd  '
         self._check_memento_state(1, 0, True, False, 'abcd  ')
 
-        self.text.insert('insert', 'e') # new word 'e'
+        self.text.insert('insert', 'e')  # new word 'e'
         self._check_memento_state(2, 0, True, False, 'abcd  e')
 
-        self.text.insert('insert', ' ') # 'e' --> 'e '
+        self.text.insert('insert', ' ')  # 'e' --> 'e '
         self._check_memento_state(2, 0, True, False, 'abcd  e ')
 
-        self.text.insert('insert', 'fgh') # 'fgh' --> 'fgh'
+        self.text.insert('insert', 'fgh')  # 'fgh' --> 'fgh'
         self._check_memento_state(3, 0, True, False, 'abcd  e fgh')
 
         self._undo('fgh')
@@ -47,7 +47,7 @@ class MementoTest(unittest.TestCase):
         self._undo('e ')
         self._check_memento_state(1, 2, True, True, 'abcd  ')
         self._undo('abcd  ')
-        self._check_memento_state(0, 3, False, True,'')
+        self._check_memento_state(0, 3, False, True, '')
 
         self._redo('abcd  ')
         self._check_memento_state(1, 2, True, True, 'abcd  ')
@@ -123,11 +123,9 @@ class MementoTest(unittest.TestCase):
             self.text.delete(
                 history.index_start(), history.index_end(), True)
 
-    def _check_memento_state(self, len_undo_stack, len_redo_stack,
+    def _check_memento_state(
+                self, len_undo_stack, len_redo_stack,
                 undo_possible, redo_possible, text_text):
-        #print('## TEST ##')
-        #print(self.text.get(1.0, 'end-1c'))
-        #print('## END TEST ##')
         self.assertEqual(len(self.memento._undo_stack), len_undo_stack)
         self.assertEqual(len(self.memento._redo_stack), len_redo_stack)
         self.assertEqual(self.memento.is_undo_possible(), undo_possible)

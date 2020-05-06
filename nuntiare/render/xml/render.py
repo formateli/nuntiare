@@ -1,18 +1,15 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
 from xml.dom import minidom
 from .. render import Render
 from ... import LOGGER
 
-__all__ = ['XmlRender']
-
 
 class XmlRender(Render):
     def __init__(self):
-        super(XmlRender, self).__init__(extension='xml')        
+        super(XmlRender, self).__init__(extension='xml')
 
     def render(self, report, overwrite):
         super(XmlRender, self).render(report, overwrite)
@@ -71,7 +68,6 @@ class XmlRender(Render):
                             {'current_instance': None}
 
             if member.parent_member:
-                pm = members_tree[member.parent_member]
                 if member.parent_member.data_element_output == 'NoOutput':
                     m['data_element_output'] = 'NoOutput'
 
@@ -115,7 +111,7 @@ class XmlRender(Render):
         grp['element'] = grp_el
         member = grp['member']
         parent_group = member['member'].get_parent_group(tablix)
-        
+
         if parent_group:
             pg = groups[parent_group]
             member_el = pg['children'][group.name]['collection_el']
@@ -169,8 +165,8 @@ class XmlRender(Render):
                         row.member.group_belongs:
                     grp = groups[row.member.group_belongs]
                     new_instance = False
-                    if  grp['current_row_instance'] in \
-                            ['NEW_BLANK', row.instance]:
+                    if (grp['current_row_instance'] in
+                            ['NEW_BLANK', row.instance]):
                         grp_el = grp['element']
                     else:
                         new_instance = True
@@ -215,8 +211,9 @@ class XmlRender(Render):
                                 pg['children'][
                                     row.member.group_belongs.name][
                                         'collection_el']
-                            pg['children'][row.member.group_belongs.name]['current_instance'] = \
-                                row.instance
+                            pg['children'][
+                                row.member.group_belongs.name][
+                                    'current_instance'] = row.instance
                         else:
                             member_el = doc.createElement(
                                 row.member.data_element_name)
@@ -269,7 +266,7 @@ class XmlRender(Render):
 
     def _run_textbox(self, doc, element, item):
         value = str(item.value) if item.value is not None else ''
-        name = item.data_element_name        
+        name = item.data_element_name
         if item.data_element_style == 'Attribute':
             element.setAttribute(name, value)
         else:

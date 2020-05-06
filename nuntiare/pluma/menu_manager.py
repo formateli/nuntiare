@@ -2,9 +2,9 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 from tkinter import Menu
-from tkinter import NORMAL, DISABLED
+from tkinter import DISABLED
 from tkinter import ttk
-from materialtheme import Theme, ImageManager
+from materialtheme import ImageManager
 
 
 class MenuManager():
@@ -32,7 +32,8 @@ class MenuManager():
 
     @classmethod
     def add_command(cls, menu_name, item_name,
-                label, acc, command, image=None, state=DISABLED):
+                    label, acc, command,
+                    image=None, state=DISABLED):
         menu = cls.get_menu(menu_name)
         if image is not None:
             image = ImageManager.get_image(image)
@@ -40,7 +41,7 @@ class MenuManager():
 
     @classmethod
     def set_menu_command_state(
-            cls, menu_name, item_name, state):
+                cls, menu_name, item_name, state):
         menu = cls.get_menu(menu_name)
         menu.set_command_state(item_name, state)
 
@@ -87,7 +88,8 @@ class MenuManager():
         item = self.get_toolbar_item(toolbar_name, item_name)
         item['state'] = state
 
-    def linK_menu_toolbar_item(self, link_name, 
+    def linK_menu_toolbar_item(
+                self, link_name,
                 menu_name, menu_item_name,
                 toolbar_name, toolbar_item_name):
         if link_name in self._links:

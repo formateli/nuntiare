@@ -1,14 +1,11 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
 import html
 from .. render import Render
 from ... import LOGGER
 from ... outcome.page_item import PageItemsInfo
-
-__all__ = ['HtmlRender']
 
 
 class HeaderFooterRectangle(object):
@@ -466,7 +463,7 @@ class HtmlRender(Render):
                 for l in lines:
                     if sys.version_info[0] == 2:  # python2
                         f.write(l)
-                    else:                    
+                    else:
                         f.write(l.encode('utf-8'))
             finally:
                 f.close()
@@ -475,7 +472,7 @@ class HtmlRender(Render):
                 "I/O Error trying to write to file '{0}'. {1}.".format(
                     self.result_file, e.strerror),
                 True, "IOError")
-        except:
+        except Exception:
             LOGGER.error(
                 "Unexpected error trying to write to file '{0}'. {1}.".format(
                     self.result_file, sys.exc_info()[0]),

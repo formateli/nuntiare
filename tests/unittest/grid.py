@@ -2,9 +2,6 @@
 # The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import unittest
-import dateutil
-import math
-from decimal import Decimal
 from nuntiare.outcome.page_tablix import Grid
 
 
@@ -213,11 +210,11 @@ class GridTest(unittest.TestCase):
         self._check_grid(grid, 3, 1)
         self._check_cell(grid, 2, 0, "2-0")
         self.assertEqual(cell_0_0.col_span, 1)
-        cell_3_0 = grid.add_cell(3, 0, "3-0", parent_cell=cell_2_0)
+        grid.add_cell(3, 0, "3-0", parent_cell=cell_2_0)
         self._check_grid(grid, 4, 1)
         self._check_cell(grid, 3, 0, "3-0")
         self.assertEqual(cell_0_0.col_span, 1)
-        cell_3_1 = grid.add_cell(3, 1, "3-1", parent_cell=cell_2_0)
+        grid.add_cell(3, 1, "3-1", parent_cell=cell_2_0)
         self._check_grid(grid, 4, 2)
         self._check_cell(grid, 3, 1, "3-1")
         self._check_cell(grid, 0, 0, "0-0", col_span=2)
@@ -226,7 +223,7 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 1, 1, "1-0", col_span=2)
         self._check_cell(grid, 2, 0, "2-0", col_span=2)
         self._check_cell(grid, 2, 1, "2-0", col_span=2)
-        cell_3_2 = grid.add_cell(3, 2, "3-2", parent_cell=cell_2_0)
+        grid.add_cell(3, 2, "3-2", parent_cell=cell_2_0)
         self._check_grid(grid, 4, 3)
         self._check_cell(grid, 3, 2, "3-2")
         self._check_cell(grid, 0, 0, "0-0", col_span=3)
@@ -251,12 +248,12 @@ class GridTest(unittest.TestCase):
         self._check_cell(grid, 1, 3, "1-1")
         self.assertEqual(cell_0_0.col_span, 4)
 
-        cell_3_3 = grid.add_cell(3, next_col, "3-3", parent_cell=cell_2_1)
+        grid.add_cell(3, next_col, "3-3", parent_cell=cell_2_1)
         self._check_grid(grid, 4, 4)
         self._check_cell(grid, 3, 3, "3-3")
         self.assertEqual(cell_0_0.col_span, 4)
 
-        cell_3_4 = grid.add_cell(3, next_col + 1, "3-4", parent_cell=cell_2_1)
+        grid.add_cell(3, next_col + 1, "3-4", parent_cell=cell_2_1)
         self._check_grid(grid, 4, 5)
         self._check_cell(grid, 3, 4, "3-4")
         self.assertEqual(cell_0_0.col_span, 5)
@@ -273,18 +270,18 @@ class GridTest(unittest.TestCase):
         self._check_grid(grid, 1, 3)
         self._check_cell(grid, 0, 2, "0-2")
 
-        cell_0_3 = grid.add_cell(0, 3, "0-3", parent_cell=cell_0_2)
+        grid.add_cell(0, 3, "0-3", parent_cell=cell_0_2)
         self._check_grid(grid, 1, 4)
         self._check_cell(grid, 0, 3, "0-3")
         self._check_cell(grid, 0, 0, "0-0")
         next_row = grid.next_row()
         self.assertEqual(next_row, 1)
-        cell_1_3 = grid.add_cell(next_row, 3, "1-3", parent_cell=cell_0_2)
+        grid.add_cell(next_row, 3, "1-3", parent_cell=cell_0_2)
         self._check_grid(grid, 2, 4)
         self._check_cell(grid, 1, 3, "1-3")
         self._check_cell(grid, 0, 2, "0-2", row_span=2)
         self._check_cell(grid, 1, 2, "0-2", row_span=2)
-        cell_2_3 = grid.add_cell(next_row + 1, 3, "2-3", parent_cell=cell_0_2)
+        grid.add_cell(next_row + 1, 3, "2-3", parent_cell=cell_0_2)
         self._check_grid(grid, 3, 4)
         self._check_cell(grid, 2, 3, "2-3")
         self._check_cell(grid, 0, 2, "0-2", row_span=3)
@@ -304,10 +301,10 @@ class GridTest(unittest.TestCase):
         self._check_grid(grid, 4, 4)
         self._check_cell(grid, 3, 2, "1-2")
 
-        cell_3_3 = grid.add_cell(next_row, 3, "3-3", parent_cell=cell_1_2)
+        grid.add_cell(next_row, 3, "3-3", parent_cell=cell_1_2)
         self._check_grid(grid, 4, 4)
         self._check_cell(grid, 3, 3, "3-3")
-        cell_3_4 = grid.add_cell(next_row + 1, 3, "3-4", parent_cell=cell_1_2)
+        grid.add_cell(next_row + 1, 3, "3-4", parent_cell=cell_1_2)
         self._check_grid(grid, 5, 4)
         self._check_cell(grid, 4, 3, "3-4")
 

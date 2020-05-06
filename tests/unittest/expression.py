@@ -2,14 +2,15 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import unittest
-from nuntiare.definition.expression import (String, Boolean,
+from nuntiare.definition.expression import (
+        String, Boolean,
         Integer, Color, Size)
 from nuntiare.report import Report
 
 
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
-        string_xml = """
+        string_xml = r"""
             <Nuntiare>
                 <Name>Element Type Test</Name>
                 <Width>21cm</Width>

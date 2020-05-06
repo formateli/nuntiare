@@ -13,9 +13,9 @@ if os.path.isdir(DIR):
     sys.path.insert(0, os.path.dirname(DIR))
 
 
-from nuntiare import LOGGER
-from nuntiare.report import Report
-from nuntiare.render.render import Render
+from nuntiare import LOGGER                 # noqa: E402
+from nuntiare.report import Report          # noqa: E402
+from nuntiare.render.render import Render   # noqa: E402
 
 
 def get_conn_string(file_name):

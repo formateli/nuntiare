@@ -50,9 +50,11 @@ class MementoCaretaker():
 
             if text_info.text == '\n' or self._last_char == '\n':
                 self._undo_stack.append(text_info)
-            elif self.is_undo_possible() and (self._last_char is None or
-                    (self._last_char is not None and end_char is not None and
-                        len(text_info.text) == 1)):
+            elif self.is_undo_possible() and (
+                        self._last_char is None or
+                        (self._last_char is not None
+                         and end_char is not None and
+                         len(text_info.text) == 1)):
                 # Append text to last text and change Pos
                 m = self._undo_stack[-1]
                 m.text += text_info.text
@@ -62,7 +64,7 @@ class MementoCaretaker():
 
             self._last_char = end_char
 
-        else: # text_info.type == 'deleted'
+        else:  # text_info.type == 'deleted'
             self._undo_stack.append(text_info)
             self._last_char = self._break_chars[0]
 

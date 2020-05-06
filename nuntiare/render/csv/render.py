@@ -1,12 +1,8 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
-import sys
 from .. render import Render
 from ... import LOGGER
-
-__all__ = ['CsvRender']
 
 
 class CsvRender(Render):
@@ -50,8 +46,8 @@ class CsvRender(Render):
                 self.lines.append(line)
 
     def _run_textbox(self, item):
-        #value = str(item.value) if item.value is not None else ''
-        value = str(item.value_formatted) if item.value_formatted is not None else ''
+        value = str(item.value_formatted) \
+                if item.value_formatted is not None else ''
         return value
 
     def _get_line_to_write(self, line):
@@ -69,11 +65,8 @@ class CsvRender(Render):
             f = open(self.result_file, 'wb')
             try:
                 for line in self.lines:
-                    l = self._get_line_to_write(line) + '\n'
-                    if sys.version_info[0] == 2:  # python2
-                        f.write(l)
-                    else:                    
-                        f.write(l.encode('utf-8'))
+                    ln = self._get_line_to_write(line) + '\n'
+                    f.write(ln.encode('utf-8'))
             finally:
                 f.close()
         except IOError as e:

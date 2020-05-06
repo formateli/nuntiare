@@ -90,12 +90,14 @@ class HighlightDefinition(XmlMixin):
             text.set_tags(self._styles)
 
         if first_time:
-            self._apply_hl_first_time(text, text_info, blocks_gtw, progressbar)
+            self._apply_hl_first_time(
+                    text, text_info, blocks_gtw, progressbar)
         else:
-            self._apply_hl_text_changed(text, text_info, blocks_gtw, progressbar)
+            self._apply_hl_text_changed(
+                    text, text_info, blocks_gtw, progressbar)
 
     def _apply_hl_first_time(self, text, text_info, blocks_gtw, progressbar):
-        blocks_gtw.check_lines_number(text_info.line_count()) # TODO to remove
+        blocks_gtw.check_lines_number(text_info.line_count())  # TODO to remove
         self._apply_hl(text, blocks_gtw, 1, 0, 'end', progressbar)
 
     def _apply_hl_text_changed(self, text, text_info, blocks_gtw, progressbar):
@@ -113,15 +115,21 @@ class HighlightDefinition(XmlMixin):
                     self._apply_hl(
                         text, blocks_gtw,
                         avbl_range[0], avbl_range[1],
-                        '{0}.{1}'.format(avbl_range[2], avbl_range[3]), progressbar)
+                        '{0}.{1}'.format(
+                                avbl_range[2], avbl_range[3]),
+                        progressbar
+                        )
 
-            else: # deleted
+            else:  # deleted
                 self._apply_hl(
                     text, blocks_gtw,
                     avbl_range[0], avbl_range[1],
-                    '{0}.{1}'.format(avbl_range[2], avbl_range[3]), progressbar)
+                    '{0}.{1}'.format(
+                            avbl_range[2], avbl_range[3]),
+                    progressbar
+                    )
 
-        else: # There are blocks affected
+        else:  # There are blocks affected
             if text_info.type == 'inserted':
                 if len(blks_affected) > 1:
                     raise Exception(
@@ -137,21 +145,17 @@ class HighlightDefinition(XmlMixin):
                             self._apply_tags(text, [b])
                         return
 
-            else: # deleted
+            else:  # deleted
                 b = blks_affected[0]
                 if b.descriptor.type in {'toclosetoken', 'toeol'}:
                     if b.in_range(text_info):
                         return
 
     def _apply_hl(self, text, blocks_gtw,
-                line_start, col_start, index_end, progressbar):
-        print('_APLY HL() ***')
-
+                  line_start, col_start, index_end, progressbar):
         lines = text.get(
             '{0}.{1}'.format(line_start, col_start),
             index_end).splitlines()
-
-        print('line_start: {0}'.format(line_start))
 
         cur_line = line_start
         end_line = line_start + (len(lines) - 1)
@@ -161,17 +165,10 @@ class HighlightDefinition(XmlMixin):
         while cur_line <= end_line:
             progressbar.step()
             progressbar.update_idletasks()
-
-            print('cur_line: {0}'.format(cur_line))
-
             line = lines[cur_line - line_start]
             blocks_gtw.set_line(cur_line)
-
-            print("  '{0}'".format(line))
-            print("  First iter: {0}".format(first_iter))
-
             start_index = '{0}.{1}'.format(cur_line, start_col)
-            print("  Start index before: '{0}'".format(start_index))
+
             if first_iter:
                 end_index = '{0}.{1}'.format(
                     cur_line, start_col + len(line))
@@ -180,16 +177,12 @@ class HighlightDefinition(XmlMixin):
                     cur_line, start_col + len(line[start_col:]))
             first_iter = False
 
-            print("  Start index after: '{0}'".format(start_index))
-            print("  End index after: '{0}'".format(end_index))
-
             blks, descriptor = self._process_line(
                 text, start_index, end_index)
 
             cur_line += 1
             start_col = 0
 
-            print('  blks: ' + str(blks))
             if not blks:
                 continue
 
@@ -199,9 +192,7 @@ class HighlightDefinition(XmlMixin):
                 self._apply_tags(text, blks)
                 continue
 
-            print('  Multiline')
-
-            # Last block of blks is of 
+            # Last block of blks is of
             # descriptor type 'ToCloseToken' and
             # its state is 0 (open) and it is
             # multi line
@@ -212,9 +203,7 @@ class HighlightDefinition(XmlMixin):
             last_blk = blks[-1]
             last_index = self._find_multiline_last_index(
                     text, last_blk)
-            print('  LAST INDEX: ' + str(last_index))
-            print('  LAST INDEX blk: ' + last_blk.index_end())
-            blocks_gtw.add_blocks([last_blk]) # Update lines
+            blocks_gtw.add_blocks([last_blk])  # Update lines
             self._apply_tags(text, [last_blk])
 
             if last_index is None:
@@ -237,7 +226,7 @@ class HighlightDefinition(XmlMixin):
         blocks_gtw.remove_blocks()
 
     def _find_multiline_last_index(self, text, block):
-        if block.descriptor.type not in {'toclosetoken',}:
+        if block.descriptor.type not in {'toclosetoken'}:
             raise Exception(
                 "Descriptor must be type of 'ToCloseToken'")
 
@@ -247,7 +236,8 @@ class HighlightDefinition(XmlMixin):
             block.index_start(), len(block.descriptor._tokens[0].value))
 
         index = text.search(block.descriptor._pattern_2,
-                    start, 'end', count=count, regexp=True)
+                            start, 'end', count=count,
+                            regexp=True)
 
         if index == '' or count.get() == 0:
             res = None
@@ -259,15 +249,12 @@ class HighlightDefinition(XmlMixin):
             res = text.index(
                 '{0}+{1}c'.format(index, count.get()))
             block.set_index_end(res)
-            block.state = 1 # Completed, because close_token was found.
+            block.state = 1  # Completed, because close_token was found.
         return res
 
     def _remove_tags(self, text, blocks):
-        print('  **** Remove tag')
         for b in blocks:
-            #TODO remove sub blocks tags
-            print('    start: ' + b.index_start())
-            print('    end: ' + b.index_end())
+            # TODO remove sub blocks tags
             text.tag_remove(
                     b.descriptor.style,
                     b.index_start(),
@@ -275,22 +262,18 @@ class HighlightDefinition(XmlMixin):
                 )
 
     def _apply_tags(self, text, blocks, ommit_last_block=False):
-        print('  **** _Apply tag')
         i = len(blocks)
         if ommit_last_block:
             i -= 1
         if i <= 0:
-            print('   i < 0')
             return
 
         i -= 1
         x = 0
-        while x <= i: 
+        while x <= i:
             b = blocks[x]
-            print('   {0}: {1} - {2}'.format(
-                b.descriptor.style, b.index_start(), b.index_end()))
             text.tag_add(
-                b.descriptor.style, 
+                b.descriptor.style,
                 b.index_start(),
                 b.index_end())
             if b.sub_blocks:
@@ -309,7 +292,7 @@ class HighlightDefinition(XmlMixin):
         last_blk = blks[-1]
 
         for b in blks:
-            if b.descriptor._descriptors: # Sub descriptors
+            if b.descriptor._descriptors:  # Sub descriptors
                 for d in b.descriptor._descriptors:
                     b.sub_blocks += d.get_blocks(
                         text, b.index_start(), b.index_end())
@@ -325,30 +308,16 @@ class HighlightDefinition(XmlMixin):
         if len(blks) in [0, 1]:
             return blks
 
-        #print('*** PURGE')
-
         # order by start col
         n_blks = HighlightBlocks.order_blocks(blks)
-
-        #print(len(n_blks))
-        #for b in n_blks:
-        #    print(b.descriptor.style)
-        #    print(' ' + str(b.index_start()) + '-' + str(b.index_end()))
 
         # Verify if blocks intersects each other and delete
         res = []
         for b in n_blks:
             self._mark_for_delete(b, n_blks, res)
 
-        #print('REMOVING ...')
         for r in res:
-            #print(r)
             n_blks.remove(r)
-
-        #for b in n_blks:
-        #    print(b.descriptor.style)
-        #    print(' ' + str(b.index_start()) + '-' + str(b.index_end()))
-        #print(len(n_blks))
 
         return n_blks
 
@@ -397,7 +366,8 @@ class HighlightDescriptor(XmlMixin):
                 node, 'style', None, True)
         self.multi_line = bool(self.get_attr_value(
                 node, 'multiLine', False))
-        self._descriptors = [] # Sub drescriptors. Ex: xml attribute name/value
+        # Sub drescriptors. Ex: xml attribute name/value
+        self._descriptors = []
         self._tokens = []
         self.is_separator = None
 
@@ -419,8 +389,7 @@ class HighlightDescriptor(XmlMixin):
             if n.nodeName == 'descriptors':
                 self._get_descriptors(n, case_sensitive)
 
-        self._pattern, self._pattern_1, self._pattern_2 = \
-                    self._get_pattern()
+        self._pattern, self._pattern_1, self._pattern_2 = self._get_pattern()
 
     def get_blocks(self, text, start, end):
         if not self._pattern:
@@ -436,7 +405,7 @@ class HighlightDescriptor(XmlMixin):
             if index == '' or count.get() == 0:
                 if self.type in {'wholeword', 'regex', 'toeol'}:
                     break
-                else: # toclosetoken
+                else:  # toclosetoken
                     is_toclosetoken = self._to_close_token_open_search(
                             text, 'startIndex', end, count)
                     if not is_toclosetoken:
@@ -445,14 +414,14 @@ class HighlightDescriptor(XmlMixin):
                             is_toclosetoken[0],
                             is_toclosetoken[1],
                             descriptor=self,
-                            state=0 # open
+                            state=0  # open
                         )
                     )
                     text.mark_set('startIndex', is_toclosetoken[1])
             else:
                 end_index = text.index('{0}+{1}c'.format(index, count.get()))
                 blocks.append(HighlightBlock(
-                            index, 
+                            index,
                             end_index,
                             descriptor=self,
                         )
@@ -464,9 +433,6 @@ class HighlightDescriptor(XmlMixin):
                         '{0}+{1}c'.format(index, len(self._tokens[0].value)))
                 text.mark_set('startIndex', end_index)
 
-        for b in blocks:
-            print('    Block Found {0}'.format(b))
-
         return blocks
 
     def _to_close_token_open_search(self, text, start, end, count):
@@ -475,11 +441,12 @@ class HighlightDescriptor(XmlMixin):
         close_token is not in same line or it does not exist.
         Return a tuple: [startIndex, endIndex]
         '''
-        if self.type not in {'toclosetoken',}:
+        if self.type not in {'toclosetoken'}:
             return
 
         index = text.search(self._pattern_1,
-                    start, end, count=count, regexp=True)
+                            start, end, count=count,
+                            regexp=True)
 
         if index == '' or count.get() == 0:
             return
@@ -499,9 +466,9 @@ class HighlightDescriptor(XmlMixin):
 
     def _get_pattern(self):
         pattern = ''
-        pattern_1 = None # For
-        pattern_2 = None # Multiline search
-        
+        pattern_1 = None  # For
+        pattern_2 = None  # Multiline search
+
         if self.type == 'wholeword':
             for token in self._tokens:
                 if pattern != '':
@@ -545,7 +512,7 @@ class HighlightStyle(XmlMixin):
         self.fore_color = self.get_attr_value(
                 node, 'foreColor', None)
         self.back_color = self.get_attr_value(
-                node, 'backColor', None) 
+                node, 'backColor', None)
         self.bold = bool(self.get_attr_value(
                 node, 'bold', False))
         self.italic = bool(self.get_attr_value(

@@ -7,7 +7,6 @@ from xml.dom import minidom
 from . result import Result
 from . import LOGGER
 from . definition.element import Nuntiare
-from . definition.expression import Expression
 from . definition.expression_eval import ExpressionEval
 from . data.data_type import DataType
 from . data.data import DataSourceObject, DataSetObject
@@ -27,7 +26,7 @@ class Parameters(Collection):
 
 class Report:
     def __init__(self, definition_source, output_name=None,
-                output_directory=None):
+                 output_directory=None):
 
         self.definition_source = definition_source
         self.result = None
@@ -285,7 +284,7 @@ System error: {1}'''
             try:
                 result[ds.Name] = DataSourceObject(self, ds)
                 result[ds.Name].connect()
-            except:
+            except Exception:
                 result[ds.Name] = None
                 continue
         return result

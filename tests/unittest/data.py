@@ -96,12 +96,13 @@ class DataTest(unittest.TestCase):
     def _verify(self, report):
         self.assertNotEqual(report.data_sources['DataSourceTest'], None)
         self.assertEqual(report.data_sources['DataSourceTest'].name,
-                            'DataSourceTest')
+                         'DataSourceTest')
 
         # DataSet without filter
         data = report.data_sets['DataSet1']  # It is the DataInterface object
         # It is appended to the data_groups colecction too
-        self.assertEqual('DataSet1' in report.data_sets, 'DataSet1' in report.data_groups)
+        self.assertEqual('DataSet1' in report.data_sets,
+                         'DataSet1' in report.data_groups)
         self.assertEqual(len(data.rows), 830)
         data.move_first()  # Move to first row
         self.assertEqual(data.EOF, False)
@@ -148,14 +149,17 @@ class DataTest(unittest.TestCase):
 
         data.move_first()
         self.assertEqual(data.fields['customer'], 'WOLZA')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-12-05'))
+        self.assertEqual(data.fields['date'],
+                         dateutil.parser.parse('1996-12-05'))
 
         data.move(100)
         self.assertEqual(data.fields['customer'], 'TORTU')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1996-10-02'))
+        self.assertEqual(data.fields['date'],
+                         dateutil.parser.parse('1996-10-02'))
         data.move_last()
         self.assertEqual(data.fields['customer'], 'ALFKI')
-        self.assertEqual(data.fields['date'], dateutil.parser.parse('1998-04-09'))
+        self.assertEqual(data.fields['date'],
+                         dateutil.parser.parse('1998-04-09'))
 
         # ========== Groups ==================
 
@@ -300,7 +304,7 @@ class DataTest(unittest.TestCase):
             i += 1
 
     def _get_xml_string_1(self):
-        return '''
+        return r'''
 <Nuntiare>
   <Name>Data_Test</Name>
   <Width>21cm</Width>
@@ -599,7 +603,7 @@ employeeid, freight FROM orders ORDER BY orderid</CommandText>
 '''
 
     def _get_xml_string_2(self):
-        return '''
+        return r'''
 <Nuntiare>
   <Name>Sorting Test</Name>
   <Width>21cm</Width>

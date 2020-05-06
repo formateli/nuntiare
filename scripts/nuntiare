@@ -8,17 +8,19 @@ import argparse
 
 
 try:
-    from nuntiare import VERSION, COPYRIGHT, LICENSE, LOGGER
+    from nuntiare import (PROJECT_NAME, DESCRIPTION, VERSION,
+                          COPYRIGHT, LICENSE, LOGGER)
 except ImportError:
     print('Running uninstalled mode...')
     DIR = os.path.dirname(os.path.realpath(__file__))
     DIR = os.path.normpath(os.path.join(DIR, '..', 'nuntiare'))
     if os.path.isdir(DIR):
         sys.path.insert(0, os.path.dirname(DIR))
-    from nuntiare import VERSION, COPYRIGHT, LICENSE, LOGGER
+    from nuntiare import (PROJECT_NAME, DESCRIPTION, VERSION,
+                          COPYRIGHT, LICENSE, LOGGER)
 
 
-APPNAME = 'Nuntiare command line tool'
+APPNAME = PROJECT_NAME + ' command line tool'
 
 
 def get_info():

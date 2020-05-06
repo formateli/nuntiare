@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 
-_TYPE = None # None, GTK, GI
+_TYPE = None  # None, GTK, GI
 
 try:
     import cairo
@@ -98,8 +98,6 @@ class CairoFont(IFontManager):
         elif style.font_weight == '900':
             name_fd.set_weight(CairoFont.get_weight('HEAVY'))
 
-        max_height = \
-            cur_height - style.padding_top - style.padding_bottom
         max_width = \
             cur_width - style.padding_left - style.padding_right
 
@@ -137,7 +135,6 @@ class CairoFont(IFontManager):
             return getattr(pango.Style, value)
         else:
             return getattr(pango, 'STYLE_' + value)
-            
 
     @staticmethod
     def get_weight(value):

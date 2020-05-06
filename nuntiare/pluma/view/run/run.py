@@ -21,7 +21,7 @@ class RunBar(GroupToolBar):
 
         self._view = view
         self._id = RunBar._get_next_id()
-        prefix = str(self._id) + '_' 
+        prefix = str(self._id) + '_'
         iz = '22x22'
 
         self.add_toolbar('run')
@@ -47,7 +47,7 @@ class RunBar(GroupToolBar):
                     command=lambda x=r: self._run_render(x))
             i += 1
 
-        #TODO destroy menu when pluma.tab close
+        # TODO destroy menu when pluma.tab close
 
     def _run(self):
         self._view.run()

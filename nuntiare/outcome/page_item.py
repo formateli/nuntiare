@@ -1,10 +1,7 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import sys
-#import cairo
-#from .. nuntiarepango import pango, NuntiarePango
 from .. import LOGGER, FontManager
 from .. data.data_type import DataType
 
@@ -167,7 +164,7 @@ class PageItem(object):
         if self.parent is not None and self.parent.type == 'RowCell':
             self.parent.set_new_height(height)
 
-    def set_new_widht(self, height):
+    def set_new_widht(self, width):
         self.width = width
 
     def _normalize_height_width(self):
@@ -176,7 +173,7 @@ class PageItem(object):
                 if self.parent.height > 0 and self.height == 0:
                     self.height = self.parent.height - self.parent.top
             if self.parent.width:
-              if self.parent.width > 0 and self.width == 0:
+                if self.parent.width > 0 and self.width == 0:
                     self.width = self.parent.width - self.parent.left
 
     def get_item_list(self):
@@ -199,7 +196,7 @@ class PageItem(object):
         if not page_item:
             err_msg = "Error trying to get Report item. " \
                 "Invalid definition element '{0}'"
-            logger.error(err_msg.format(it), True)
+            LOGGER.error(err_msg.format(it), True)
 
         return page_item
 

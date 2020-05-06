@@ -6,7 +6,6 @@
 
 from nuntiare.pluma.highlight import Highlight, HighlightBlocks
 from nuntiare.pluma.widget import TextEvent, TextInfoMixin
-from tkinter import Text, END
 import unittest
 
 
@@ -57,9 +56,9 @@ class HighlightTest(unittest.TestCase):
         line = self.hl_blocks.get_line(1)
         # Just one block for 'from' reserved word
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (1, 4, 1, 8))
 
         # Add letter 'd' to non block area
@@ -70,9 +69,9 @@ class HighlightTest(unittest.TestCase):
         line = self.hl_blocks.get_line(1)
         # Remain one block
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (1, 5, 1, 9))
 
         # Break line at position 4
@@ -89,9 +88,9 @@ class HighlightTest(unittest.TestCase):
 
         line = self.hl_blocks.get_line(2)
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (2, 1, 2, 5))
 
         # Insert two lines text
@@ -108,20 +107,20 @@ class HighlightTest(unittest.TestCase):
 
         line = self.hl_blocks.get_line(2)
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (2, 0, 2, 3))
 
         self._tag_in_range('reserved', 'from', '4.1', '4.5')
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (4, 1, 4, 5))
 
-        # Test reserved 
+        # Test reserved
         # insert just before: Nothimg happens because char is a separator
         self.text.insert('4.1', ' ')
         # Tags
@@ -130,9 +129,9 @@ class HighlightTest(unittest.TestCase):
 
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (4, 2, 4, 6))
 
         # insert just after: Nothimg happens because char is a separator
@@ -143,9 +142,9 @@ class HighlightTest(unittest.TestCase):
 
         line = self.hl_blocks.get_line(4)
         self.assertEqual(len(line), 1)
-        l = line[0]
+        ln = line[0]
         self.assertEqual(
-            (l.line_start, l.col_start, l.line_end, l.col_end),
+            (ln.line_start, ln.col_start, ln.line_end, ln.col_end),
             (4, 2, 4, 6))
 
         # insert between: clear tag
@@ -168,8 +167,8 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 2)
         i = 1
         while i <= 2:
-            l = self.hl_blocks.get_line(1)
-            self.assertEqual(len(l), 0)
+            ln = self.hl_blocks.get_line(1)
+            self.assertEqual(len(ln), 0)
             i += 1
         # Tags
         self._get_tag_ranges()
@@ -216,7 +215,7 @@ class HighlightTest(unittest.TestCase):
         self.text.delete('1.3', '1.4')
         # 'abcfrom fgh'
         line = self.hl_blocks.get_line(1)
-        self.assertEqual(len(line), 0) # No blocks
+        self.assertEqual(len(line), 0)  # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.11')
 
@@ -225,7 +224,7 @@ class HighlightTest(unittest.TestCase):
         self.text.delete('1.8', '1.9')
         # 'abc fromfgh'
         line = self.hl_blocks.get_line(1)
-        self.assertEqual(len(line), 0) # No blocks
+        self.assertEqual(len(line), 0)  # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.11')
 
@@ -234,7 +233,7 @@ class HighlightTest(unittest.TestCase):
         self.text.delete('1.5', '1.6')
         # 'abc fom fgh'
         line = self.hl_blocks.get_line(1)
-        self.assertEqual(len(line), 0) # No blocks
+        self.assertEqual(len(line), 0)  # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.11')
 
@@ -243,48 +242,49 @@ class HighlightTest(unittest.TestCase):
         self.text.delete('1.4', '1.8')
         # 'abc  fgh'
         line = self.hl_blocks.get_line(1)
-        self.assertEqual(len(line), 0) # No blocks
+        self.assertEqual(len(line), 0)  # No blocks
         self._get_tag_ranges()
         self._tag_no_in_range('reserved', '1.0', '1.8')
 
         #####################################
 
         self.text = self._reset_text_widget()
-        self.text.insert('1.0', 'from tkinter import ttk\nfrom tkinter.font import Font\n')
+        self.text.insert('1.0', 'from tkinter import ttk\n'
+                         'from tkinter.font import Font\n')
         self.assertEqual(len(self.hl_blocks._lines), 3)
         self._get_tag_ranges()
-        l = self.hl_blocks.get_line(1)
+        ln = self.hl_blocks.get_line(1)
         self._tag_in_range('reserved', 'from', '1.0', '1.4')
-        self.assertEqual((l[0].index_start(),  l[0].index_end()),
-            ('1.0', '1.4'))
+        self.assertEqual((ln[0].index_start(), ln[0].index_end()),
+                         ('1.0', '1.4'))
         self._tag_in_range('reserved', 'import', '1.13', '1.19')
-        self.assertEqual((l[1].index_start(),  l[1].index_end()),
-            ('1.13', '1.19'))
-        l = self.hl_blocks.get_line(2)
+        self.assertEqual((ln[1].index_start(),  ln[1].index_end()),
+                         ('1.13', '1.19'))
+        ln = self.hl_blocks.get_line(2)
         self._tag_in_range('reserved', 'from', '2.0', '2.4')
-        self.assertEqual((l[0].index_start(),  l[0].index_end()),
-            ('2.0', '2.4'))
+        self.assertEqual((ln[0].index_start(),  ln[0].index_end()),
+                         ('2.0', '2.4'))
         self._tag_in_range('reserved', 'import', '2.18', '2.24')
-        self.assertEqual((l[1].index_start(),  l[1].index_end()),
-            ('2.18', '2.24'))
+        self.assertEqual((ln[1].index_start(),  ln[1].index_end()),
+                         ('2.18', '2.24'))
 
         self.text.delete('2.29', '3.0')
         self.assertEqual(len(self.hl_blocks._lines), 2)
         self._get_tag_ranges()
-        l = self.hl_blocks.get_line(1)
+        ln = self.hl_blocks.get_line(1)
         self._tag_in_range('reserved', 'from', '1.0', '1.4')
-        self.assertEqual((l[0].index_start(),  l[0].index_end()),
-            ('1.0', '1.4'))
+        self.assertEqual((ln[0].index_start(),  ln[0].index_end()),
+                         ('1.0', '1.4'))
         self._tag_in_range('reserved', 'import', '1.13', '1.19')
-        self.assertEqual((l[1].index_start(),  l[1].index_end()),
-            ('1.13', '1.19'))
-        l = self.hl_blocks.get_line(2)
+        self.assertEqual((ln[1].index_start(),  ln[1].index_end()),
+                         ('1.13', '1.19'))
+        ln = self.hl_blocks.get_line(2)
         self._tag_in_range('reserved', 'from', '2.0', '2.4')
-        self.assertEqual((l[0].index_start(),  l[0].index_end()),
-            ('2.0', '2.4'))
+        self.assertEqual((ln[0].index_start(),  ln[0].index_end()),
+                         ('2.0', '2.4'))
         self._tag_in_range('reserved', 'import', '2.18', '2.24')
-        self.assertEqual((l[1].index_start(),  l[1].index_end()),
-            ('2.18', '2.24'))
+        self.assertEqual((ln[1].index_start(),  ln[1].index_end()),
+                         ('2.18', '2.24'))
 
         #####################################
 
@@ -297,11 +297,13 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_in_range('quote', '"char1"', '1.0', '1.7')
         self.assertEqual(
-            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end),
             (1, 0, 1, 7))
         self._tag_in_range('quote', '"char2"', '1.12', '1.19')
         self.assertEqual(
-            (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
+            (line[1].line_start, line[1].col_start,
+                line[1].line_end, line[1].col_end),
             (1, 12, 1, 19))
 
         # Delete
@@ -313,7 +315,8 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_in_range('quote', '"har2"', '1.12', '1.18')
         self.assertEqual(
-            (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
+            (line[1].line_start, line[1].col_start,
+                line[1].line_end, line[1].col_end),
             (1, 12, 1, 18))
 
         self.text.delete('1.16', '1.17')
@@ -323,7 +326,8 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_in_range('quote', '"har"', '1.12', '1.17')
         self.assertEqual(
-            (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
+            (line[1].line_start, line[1].col_start,
+                line[1].line_end, line[1].col_end),
             (1, 12, 1, 17))
 
         self.text.delete('1.14', '1.15')
@@ -333,22 +337,24 @@ class HighlightTest(unittest.TestCase):
         self._get_tag_ranges()
         self._tag_in_range('quote', '"hr"', '1.12', '1.16')
         self.assertEqual(
-            (line[1].line_start, line[1].col_start, line[1].line_end, line[1].col_end),
+            (line[1].line_start, line[1].col_start,
+                line[1].line_end, line[1].col_end),
             (1, 12, 1, 16))
 
         ####################################
 
         self.text = self._reset_text_widget()
         self.text.insert('1.0',
-            '''"""\nline 1\nline 2\nline 3\n"""''')
+                         '''"""\nline 1\nline 2\nline 3\n"""''')
 
         self.assertEqual(len(self.hl_blocks._lines), 5)
         i = 1
         while i <= len(self.hl_blocks._lines):
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (1, 0, 5, 3))
             i += 1
 
@@ -359,10 +365,11 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks.get_line(1)), 0)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (2, 0, 6, 3))
             i += 1
 
@@ -370,10 +377,11 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (2, 0, 7, 3))
             i += 1
 
@@ -385,11 +393,11 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (2, 0, 7, 3))
             i += 1
 
@@ -397,27 +405,26 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 8)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (2, 0, 8, 6))
             i += 1
         self._get_tag_ranges()
         self._tag_in_range(
             'quote', '"""\nl\nine 1\nline 2\nline 3\n\nabc"""', '2.0', '8.6')
 
-
         self.text.delete('3.1', '4.0')
         self.assertEqual(len(self.hl_blocks._lines), 7)
         i = 2
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (2, 0, 7, 6))
             i += 1
         self._get_tag_ranges()
@@ -428,11 +435,11 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 6)
         i = 1
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (1, 0, 6, 6))
             i += 1
         self._get_tag_ranges()
@@ -443,11 +450,11 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 8)
         i = 3
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (3, 0, 8, 6))
             i += 1
 
@@ -459,26 +466,27 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(self.hl_blocks._lines), 10)
         i = 3
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (3, 0, 10, 6))
             i += 1
         self._get_tag_ranges()
         self._tag_in_range(
-            'quote', '"""\n\n\nline 1\nline 2\nline 3\n\nabc"""', '3.0', '10.6')
+            'quote', '"""\n\n\nline 1\nline 2\nline 3\n\nabc"""',
+            '3.0', '10.6')
 
         self.text.delete('4.0', '6.0')
         self.assertEqual(len(self.hl_blocks._lines), 8)
         i = 3
         while i <= len(self.hl_blocks._lines):
-            print(i)
-            l = self.hl_blocks.get_line(i)
-            self.assertEqual(len(l), 1)
+            ln = self.hl_blocks.get_line(i)
+            self.assertEqual(len(ln), 1)
             self.assertEqual(
-                (l[0].line_start, l[0].col_start, l[0].line_end, l[0].col_end),
+                (ln[0].line_start, ln[0].col_start,
+                    ln[0].line_end, ln[0].col_end),
                 (3, 0, 8, 6))
             i += 1
         self._get_tag_ranges()
@@ -497,7 +505,8 @@ class HighlightTest(unittest.TestCase):
         self._tag_in_range('comment', '# comment', '1.0', '1.9')
 
         self.assertEqual(
-            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end),
             (1, 0, 1, 9))
 
         self.text.insert('1.9', ' x')
@@ -505,7 +514,8 @@ class HighlightTest(unittest.TestCase):
         self.assertEqual(len(line), 1)
 
         self.assertEqual(
-            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end),
             (1, 0, 1, 11))
         self._get_tag_ranges()
         self._tag_in_range('comment', '# comment x', '1.0', '1.11')
@@ -515,7 +525,8 @@ class HighlightTest(unittest.TestCase):
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 1)
         self.assertEqual(
-            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end),
             (1, 0, 1, 10))
         self._get_tag_ranges()
         self._tag_in_range('comment', '# commentx', '1.0', '1.10')
@@ -524,7 +535,8 @@ class HighlightTest(unittest.TestCase):
         line = self.hl_blocks.get_line(1)
         self.assertEqual(len(line), 1)
         self.assertEqual(
-            (line[0].line_start, line[0].col_start, line[0].line_end, line[0].col_end),
+            (line[0].line_start, line[0].col_start,
+                line[0].line_end, line[0].col_end),
             (1, 0, 1, 9))
         self._get_tag_ranges()
         self._tag_in_range('comment', '# comment', '1.0', '1.9')
@@ -616,8 +628,9 @@ class HighlightTest(unittest.TestCase):
         for r in ranges:
             idxs = r.index_start_int()
             if idxs >= start_int and idxs <= end_int:
-                raise Exception("Found in range for tag '{0}'. {1} - {2}".format(
-                    tag_name, r.index_start(), r.index_end()))
+                raise Exception(
+                    "Found in range for tag '{0}'. {1} - {2}".format(
+                        tag_name, r.index_start(), r.index_end()))
 
     def _get_tag_ranges(self):
         res = {}
@@ -629,7 +642,7 @@ class HighlightTest(unittest.TestCase):
             res[tag] = []
             ranges = self.text.tag_ranges(tag)
             i = 0
-            while i < len(ranges):           
+            while i < len(ranges):
                 res[tag].append(
                         TagRange(ranges[i].string, ranges[i + 1].string)
                     )
@@ -647,7 +660,7 @@ class HighlightTest(unittest.TestCase):
         self.hl.apply_hl(self.text, text_info, self.hl_blocks)
 
     def _get_python_sample_2(self):
-        return '''# one line comment
+        return r'''# one line comment
 class ThisIsAClass():
     def def_test():
         "#str1", "#str2"
@@ -662,140 +675,157 @@ class ThisIsAClass():
         '''
 
     def _get_syntax_python(self):
-        return '''<highlightDefinition caseSensitive="1" extensions="py">
-	<styles>
-        <style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
-        <style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
-        <style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
-	</styles>
+        return r'''<highlightDefinition caseSensitive="1" extensions="py">
+    <styles>
+        <style name="reserved" foreColor="blue" backColor=""
+            bold="0" italic="0" />
+        <style name="comment" foreColor="green" backColor=""
+            bold="0" italic="0" />
+        <style name="quote" foreColor="red" backColor=""
+            bold="0" italic="0" />
+    </styles>
 
-	<separators>
-		<separator value="." />
-		<separator value="," />
-		<separator value=":" />
-		<separator value="-" />
-		<separator value="+" />
-		<separator value="=" />
-		<separator value="(" />
-		<separator value=")" />
-		<separator value="[" />
-		<separator value="]" />
-		<separator value="{" />
-		<separator value="}" />
-		<separator value=";" />
-		<separator value="?" />
-	</separators>
+    <separators>
+        <separator value="." />
+        <separator value="," />
+        <separator value=":" />
+        <separator value="-" />
+        <separator value="+" />
+        <separator value="=" />
+        <separator value="(" />
+        <separator value=")" />
+        <separator value="[" />
+        <separator value="]" />
+        <separator value="{" />
+        <separator value="}" />
+        <separator value=";" />
+        <separator value="?" />
+    </separators>
 
-	<descriptors>
+    <descriptors>
 
-		<descriptor style="reserved" type="WholeWord" description="Set of words to be highlighted" >
-			<tokens>
-				<token value="and"/>
-				<token value="as"/>
-				<token value="assert"/>
-				<token value="break"/>-
-				<token value="class"/>
-				<token value="continue"/>
-				<token value="def"/>
-				<token value="del"/>
-				<token value="elif"/>
-				<token value="else"/>
-				<token value="except"/>
-				<token value="False"/>
-				<token value="finally"/>
-				<token value="for"/>
-				<token value="from"/>
-				<token value="global"/>
-				<token value="if"/>
-				<token value="import"/>
-				<token value="in"/>
-				<token value="is"/>
-				<token value="lambda"/>
-				<token value="None"/>
-				<token value="nonlocal"/>
-				<token value="not"/>
-				<token value="or"/>
-				<token value="pass"/>
-				<token value="raise"/>
-				<token value="return"/>
-				<token value="True"/>
-				<token value="try"/>
-				<token value="while"/>
-				<token value="with"/>
-				<token value="yield"/>
-				<token value="self"/>
+        <descriptor style="reserved" type="WholeWord"
+                description="Set of words to be highlighted" >
+            <tokens>
+                <token value="and"/>
+                <token value="as"/>
+                <token value="assert"/>
+                <token value="break"/>-
+                <token value="class"/>
+                <token value="continue"/>
+                <token value="def"/>
+                <token value="del"/>
+                <token value="elif"/>
+                <token value="else"/>
+                <token value="except"/>
+                <token value="False"/>
+                <token value="finally"/>
+                <token value="for"/>
+                <token value="from"/>
+                <token value="global"/>
+                <token value="if"/>
+                <token value="import"/>
+                <token value="in"/>
+                <token value="is"/>
+                <token value="lambda"/>
+                <token value="None"/>
+                <token value="nonlocal"/>
+                <token value="not"/>
+                <token value="or"/>
+                <token value="pass"/>
+                <token value="raise"/>
+                <token value="return"/>
+                <token value="True"/>
+                <token value="try"/>
+                <token value="while"/>
+                <token value="with"/>
+                <token value="yield"/>
+                <token value="self"/>
                 <token value="super"/>
-			</tokens>
-		</descriptor>
+            </tokens>
+        </descriptor>
 
-		<descriptor style="quote" type="ToCloseToken" multiLine="1" description="Multiline quote">
-			<tokens>
-				<token value="&quot;&quot;&quot;" closeToken="&quot;&quot;&quot;"/>
-			</tokens>
-		</descriptor>
+        <descriptor style="quote" type="ToCloseToken" multiLine="1"
+                description="Multiline quote">
+            <tokens>
+                <token value="&quot;&quot;&quot;"
+                    closeToken="&quot;&quot;&quot;"/>
+            </tokens>
+        </descriptor>
 
-		<descriptor style="quote" type="ToCloseToken" description="String between quotes">
-			<tokens>
-				<token value="&quot;" closeToken="&quot;"/>
-			</tokens>
-		</descriptor>
+        <descriptor style="quote" type="ToCloseToken"
+                description="String between quotes">
+            <tokens>
+                <token value="&quot;" closeToken="&quot;"/>
+            </tokens>
+        </descriptor>
 
-		<descriptor style="quote" type="ToCloseToken" description="String between single quotes">
-			<tokens>
-				<token value="'" closeToken="'"/>
-			</tokens>
-		</descriptor>
+        <descriptor style="quote" type="ToCloseToken"
+                description="String between single quotes">
+            <tokens>
+                <token value="'" closeToken="'"/>
+            </tokens>
+        </descriptor>
 
-		<descriptor style="comment" type="ToEOL" description="Comment line" >
-			<tokens>
-				<token value="#"/>
-			</tokens>
-		</descriptor>
+        <descriptor style="comment" type="ToEOL" description="Comment line">
+            <tokens>
+                <token value="#"/>
+            </tokens>
+        </descriptor>
 
-	</descriptors>
+    </descriptors>
 
 </highlightDefinition>
         '''
 
     def _get_syntax_xml(self):
-        return '''<highlightDefinition caseSensitive="0"  extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
+        return r'''<highlightDefinition caseSensitive="0"
+                extensions="xml,build,page,rdl,rdlc,addin,nuntiare">
 
-	<styles>
-		<style name="reserved" foreColor="blue" backColor="" bold="0" italic="0" />
-		<style name="comment" foreColor="green" backColor="" bold="0" italic="0" />
-		<style name="attr" foreColor="brown" backColor="" bold="0" italic="0" />
-		<style name="quote" foreColor="red" backColor="" bold="0" italic="0" />
-	</styles>
+    <styles>
+        <style name="reserved" foreColor="blue"
+            backColor="" bold="0" italic="0" />
+        <style name="comment" foreColor="green"
+            backColor="" bold="0" italic="0" />
+        <style name="attr" foreColor="brown"
+            backColor="" bold="0" italic="0" />
+        <style name="quote" foreColor="red"
+            backColor="" bold="0" italic="0" />
+    </styles>
 
-	<separators>
-	</separators>
+    <separators>
+    </separators>
 
-	<descriptors>
-		<descriptor style="reserved" type="ToCloseToken" description="Xml Element">
-			<tokens>
-				<token value="&lt;" closeToken="&gt;"/>
-			</tokens>
+    <descriptors>
+        <descriptor style="reserved" type="ToCloseToken"
+                description="Xml Element">
+            <tokens>
+                <token value="&lt;" closeToken="&gt;"/>
+            </tokens>
             <!-- Sub descriptors -->
-	        <descriptors>
-                <descriptor style="attr" type="Regex" description="Attribute Name">
+            <descriptors>
+                <descriptor style="attr" type="Regex"
+                        description="Attribute Name">
                     <tokens>
                         <token value="\s(.*)="/>
                     </tokens>
-		        </descriptor>
-		        <descriptor style="quote" type="ToCloseToken" description="Attribute value">
-			        <tokens>
-				        <token value="&quot;" closeToken="&quot;"/>
-			        </tokens>
-		        </descriptor>
-	        </descriptors>
-		</descriptor>
+                </descriptor>
+                <descriptor style="quote" type="ToCloseToken"
+                        description="Attribute value">
+                    <tokens>
+                        <token value="&quot;" closeToken="&quot;"/>
+                    </tokens>
+                </descriptor>
+            </descriptors>
+        </descriptor>
 
-		<descriptor style="comment" type="ToCloseToken" multiLine="1" description="Comment block">
-			<tokens>
-				<token value="&lt;!--" closeToken="--&gt;" />
-			</tokens>
-		</descriptor>
+        <descriptor style="comment" type="ToCloseToken"
+                multiLine="1" description="Comment block">
+            <tokens>
+                <token value="&lt;!--" closeToken="--&gt;" />
+            </tokens>
+        </descriptor>
 
-	</descriptors>
+    </descriptors>
 
 </highlightDefinition>'''

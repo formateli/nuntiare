@@ -8,11 +8,11 @@ from ..common import TextInfoMixin
 class TextChangedInfo(TextInfoMixin):
     def __init__(self):
         super(TextChangedInfo, self).__init__()
-        self.type = None # inserted, deleted
+        self.type = None  # inserted, deleted
         self.text = None
 
     def set_info(self, type_, text_changed, index_start, index_end=None):
-        self.type = type_		
+        self.type = type_
         self.text = text_changed
 
         self.line_start, self.col_start = \
@@ -20,7 +20,7 @@ class TextChangedInfo(TextInfoMixin):
 
         self._affected_factor = 1
         if type_ == 'deleted':
-           self._affected_factor = -1
+            self._affected_factor = -1
 
         self._set_index_end_info(index_end)
 
@@ -74,7 +74,8 @@ class TextEvent(tk.Text):
             text_editor_font = tk.font.Font(
                 family='Courier New', size=14)
 
-        super(TextEvent, self).__init__(parent,
+        super(TextEvent, self).__init__(
+                parent,
                 wrap=tk.NONE,
                 font=text_editor_font,
                 xscrollcommand=xscrollcommand,
@@ -108,13 +109,8 @@ class TextEvent(tk.Text):
 
     def _proxy(self, command, *args):
         if command in ('insert', 'delete', 'replace'):
-
-            print('==================')
-            #print(args)
-
             if command == 'insert':
                 mark = self.index(args[0])
-                print('{0} {1}'.format(command, mark))
                 self.text_changed_info.set_info(
                         type_='inserted',
                         text_changed=args[1], index_start=mark)
@@ -125,9 +121,6 @@ class TextEvent(tk.Text):
                     mark_2 = self.index('insert')
                 else:
                     mark_2 = self.index(args[1])
-
-                print('{0} {1}-{2}'.format(command, mark_1, mark_2))
-
                 text_deleted = self._get_text_deleted(mark_1, mark_2)
                 self.text_changed_info.set_info(
                         type_='deleted',
@@ -137,14 +130,11 @@ class TextEvent(tk.Text):
             elif command == 'replace':
                 raise Exception("Replace <<TextModified>> Not Implemented")
 
-            print('==================')
-
         cmd = (self._orig, command) + args
         try:
             result = self.tk.call(cmd)
-        except tk.TclError as er:
+        except tk.TclError:
             result = None
-            #print(er)
 
         if command in ('insert', 'delete', 'replace'):
             self.event_generate("<<TextModified>>")

@@ -7,7 +7,7 @@ from tools import get_report_path
 from datetime import datetime
 from decimal import Decimal
 from nuntiare.report import Report
-from nuntiare.definition.functions import *
+import nuntiare.definition.functions as fn
 
 
 class AggregateTest(unittest.TestCase):
@@ -226,89 +226,156 @@ class AggregateTest(unittest.TestCase):
 
     def test_functions(self):
         # Conversion functions
-        self.assertEqual(CBool('true'), True)
-        self.assertEqual(CBool('t'), True)
+        self.assertEqual(fn.CBool('true'), True)
+        self.assertEqual(fn.CBool('t'), True)
 
         self.assertEqual(
-            CDate('20151231'), datetime(2015, 12, 31, 0, 0, 0))
+            fn.CDate('20151231'), datetime(2015, 12, 31, 0, 0, 0))
         self.assertEqual(
-            CDate('20151231 23:59:59'), datetime(2015, 12, 31, 23, 59, 59))
+            fn.CDate('20151231 23:59:59'), datetime(2015, 12, 31, 23, 59, 59))
 
-        self.assertEqual(CInt('1'), 1)
-        self.assertEqual(CInt(1.1), 1)
+        self.assertEqual(fn.CInt('1'), 1)
+        self.assertEqual(fn.CInt(1.1), 1)
 
-        self.assertEqual(CFloat('1.1'), 1.1)
-        self.assertEqual(CInt(CFloat('1.1')), 1)
+        self.assertEqual(fn.CFloat('1.1'), 1.1)
+        self.assertEqual(fn.CInt(fn.CFloat('1.1')), 1)
 
-        self.assertEqual(CDecimal('1.1'), Decimal('1.1'))
-        self.assertEqual(CDecimal(1.1), Decimal(1.1))
+        self.assertEqual(fn.CDecimal('1.1'), Decimal('1.1'))
+        self.assertEqual(fn.CDecimal(1.1), Decimal(1.1))
 
-        self.assertEqual(CStr(1.1), '1.1')
-        self.assertEqual(CStr(True), 'True')
+        self.assertEqual(fn.CStr(1.1), '1.1')
+        self.assertEqual(fn.CStr(True), 'True')
         self.assertEqual(
-            CStr(datetime(2015, 12, 31, 0, 0, 0)), '2015-12-31 00:00:00')
+            fn.CStr(datetime(2015, 12, 31, 0, 0, 0)), '2015-12-31 00:00:00')
 
         # Conditional functions
-        self.assertEqual(Iif(True, 'a', 'b'), 'a')
-        self.assertEqual(Iif(False, 'a', 'b'), 'b')
-        self.assertEqual(Iif(None, 'a', 'b'), 'b')
+        self.assertEqual(fn.Iif(True, 'a', 'b'), 'a')
+        self.assertEqual(fn.Iif(False, 'a', 'b'), 'b')
+        self.assertEqual(fn.Iif(None, 'a', 'b'), 'b')
 
-        self.assertEqual(Switch(0, 0, 'a', 1, 'b', 2, 'c'), 'a')
-        self.assertEqual(Switch(1, 0, 'a', 1, 'b', 2, 'c'), 'b')
-        self.assertEqual(Switch(2, 0, 'a', 1, 'b', 2, 'c'), 'c')
+        self.assertEqual(fn.Switch(0, 0, 'a', 1, 'b', 2, 'c'), 'a')
+        self.assertEqual(fn.Switch(1, 0, 'a', 1, 'b', 2, 'c'), 'b')
+        self.assertEqual(fn.Switch(2, 0, 'a', 1, 'b', 2, 'c'), 'c')
 
-        self.assertEqual(Choose(1, 'a', 'b', 'c'), 'a')
-        self.assertEqual(Choose(2, 'a', 'b', 'c'), 'b')
-        self.assertEqual(Choose(3, 'a', 'b', 'c'), 'c')
+        self.assertEqual(fn.Choose(1, 'a', 'b', 'c'), 'a')
+        self.assertEqual(fn.Choose(2, 'a', 'b', 'c'), 'b')
+        self.assertEqual(fn.Choose(3, 'a', 'b', 'c'), 'c')
 
         # Date funtions
-        self.assertEqual(Day(datetime(2015, 12, 31, 23, 15, 49)), 31)
-        self.assertEqual(Month(datetime(2015, 12, 31, 23, 15, 49)), 12)
-        self.assertEqual(Year(datetime(2015, 12, 31, 23, 15, 49)), 2015)
-        self.assertEqual(Hour(datetime(2015, 12, 31, 23, 15, 49)), 23)
-        self.assertEqual(Minute(datetime(2015, 12, 31, 23, 15, 49)), 15)
-        self.assertEqual(Second(datetime(2015, 12, 31, 23, 15, 49)), 49)
-        self.assertEqual(Day(Today()), Day(datetime.today()))
+        self.assertEqual(fn.Day(datetime(2015, 12, 31, 23, 15, 49)), 31)
+        self.assertEqual(fn.Month(datetime(2015, 12, 31, 23, 15, 49)), 12)
+        self.assertEqual(fn.Year(datetime(2015, 12, 31, 23, 15, 49)), 2015)
+        self.assertEqual(fn.Hour(datetime(2015, 12, 31, 23, 15, 49)), 23)
+        self.assertEqual(fn.Minute(datetime(2015, 12, 31, 23, 15, 49)), 15)
+        self.assertEqual(fn.Second(datetime(2015, 12, 31, 23, 15, 49)), 49)
+        self.assertEqual(fn.Day(fn.Today()), fn.Day(datetime.today()))
 
         # String funtions
-        self.assertEqual(Format('Hello', 'Hello'), 'Hello')
-        self.assertEqual(Format('World!', 'Hello {0}'), 'Hello World!')
-        self.assertEqual(Format(12, '{:,.2f}'), '12.00')
+        self.assertEqual(fn.Format('Hello', 'Hello'), 'Hello')
+        self.assertEqual(fn.Format('World!', 'Hello {0}'), 'Hello World!')
+        self.assertEqual(fn.Format(12, '{:,.2f}'), '12.00')
 
-        self.assertEqual(LCase('To Lower'), 'to lower')
-        self.assertEqual(LCase(None), None)
-        self.assertEqual(UCase('To Upper'), 'TO UPPER')
-        self.assertEqual(UCase(None), None)
-        self.assertEqual(Len(''), 0)
-        self.assertEqual(Len('Get Lenght'), 10)
-        self.assertEqual(Len(None), None)
-        self.assertEqual(LTrim(''), '')
-        self.assertEqual(LTrim('  '), '')
-        self.assertEqual(LTrim(' LTrim'), 'LTrim')
-        self.assertEqual(LTrim('       LTrim'), 'LTrim')
-        self.assertEqual(LTrim('LTrim  '), 'LTrim  ')
-        self.assertEqual(RTrim(''), '')
-        self.assertEqual(RTrim('  '), '')
-        self.assertEqual(RTrim('RTrim '), 'RTrim')
-        self.assertEqual(RTrim('RTrim       '), 'RTrim')
-        self.assertEqual(RTrim('  RTrim'), '  RTrim')
-        self.assertEqual(Trim(''), '')
-        self.assertEqual(Trim('  '), '')
-        self.assertEqual(Trim(' Trim '), 'Trim')
-        self.assertEqual(Trim('      Trim       '), 'Trim')
+        self.assertEqual(fn.LCase('To Lower'), 'to lower')
+        self.assertEqual(fn.LCase(None), None)
+        self.assertEqual(fn.UCase('To Upper'), 'TO UPPER')
+        self.assertEqual(fn.UCase(None), None)
+        self.assertEqual(fn.Len(''), 0)
+        self.assertEqual(fn.Len('Get Lenght'), 10)
+        self.assertEqual(fn.Len(None), None)
+        self.assertEqual(fn.LTrim(''), '')
+        self.assertEqual(fn.LTrim('  '), '')
+        self.assertEqual(fn.LTrim(' LTrim'), 'LTrim')
+        self.assertEqual(fn.LTrim('       LTrim'), 'LTrim')
+        self.assertEqual(fn.LTrim('LTrim  '), 'LTrim  ')
+        self.assertEqual(fn.RTrim(''), '')
+        self.assertEqual(fn.RTrim('  '), '')
+        self.assertEqual(fn.RTrim('RTrim '), 'RTrim')
+        self.assertEqual(fn.RTrim('RTrim       '), 'RTrim')
+        self.assertEqual(fn.RTrim('  RTrim'), '  RTrim')
+        self.assertEqual(fn.Trim(''), '')
+        self.assertEqual(fn.Trim('  '), '')
+        self.assertEqual(fn.Trim(' Trim '), 'Trim')
+        self.assertEqual(fn.Trim('      Trim       '), 'Trim')
 
         mid_test = 'Mid Function Demo'
-        self.assertEqual(Mid(mid_test, 1, 3), 'Mid')
-        self.assertEqual(Mid(mid_test, 14, 4), 'Demo')
-        self.assertEqual(Mid(mid_test, 5), 'Function Demo')
-        self.assertEqual(Mid(mid_test, 5, 150), 'Function Demo')
-        self.assertEqual(Mid(mid_test, 150), '')
+        self.assertEqual(fn.Mid(mid_test, 1, 3), 'Mid')
+        self.assertEqual(fn.Mid(mid_test, 14, 4), 'Demo')
+        self.assertEqual(fn.Mid(mid_test, 5), 'Function Demo')
+        self.assertEqual(fn.Mid(mid_test, 5, 150), 'Function Demo')
+        self.assertEqual(fn.Mid(mid_test, 150), '')
 
         replace_test = 'abc def abc hij klm'
         self.assertEqual(
-            Replace(replace_test, 'abc', 'xxx'), 'xxx def xxx hij klm')
+            fn.Replace(replace_test, 'abc', 'xxx'), 'xxx def xxx hij klm')
         self.assertEqual(
-            Replace(replace_test, 'abc', 'xxx', 1), 'xxx def abc hij klm')
+            fn.Replace(replace_test, 'abc', 'xxx', 1), 'xxx def abc hij klm')
 
-        self.assertEqual(String(5, 'x'), 'xxxxx')
-        self.assertEqual(String(0, 'x'), '')
+        self.assertEqual(fn.String(5, 'x'), 'xxxxx')
+        self.assertEqual(fn.String(0, 'x'), '')
+
+        # Test functions in report
+
+        report = Report(self._get_functios_xml())
+        report.run()
+
+    def _get_functios_xml(self):
+        return r'''
+<Nuntiare>
+  <Name>Functions tests</Name>
+  <Page></Page>
+  <Body>
+    <ReportItems>
+      <Tablix>
+        <Name>grid_functions</Name>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember/>
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember/>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>5mm</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>5mm</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>5mm</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>cbool</Name>
+                        <Value>=CBool('true')</Value>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Textbox>
+                        <Name>cfloat</Name>
+                        <Value>=CFloat('1.99')</Value>
+                      </Textbox>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+      </Tablix>
+    </ReportItems>
+  </Body>
+</Nuntiare>
+'''

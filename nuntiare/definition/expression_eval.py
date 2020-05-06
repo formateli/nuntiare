@@ -1,10 +1,9 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from importlib import import_module
 from . expression import Expression
-from . functions import *
+from . functions import *  # noqa: F401, F403
 from .. import LOGGER
 
 
@@ -419,33 +418,32 @@ class ExpressionEval(object):
                 setattr(self, key, value)
             self._loaded = True
 
-        Modules = M = self
-
-        Aggregate = self._aggregate.Aggregate
-        Avg = self._aggregate.Avg
-        Count = self._aggregate.Count
-        CountDistinct = self._aggregate.CountDistinct
-        CountRows = self._aggregate.CountRows
-        First = self._aggregate.First
-        Last = self._aggregate.Last
-        Max = self._aggregate.Max
-        Min = self._aggregate.Min
-        Previous = self._aggregate.Previous
-        RowNumber = self._aggregate.RowNumber
-        RunningValue = self._aggregate.RunningValue
-        Sum = self._aggregate.Sum
-        StDev = self._aggregate.StDev
-        StDevP = self._aggregate.StDevP
-        Var = self._aggregate.Var
-        VarP = self._aggregate.VarP
+        Modules = M = self                              # noqa: F841
+        Aggregate = self._aggregate.Aggregate           # noqa: F841
+        Avg = self._aggregate.Avg                       # noqa: F841
+        Count = self._aggregate.Count                   # noqa: F841
+        CountDistinct = self._aggregate.CountDistinct   # noqa: F841
+        CountRows = self._aggregate.CountRows           # noqa: F841
+        First = self._aggregate.First                   # noqa: F841
+        Last = self._aggregate.Last                     # noqa: F841
+        Max = self._aggregate.Max                       # noqa: F841
+        Min = self._aggregate.Min                       # noqa: F841
+        Previous = self._aggregate.Previous             # noqa: F841
+        RowNumber = self._aggregate.RowNumber           # noqa: F841
+        RunningValue = self._aggregate.RunningValue     # noqa: F841
+        Sum = self._aggregate.Sum                       # noqa: F841
+        StDev = self._aggregate.StDev                   # noqa: F841
+        StDevP = self._aggregate.StDevP                 # noqa: F841
+        Var = self._aggregate.Var                       # noqa: F841
+        VarP = self._aggregate.VarP                     # noqa: F841
 
         exp_error = "Error evaluating expression: '{0}'".format(expression)
 
         try:
             if self.report:
                 # Collections and aliases
-                Parameters = P = self.report.parameters
-                Globals = G = self.report.globals
+                Parameters = P = self.report.parameters  # noqa: F841
+                Globals = G = self.report.globals        # noqa: F841
                 # TODO ReportItems
 
                 if self.report.current_data_scope[0]:  # Always in Row
@@ -453,7 +451,7 @@ class ExpressionEval(object):
                             self.report.current_data_scope[0]
                         ].current_instance().data.fields
                 elif self.report.current_data_interface:
-                    Fields = F = self.report.data_interfaces[
+                    Fields = F = self.report.data_interfaces[     # noqa: F841
                         self.report.current_data_interface].fields
 
             result = eval(expression)

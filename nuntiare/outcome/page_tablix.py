@@ -177,7 +177,8 @@ class PageTablix(PageItem):
                 w = 1
                 if cell.col_span > 1:
                     while w < cell.col_span:
-                        cell.width += self.column_hierarchy.rows_columns[y + w].width
+                        cell.width += \
+                            self.column_hierarchy.rows_columns[y + w].width
                         row.cells[y + w].width = 0.0
                         w += 1
                 y += w
@@ -207,7 +208,7 @@ class PageTablix(PageItem):
 
         if not self.row_hierarchy.has_header() or \
                 not self.column_hierarchy.has_header():
-            LOGERR.error(
+            LOGGER.error(
                 'ColumnHierarchy and RowHierarchy headers '
                 'must be defined for TablixCorner.', True)
             return
@@ -461,8 +462,8 @@ class TablixHierarchy:
         if self.cumulative_sizes:
             z_list = []
             for size in self.cumulative_sizes:
-                l = (size, None)
-                z_list.append(l)
+                ls = (size, None)
+                z_list.append(ls)
             res = sorted(z_list, key=lambda z: z[0])
             self.cumulative_sizes = []
             for r in res:
@@ -646,12 +647,12 @@ class TablixMember:
             definition, 'DataElementName', None)
         self.data_element_output = report.get_value(
             definition, 'DataElementOutput', 'Auto')
-        self.def_object = None  # Row or Column definition.        
+        self.def_object = None  # Row or Column definition.
 
         if definition:
             header_def = definition.get_element('TablixHeader')
             if header_def:
-                self.header.set_header(header_def)                
+                self.header.set_header(header_def)
             group_def = definition.get_element('Group')
             if group_def:
                 self.group = DataGroupObject(
@@ -679,7 +680,7 @@ class TablixMember:
                     self.data_element_name = 'StaticMember'
             else:
                 self.data_element_name = \
-                    self.group.name + '_Collection' 
+                    self.group.name + '_Collection'
 
         if definition:
             members_def = definition.get_element('TablixMembers')
@@ -898,16 +899,6 @@ class Grid:
 
     def next_row(self):
         return len(self.rows)
-
-    #def set_column_width(self, index, width):
-    #    col = self.columns[index]
-    #    col.width = width
-    #    self.width += width
-
-    #def set_row_height(self, index, height):
-    #    row = self.rows[index]
-    #    row.height = height
-    #    self.height += height
 
     def extend(self, grid, direction):
         if direction == 'right':

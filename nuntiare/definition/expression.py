@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-from PIL import ImageColor
 from .. import LOGGER
 from .. data.data_type import DataType
 
@@ -19,7 +18,7 @@ class Expression:
         try:
             if not expression.startswith('='):
                 is_constant = True
-        except:
+        except Exception:
             # It is probably an object
             is_constant = True
 
@@ -125,15 +124,9 @@ class Color(Expression):
         result = []
         Color._validate_hex_color(hex_color)
         hex_color = hex_color[1:]  # Remove '#'
-
-#        result.append(int(hex_color[0:2] + hex_color[0:2], 16))
-#        result.append(int(hex_color[2:4] + hex_color[2:4], 16))
-#        result.append(int(hex_color[4:] + hex_color[4:], 16))
-
         result.append(int(hex_color[0:2], 16))
         result.append(int(hex_color[2:4], 16))
         result.append(int(hex_color[4:], 16))
-
         return result
 
     @staticmethod
@@ -456,7 +449,7 @@ class Size(Expression):
             # No unit, so it is in points
             self._size = float(string_size)
             return self._size
-        except:
+        except Exception:
             self._size = None
 
         units = ('in', 'cm', 'mm', 'pt', 'pc')

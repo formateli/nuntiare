@@ -1,7 +1,7 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-import tkinter as tk 
+import tkinter as tk
 from tkinter import ttk
 from ttkwidgets import AutoHideScrollbar
 
@@ -39,15 +39,18 @@ class PanedView(ttk.PanedWindow):
         self._right_hidden = False
 
     def selected(self):
-        raise NotImplementedError("'selected' must be " 
+        raise NotImplementedError(
+                "'selected' must be "
                 "implemente by '{}'".format(self.__class__.__name__))
 
     def deselected(self):
-        raise NotImplementedError("'deselected' must be " 
+        raise NotImplementedError(
+                "'deselected' must be "
                 "implemente by '{}'".format(self.__class__.__name__))
 
     def close(self):
-        raise NotImplementedError("'close' must be " 
+        raise NotImplementedError(
+                "'close' must be "
                 "implemente by '{}'".format(self.__class__.__name__))
 
     def toggle_right_pane(self):
@@ -61,5 +64,6 @@ class PanedView(ttk.PanedWindow):
         return FrameScrolled(self.view.notebook)
 
     def _init_class(self):
-        raise NotImplementedError("'_init_class' must be " 
+        raise NotImplementedError(
+                "'_init_class' must be "
                 "implemente by '{}'".format(self.__class__.__name__))

@@ -14,8 +14,8 @@ class Field(CollectionItem):
             data_field, field_value, data_type):
         super(Field, self).__init__(name)
 
-        if (not data_field and not field_value) or \
-                (data_field and field_value):
+        if ((not data_field and not field_value) or
+                (data_field and field_value)):
             LOGGER.error(
                 "'Field' must be type of 'DataField' or 'Value'.", True)
 
@@ -60,7 +60,8 @@ class Fields(Collection):
 
     def add_field(self, name, data_field, field_value, data_type):
         field = Field(self._field_index, self,
-                name, data_field, field_value, data_type)
+                      name, data_field, field_value,
+                      data_type)
         super(Fields, self).add_item(field)
         self._field_index += 1
 
@@ -79,12 +80,14 @@ class Fields(Collection):
             return item._data_type
         LOGGER.error(
             "Invalid property '{0}' for {1} collection item.".format(
-                name, item.__class__.__name__), True)
+                name, item.__class__.__name__),
+            True)
 
     def __setitem__(self, key, value):
         LOGGER.error(
             "Item '{0}' in Collection '{1}' is read only.".format(
-                name, self.__class__.__name__), True)
+                key, self.__class__.__name__),
+            True)
 
 
 class FieldsDataInterface:
@@ -94,7 +97,7 @@ class FieldsDataInterface:
         self.count = 0
 
     def add_field(self, name, data_field=None,
-                field_value=None, data_type=None):
+                  field_value=None, data_type=None):
         'Must be call only for DataSet'
         if not self.fields:
             self.fields = Fields(self.parent.report)
@@ -138,7 +141,7 @@ class DataInterface:
             report.data_interfaces[name] = self
 
     def add_field(self, name, data_field=None,
-                    field_value=None, data_type=None):
+                  field_value=None, data_type=None):
         self.fields.add_field(
             name, data_field, field_value, data_type)
 
@@ -187,7 +190,7 @@ class DataInterface:
 
     def copy(self):
         LOGGER.debug("Copy data from '{0}' "
-                "to 'data_copy_{0}'".format(self.name))
+                     "to 'data_copy_{0}'".format(self.name))
         result = DataInterface(self.report, 'data_copy_' + self.name)
         result.fields.fields = self.fields.fields
         for r in self.rows:
@@ -227,24 +230,26 @@ class DataSource:
         self.cursor = None
         if not self.data_provider:
             LOGGER.error(
-                    "Invalid DataProvider '{0}' for DataSource '{1}'".format(
-                    self.data_provider, self.name))
+                "Invalid DataProvider '{0}' for DataSource '{1}'".format(
+                        self.data_provider, self.name)
+                )
             return False
 
         if connection_object is None:
             LOGGER.error(
-                    "Invalid connection object for DataSource '{0}'.".format(
-                    self.name))
+                "Invalid connection object for DataSource '{0}'.".format(
+                        self.name)
+                )
             return False
 
         try:
             LOGGER.debug(
-                    "Connecting Data Source '{0}'".format(self.name))
+                "Connecting Data Source '{0}'".format(self.name))
             conn = self.data_provider.connect(connection_object)
             self.cursor = conn.cursor()
         except Exception as e:
             LOGGER.error(
-                    "Error while connecting to database. '{0}'".format(e.args[0]))
+                "Error while connecting to database. '{0}'".format(e.args[0]))
             return False
 
         return True
@@ -317,11 +322,11 @@ class DataSet(DataInterface):
                                 break
                             f.is_missing = False
                             row.append(r[x])
-                except:
+                except Exception as e:
                     # TODO add more error info
                     raise Exception(
-                        "Error with field '{0}'".format(
-                            f.name))
+                        "Error with field '{0}'. {1}".format(
+                            f.name, e))
                 x += 1
 
             if len(row) == 0:
@@ -444,11 +449,11 @@ class DataSetObject(DataSet):
         else:
             # Connection failed, try to load data appended to report
             LOGGER.info("Trying to load embedded data"
-                    "for data set '{0}'".format(self.name))
+                        "for data set '{0}'".format(self.name))
             if not self.report.definition.data:
-                err_msg = "DataSource connection failed and " \
-                    "no data embedded in defintion file for DataSet: '{0}'."
-                LOGGER.critical(err_msg.format(self.name), True)
+                LOGGER.critical("DataSource connection failed and no data "
+                                "embedded in defintion file for "
+                                "DataSet: '{0}'.".format(self.name), True)
             self.report.definition.data.load(self.report)
             data = self.report.definition.data.get_data(
                 self.data_set_def.Name)
@@ -509,8 +514,9 @@ class FiltersObject:
                     self.report, None, None, None,
                     direct_expression=flt.operator)
             if operator is None:
-                raise_error_with_log(
-                    "No Operator for Filter in Data '{0}'".format(data.name))
+                LOGGER.error(
+                    "No Operator for Filter in Data '{0}'.".format(
+                        data.name), True)
             row = self._filter_row(
                 data.name, flt.filter_values,
                 data.get_current_row(), val, operator)
@@ -528,14 +534,15 @@ class FiltersObject:
                 self.report, None, None, None, direct_expression=v))
 
         if len(vals) == 0:
-            raise_error_with_log(
-                "No filter values defined for '{0}'".format(name))
-
+            LOGGER.error(
+                "No filter values defined for '{0}'.".format(
+                    name), True)
         if operator not in ('In', 'Between'):
             if len(vals) > 1:
-                err_msg = "Operator '{0}' only accepts one filter value. "
-                err_msg += "Data name: '{1}'"
-                raise_error_with_log(err_msg.format(operator, name))
+                LOGGER.error(
+                    "Operator '{0}' only accepts one filter value. "
+                    "Data name: '{1}'".format(
+                        operator, name), True)
             if operator == 'Equal':
                 if val == vals[0]:
                     filtered = True
@@ -554,17 +561,20 @@ class FiltersObject:
             if operator == 'LessThanOrEqual':
                 if val <= vals[0]:
                     filtered = True
-            if operator in (
-                    'Like', 'TopN', 'BottomN', 'TopPercent', 'BottomPercent'):
-                raise_error_with_log(
+            if operator in ('Like', 'TopN', 'BottomN',
+                            'TopPercent', 'BottomPercent'):
+                LOGGER.error(
                     "Operator '{0}' is not supported at this moment.".format(
-                        operator))
+                        operator),
+                    True)
         else:
             if operator == 'Between':
                 if len(vals) > 2:
-                    err_msg = "Operator '{0}' takes exactly 2 " \
-                        "filter values. Data name: '{1}'"
-                    raise_error_with_log(err_msg.format(operator, name))
+                    LOGGER.error(
+                        "Operator '{0}' takes exactly 2 filter values. "
+                        "Data name: '{1}'.".format(
+                            operator, name),
+                        True)
                 if val >= vals[0] and val <= vals[1]:
                     filtered = True
             if operator == 'In':
@@ -700,7 +710,8 @@ class DataGroupObject:
         class_name = group_def.__class__.__name__
         for parent_instance in self.parent.instances:
             groups = []
-            data = self._get_filtered_and_sorted(parent_instance.data, flt, srt)
+            data = self._get_filtered_and_sorted(parent_instance.data,
+                                                 flt, srt)
             if class_name == 'Group' and not exp_def:
                 groups.append([None, self._create_one_group(data)])
                 self.is_detail_group = True
@@ -710,7 +721,8 @@ class DataGroupObject:
                     self.is_detail_group = True
                 else:
                     for exp in exp_def.expression_list:
-                        groups = DataGroupInstance.get_groups(data, exp, groups)
+                        groups = DataGroupInstance.get_groups(data, exp,
+                                                              groups)
             else:
                 groups.append([None, self._create_one_group(data)])
 
@@ -767,7 +779,7 @@ class DataGroupObject:
             self.report.data_interfaces[name] = data
         if data.name != name:
             LOGGER.debug("Modifying data name "
-                    "form '{}' to '{}'".format(data.name, name))
+                         "form '{}' to '{}'".format(data.name, name))
         data.name = name
 
     def _create_one_group(self, data):

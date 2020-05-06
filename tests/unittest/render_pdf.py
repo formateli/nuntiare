@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 import unittest
 from tools import get_report_path
 from nuntiare.report import Report
@@ -10,7 +9,7 @@ from nuntiare.render.cairo.pdf import PdfRender
 
 class RenderPdfTest(unittest.TestCase):
     def test_Colums(self):
-        report_str = '''
+        report_str = r'''
 <Nuntiare>
   <Name>Pdf Column Test</Name>
   <Page>
@@ -81,7 +80,6 @@ class RenderPdfTest(unittest.TestCase):
         pdf = PdfRender()
         pdf.render(report, overwrite=True)
 
-        result = report.result
         pages = pdf.pages
         frames = pdf.pages.frames
 
@@ -142,7 +140,6 @@ class RenderPdfTest(unittest.TestCase):
         pdf = PdfRender()
         pdf.render(report, overwrite=True)
 
-        result = report.result
         pages = pdf.pages
         frames = pdf.pages.frames
 
@@ -203,7 +200,6 @@ class RenderPdfTest(unittest.TestCase):
         pdf = PdfRender()
         pdf.render(report, overwrite=True)
 
-        result = report.result
         pages = pdf.pages
         frames = pdf.pages.frames
 
