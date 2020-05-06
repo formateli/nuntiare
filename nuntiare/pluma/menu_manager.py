@@ -4,7 +4,7 @@
 from tkinter import Menu
 from tkinter import DISABLED
 from tkinter import ttk
-from materialtheme import ImageManager
+from .materialtheme import ImageManager
 
 
 class MenuManager():

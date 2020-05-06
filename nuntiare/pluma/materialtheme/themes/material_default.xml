@@ -1,0 +1,19 @@
+<!-- This file is part of nuntiare project. The COPYRIGHT file at the
+top level of this repository contains the full copyright notices and license terms.
+-->
+<Theme>
+    <Name>material_default</Name>
+    <PrimaryColor>#6200EE</PrimaryColor>
+    <PrimaryVariantColor>#3700B3</PrimaryVariantColor>
+    <SecondaryColor>#03DAC6</SecondaryColor>
+    <SecondaryVariantColor>#018786</SecondaryVariantColor>
+    <BackgroundColor>#FFFFFF</BackgroundColor>
+    <SurfaceColor>#FFFFFF</SurfaceColor>
+    <ErrorColor>#B00020</ErrorColor>
+    <PrimaryTextColor>#FFFFFF</PrimaryTextColor>
+    <SecondaryTextColor>#000000</SecondaryTextColor>
+    <BackgroundTextColor>#000000</BackgroundTextColor>
+    <SurfaceTextColor>#000000</SurfaceTextColor>
+    <ErrorTextColor>#FFFFFF</ErrorTextColor>
+    <Font>Helvetica 10</Font>
+</Theme>

@@ -1,0 +1,8 @@
+<!-- This file is part of nuntiare project. The COPYRIGHT file at the
+top level of this repository contains the full copyright notices and license terms.
+-->
+<Theme>
+    <Name>material_light</Name>
+    <PrimaryColor>#FFFFFF</PrimaryColor>
+    <PrimaryTextColor>#6200EE</PrimaryTextColor>
+</Theme>

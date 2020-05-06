@@ -7,7 +7,7 @@ import logging
 from nuntiare import LOGGER
 from nuntiare.report import Report
 from nuntiare.render.render import Render
-from materialtheme.widgets import GroupToolBarTheme as GroupToolBar
+from ...materialtheme.widgets import GroupToolBarTheme as GroupToolBar
 from ...menu_manager import MenuManager
 from ..common import PanedView
 
