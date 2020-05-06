@@ -7,7 +7,6 @@
 import os
 import sys
 import unittest
-import logging
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 DIR = os.path.normpath(os.path.join(DIR, '..', '..', 'nuntiare'))
@@ -22,10 +21,8 @@ import data             # noqa: E402
 import aggregate        # noqa: E402
 # TODO should be a diferent library
 # because it depends on GTK
-import render_pdf       # noqa: E402
+#import render_pdf       # noqa: E402
 
-
-logging.basicConfig(filename='nuntiare_test.log', level=logging.DEBUG)
 
 LOADER = unittest.TestLoader()
 
@@ -35,7 +32,7 @@ SUITE.addTests(LOADER.loadTestsFromModule(parameter))
 SUITE.addTests(LOADER.loadTestsFromModule(grid))
 SUITE.addTests(LOADER.loadTestsFromModule(data))
 SUITE.addTests(LOADER.loadTestsFromModule(aggregate))
-SUITE.addTests(LOADER.loadTestsFromModule(render_pdf))
+#SUITE.addTests(LOADER.loadTestsFromModule(render_pdf))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
-RESULT = RUNNER.run(SUITE)
+RUNNER.run(SUITE)
