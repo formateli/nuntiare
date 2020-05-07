@@ -88,6 +88,9 @@ class LogWindow(tk.Text):
         self.config(state=tk.DISABLED)
         LogWindow._handler.setStream(self)
 
+    def critical(self, e):
+        LOGGER.critical("Pluma error while procesing report. {0}".format(e))
+
     def write(self, txt):
         self.config(state=tk.NORMAL)
         self.insert('insert', txt)
@@ -138,10 +141,13 @@ class RunView(PanedView):
     def run(self):
         self.log.clear()
         text = self.view.get_view('text')
-        report = Report(text.text.get(1.0, tk.END))
-        report.run()
-        render = Render.get_render('html')
-        render.render(report, overwrite=True)
+        try:
+            report = Report(text.text.get(1.0, tk.END))
+            report.run()
+            render = Render.get_render('html')
+            render.render(report, overwrite=True)
+        except Exception as e:
+            self.log.critical(e)
 
     def selected(self):
         tb = self.view.pluma.toolbar

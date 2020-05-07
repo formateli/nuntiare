@@ -58,14 +58,14 @@ _EXPRESSION_LIST_CLASSES = [
 ]
 
 
-class Card(object):
+class Card:
     ZERO_ONE = 0
     ONE = 1
     ONE_MANY = 2
     ZERO_MANY = 3
 
 
-class Element(object):
+class Element:
     ELEMENT = 0
     STRING = 1
     INTEGER = 2
@@ -245,9 +245,9 @@ class Element(object):
                 report, self, name, default_value)
 
     @staticmethod
-    def extend_element_list(class_, additional_elements):
+    def extend_element_list(orig, additional_elements):
         el = {}
-        for key, value in class_.elements.items():
+        for key, value in orig.items():
             el[key] = value
         if additional_elements:
             for key, value in additional_elements.items():
@@ -353,7 +353,7 @@ class Element(object):
             return True
 
 
-class Link(object):
+class Link:
     def __init__(self, report_def, parent, obj=None, data=None):
         # Main Report() object where some collections are stored
         self.report_def = report_def
@@ -367,7 +367,7 @@ class Link(object):
             self.report_def = obj
 
 
-class _ExpressionList(object):
+class _ExpressionList:
     def __init__(self, node, elements, lnk):
 
         if len(elements) == 0 or len(elements) > 1:
@@ -447,29 +447,29 @@ class Nuntiare(Element):
                 if n.nodeName == 'Data':
                     create_data(n)
 
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Description': [Element.STRING, Card.ZERO_ONE, True],
-        'Author': [Element.STRING, Card.ZERO_ONE, True],
-        'Version': [Element.STRING, Card.ZERO_ONE, True],
-        'DateCreate': [Element.DATE, Card.ZERO_ONE, True],
-        'DateUpdate': [Element.DATE, Card.ZERO_ONE, True],
-        'DataSources': [],
-        'DataSets': [],
-        'Body': [Element.ELEMENT, Card.ONE],
-        'ReportParameters': [],
-        'Modules': [],
-        'EmbeddedImages': [],
-        'Page': [Element.ELEMENT, Card.ONE],
-        'Language': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementName': [
-            Element.STRING, Card.ZERO_ONE, True, 'Nuntiare'],
-        'DataElementStyle': [
-            Element.ENUM, Card.ZERO_ONE, True, 'Attribute'],
-    }
-
     def __init__(self, node):
         LOGGER.info('Initializing report definition...')
+
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'Description': [Element.STRING, Card.ZERO_ONE, True],
+            'Author': [Element.STRING, Card.ZERO_ONE, True],
+            'Version': [Element.STRING, Card.ZERO_ONE, True],
+            'DateCreate': [Element.DATE, Card.ZERO_ONE, True],
+            'DateUpdate': [Element.DATE, Card.ZERO_ONE, True],
+            'DataSources': [],
+            'DataSets': [],
+            'Body': [Element.ELEMENT, Card.ONE],
+            'ReportParameters': [],
+            'Modules': [],
+            'EmbeddedImages': [],
+            'Page': [Element.ELEMENT, Card.ONE],
+            'Language': [Element.STRING, Card.ZERO_ONE, True],
+            'DataElementName': [
+                Element.STRING, Card.ZERO_ONE, True, 'Nuntiare'],
+            'DataElementStyle': [
+                Element.ENUM, Card.ZERO_ONE, True, 'Attribute'],
+        }
 
         self.parameters_def = []
         self.data_sources = []
@@ -493,61 +493,57 @@ class Nuntiare(Element):
 
 
 class EmbeddedImages(Element):
-    elements = {'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY], }
         super(EmbeddedImages, self).__init__(node, self.elements, lnk)
 
 
 class EmbeddedImage(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'MIMEType': [Element.STRING, Card.ONE, True],
-        'ImageData': [Element.STRING, Card.ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'MIMEType': [Element.STRING, Card.ONE, True],
+            'ImageData': [Element.STRING, Card.ONE, True],
+        }
         super(EmbeddedImage, self).__init__(node, self.elements, lnk)
 
 
 class Modules(Element):
-    elements = {'Module': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'Module': [Element.ELEMENT, Card.ONE_MANY], }
         self.modules = []
         super(Modules, self).__init__(node, self.elements, lnk)
 
 
 class Module(Element):
-    elements = {
-        'From': [Element.STRING, Card.ZERO_ONE, True],
-        'Import': [Element.STRING, Card.ZERO_ONE, True],
-        'As': [Element.STRING, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'From': [Element.STRING, Card.ZERO_ONE, True],
+            'Import': [Element.STRING, Card.ZERO_ONE, True],
+            'As': [Element.STRING, Card.ZERO_ONE, True],
+        }
         super(Module, self).__init__(node, self.elements, lnk)
         lnk.parent.modules.append(self)
 
 
 class ReportParameters(Element):
-    elements = {'ReportParameter': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportParameter': [Element.ELEMENT, Card.ONE_MANY], }
         super(ReportParameters, self).__init__(node, self.elements, lnk)
 
 
 class ReportParameter(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
-        'CanBeNone': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
-        'AllowBlank': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
-        'DefaultValue': [Element.VARIANT, Card.ONE],
-        'Promt': [Element.STRING],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
+            'CanBeNone': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
+            'AllowBlank': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
+            'DefaultValue': [Element.VARIANT, Card.ONE],
+            'Promt': [Element.STRING],
+        }
         super(ReportParameter, self).__init__(node, self.elements, lnk)
         self._default_value = self.get_element('DefaultValue')
         self.lnk.report_def.parameters_def.append(self)
@@ -579,46 +575,43 @@ class ReportParameter(Element):
 
 
 class Visibility(Element):
-    elements = {
-        'Hidden': [Element.BOOLEAN, Card.ZERO_ONE],
-        'ToggleItem': [Element.STRING, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Hidden': [Element.BOOLEAN, Card.ZERO_ONE],
+            'ToggleItem': [Element.STRING, Card.ZERO_ONE, True],
+        }
         super(Visibility, self).__init__(node, self.elements, lnk)
 
 
 class Page(Element):
-    elements = {
-        'PageHeader': [],
-        'PageFooter': [],
-        'PageHeight': [Element.SIZE, Card.ZERO_ONE, True, 11 * 72],
-        'PageWidth': [Element.SIZE, Card.ZERO_ONE, True, 8.5 * 72],
-        'LeftMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'RightMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'TopMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'BottomMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'Columns': [Element.INTEGER, Card.ZERO_ONE, True, 1],
-        'ColumnSpacing': [Element.SIZE, Card.ZERO_ONE, True, 0.5 * 72],
-        'Style': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'PageHeader': [],
+            'PageFooter': [],
+            'PageHeight': [Element.SIZE, Card.ZERO_ONE, True, 11 * 72],
+            'PageWidth': [Element.SIZE, Card.ZERO_ONE, True, 8.5 * 72],
+            'LeftMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+            'RightMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+            'TopMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+            'BottomMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
+            'Columns': [Element.INTEGER, Card.ZERO_ONE, True, 1],
+            'ColumnSpacing': [Element.SIZE, Card.ZERO_ONE, True, 0.5 * 72],
+            'Style': [],
+        }
         super(Page, self).__init__(node, self.elements, lnk)
 
 
 class _PageSection(Element):
-    elements = {
-        'ReportItems': [],
-        'Height': [Element.SIZE, Card.ONE, True, 0.0],
-        'PrintOnFirstPage': [
-            Element.BOOLEAN, Card.ZERO_ONE, True],
-        'PrintOnLastPage': [
-            Element.BOOLEAN, Card.ZERO_ONE, True],
-        'Style': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportItems': [],
+            'Height': [Element.SIZE, Card.ONE, True, 0.0],
+            'PrintOnFirstPage': [
+                Element.BOOLEAN, Card.ZERO_ONE, True],
+            'PrintOnLastPage': [
+                Element.BOOLEAN, Card.ZERO_ONE, True],
+            'Style': [],
+        }
         super(_PageSection, self).__init__(node, self.elements, lnk)
 
 
@@ -633,30 +626,27 @@ class PageFooter(_PageSection):
 
 
 class Body(Element):
-    elements = {
-        'ReportItems': [],
-        'Style': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportItems': [],
+            'Style': [],
+        }
         super(Body, self).__init__(node, self.elements, lnk)
 
 
 class DataSources(Element):
-    elements = {'DataSource': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'DataSource': [Element.ELEMENT, Card.ONE_MANY], }
         super(DataSources, self).__init__(node, self.elements, lnk)
 
 
 class DataSource(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Transaction': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'ConnectionProperties': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'Transaction': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'ConnectionProperties': [],
+        }
         super(DataSource, self).__init__(node, self.elements, lnk)
         self.conn_properties = self.get_element('ConnectionProperties')
         for ds in lnk.report_def.data_sources:
@@ -668,33 +658,30 @@ class DataSource(Element):
 
 
 class ConnectionProperties(Element):
-    elements = {
-        'DataProvider': [Element.STRING, Card.ONE],
-        'ConnectObject': [Element.VARIANT, Card.ONE],
-        'Prompt': [Element.STRING, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'DataProvider': [Element.STRING, Card.ONE],
+            'ConnectObject': [Element.VARIANT, Card.ONE],
+            'Prompt': [Element.STRING, Card.ZERO_ONE, True],
+        }
         super(ConnectionProperties, self).__init__(node, self.elements, lnk)
 
 
 class DataSets(Element):
-    elements = {'DataSet': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'DataSet': [Element.ELEMENT, Card.ONE_MANY], }
         super(DataSets, self).__init__(node, self.elements, lnk)
 
 
 class DataSet(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Fields': [],
-        'Query': [Element.ELEMENT, Card.ONE],
-        'Filters': [],
-        'SortExpressions': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'Fields': [],
+            'Query': [Element.ELEMENT, Card.ONE],
+            'Filters': [],
+            'SortExpressions': [],
+        }
         self.fields = []
         super(DataSet, self).__init__(node, self.elements, lnk)
         self.fields_def = self.get_element('Fields')
@@ -711,9 +698,8 @@ class DataSet(Element):
 
 
 class Fields(Element):
-    elements = {'Field': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'Field': [Element.ELEMENT, Card.ONE_MANY], }
         super(Fields, self).__init__(node, self.elements, lnk)
 
 
@@ -722,14 +708,13 @@ class Field(Element):
     The Field element contains information about a field in
     the data model of the report.
     '''
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
-        'DataField': [Element.STRING, Card.ZERO_ONE, True],
-        'Value': [Element.VARIANT],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
+            'DataField': [Element.STRING, Card.ZERO_ONE, True],
+            'Value': [Element.VARIANT],
+        }
         super(Field, self).__init__(node, self.elements, lnk)
         data_set = lnk.parent.lnk.parent  # Get Dataset
         for fd in data_set.fields:
@@ -741,13 +726,12 @@ class Field(Element):
 
 
 class Query(Element):
-    elements = {
-        'DataSourceName': [Element.STRING, Card.ONE, True],
-        'CommandText': [Element.STRING],
-        'QueryParameters': [],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'DataSourceName': [Element.STRING, Card.ONE, True],
+            'CommandText': [Element.STRING],
+            'QueryParameters': [],
+        }
         super(Query, self).__init__(node, self.elements, lnk)
 
     def get_command_text(self, report):
@@ -760,132 +744,123 @@ class Query(Element):
 
 
 class QueryParameters(Element):
-    elements = {'QueryParameter': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'QueryParameter': [Element.ELEMENT, Card.ONE_MANY], }
         super(QueryParameters, self).__init__(node, self.elements, lnk)
 
 
 class QueryParameter(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'Value': [Element.VARIANT, Card.ONE],
+        }
         super(QueryParameter, self).__init__(node, self.elements, lnk)
 
 
 class Filters(Element):
-    elements = {'Filter': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'Filter': [Element.ELEMENT, Card.ONE_MANY], }
         self.filter_list = []
         super(Filters, self).__init__(node, self.elements, lnk)
 
 
 class Filter(Element):
-    elements = {
-        'FilterExpression': [Element.VARIANT, Card.ONE],
-        'Operator': [Element.ENUM, Card.ONE, True],
-        'FilterValues': [Element.EXPRESSION_LIST, Card.ONE],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'FilterExpression': [Element.VARIANT, Card.ONE],
+            'Operator': [Element.ENUM, Card.ONE, True],
+            'FilterValues': [Element.EXPRESSION_LIST, Card.ONE],
+        }
         super(Filter, self).__init__(node, self.elements, lnk)
         lnk.parent.filter_list.append(self)
 
 
 class FilterValues(_ExpressionList):
-    elements = {'FilterValue': [Element.VARIANT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'FilterValue': [Element.VARIANT, Card.ONE_MANY], }
         super(FilterValues, self).__init__(node, self.elements, lnk)
 
 
 class Group(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'GroupExpressions': [Element.EXPRESSION_LIST],
-        'PageBreak': [],
-        'Filters': [],
-        'SortExpressions': [],
-        'Parent': [Element.VARIANT],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Output'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'GroupExpressions': [Element.EXPRESSION_LIST],
+            'PageBreak': [],
+            'Filters': [],
+            'SortExpressions': [],
+            'Parent': [Element.VARIANT],
+            'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+            'DataElementOutput': [
+                    Element.ENUM, Card.ZERO_ONE, True, 'Output'],
+        }
         super(Group, self).__init__(node, self.elements, lnk)
 
 
 class GroupExpressions(_ExpressionList):
-    elements = {'GroupExpression': [Element.VARIANT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {
+                'GroupExpression': [Element.VARIANT, Card.ONE_MANY], }
         super(GroupExpressions, self).__init__(node, self.elements, lnk)
 
 
 class SortExpressions(Element):
-    elements = {'SortExpression': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'SortExpression': [Element.ELEMENT, Card.ONE_MANY], }
         self.sortby_list = []
         super(SortExpressions, self).__init__(node, self.elements, lnk)
 
 
 class SortExpression(Element):
-    elements = {
-        'Value': [Element.VARIANT, Card.ONE],
-        'SortDirection': [Element.ENUM, Card.ZERO_ONE, True, 'Ascending'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Value': [Element.VARIANT, Card.ONE],
+            'SortDirection': [Element.ENUM, Card.ZERO_ONE, True, 'Ascending'],
+        }
         super(SortExpression, self).__init__(node, self.elements, lnk)
         lnk.parent.sortby_list.append(self)
 
 
 class Style(Element):
-    elements = {
-        'Border': [],
-        'TopBorder': [],
-        'BottomBorder': [],
-        'LeftBorder': [],
-        'RightBorder': [],
-        'BackgroundColor': [Element.COLOR],
-        'BackgroundGradientType': [Element.ENUM],
-        'BackgroundGradientEndColor': [Element.COLOR],
-        'BackgroundImage': [],
-        'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
-        'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
-        'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'Format': [Element.STRING],
-        'TextDecoration': [Element.ENUM, Card.ZERO_ONE, False, 'None'],
-        'TextAlign': [Element.ENUM, Card.ZERO_ONE, False, 'General'],
-        'VerticalAlign': [Element.ENUM, Card.ZERO_ONE, False, 'Top'],
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
-        'PaddingLeft': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingRight': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingTop': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingBottom': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'LineHeight': [Element.SIZE, Card.ZERO_ONE, False, 1.0],
-        'TextDirection': [Element.ENUM, Card.ZERO_ONE, False, 'LTR'],
-        'WritingMode': [Element.ENUM, Card.ZERO_ONE, False, 'Horizontal'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Border': [],
+            'TopBorder': [],
+            'BottomBorder': [],
+            'LeftBorder': [],
+            'RightBorder': [],
+            'BackgroundColor': [Element.COLOR],
+            'BackgroundGradientType': [Element.ENUM],
+            'BackgroundGradientEndColor': [Element.COLOR],
+            'BackgroundImage': [],
+            'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
+            'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
+            'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
+            'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
+            'Format': [Element.STRING],
+            'TextDecoration': [Element.ENUM, Card.ZERO_ONE, False, 'None'],
+            'TextAlign': [Element.ENUM, Card.ZERO_ONE, False, 'General'],
+            'VerticalAlign': [Element.ENUM, Card.ZERO_ONE, False, 'Top'],
+            'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
+            'PaddingLeft': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+            'PaddingRight': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+            'PaddingTop': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+            'PaddingBottom': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
+            'LineHeight': [Element.SIZE, Card.ZERO_ONE, False, 1.0],
+            'TextDirection': [Element.ENUM, Card.ZERO_ONE, False, 'LTR'],
+            'WritingMode': [Element.ENUM, Card.ZERO_ONE, False, 'Horizontal'],
+        }
         super(Style, self).__init__(node, self.elements, lnk)
 
 
 class Border(Element):
-    elements = {
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
-        'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False],
-        'Width': [Element.SIZE, Card.ZERO_ONE, False, 1],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
+            'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False],
+            'Width': [Element.SIZE, Card.ZERO_ONE, False, 1],
+        }
         super(Border, self).__init__(node, self.elements, lnk)
 
 
@@ -910,68 +885,55 @@ class BottomBorder(Border):
 
 
 class BackgroundImage(Element):
-    elements = {
-        'ImageSource': [Element.ENUM, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'MIMEType': [Element.STRING],
-        'BackgroundRepeat': [Element.ENUM],
-        'TransparentColor': [Element.COLOR],
-        'Position': [Element.ENUM],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ImageSource': [Element.ENUM, Card.ONE, True],
+            'Value': [Element.VARIANT, Card.ONE],
+            'MIMEType': [Element.STRING],
+            'BackgroundRepeat': [Element.ENUM],
+            'TransparentColor': [Element.COLOR],
+
+            'Position': [Element.ENUM],
+        }
         super(Image, self).__init__('Image', node, lnk, self.elements)
 
 
-# class BackgroundImage(Element):
-#     elements = {
-#         'ImageSource': [Element.ENUM, 1, True],
-#         'BorderStyle': [Element.ENUM],
-#         'Width': [Element.SIZE],
-#     }
-#
-#     def __init__(self, node, lnk):
-#         super(Border, self).__init__(node, self.elements, lnk)
-
-
 class ReportItems(Element):
-    elements = {
-        'Line': [Element.ELEMENT, Card.ZERO_MANY],
-        'Rectangle': [Element.ELEMENT, Card.ZERO_MANY],
-        'Textbox': [Element.ELEMENT, Card.ZERO_MANY],
-        'Image': [Element.ELEMENT, Card.ZERO_MANY],
-        'Subreport': [Element.ELEMENT, Card.ZERO_MANY],
-        'Tablix': [Element.ELEMENT, Card.ZERO_MANY],
-        'Chart': [Element.ELEMENT, Card.ZERO_MANY],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Line': [Element.ELEMENT, Card.ZERO_MANY],
+            'Rectangle': [Element.ELEMENT, Card.ZERO_MANY],
+            'Textbox': [Element.ELEMENT, Card.ZERO_MANY],
+            'Image': [Element.ELEMENT, Card.ZERO_MANY],
+            'Subreport': [Element.ELEMENT, Card.ZERO_MANY],
+            'Tablix': [Element.ELEMENT, Card.ZERO_MANY],
+            'Chart': [Element.ELEMENT, Card.ZERO_MANY],
+        }
         self.reportitems_list = []
         super(ReportItems, self).__init__(node, self.elements, lnk)
 
 
 class _ReportItem(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'ActionInfo': [],
-        'Top': [Element.SIZE, Card.ZERO_ONE, True],
-        'Left': [Element.SIZE, Card.ZERO_ONE, True],
-        'Height': [Element.SIZE, Card.ZERO_ONE, True],
-        'Width': [Element.SIZE, Card.ZERO_ONE, True],
-        'ZIndex': [Element.INTEGER, Card.ZERO_ONE, True, -1],
-        'Visibility': [],
-        'ToolTip': [Element.STRING],
-        'Bookmark': [Element.STRING],
-        'RepeatWith': [Element.STRING, Card.ZERO_ONE, True],
-        'Style': [],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
-    }
-
     def __init__(self, type, node, lnk, additional_elements):
-        el = Element.extend_element_list(
-                _ReportItem, additional_elements)
-        super(_ReportItem, self).__init__(node, el, lnk)
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'ActionInfo': [],
+            'Top': [Element.SIZE, Card.ZERO_ONE, True],
+            'Left': [Element.SIZE, Card.ZERO_ONE, True],
+            'Height': [Element.SIZE, Card.ZERO_ONE, True],
+            'Width': [Element.SIZE, Card.ZERO_ONE, True],
+            'ZIndex': [Element.INTEGER, Card.ZERO_ONE, True, -1],
+            'Visibility': [],
+            'ToolTip': [Element.STRING],
+            'Bookmark': [Element.STRING],
+            'RepeatWith': [Element.STRING, Card.ZERO_ONE, True],
+            'Style': [],
+            'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+            'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        }
+        self.elements = Element.extend_element_list(
+                self.elements, additional_elements)
+        super(_ReportItem, self).__init__(node, self.elements, lnk)
         self.type = type
         lnk.parent.reportitems_list.append(self)
 
@@ -982,166 +944,152 @@ class Line(_ReportItem):
 
 
 class Rectangle(_ReportItem):
-    elements = {
-        'ReportItems': [],
-        'PageBreak': [],
-        'KeepTogether': [Element.BOOLEAN, 0, True, False],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportItems': [],
+            'PageBreak': [],
+            'KeepTogether': [Element.BOOLEAN, 0, True, False],
+            'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True, True],
+        }
         super(Rectangle, self).__init__('Rectangle', node, lnk, self.elements)
 
 
 class Subreport(_ReportItem):
-    elements = {
-        'ReportName': [Element.STRING, Card.ONE, True],
-        'Parameters': [],
-        'NoRowsMessage': [Element.STRING],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'MergeTransactions': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportName': [Element.STRING, Card.ONE, True],
+            'Parameters': [],
+            'NoRowsMessage': [Element.STRING],
+            'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
+            'MergeTransactions': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
+        }
         super(Subreport, self).__init__('Subreport', node, lnk, self.elements)
 
 
 class Parameters(Element):
-    elements = {'Parameter': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'Parameter': [Element.ELEMENT, Card.ONE_MANY], }
         super(Parameters, self).__init__(node, self.elements, lnk)
 
 
 class Parameter(Element):
-    elements = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'Omit': [Element.BOOLEAN],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Name': [Element.STRING, Card.ONE, True],
+            'Value': [Element.VARIANT, Card.ONE],
+            'Omit': [Element.BOOLEAN],
+        }
         super(Parameter, self).__init__(node, self.elements, lnk)
 
 
 class Image(_ReportItem):
-    elements = {
-        'ImageSource': [Element.ENUM, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'MIMEType': [Element.STRING],
-        'ImageSizing': [Element.ENUM, Card.ZERO_ONE, True, 'AutoSize'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ImageSource': [Element.ENUM, Card.ONE, True],
+            'Value': [Element.VARIANT, Card.ONE],
+            'MIMEType': [Element.STRING],
+            'ImageSizing': [Element.ENUM, Card.ZERO_ONE, True, 'AutoSize'],
+        }
         super(Image, self).__init__('Image', node, lnk, self.elements)
 
 
 class Textbox(_ReportItem):
-    elements = {
-        'Value': [Element.VARIANT, Card.ZERO_ONE],
-        'CanGrow': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'CanShrink': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'HideDuplicates': [Element.STRING, Card.ZERO_ONE, True],
-        'ToggleImage': [],
-        'DataElementStyle': [
-            Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Value': [Element.VARIANT, Card.ZERO_ONE],
+            'CanGrow': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'CanShrink': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
+            'HideDuplicates': [Element.STRING, Card.ZERO_ONE, True],
+            'ToggleImage': [],
+            'DataElementStyle': [
+                Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        }
         super(Textbox, self).__init__('Textbox', node, lnk, self.elements)
 
 
 class ToggleImage(Element):
-    elements = {'InitialState': [Element.BOOLEAN, Card.ONE], }
-
     def __init__(self, node, lnk):
+        self.elements = {'InitialState': [Element.BOOLEAN, Card.ONE], }
         super(ToggleImage, self).__init__(node, self.elements, lnk)
 
 
 class _DataRegion(_ReportItem):
-    elements = {
-        'NoRowsMessage': [Element.STRING],
-        'DataSetName': [Element.STRING, Card.ZERO_ONE, True],
-        'PageBreak': [],
-        'Filters': [],
-        'SortExpressions': [],
-    }
-
     def __init__(self, type, node, lnk, additional_elements):
-        el = Element.extend_element_list(
-                _DataRegion, additional_elements)
-        super(_DataRegion, self).__init__(type, node, lnk, el)
+        self.elements = {
+            'NoRowsMessage': [Element.STRING],
+            'DataSetName': [Element.STRING, Card.ZERO_ONE, True],
+            'PageBreak': [],
+            'Filters': [],
+            'SortExpressions': [],
+        }
+        self.elements = Element.extend_element_list(
+                self.elements, additional_elements)
+        super(_DataRegion, self).__init__(type, node, lnk, self.elements)
 
 
 class Tablix(_DataRegion):
-    elements = {
-        'TablixCorner': [],
-        'TablixBody': [Element.ELEMENT, Card.ONE],
-        'TablixColumnHierarchy': [Element.ELEMENT, Card.ONE],
-        'TablixRowHierarchy': [Element.ELEMENT, Card.ONE],
-        'LayoutDirection': [Element.ENUM, Card.ZERO_ONE, True, 'LTR'],
-        'GroupsBeforeRowHeaders': [Element.INTEGER, Card.ZERO_ONE, True],
-        'RepeatColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'RepeatRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'FixedColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'FixedRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'TablixCorner': [],
+            'TablixBody': [Element.ELEMENT, Card.ONE],
+            'TablixColumnHierarchy': [Element.ELEMENT, Card.ONE],
+            'TablixRowHierarchy': [Element.ELEMENT, Card.ONE],
+            'LayoutDirection': [Element.ENUM, Card.ZERO_ONE, True, 'LTR'],
+            'GroupsBeforeRowHeaders': [Element.INTEGER, Card.ZERO_ONE, True],
+            'RepeatColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'RepeatRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'FixedColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'FixedRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
+            'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
+        }
         super(Tablix, self).__init__('Tablix', node, lnk, self.elements)
 
 
 class TablixCorner(Element):
-    elements = {'TablixCornerRows': [Element.ELEMENT, Card.ONE], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixCornerRows': [Element.ELEMENT, Card.ONE], }
         super(TablixCorner, self).__init__(node, self.elements, lnk)
 
 
 class TablixCornerRows(Element):
-    elements = {'TablixCornerRow': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {
+                'TablixCornerRow': [Element.ELEMENT, Card.ONE_MANY], }
         self.row_list = []
         super(TablixCornerRows, self).__init__(node, self.elements, lnk)
 
 
 class TablixCornerRow(Element):
-    elements = {'TablixCornerCell': [Element.ELEMENT, 2], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixCornerCell': [Element.ELEMENT, 2], }
         self.cell_list = []
         super(TablixCornerRow, self).__init__(node, self.elements, lnk)
         lnk.parent.row_list.append(self)
 
 
 class TablixCornerCell(Element):
-    elements = {'CellContents': [], }
-
     def __init__(self, node, lnk):
+        self.elements = {'CellContents': [], }
         super(TablixCornerCell, self).__init__(node, self.elements, lnk)
         lnk.parent.cell_list.append(self)
 
 
 class CellContents(Element):
-    elements = {
-        'ReportItems': [],
-        'ColSpan': [Element.INTEGER, Card.ZERO_ONE, True],
-        'RowSpan': [Element.INTEGER, Card.ZERO_ONE, True],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'ReportItems': [],
+            'ColSpan': [Element.INTEGER, Card.ZERO_ONE, True],
+            'RowSpan': [Element.INTEGER, Card.ZERO_ONE, True],
+        }
         super(CellContents, self).__init__(node, self.elements, lnk)
 
 
 class _TablixHierarchy(Element):
-    elements = {'TablixMembers': [Element.ELEMENT, Card.ONE], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixMembers': [Element.ELEMENT, Card.ONE], }
         super(_TablixHierarchy, self).__init__(node, self.elements, lnk)
 
 
@@ -1156,110 +1104,99 @@ class TablixColumnHierarchy(_TablixHierarchy):
 
 
 class TablixMembers(Element):
-    elements = {'TablixMember': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixMember': [Element.ELEMENT, Card.ONE_MANY], }
         self.member_list = []
         super(TablixMembers, self).__init__(node, self.elements, lnk)
 
 
 class TablixMember(Element):
-    elements = {
-        'Group': [],
-        'TablixHeader': [],
-        'TablixMembers': [],
-        'FixedData': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'Visibility': [],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'HideIfNoRows': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'RepeatOnNewPage': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Group': [],
+            'TablixHeader': [],
+            'TablixMembers': [],
+            'FixedData': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'Visibility': [],
+            'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
+            'HideIfNoRows': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'RepeatOnNewPage': [Element.BOOLEAN, Card.ZERO_ONE, True],
+            'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
+            'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        }
         super(TablixMember, self).__init__(node, self.elements, lnk)
         lnk.parent.member_list.append(self)
 
 
 class TablixHeader(Element):
-    elements = {
-        'Size': [Element.SIZE, Card.ONE, True],
-        'CellContents': [Element.ELEMENT, Card.ONE],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Size': [Element.SIZE, Card.ONE, True],
+            'CellContents': [Element.ELEMENT, Card.ONE],
+        }
         super(TablixHeader, self).__init__(node, self.elements, lnk)
 
 
 class TablixBody(Element):
-    elements = {
-        'TablixColumns': [Element.ELEMENT, Card.ONE],
-        'TablixRows': [Element.ELEMENT, Card.ONE],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'TablixColumns': [Element.ELEMENT, Card.ONE],
+            'TablixRows': [Element.ELEMENT, Card.ONE],
+        }
         super(TablixBody, self).__init__(node, self.elements, lnk)
 
 
 class TablixColumns(Element):
-    elements = {'TablixColumn': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixColumn': [Element.ELEMENT, Card.ONE_MANY], }
         self.column_list = []
         super(TablixColumns, self).__init__(node, self.elements, lnk)
 
 
 class TablixColumn(Element):
-    elements = {'Width': [Element.SIZE, Card.ONE, True], }
-
     def __init__(self, node, lnk):
+        self.elements = {'Width': [Element.SIZE, Card.ONE, True], }
         super(TablixColumn, self).__init__(node, self.elements, lnk)
         lnk.parent.column_list.append(self)
 
 
 class TablixRows(Element):
-    elements = {'TablixRow': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixRow': [Element.ELEMENT, Card.ONE_MANY], }
         self.row_list = []
         super(TablixRows, self).__init__(node, self.elements, lnk)
 
 
 class TablixRow(Element):
-    elements = {
-        'Height': [Element.SIZE, Card.ONE, True],
-        'TablixCells': [Element.ELEMENT, Card.ONE],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'Height': [Element.SIZE, Card.ONE, True],
+            'TablixCells': [Element.ELEMENT, Card.ONE],
+        }
         super(TablixRow, self).__init__(node, self.elements, lnk)
         lnk.parent.row_list.append(self)
 
 
 class TablixCells(Element):
-    elements = {'TablixCell': [Element.ELEMENT, Card.ONE_MANY], }
-
     def __init__(self, node, lnk):
+        self.elements = {'TablixCell': [Element.ELEMENT, Card.ONE_MANY], }
         self.cell_list = []
         super(TablixCells, self).__init__(node, self.elements, lnk)
 
 
 class TablixCell(Element):
-    elements = {
-        'CellContents': [],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True, 'Cell'],
-        'DataElementOutput': [
-            Element.ENUM, Card.ZERO_ONE, True, 'ContentsOnly'],
-    }
-
     def __init__(self, node, lnk):
+        self.elements = {
+            'CellContents': [],
+            'DataElementName': [Element.STRING, Card.ZERO_ONE, True, 'Cell'],
+            'DataElementOutput': [
+                Element.ENUM, Card.ZERO_ONE, True, 'ContentsOnly'],
+        }
         super(TablixCell, self).__init__(node, self.elements, lnk)
         lnk.parent.cell_list.append(self)
 
 
 class PageBreak(Element):
-    elements = {'BreakLocation': [Element.ENUM, Card.ONE, True], }
-
     def __init__(self, node, lnk):
+        self.elements = {'BreakLocation': [Element.ENUM, Card.ONE, True], }
         super(PageBreak, self).__init__(node, self.elements, lnk)
