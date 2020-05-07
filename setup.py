@@ -40,10 +40,17 @@ setuptools.setup(
         'Topic :: Office/Business',
         'Topic :: Printing',
         ],
+    platforms='any',
     scripts=[
         'scripts/nuntiare',
         'scripts/pluma',
         ],
-    install_requires=[],
-    python_requires='>=3.5',
+    install_requires=[
+        'python-dateutil',
+        'psycopg2',
+        'pillow',
+        'wand',
+        'ttkwidgets',
+    ],
+    python_requires='>=3.6',
 )
