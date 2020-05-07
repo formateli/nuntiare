@@ -3,5 +3,10 @@
 # contains the full copyright notices and license terms.
 from .widget_theme import WidgetThemeMixin
 from .group_toolbar import GroupToolBarTheme
-from .onoffbutton import OnOffButtonTheme
 from .uitabs import UITabsTheme
+
+__all__ = [
+        'WidgetThemeMixin',
+        'GroupToolBarTheme',
+        'UITabsTheme'
+    ]

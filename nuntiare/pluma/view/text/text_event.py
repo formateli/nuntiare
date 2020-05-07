@@ -79,7 +79,8 @@ class TextEvent(tk.Text):
                 wrap=tk.NONE,
                 font=text_editor_font,
                 xscrollcommand=xscrollcommand,
-                yscrollcommand=yscrollcommand)
+                yscrollcommand=yscrollcommand
+            )
 
         self.text_changed_info = TextChangedInfo()
         self.is_undo_redo = None

@@ -21,5 +21,6 @@ class WidgetThemeMixin:
         modificatons to its own config funtion
         '''
         raise NotImplementedError(
-            "Function '_on_theme_changed' not implemented by derived class '{}'".format(
-                self.__class__.__name__))
+            "Function '_on_theme_changed' not implemented "
+            "by derived class '{}'".format(
+                    self.__class__.__name__))

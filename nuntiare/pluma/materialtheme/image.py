@@ -1,7 +1,8 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-import os, io
+import os
+import io
 import xml.etree.ElementTree as ET
 from PIL import Image, ImageTk
 from wand.api import library
@@ -22,7 +23,7 @@ class ImageManager:
 
     @classmethod
     def get_image(cls, name, size=None,
-                color=None, extension='svg'):
+                  color=None, extension='svg'):
         image = cls._get_image(name, size, color)
         if image is None:
             image = cls._create_image(name, size, color, extension)

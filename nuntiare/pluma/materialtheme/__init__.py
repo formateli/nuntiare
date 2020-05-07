@@ -4,3 +4,9 @@
 from .material_theme import TkMaterialTheme
 from .theme import Theme
 from .image import ImageManager
+
+__all__ = [
+        'TkMaterialTheme',
+        'Theme',
+        'ImageManager'
+    ]

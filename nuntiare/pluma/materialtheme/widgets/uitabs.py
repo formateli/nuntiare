@@ -1,7 +1,8 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-# UITabs widget originally develop by Mark Roseman <https://github.com/roseman/idle>
+# UITabs widget originally develop by
+# Mark Roseman <https://github.com/roseman/idle>
 # Modifications made by this project:
 #   - tk.Frame to ttk.Frame as UITabs base class.
 #   - observer to fire events. See self._bind_callbacks.
@@ -30,7 +31,7 @@ A UITabsObserver (see below) must be provided to the widget, and is
 used to notify the caller when changes are made that must be reflected
 in other parts of the user interface.
 """
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 from tkinter.font import Font
 from . import WidgetThemeMixin
@@ -68,7 +69,7 @@ class UITabs(ttk.Frame):
         self.nextid = 1
 
         self.define_appearance()
-        self.c = Canvas(self, highlightthickness=0, borderwidth=0)
+        self.c = tk.Canvas(self, highlightthickness=0, borderwidth=0)
         self.c.grid(column=0, row=0, sticky='nwes')
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -97,7 +98,11 @@ class UITabs(ttk.Frame):
         if tabid in self.tabs:
             raise ValueError('tab already added')
         self.tabs.append(tabid)
-        self.info[tabid] = {'title': title, 'dirty': dirty, 'tooltip': tooltip}
+        self.info[tabid] = {
+                'title': title,
+                'dirty': dirty,
+                'tooltip': tooltip
+            }
         self.select(tabid)
         return tabid
 
@@ -177,11 +182,14 @@ class UITabs(ttk.Frame):
         self.height = style.lookup(self._curr_style_class, 'height')
         self.minwidth = style.lookup(self._curr_style_class, 'minwidth')
         self.maxwidth = style.lookup(self._curr_style_class, 'maxwidth')
-        self.addiconwidth = style.lookup(self._curr_style_class, 'addiconwidth')
+        self.addiconwidth = style.lookup(self._curr_style_class,
+                                         'addiconwidth')
         self.gapwidth = style.lookup(self._curr_style_class, 'gapwidth')
         self.bg = style.lookup(self._curr_style_class, 'background')
-        self.selbg = style.lookup(self._curr_style_class, 'selectedbackground')
-        self.dividerbg = style.lookup(self._curr_style_class, 'dividerbackground')
+        self.selbg = style.lookup(self._curr_style_class,
+                                  'selectedbackground')
+        self.dividerbg = style.lookup(self._curr_style_class,
+                                      'dividerbackground')
         self.textcolor = style.lookup(self._curr_style_class, 'textcolor')
         self.holecolor = style.lookup(self._curr_style_class, 'holecolor')
         self.titlefont = Font(name='TkTooltipFont', exists=True,
@@ -216,10 +224,9 @@ class UITabs(ttk.Frame):
         #         (see drag_identifygap), open up a space by moving all tabs
         #         to the left of the gap a bit more left, and all tabs to
         #         the right of the gap a bit more right.
-        if self.drag is not None and self.drag['state'] == 'inprogress' \
-                                 and self.drag['gap'] is not None:
+        if (self.drag is not None and self.drag['state'] == 'inprogress'
+                and self.drag['gap'] is not None):
             gap = self.drag['gap']
-            tabidx = self.tabs.index(self.drag['tabid'])
             idx = 0
             for t in self.tabs:
                 if self.info[t]['visible']:
@@ -265,10 +272,9 @@ class UITabs(ttk.Frame):
         "Truncate any long titles that would not fit within the tab label"
         if self.titlefont.measure(title) <= width:
             return title
-        dotwidth = self.titlefont.measure('...')
         while True:
             if self.titlefont.measure(title + '...') <= width:
-                return title+'...'
+                return title + '...'
             title = title[:-1]
 
     def update_mouseover(self, x):
@@ -278,15 +284,15 @@ class UITabs(ttk.Frame):
             self.tooltip_clear()
             self.mouseover = nowover
             self.rebuild()
-            if nowover is not None and \
-                            self.info[nowover]['tooltip'] is not None:
+            if (nowover is not None and
+                    self.info[nowover]['tooltip'] is not None):
                 self.tooltip_schedule()
 
     def tabunder(self, x):
         "Identify which tab is at a given position"
         for t in self.tabs:
-            if self.info[t]['visible'] and self.info[t]['left'] <= x <\
-                                self.info[t]['left'] + self.tabwidth:
+            if (self.info[t]['visible'] and self.info[t]['left'] <= x <
+                    self.info[t]['left'] + self.tabwidth):
                 return t
         return None
 
@@ -310,46 +316,54 @@ class UITabs(ttk.Frame):
             xpos = self.info[t]['left'] + self.info[t]['shift']
 
             color = self.selbg if t == self.current else self.bg
-            rect = self.c.create_rectangle(xpos, 0, xpos + tabwidth - 2,
+            rect = self.c.create_rectangle(
+                            xpos, 0, xpos + tabwidth - 2,
                             self.height, fill=color, outline=color)
             self.c.tag_bind(rect, '<ButtonRelease-1>',
                             lambda ev=None, t=t: self.select(t))
 
-            self.c.create_line(xpos-1, 0, xpos-1,
+            self.c.create_line(
+                            xpos-1, 0, xpos-1,
                             self.height, fill=self.dividerbg)
-            self.c.create_line(xpos+tabwidth-1, 0, xpos+tabwidth-1,
+            self.c.create_line(
+                            xpos + tabwidth - 1, 0, xpos+tabwidth - 1,
                             self.height, fill=self.dividerbg)
             color = self.textcolor
-            if self.drag is not None and self.drag['state'] == 'inprogress' \
-                                     and self.drag['tabid'] == t:
+            if (self.drag is not None and self.drag['state'] == 'inprogress'
+                    and self.drag['tabid'] == t):
                 color = self.holecolor
             txt = self.c.create_text(xpos + tabwidth / 2, self.height - 3,
-                                   anchor='s', text=lbl, fill=color,
-                                   font=self.titlefont)
+                                     anchor='s', text=lbl, fill=color,
+                                     font=self.titlefont)
             self.c.tag_bind(txt, '<ButtonRelease-1>',
                             lambda ev=None, t=t: self.select(t))
             if self.info[t]['dirty']:
-                close = self.c.create_oval(xpos+4, self.height-13, xpos+10,
-                            self.height-7, fill=self.textcolor,
-                            outline=self.textcolor, activefill='red',
-                            activeoutline='red')
-                self.c.tag_bind(close, '<1>',
+                close = self.c.create_oval(
+                        xpos + 4, self.height - 13, xpos + 10,
+                        self.height - 7, fill=self.textcolor,
+                        outline=self.textcolor, activefill='red',
+                        activeoutline='red')
+                self.c.tag_bind(
+                            close, '<1>',
                             lambda ev=None, t=t: self.closetab(t, ev))
             elif t == self.mouseover:
                 if self.drag is None or self.drag['state'] != 'inprogress':
-                    close = self.c.create_text(xpos+8, self.height-3,
-                                    anchor='s', text='x', fill=self.textcolor,
-                                    activefill='red', font=self.plusfont)
+                    close = self.c.create_text(
+                            xpos + 8, self.height - 3,
+                            anchor='s', text='x', fill=self.textcolor,
+                            activefill='red', font=self.plusfont)
                     self.c.tag_bind(close, '<ButtonRelease-1>',
                                     lambda ev=None, t=t: self.closetab(t, ev))
             if t == self.overflow_tab:
-                more = self.c.create_text(xpos + tabwidth - 12,
+                more = self.c.create_text(
+                            xpos + tabwidth - 12,
                             self.height - 5, anchor='s', text='>>',
                             fill=self.textcolor, font=self.titlefont)
                 self.c.tag_bind(more, '<1>', self.post_extras_menu)
-        plus = self.c.create_text(self.plus_x+self.addiconwidth/2,
-                            self.height-3, anchor='s', text='+',
-                            fill=self.textcolor, font=self.plusfont)
+        plus = self.c.create_text(
+                        self.plus_x + self.addiconwidth / 2,
+                        self.height-3, anchor='s', text='+',
+                        fill=self.textcolor, font=self.plusfont)
         self.c.tag_bind(plus, '<ButtonRelease-1>', self.addtab)
         self.drag_createitems()
 
@@ -363,7 +377,7 @@ class UITabs(ttk.Frame):
         "Show a menu for selecting the tabs that do not fit onscreen"
         self.tooltip_clear()
         self.calculate_positions()
-        menu = Menu(self, tearoff=0)
+        menu = tk.Menu(self, tearoff=0)
         for t in self.tabs:
             if not self.info[t]['visible']:
                 menu.add_command(label=self.info[t]['title'],
@@ -415,11 +429,13 @@ class UITabs(ttk.Frame):
         if self.drag is not None and self.drag['state'] == 'inprogress':
             if self.drag['gap'] is not None:
                 x = self.drag['gap'] * self.tabwidth
-                self.c.create_rectangle(x-self.gapwidth, 0, x+self.gapwidth,
-                            self.height, fill=self.holecolor,
-                            outline=self.holecolor)
+                self.c.create_rectangle(
+                        x - self.gapwidth, 0, x + self.gapwidth,
+                        self.height, fill=self.holecolor,
+                        outline=self.holecolor)
             label = self.info[self.drag['tabid']]['tablabel']
-            self.drag['textitem'] = self.c.create_text(self.drag['x'],
+            self.drag['textitem'] = self.c.create_text(
+                            self.drag['x'],
                             self.drag['y'], text=label, font=self.titlefont,
                             fill=self.textcolor, anchor='s')
 
@@ -464,17 +480,17 @@ class UITabs(ttk.Frame):
         x = self.winfo_rootx() + self.info[self.mouseover]['left'] + 20
         y = self.winfo_rooty() + self.height + 5
         txt = self.info[self.mouseover]['tooltip']
-        tw = self.tooltip['window'] = Toplevel(self)
+        tw = self.tooltip['window'] = tk.Toplevel(self)
         tw.wm_withdraw()
         tw.wm_geometry("+%d+%d" % (x, y))
         tw.wm_overrideredirect(1)
         try:
             tw.tk.call("::tk::unsupported::MacWindowStyle", "style", tw._w,
                        "help", "noActivates")
-        except TclError:
+        except tk.TclError:
             pass
-        lbl = Label(tw, text=txt, justify=LEFT, background="#ffffe0",
-                    borderwidth=0, font=self.tooltipfont)
+        lbl = tk.Label(tw, text=txt, justify=tk.LEFT, background="#ffffe0",
+                       borderwidth=0, font=self.tooltipfont)
         if self.tk.call('tk', 'windowingsystem') != 'aqua':
             lbl['borderwidth'] = 1
             lbl['relief'] = 'solid'
@@ -530,4 +546,4 @@ class UITabsTheme(UITabs, WidgetThemeMixin):
         WidgetThemeMixin.__init__(self)
 
     def _on_theme_changed(self, theme):
-        pass #TODO
+        pass  # TODO

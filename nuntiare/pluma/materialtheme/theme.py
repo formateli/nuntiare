@@ -3,7 +3,6 @@
 # contains the full copyright notices and license terms.
 import os
 import xml.etree.ElementTree as ET
-import tkinter as tk
 from tkinter import ttk
 from .image import ImageManager
 
@@ -52,7 +51,7 @@ class Theme(ttk.Style):
 
     @classmethod
     def bind(cls, event, callback):
-        if not event in cls._bind_callbacks:
+        if event not in cls._bind_callbacks:
             raise Exception(
                 "Invalid bind event '{}' for Theme.".format(event))
         cls._bind_callbacks[event].append(callback)
@@ -72,8 +71,9 @@ class Theme(ttk.Style):
 
         file_ = os.path.join(cls._xml_theme_folder, name + '.xml')
         if not os.path.exists(file_):
-            #TODO loggin
-            print("Material theme '{}' does not exist. Loading default.".format(name))
+            # TODO loggin
+            print("Material theme '{}' does not exist. "
+                  "Loading default.".format(name))
             return
 
         config = None
@@ -123,10 +123,9 @@ class Theme(ttk.Style):
                 print("Unknown option theme '{}'.".format(tag))
         return config
 
-
     @classmethod
     def _get_default_config(cls):
-        # see https://material.io/design/color/the-color-system.html#color-theme-creation
+        # noqa: E501 - see https://material.io/design/color/the-color-system.html#color-theme-creation
         default = {
             # A primary color is the color displayed most
             # frequently across your app’s screens and components.
@@ -197,7 +196,7 @@ class _Theme:
                 offcolor=config['secondary_text_color'],
             )
 
-        ## Scrollbars
+        # Scrollbars
         style.layout('Vertical.TScrollbar', [
                 ('Vertical.Scrollbar.trough', {'sticky': 'ns', 'children': [
                     ('Vertical.Scrollbar.thumb', {'expand': 'true'})
@@ -215,13 +214,13 @@ class _Theme:
         style.element_create(
                 'Horizontal.Scrollbar.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['background_color'], size='24x2'),
                 ('disabled', images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['disabled_color'], size='24x2')),
-                #border=(6, 0, 6, 0),
+                # border=(6, 0, 6, 0),
                 border=0,
                 sticky='ew'
             )
@@ -229,7 +228,7 @@ class _Theme:
         style.element_create(
                 'Horizontal.Scrollbar.thumb',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['primary_color']),
                 ('pressed', '!disabled', images.get_image(
@@ -241,7 +240,7 @@ class _Theme:
                 ('disabled', images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['disabled_color'])),
-                #border=(6, 0, 6, 0),
+                # border=(6, 0, 6, 0),
                 border=0,
                 sticky='ew'
             )
@@ -249,13 +248,13 @@ class _Theme:
         style.element_create(
                 'Vertical.Scrollbar.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['background_color'], size='2x24'),
                 ('disabled', images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['disabled_color'], size='2x24')),
-                #border=(0, 6, 0, 6),
+                # border=(0, 6, 0, 6),
                 border=0,
                 sticky='ns'
             )
@@ -263,7 +262,7 @@ class _Theme:
         style.element_create(
                 'Vertical.Scrollbar.thumb',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['primary_color']),
                 ('pressed', '!disabled', images.get_image(
@@ -275,13 +274,12 @@ class _Theme:
                 ('disabled', images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['disabled_color'])),
-                #border=(0, 6, 0, 6),
+                # border=(0, 6, 0, 6),
                 border=0,
                 sticky='ns'
             )
 
-
-        ## Scales
+        # Scales
         style.element_create(
                 'Horizontal.Scale.slider',
                 'image',
@@ -303,7 +301,7 @@ class _Theme:
         style.element_create(
                 'Horizontal.Scale.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scale-trough-horizontal',
                     color=config['primary_variant_color']),
                 ('active', '!disabled', images.get_image(
@@ -338,7 +336,7 @@ class _Theme:
         style.element_create(
                 'Vertical.Scale.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scale-trough-vertical',
                     color=config['primary_variant_color']),
                 ('active', '!disabled', images.get_image(
@@ -357,7 +355,7 @@ class _Theme:
         style.element_create(
                 'Horizontal.Progressbar.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['background_color']),
                 sticky='ew',
@@ -366,16 +364,16 @@ class _Theme:
         style.element_create(
                 'Horizontal.Progressbar.pbar',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-horizontal',
                     color=config['primary_color']),
                 sticky='ew',
             )
 
         style.element_create(
-               'Vertical.Progressbar.trough',
+                'Vertical.Progressbar.trough',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['background_color']),
                 sticky='ns',
@@ -384,7 +382,7 @@ class _Theme:
         style.element_create(
                 'Vertical.Progressbar.pbar',
                 'image',
-               images.get_image(
+                images.get_image(
                     'scrollbar-trough-vertical',
                     color=config['primary_color']),
                 sticky='ns',

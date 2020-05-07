@@ -17,7 +17,7 @@ class GroupToolBar(ttk.Frame):
             kwargs['style'] = GroupToolBar._style_class + '.TFrame'
         super(GroupToolBar, self).__init__(root, height=height, **kwargs)
         self.height = height
-        self.grid_propagate(0) # force height
+        self.grid_propagate(0)  # force height
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self._next_tb_id = 0
@@ -55,7 +55,8 @@ class GroupToolBar(ttk.Frame):
                          command, image_name, image_size='24x24',
                          state=tk.NORMAL, side='left'):
         tb = self.get_toolbar(toolbar_name)
-        item = tb.add_item(item_name, command,
+        item = tb.add_item(
+                item_name, command,
                 image_name, image_size, state, side,
                 GroupToolBar._style_class + '.TButton')
         return item
@@ -134,12 +135,13 @@ class _ToolBar(ttk.Frame):
         item.config(command=command)
 
     def add_item(self, item_name, command,
-                image_name, image_size, state, side, style):
+                 image_name, image_size, state, side, style):
         if item_name in self._items:
             raise Exception(
                 "Toolbar '{0}' already has an item '{1}'.".format(
                     self.name, item_name))
-        item = _ToolBarItem(self, item_name, image_name,
+        item = _ToolBarItem(
+                self, item_name, image_name,
                 image_size, command, state, side, style)
         self._items[item_name] = item
         return item
@@ -154,7 +156,7 @@ class _ToolBar(ttk.Frame):
 
 class _ToolBarItem(ttk.Button):
     def __init__(self, master, name, image_name, image_size,
-                command, state, side, style):
+                 command, state, side, style):
         if Theme._curr_theme:
             color = Theme._curr_theme.config['primary_text_color']
         else:
@@ -163,7 +165,8 @@ class _ToolBarItem(ttk.Button):
             image_name, size=image_size, color=color)
 
         super(_ToolBarItem, self).__init__(
-                master, image=image, command=command, state=state, style=style)
+                master, image=image, command=command,
+                state=state, style=style)
         self.name = name
         self._image_name = image_name
         self._image_size = image_size
@@ -181,7 +184,7 @@ class GroupToolBarTheme(GroupToolBar, WidgetThemeMixin):
         WidgetThemeMixin.__init__(self)
 
     def _on_theme_changed(self, theme):
-        #TODO see onoffbutton
+        # TODO see onoffbutton
         self._get_style(force=True)
         if theme is None:
             style = ttk.Style()
