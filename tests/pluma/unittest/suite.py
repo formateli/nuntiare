@@ -14,13 +14,11 @@ DIR = os.path.normpath(os.path.join(DIR, '..', '..', '..', 'nuntiare'))
 if os.path.isdir(DIR):
     sys.path.insert(0, os.path.dirname(DIR))
 
-import memento
-import highlight
+import highlight  # noqa: E402
 
 LOADER = unittest.TestLoader()
 
-SUITE = LOADER.loadTestsFromModule(memento)
-SUITE.addTests(LOADER.loadTestsFromModule(highlight))
+SUITE = LOADER.loadTestsFromModule(highlight)
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RUNNER.run(SUITE)
