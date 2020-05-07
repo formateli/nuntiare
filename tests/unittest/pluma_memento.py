@@ -5,6 +5,7 @@
 "Pluma memento test"
 
 import os
+import tkinter as tk
 from nuntiare.pluma.view.common.memento import MementoCaretaker, CopyPaste
 from nuntiare.pluma.view.text.text_event import TextEvent
 from tkinter import END
@@ -13,9 +14,13 @@ import unittest
 
 class MementoTest(unittest.TestCase):
     def test_memento(self):
-        self.text = TextEvent(None, None, None, is_test=True)
-        self.text.bind("<<TextModified>>", self.onTextModified)
+        self.text = None
+        try:
+            self.text = TextEvent(None, None, None, is_test=True)
+        except tk.TclError:  # DISPLAY error
+            return
 
+        self.text.bind("<<TextModified>>", self.onTextModified)
         self.text.delete(1.0, END, True)
 
         # Test Undo / Redo
