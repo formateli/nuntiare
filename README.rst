@@ -64,9 +64,4 @@ Setup
 
 Install::
 
-    python setup.py install --record files.txt
-    
-Uninstall (Ubuntu)::
-
-    sudo bash -c "cat files.txt | xargs rm -rf"
-
+    python setup.py install
