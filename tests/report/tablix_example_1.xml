@@ -1,0 +1,176 @@
+<?xml version="1.0" ?>
+<Nuntiare>
+  <Author>Fredy Ramirez</Author>
+  <Name>tablix_example_1</Name>
+  <Description>Tablix example 1
+https://msdn.microsoft.com/en-us/library/ee208912(v=sql.105).aspx</Description>
+  <Page/>
+  <ReportParameters>
+    <ReportParameter>
+      <DefaultValue>aw</DefaultValue>
+      <DataType>String</DataType>
+      <Name>db_name</Name>
+    </ReportParameter>
+    <ReportParameter>
+      <DefaultValue>localhost</DefaultValue>
+      <DataType>String</DataType>
+      <Name>db_host</Name>
+    </ReportParameter>
+    <ReportParameter>
+      <DefaultValue>5432</DefaultValue>
+      <DataType>String</DataType>
+      <Name>db_port</Name>
+    </ReportParameter>
+    <ReportParameter>
+      <DefaultValue>user</DefaultValue>
+      <DataType>String</DataType>
+      <Name>db_user</Name>
+    </ReportParameter>
+    <ReportParameter>
+      <DefaultValue>passwd</DefaultValue>
+      <DataType>String</DataType>
+      <Name>db_password</Name>
+    </ReportParameter>
+    <ReportParameter>
+      <DefaultValue>='dbname=' + P.db_name + \
+' host=' + P.db_host + \
+' port=' + P.db_port + \
+' user=' + P.db_user + \
+' password=' + P.db_password + \
+' client_encoding=UNICODE connect_timeout=0'</DefaultValue>
+      <DataType>String</DataType>
+      <Name>conn_string</Name>
+    </ReportParameter>
+  </ReportParameters>
+  <Body>
+    <ReportItems>
+      <Tablix>
+        <DataSetName>AddressDataSet</DataSetName>
+        <Name>Tablix1</Name>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember/>
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <Group>
+                <Name>Details</Name>
+              </Group>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>5.5in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.42in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <ReportItems>
+                      <Rectangle>
+                        <Height>2cm</Height>
+                        <Name>RectangleContainer</Name>
+                        <DataElementOutput>ContentsOnly</DataElementOutput>
+                        <ReportItems>
+                          <Textbox>
+                            <Value>=F.AddressLine1</Value>
+                            <CanGrow>true</CanGrow>
+                            <Width>2.5625in</Width>
+                            <Height>0.23958in</Height>
+                            <Name>Address</Name>
+                          </Textbox>
+                          <Textbox>
+                            <Left>3in</Left>
+                            <Value>=F.StateProvince</Value>
+                            <CanGrow>true</CanGrow>
+                            <Width>2.6in</Width>
+                            <Height>0.22in</Height>
+                            <ZIndex>1</ZIndex>
+                            <Name>StateProvince</Name>
+                          </Textbox>
+                          <Line>
+                            <Left>0.15in</Left>
+                            <Width>5.2in</Width>
+                            <ZIndex>2</ZIndex>
+                            <Name>Line1</Name>
+                            <Height>0in</Height>
+                            <Top>0.35in</Top>
+                            <Style>
+                              <Border>
+                                <Width>5pt</Width>
+                                <BorderStyle>Solid</BorderStyle>
+                              </Border>
+                            </Style>
+                          </Line>
+                        </ReportItems>
+                        <Style>
+                          <Border>
+                            <Color>Green</Color>
+                            <Width>2pt</Width>
+                            <BorderStyle>Solid</BorderStyle>
+                          </Border>
+                        </Style>
+                      </Rectangle>
+                    </ReportItems>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+      </Tablix>
+    </ReportItems>
+    <Style/>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Name>src1</Name>
+      <ConnectionProperties>
+        <ConnectObject>=P.conn_string</ConnectObject>
+        <DataProvider>postgresql</DataProvider>
+      </ConnectionProperties>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet>
+      <Name>AddressDataSet</Name>
+      <Query>
+        <CommandText>SELECT address.addressline1, address.city, address.postalcode,
+stateprovince.name as stateprovince, countryregion.name as countryregion
+FROM address
+INNER JOIN stateprovince ON address.stateprovinceid = stateprovince.stateprovinceid
+INNER JOIN countryregion ON countryregion.countryregioncode = stateprovince.countryregioncode</CommandText>
+        <DataSourceName>src1</DataSourceName>
+      </Query>
+      <Fields>
+        <Field>
+          <Name>AddressLine1</Name>
+          <DataField>addressline1</DataField>
+        </Field>
+        <Field>
+          <Name>City</Name>
+          <DataField>city</DataField>
+        </Field>
+        <Field>
+          <Name>StateProvince</Name>
+          <DataField>stateprovince</DataField>
+        </Field>
+        <Field>
+          <Name>PostalCode</Name>
+          <DataField>postalcode</DataField>
+        </Field>
+        <Field>
+          <Name>CountryRegion</Name>
+          <DataField>countryregion</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+</Nuntiare>

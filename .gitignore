@@ -24,7 +24,7 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
+*.log.*
 *.sqlite
  
 # OS generated files #
@@ -41,11 +41,16 @@ Thumbs.db
 # nuntiare #
 ######################
 MANIFEST
+TODO
 *.html
 *.pdf
 *.svg
 *.png
 *.csv
+*.nuntiare
+*.xml.xml
 db_test_connection_panama
 db_test_connection_northwind
 db_test_connection_adventure
+*.egg-info
+.tox
