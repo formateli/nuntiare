@@ -13,9 +13,6 @@ import unittest
 
 class MementoTest(unittest.TestCase):
     def test_memento(self):
-        if os.environ.get('DISPLAY', '') == '':
-            return
-
         self.text = TextEvent(None, None, None, is_test=True)
         self.text.bind("<<TextModified>>", self.onTextModified)
 
