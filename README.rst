@@ -65,3 +65,74 @@ Setup
 Install::
 
     python setup.py install
+
+
+Documentation
+-------------
+
+    https://formateli.com/nuntiare
+
+
+Version
+-------
+
+Current version: 0.3.0-alpha
+
+
+Roadmap
+-------
+
+0.1.0
+
+   * Data from databases (API 2.0), csv, xml, lists and objects.
+   * Dataset Group and Order.
+
+
+0.2.0
+
+   * Aggregates: Max, Min, Count, CountDistinct, CountRows, First, Last,
+     Previous, Avg, Sum, RunningValue, RowNumber.
+   * Functions: CBool, CDate, CInt, CFloat, CDecimal, CStr, Iif, Switch,
+     Choose, Day, Month, Year, Hour, Minute, Second, Today, Format, LCase,
+     UCase, Len, Trim, RTrim, LTrim, Mid, Replace, String.
+
+
+0.3.0
+
+   * Controls:
+      - Textbox
+      - Line
+      - Rectangle
+      - Tablix
+   * html, csv and xml renders.
+   * Full *nuntiare* command line tool implemented.
+
+
+0.4.0
+
+   * *pluma* report designer.
+      - Designer view.
+      - Xml view.
+      - Run and export view.
+
+0.5.0
+
+   * pdf, png and svg renders (Cairo based).
+
+
+0.6.0
+
+   * Controls:
+      - Image
+      - Sub report.
+
+
+0.7.0
+
+   * Chart control.
+
+
+0.8.0
+
+   * *pluma* report designer.
+      - Viewer plugin.
