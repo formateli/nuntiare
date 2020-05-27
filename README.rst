@@ -70,7 +70,7 @@ Install::
 Documentation
 -------------
 
-    https://formateli.com/nuntiare
+https://formateli.com/nuntiare
 
 
 Version
