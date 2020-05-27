@@ -18,7 +18,7 @@ DESCRIPTION = 'Python report toolkit'
 AUTHOR = 'Fredy Ramirez - https://formateli.com'
 COPYRIGHT = '2013-2020, ' + AUTHOR
 LICENSE = 'GNU GENERAL PUBLIC LICENSE v3'
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 

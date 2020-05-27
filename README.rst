@@ -76,7 +76,7 @@ https://formateli.com/nuntiare
 Version
 -------
 
-Current version: 0.3.0-alpha
+Current version: 0.3.1-alpha
 
 
 Roadmap
