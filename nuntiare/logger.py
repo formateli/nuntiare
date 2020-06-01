@@ -7,17 +7,23 @@ import logging.handlers
 
 class NuntiareLog:
     def __init__(self, default_level="WARNING"):
+        self._handler = {}
         default_level = self._get_level_from_string(default_level)
         self._logger = logging.getLogger('Nuntiare')
         self._logger.setLevel(default_level)
         self.add_handler(logging.NullHandler())
 
-    def add_handler(self, handler, level=None, formatter=None):
+    def add_handler(self, handler, level=None, formatter=None, name=None):
         if level:
             handler.setLevel(self._get_level_from_string(level))
         if formatter:
             handler.setFormatter(logging.Formatter(formatter))
         self._logger.addHandler(handler)
+        if name is not None:
+            self._handler[name] = handler
+
+    def get_handler(self, name):
+        return self._handler[name]
 
     def remove_handler(self, handler):
         self._logger.removeHandler(handler)
@@ -54,7 +60,8 @@ class NuntiareLog:
             # TODO other types
             raise Exception(message)
 
-    def _get_level_from_string(self, level):
+    @staticmethod
+    def _get_level_from_string(level):
         if level == "DEBUG":
             return logging.DEBUG
         elif level == "INFO":

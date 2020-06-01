@@ -498,8 +498,85 @@ class EmbeddedImages(Element):
             'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY], }
         super(EmbeddedImages, self).__init__(node, self.elements, lnk)
 
+    @staticmethod
+    def embed_image_file(xml_file, image_file, name, mimetype):
+        name, mimetype, image_string = EmbeddedImage.get_base64_image(
+                image_file, name, mimetype)
+        EmbeddedImages.embed_image_base64(
+                xml_file, image_string, name, mimetype)
+
+    @staticmethod
+    def embed_image_base64(xml_file, image_string, name, mimetype):
+        from xml.dom import minidom
+
+        def create_text_node(dom, parent_el, child, txt):
+            child_el = dom.createElement(child)
+            child_el.appendChild(dom.createTextNode(txt))
+            parent_el.appendChild(child_el)
+
+        def replace_text_node(dom, parent_el, child, txt):
+            found = False
+            for node in parent_el.childNodes:
+                if node.nodeName == child:
+                    node.firstChild.replaceWholeText(txt)
+                    found = True
+            if not found:
+                create_text_node(dom, parent_el, child, txt)
+
+        # This routine is necesary to avoid
+        # lines spaces when file is saved using toprettyxml
+        with open(xml_file, 'rb') as file_read:
+            data = file_read.read()
+        data = data.decode('utf-8')
+        reparsed = minidom.parseString(data)
+        data = ''
+        for line in reparsed.toprettyxml(indent=' ').split('\n'):
+            st = line.strip()
+            if st:
+                data += st
+
+        dom = minidom.parseString(data)
+
+        root = dom.getElementsByTagName('Nuntiare')[0]
+        ei = dom.getElementsByTagName('EmbeddedImages')
+        if not ei:
+            ei_element = dom.createElement('EmbeddedImages')
+            root.appendChild(ei_element)
+        else:
+            ei_element = ei[0]
+
+        image_element = None
+        for el in ei_element.childNodes:
+            if el.nodeName == 'EmbeddedImage':
+                for node in el.childNodes:
+                    if node.nodeName == 'Name':
+                        if node.firstChild.nodeValue == name:
+                            image_element = el
+
+        if image_element is None:
+            image_element = dom.createElement('EmbeddedImage')
+            create_text_node(dom, image_element, 'Name', name)
+            create_text_node(dom, image_element, 'MIMEType', mimetype)
+            create_text_node(dom, image_element, 'ImageData', image_string)
+            ei_element.appendChild(image_element)
+        else:
+            replace_text_node(dom, image_element, 'MIMEType', mimetype)
+            replace_text_node(dom, image_element, 'ImageData', image_string)
+
+        with open(xml_file, 'wb') as file_write:
+            file_write.write(dom.toprettyxml(indent='  ', encoding='utf-8'))
+
 
 class EmbeddedImage(Element):
+
+    _mimetype_valid = {
+        'image/bmp': 'BMP',
+        'image/jpeg': 'JPG',
+        'image/gif': 'GIF',
+        'image/png': 'PNG',
+        'image/xpng': 'PNG'
+        }
+
     def __init__(self, node, lnk):
         self.elements = {
             'Name': [Element.STRING, Card.ONE, True],
@@ -507,6 +584,56 @@ class EmbeddedImage(Element):
             'ImageData': [Element.STRING, Card.ONE, True],
         }
         super(EmbeddedImage, self).__init__(node, self.elements, lnk)
+
+    @classmethod
+    def get_base64_image(cls, image_file, name=None, mimetype=None):
+        """ Return a Base64 string reporesentation
+            along with its name and mimetype of Image file.
+            name and mimetype can be inferred from image_file if
+            they are not provided. 
+        """
+        import base64
+        from PIL import Image
+        import base64
+        import io
+        import os
+
+        filename, ext = os.path.splitext(os.path.basename(image_file))
+
+        if name is None:
+            name = filename
+
+        if mimetype is None:
+            ext = ext.lower()[1:]
+            if ext == 'bmp':
+                mimetype = 'image/bmp'
+            elif ext in ['jpg', 'jpeg']:
+                mimetype = 'image/jpeg'
+            elif ext == 'gif':
+                mimetype = 'image/gif'
+            elif ext == 'png':
+                mimetype = 'image/png'
+            else:
+                LOGGER.error(
+                    "MIMEType can not be inferred from {0} extension".format(
+                        ext), raise_error=True)
+
+        mimetype = mimetype.lower()
+        if mimetype not in cls._mimetype_valid:
+            LOGGER.error(
+                "Invalid MIMEType '{0}' for '{1}' image.".format(
+                    mimetype, name), raise_error=True)
+
+        buffered = io.BytesIO()
+        img = Image.open(image_file)
+        img.show()
+        img.save(buffered, format=cls._mimetype_valid[mimetype])
+        img_str = base64.b64encode(buffered.getvalue())
+        res = img_str.decode('utf-8')
+
+        #test = Image.open(io.BytesIO(base64.b64decode(res)))
+
+        return name, mimetype, res
 
 
 class Modules(Element):
@@ -895,7 +1022,8 @@ class BackgroundImage(Element):
 
             'Position': [Element.ENUM],
         }
-        super(Image, self).__init__('Image', node, lnk, self.elements)
+        super(BackgroundImage, self).__init__(
+                'Image', node, lnk, self.elements)
 
 
 class ReportItems(Element):

@@ -5,7 +5,7 @@
 import os
 import sys
 import argparse
-
+import logging
 
 try:
     from nuntiare import (PROJECT_NAME, DESCRIPTION, VERSION,
@@ -22,6 +22,10 @@ except ImportError:
 
 APPNAME = PROJECT_NAME + ' command line tool'
 
+if sys.stdout:
+    LOGGER.add_handler(logging.StreamHandler(sys.stdout),
+                       level='WARNING', name='stdout')
+
 
 def get_info():
     res = "\n{0} version {1}\nCopyright {2}\nLicensed under {3}".format(
@@ -29,8 +33,14 @@ def get_info():
     return res
 
 
+def verify_file(file):
+    if not os.path.isfile(file) or not os.access(file, os.R_OK):
+        err_msg = "'{0}' is not a valid file or " \
+            "user has not read access for it."
+        LOGGER.error(err_msg.format(file), True, 'IOError')
+
+
 def do_render(args):
-    import logging
     from nuntiare.report import Report
     from nuntiare.render.render import Render
 
@@ -49,13 +59,11 @@ def do_render(args):
             result[name] = val
         return result
 
-    if sys.stdout:  # Default: WARNING
-        LOGGER.add_handler(logging.StreamHandler(sys.stdout), args.v)
+    if args.v != 'WARNING':
+        lg = LOGGER.get_handler('stdout')
+        lg.setLevel(LOGGER._get_level_from_string(args.v))
 
-    if not os.path.isfile(args.file):
-        LOGGER.critical(
-            "File '{0}' not found.".format(args.file),
-            True, 'IOError')
+    verify_file(args.file)
 
     renders = args.r
     if not renders:
@@ -80,6 +88,39 @@ def do_render(args):
 
     if args.save:
         report.save(not args.no_overwrite)
+
+
+def do_embed_image(args):
+    verify_file(args.file)
+    verify_file(args.image)
+
+    from nuntiare.definition.element import EmbeddedImages
+
+    filename, ext = os.path.splitext(os.path.basename(args.image))
+
+    if args.n:
+        name = args.n
+    else:
+        name = filename
+
+    if args.m:
+        mimetype = args.m
+    else:
+        ext = ext.lower()[1:]
+        if ext == 'bmp':
+            mimetype = 'image/bmp'
+        elif ext in ['jpg', 'jpeg']:
+            mimetype = 'image/jpeg'
+        elif ext == 'gif':
+            mimetype = 'image/gif'
+        elif ext == 'png':
+            mimetype = 'image/png'
+        else:
+            LOGGER.error(
+                "MIMEType can not be inferred from '{0}' extension".format(
+                    ext), raise_error=True)
+
+    EmbeddedImages.embed_image_file(args.file, args.image, name, mimetype)
 
 
 def do_convert(args):
@@ -157,10 +198,7 @@ def do_convert(args):
             get_element(doc, n, el)
 
     rdlc = args.rdl
-    if not os.path.isfile(rdlc) or not os.access(rdlc, os.R_OK):
-        err_msg = "'{0}' is not a valid file or " \
-            "User has not read access for it."
-        LOGGER.error(err_msg.format(rdlc), True, 'IOError')
+    verify_file(rdlc)
 
     LOGGER.info(
         "Converting '{0}' to nuntiare template file.".format(rdlc))
@@ -283,10 +321,36 @@ def run():
     parser_render.add_argument(
         "--save", action='store_true', help=help)
 
-    help = "Output verbosity. Default: 'WARNING'"
+    help = "Logs output verbosity. Default: 'WARNING'"
     parser_render.add_argument(
         "-v", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         default="WARNING", help=help)
+
+    # ======== embed image ==================
+    help = 'Embed an image into a xml definition file as base64 string.'
+    parser_embed_image = subparsers.add_parser(
+        'embed-image',
+        formatter_class=argparse.RawTextHelpFormatter,
+        description=help)
+
+    help = 'Nuntiare xml definition file where image will be embedded.'
+    parser_embed_image.add_argument("file", help=help)
+
+    help = 'Image which will be embedded.'
+    parser_embed_image.add_argument("image", help=help)
+
+    help = "Element name for image in Nuntiare xml definition file. " \
+            "\nDefault: Image file name."
+    parser_embed_image.add_argument(
+        "-n", metavar="name", help=help)
+
+    help = "Valid image MIMEType." \
+            "\nDefault: Inferred from image file extension."
+    parser_embed_image.add_argument(
+        "-m", choices=[
+            'image/bmp', 'image/jpeg',
+            'image/gif', 'image/png', 'image/xpng'
+            ], help=help)
 
     # ======== convert ==================
     help = 'Converts a Rdl 2008 file to Nuntiare xml definition file.'
@@ -302,6 +366,8 @@ def run():
 
     if args.command == 'render':
         do_render(args)
+    elif args.command == 'embed-image':
+        do_embed_image(args)
     elif args.command == 'convert':
         do_convert(args)
 
