@@ -10,6 +10,7 @@
         <Width>15cm</Width>
         <Style>
           <FontSize>16</FontSize>
+          <PaddingBottom>4</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -19,7 +20,6 @@
         <ImageSizing>AutoSize</ImageSizing>
         <Value>formateli</Value>
       </Image>
-
       <Textbox>
         <Name>txt_fit_size</Name>
         <Value>Fit size embedded image (15cm x 5cm)</Value>
@@ -27,6 +27,7 @@
         <Width>15cm</Width>
         <Style>
           <FontSize>16</FontSize>
+          <PaddingBottom>4</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -38,7 +39,63 @@
         <Height>5cm</Height>
         <Width>15cm</Width>
       </Image>
-
+      <Textbox>
+        <Name>txt_fit_proportiontal_size_1</Name>
+        <Value>Fit proportional size embedded image (15cm x 5cm)</Value>
+        <Height>5mm</Height>
+        <Width>15cm</Width>
+        <Style>
+          <FontSize>16</FontSize>
+          <PaddingBottom>4</PaddingBottom>
+        </Style>
+      </Textbox>
+      <Image>
+        <Name>image_fitproportional_size_1</Name>
+        <ImageSource>Embedded</ImageSource>
+        <MIMEType>image/png</MIMEType>
+        <ImageSizing>FitProportional</ImageSizing>
+        <Value>formateli</Value>
+        <Height>5cm</Height>
+        <Width>15cm</Width>
+      </Image>
+      <Textbox>
+        <Name>txt_fit_proportiontal_size_2</Name>
+        <Value>Fit proportional size embedded image (5cm x 15cm)</Value>
+        <Height>5mm</Height>
+        <Width>15cm</Width>
+        <Style>
+          <FontSize>16</FontSize>
+          <PaddingBottom>4</PaddingBottom>
+        </Style>
+      </Textbox>
+      <Image>
+        <Name>image_fitproportional_size_2</Name>
+        <ImageSource>Embedded</ImageSource>
+        <MIMEType>image/png</MIMEType>
+        <ImageSizing>FitProportional</ImageSizing>
+        <Value>formateli</Value>
+        <Height>15cm</Height>
+        <Width>5cm</Width>
+      </Image>
+      <Textbox>
+        <Name>txt_external_fit_proportiontal_size</Name>
+        <Value>Fit proportional size external image (5cm x 15cm)</Value>
+        <Height>5mm</Height>
+        <Width>15cm</Width>
+        <Style>
+          <FontSize>16</FontSize>
+          <PaddingBottom>4</PaddingBottom>
+        </Style>
+      </Textbox>
+      <Image>
+        <Name>image_external_fitproportional_size</Name>
+        <ImageSource>External</ImageSource>
+        <MIMEType>image/png</MIMEType>
+        <ImageSizing>FitProportional</ImageSizing>
+        <Value>formateli.png</Value>
+        <Height>15cm</Height>
+        <Width>5cm</Width>
+      </Image>
     </ReportItems>
     <Style/>
   </Body>

@@ -7,6 +7,7 @@ from PIL import Image
 from .. render import Render
 from ... import LOGGER
 from ... outcome.page_item import PageItemsInfo
+from nuntiare.definition.element import EmbeddedImage
 
 
 class HeaderFooterRectangle(object):
@@ -265,6 +266,9 @@ class HtmlRender(Render):
         if it.image_source == 'Embedded':
             el = it.report.definition.get_element('EmbeddedImages')
             data = el.embedded_images[it.image_value].ImageData
+        elif it.image_source == 'External':
+            data = EmbeddedImage.get_base64_image(
+                it.image_value, it.name, it.mimetype)[2]
 
         image.add_attribute(
             'src',
@@ -276,25 +280,9 @@ class HtmlRender(Render):
             image.add_attribute(
                 'width', it.width)
         elif it.image_sizing == 'FitProportional':
-            img = Image.open(data)
-            w, h = img.size
-
-            width = it.width
-            height = it.height
-
-            factor_width = 1
-            factor_height = 1
-            if width > height:
-                factor_h = height / width
-            elif height > width:
-                factor_w = width / height
-
-            factor_w = 1
-            factor_h = 1
-            if w > h:
-                factor_h = h / w                    
-            elif w < h:
-                factor_w = w / h
+            img = EmbeddedImage.get_pil_image_from_base64(data)
+            width, height = EmbeddedImage.get_proportional_size(
+                    it.width, it.height, img.size[0], img.size[1])
 
             image.add_attribute(
                 'height', height)

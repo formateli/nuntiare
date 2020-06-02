@@ -2,6 +2,11 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import sys
+import base64
+from PIL import Image as PilImage
+import base64
+import io
+import os
 from . expression import (Expression, String, Boolean,  # noqa: F401
         Integer, Variant, Size, Color)                  # noqa: F401
 from . enum import (BorderStyle, FontStyle,             # noqa: F401
@@ -595,12 +600,6 @@ class EmbeddedImage(Element):
             name and mimetype can be inferred from image_file if
             they are not provided. 
         """
-        import base64
-        from PIL import Image
-        import base64
-        import io
-        import os
-
         filename, ext = os.path.splitext(os.path.basename(image_file))
 
         if name is None:
@@ -628,15 +627,57 @@ class EmbeddedImage(Element):
                     mimetype, name), raise_error=True)
 
         buffered = io.BytesIO()
-        img = Image.open(image_file)
-        img.show()
+        img = PilImage.open(image_file)
         img.save(buffered, format=cls._mimetype_valid[mimetype])
         img_str = base64.b64encode(buffered.getvalue())
         res = img_str.decode('utf-8')
 
-        #test = Image.open(io.BytesIO(base64.b64decode(res)))
+        return [name, mimetype, res]
 
-        return name, mimetype, res
+    @staticmethod
+    def get_pil_image_from_base64(image_str):
+        img = PilImage.open(io.BytesIO(base64.b64decode(image_str)))
+        return img
+
+    @staticmethod
+    def get_proportional_size(containe_width, containe_height,
+                              image_width, image_height):
+        width = containe_width
+        height = containe_height
+
+        factor_base = [
+            width / height,
+            height / width
+            ]
+
+        factor_image = [
+            image_width / image_height,
+            image_height / image_width
+            ]
+
+        if width == height:
+            if image_width > image_height:
+                height = width * factor_image[1]
+            elif image_width < image_height:
+                width = height * factor_image[0]
+        elif width > height:
+            if image_width >= image_height:
+                if factor_image[0] >= factor_base[0]:
+                    height = width * factor_image[1]
+                else:
+                    width = height * factor_image[0]
+            else:
+                width = height * factor_image[0]
+        elif width < height:
+            if image_height >= image_width:
+                if factor_image[1] >= factor_base[1]:
+                    width = height * factor_image[0]
+                else:
+                    height = width * factor_image[1]
+            else:
+                height = width * factor_image[1]
+
+        return [width, height]
 
 
 class Modules(Element):
