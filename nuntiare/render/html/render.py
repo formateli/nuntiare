@@ -3,6 +3,7 @@
 # contains the full copyright notices and license terms.
 import sys
 import html
+from PIL import Image
 from .. render import Render
 from ... import LOGGER
 from ... outcome.page_item import PageItemsInfo
@@ -130,6 +131,8 @@ class HtmlRender(Render):
                 continue  # Not supported
             if it.type in ['PageRectangle', 'PageText']:
                 el = self._get_rectangle(it)
+            if it.type == 'PageImage':
+                el = self._get_image(it)
             if it.type == 'PageTablix':
                 el = self._get_grid(it)
 
@@ -254,6 +257,52 @@ class HtmlRender(Render):
 
         res = self._get_td_parent_element(it, tablix)
         return res
+
+    def _get_image(self, it):
+        rec = _HtmlElement('div', it.name)
+        image = _HtmlElement('img', None)
+
+        if it.image_source == 'Embedded':
+            el = it.report.definition.get_element('EmbeddedImages')
+            data = el.embedded_images[it.image_value].ImageData
+
+        image.add_attribute(
+            'src',
+            'data:' + it.mimetype + ';base64, ' + data)
+
+        if it.image_sizing == 'Fit':
+            image.add_attribute(
+                'height', it.height)
+            image.add_attribute(
+                'width', it.width)
+        elif it.image_sizing == 'FitProportional':
+            img = Image.open(data)
+            w, h = img.size
+
+            width = it.width
+            height = it.height
+
+            factor_width = 1
+            factor_height = 1
+            if width > height:
+                factor_h = height / width
+            elif height > width:
+                factor_w = width / height
+
+            factor_w = 1
+            factor_h = 1
+            if w > h:
+                factor_h = h / w                    
+            elif w < h:
+                factor_w = w / h
+
+            image.add_attribute(
+                'height', height)
+            image.add_attribute(
+                'width', width)
+
+        rec.add_element(image)
+        return rec
 
     def _get_rectangle(self, it):
         in_cell = self._is_in_cell(it)

@@ -192,6 +192,8 @@ class PageItem(object):
         if it.type == "Tablix":
             from . page_tablix import PageTablix
             page_item = PageTablix(report, it, parent)
+        if it.type == "Image":
+            page_item = PageImage(report, it, parent)
 
         if not page_item:
             err_msg = "Error trying to get Report item. " \
@@ -199,6 +201,20 @@ class PageItem(object):
             LOGGER.error(err_msg.format(it), True)
 
         return page_item
+
+
+class PageImage(PageItem):
+    def __init__(self, report, report_item_def, parent):
+        super(PageImage, self).__init__(
+            'PageImage', report, report_item_def, parent)
+        self.image_source = report.get_value(
+            report_item_def, 'ImageSource', None)
+        self.mimetype = report.get_value(
+            report_item_def, 'MIMEType', None)
+        self.image_sizing = report.get_value(
+            report_item_def, 'ImageSizing', 'AutoSize')
+        self.image_value = report.get_value(
+            report_item_def, 'Value', None)
 
 
 class PageLine(PageItem):
@@ -210,7 +226,7 @@ class PageLine(PageItem):
 class PageRectangle(PageItem):
     def __init__(self, report, report_item_def, parent):
         super(PageRectangle, self).__init__(
-            'PageRectangle', report, report_item_def, parent)
+            'ImageSource', report, report_item_def, parent)
         self.omit_border_on_page_break = report.get_value(
             report_item_def, 'OmitBorderOnPageBreak', True)
         self.page_break = report.get_value(

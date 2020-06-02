@@ -10,7 +10,7 @@ from . enum import (BorderStyle, FontStyle,             # noqa: F401
         BackgroundRepeat, BackgroundGradientType,       # noqa: F401
         DataType, SortDirection, Operator,              # noqa: F401
         BreakLocation, DataElementStyle,                # noqa: F401
-        DataElementOutput)                              # noqa: F401
+        DataElementOutput, ImageSource, ImageSizing)    # noqa: F401
 from .. import LOGGER
 from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
@@ -44,7 +44,8 @@ _ENUM_CLASSES = [
     'TextDirection', 'WritingMode', 'BackgroundRepeat',
     'BackgroundGradientType', 'DataType',
     'SortDirection', 'Operator', 'BreakLocation',
-    'DataElementStyle', 'DataElementOutput'
+    'DataElementStyle', 'DataElementOutput',
+    'ImageSource', 'ImageSizing'
 ]
 
 _EXPRESSION_CLASSES = [
@@ -495,7 +496,8 @@ class Nuntiare(Element):
 class EmbeddedImages(Element):
     def __init__(self, node, lnk):
         self.elements = {
-            'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY], }
+            'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY]}
+        self.embedded_images = {}
         super(EmbeddedImages, self).__init__(node, self.elements, lnk)
 
     @staticmethod
@@ -584,6 +586,7 @@ class EmbeddedImage(Element):
             'ImageData': [Element.STRING, Card.ONE, True],
         }
         super(EmbeddedImage, self).__init__(node, self.elements, lnk)
+        lnk.parent.embedded_images[self.Name] = self
 
     @classmethod
     def get_base64_image(cls, image_file, name=None, mimetype=None):
