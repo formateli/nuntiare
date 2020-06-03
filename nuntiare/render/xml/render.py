@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-import sys
 from xml.dom import minidom
 from .. render import Render
 from ... import LOGGER
@@ -279,10 +278,7 @@ class XmlRender(Render):
         try:
             f = open(self.result_file, 'wb')
             try:
-                if sys.version_info[0] == 2:  # python2
-                    res = doc.toprettyxml(indent='  ')
-                else:
-                    res = doc.toprettyxml(indent='  ', encoding='utf-8')
+                res = doc.toprettyxml(indent='  ', encoding='utf-8')
                 f.write(res)
             finally:
                 f.close()
