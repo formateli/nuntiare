@@ -425,7 +425,7 @@ class Size(Expression):
 
     def __init__(self, string_size, lnk, must_be_constant=False):
         super(Size, self).__init__(string_size, lnk, must_be_constant)
-        self._size = None  # points
+        self._size = None
         if not self.is_constant:
             return
         self._get_value(string_size)
@@ -445,12 +445,6 @@ class Size(Expression):
 
         # convert to unicode
         string_size = DataType.get_value('String', string_size)
-        try:
-            # No unit, so it is in points
-            self._size = float(string_size)
-            return self._size
-        except Exception:
-            self._size = None
 
         units = ('in', 'cm', 'mm', 'pt', 'pc')
 
@@ -467,8 +461,24 @@ class Size(Expression):
 
         size = string_size[:len(string_size) - 2]
         size = size.strip()
-        self._size = Size.convert(float(size), unit, 'pt')
+        self._size = Size.convert(float(size), unit, 'pt')  # Default point
         return self._size
+
+    @staticmethod
+    def convert_to_pixel(value, unit, ppi=96):
+        unit = unit.strip().lower()
+        if unit == 'px':
+            return value
+        points = Size.convert(value, unit, 'pt')
+        return (points * ppi) / Size.size_72
+
+    @staticmethod
+    def convert_from_pixel(value, unit, ppi=96):
+        unit = unit.strip().lower()
+        if unit == 'px':
+            return value
+        points = (value * Size.size_72) / ppi
+        return Size.convert(points, 'pt', unit)
 
     @staticmethod
     def convert_to_mm(value, unit):

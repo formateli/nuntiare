@@ -119,9 +119,14 @@ class RunView(PanedView):
         self.type = 'run'
 
         up_frame = self.get_frame()
-        label = ttk.Label(up_frame, text='NOT IMPLEMENTED')
-        label.grid(row=0, column=0, sticky='wens')
-        self.left_window.add(up_frame, weight=4)
+        self._canvas = tk.Canvas(
+            up_frame,
+            xscrollcommand=up_frame.xscrollbar.set,
+            yscrollcommand=up_frame.yscrollbar.set)
+        self._canvas.grid(row=0, column=0, sticky='wens')
+        self.left_window.add(up_frame, weight=3)
+        up_frame.xscrollbar.config(command=self._canvas.xview)
+        up_frame.yscrollbar.config(command=self._canvas.yview)
 
         down_frame = self.get_frame()
         self.log = LogWindow(
@@ -144,8 +149,13 @@ class RunView(PanedView):
         try:
             report = Report(text.text.get(1.0, tk.END))
             report.run()
-            render = Render.get_render('html')
-            render.render(report, overwrite=True)
+
+            self._canvas.config(
+                    width=1000, height=1000,
+                    scrollregion=(0, 0, 1000, 1000))
+
+            render = Render.get_render('tk')
+            render.render(report, self._canvas)
         except Exception as e:
             self.log.critical(e)
 

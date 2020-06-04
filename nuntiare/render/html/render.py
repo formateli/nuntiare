@@ -264,7 +264,7 @@ class HtmlRender(Render):
         image = _HtmlElement('img', None)
 
         if it.image_source == 'Embedded':
-            el = it.report.definition.get_element('EmbeddedImages')
+            el = it.report.definition.EmbeddedImages
             data = el.embedded_images[it.image_value].ImageData
         elif it.image_source == 'External':
             data = EmbeddedImage.get_base64_image(

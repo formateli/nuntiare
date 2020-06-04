@@ -9,8 +9,8 @@
         <Height>5mm</Height>
         <Width>15cm</Width>
         <Style>
-          <FontSize>16</FontSize>
-          <PaddingBottom>4</PaddingBottom>
+          <FontSize>16pt</FontSize>
+          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -19,6 +19,8 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>AutoSize</ImageSizing>
         <Value>formateli</Value>
+        <Height>200pt</Height>
+        <Width>200pt</Width>
       </Image>
       <Textbox>
         <Name>txt_fit_size</Name>
@@ -26,12 +28,14 @@
         <Height>5mm</Height>
         <Width>15cm</Width>
         <Style>
-          <FontSize>16</FontSize>
-          <PaddingBottom>4</PaddingBottom>
+          <FontSize>16pt</FontSize>
+          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
         <Name>image_fit_size</Name>
+        <Top>2cm</Top>
+        <Left>15cm</Left>
         <ImageSource>Embedded</ImageSource>
         <MIMEType>image/png</MIMEType>
         <ImageSizing>Fit</ImageSizing>
@@ -45,8 +49,8 @@
         <Height>5mm</Height>
         <Width>15cm</Width>
         <Style>
-          <FontSize>16</FontSize>
-          <PaddingBottom>4</PaddingBottom>
+          <FontSize>16pt</FontSize>
+          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -55,6 +59,8 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli</Value>
+        <Top>8cm</Top>
+        <Left>15cm</Left>
         <Height>5cm</Height>
         <Width>15cm</Width>
       </Image>
@@ -64,8 +70,8 @@
         <Height>5mm</Height>
         <Width>15cm</Width>
         <Style>
-          <FontSize>16</FontSize>
-          <PaddingBottom>4</PaddingBottom>
+          <FontSize>16pt</FontSize>
+          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -74,6 +80,8 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli</Value>
+        <Top>14cm</Top>
+        <Left>15cm</Left>
         <Height>15cm</Height>
         <Width>5cm</Width>
       </Image>
@@ -83,8 +91,8 @@
         <Height>5mm</Height>
         <Width>15cm</Width>
         <Style>
-          <FontSize>16</FontSize>
-          <PaddingBottom>4</PaddingBottom>
+          <FontSize>16pt</FontSize>
+          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>

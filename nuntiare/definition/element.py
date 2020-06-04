@@ -591,6 +591,9 @@ class EmbeddedImage(Element):
             'ImageData': [Element.STRING, Card.ONE, True],
         }
         super(EmbeddedImage, self).__init__(node, self.elements, lnk)
+        # Original size in pixel
+        self.image_width, self.image_height = \
+                self.get_pil_image_size_from_base64(self.ImageData)
         lnk.parent.embedded_images[self.Name] = self
 
     @classmethod
@@ -638,6 +641,11 @@ class EmbeddedImage(Element):
     def get_pil_image_from_base64(image_str):
         img = PilImage.open(io.BytesIO(base64.b64decode(image_str)))
         return img
+
+    @staticmethod
+    def get_pil_image_size_from_base64(image_str):
+        img = EmbeddedImage.get_pil_image_from_base64(image_str)
+        return img.size
 
     @staticmethod
     def get_proportional_size(containe_width, containe_height,
@@ -1236,7 +1244,7 @@ class TablixCornerRows(Element):
 
 class TablixCornerRow(Element):
     def __init__(self, node, lnk):
-        self.elements = {'TablixCornerCell': [Element.ELEMENT, 2], }
+        self.elements = {'TablixCornerCell': [Element.ELEMENT, Card.ZERO_ONE], }
         self.cell_list = []
         super(TablixCornerRow, self).__init__(node, self.elements, lnk)
         lnk.parent.row_list.append(self)
@@ -1277,7 +1285,7 @@ class TablixColumnHierarchy(_TablixHierarchy):
 
 class TablixMembers(Element):
     def __init__(self, node, lnk):
-        self.elements = {'TablixMember': [Element.ELEMENT, Card.ONE_MANY], }
+        self.elements = {'TablixMember': [Element.ELEMENT, Card.ONE_MANY]}
         self.member_list = []
         super(TablixMembers, self).__init__(node, self.elements, lnk)
 
