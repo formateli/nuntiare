@@ -87,9 +87,9 @@
       </Image>
       <Textbox>
         <Name>txt_external_fit_proportiontal_size</Name>
-        <Value>Fit proportional size external image (5cm x 15cm)</Value>
+        <Value>Fit proportional size external image (10cm x 5cm)</Value>
         <Height>5mm</Height>
-        <Width>15cm</Width>
+        <Width>10cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -101,8 +101,9 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli.png</Value>
-        <Height>15cm</Height>
-        <Width>5cm</Width>
+        <Top>15cm</Top>
+        <Height>10cm</Height>
+        <Width>10cm</Width>
       </Image>
     </ReportItems>
     <Style/>

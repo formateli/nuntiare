@@ -15,6 +15,7 @@ if os.path.isdir(DIR):
 
 import dataprovider     # noqa: E402
 import expression       # noqa: E402
+import image            # noqa: E402
 import parameter        # noqa: E402
 import grid             # noqa: E402
 import data             # noqa: E402
@@ -29,6 +30,7 @@ LOADER = unittest.TestLoader()
 
 SUITE = LOADER.loadTestsFromModule(dataprovider)
 SUITE.addTests(LOADER.loadTestsFromModule(expression))
+SUITE.addTests(LOADER.loadTestsFromModule(image))
 SUITE.addTests(LOADER.loadTestsFromModule(parameter))
 SUITE.addTests(LOADER.loadTestsFromModule(grid))
 SUITE.addTests(LOADER.loadTestsFromModule(data))

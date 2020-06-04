@@ -68,12 +68,14 @@ class ElementTypeTest(unittest.TestCase):
         self.assertEqual(s.value(report), 10.0)
         s = Size('10 pt', True)
         self.assertEqual(s.value(report), 10.0)
-        s = Size('10', True)
-        self.assertEqual(s.value(report), 10.0)
         s = Size('1in', True)
         self.assertEqual(s.value(report), 72.0)
         s = Size.convert(72.0, 'pt', 'in')
         self.assertEqual(s, 1)
+        with self.assertRaises(ValueError):
+            # Unit must be set
+            s = Size('10', True)
+            self.assertEqual(s.value(report), 10.0)
 
         # Color
         s = Color(None, True)

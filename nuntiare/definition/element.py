@@ -598,8 +598,8 @@ class EmbeddedImage(Element):
 
     @classmethod
     def get_base64_image(cls, image_file, name=None, mimetype=None):
-        """ Return a Base64 string reporesentation
-            along with its name and mimetype of Image file.
+        """ Return a Base64 string reporesentation and PIL Image
+            along with its name and mimetype.
             name and mimetype can be inferred from image_file if
             they are not provided. 
         """
@@ -635,7 +635,7 @@ class EmbeddedImage(Element):
         img_str = base64.b64encode(buffered.getvalue())
         res = img_str.decode('utf-8')
 
-        return [name, mimetype, res]
+        return [name, mimetype, res, img]
 
     @staticmethod
     def get_pil_image_from_base64(image_str):
@@ -648,10 +648,10 @@ class EmbeddedImage(Element):
         return img.size
 
     @staticmethod
-    def get_proportional_size(containe_width, containe_height,
+    def get_proportional_size(container_width, container_height,
                               image_width, image_height):
-        width = containe_width
-        height = containe_height
+        width = container_width
+        height = container_height
 
         factor_base = [
             width / height,
@@ -663,26 +663,32 @@ class EmbeddedImage(Element):
             image_height / image_width
             ]
 
-        if width == height:
+        if container_width == container_height:
             if image_width > image_height:
                 height = width * factor_image[1]
             elif image_width < image_height:
                 width = height * factor_image[0]
-        elif width > height:
+        elif container_width > container_height:
             if image_width >= image_height:
                 if factor_image[0] >= factor_base[0]:
+                    width = container_width
                     height = width * factor_image[1]
                 else:
+                    height = container_height
                     width = height * factor_image[0]
             else:
+                height = container_height
                 width = height * factor_image[0]
-        elif width < height:
+        elif container_width < container_height:
             if image_height >= image_width:
                 if factor_image[1] >= factor_base[1]:
+                    height = container_height
                     width = height * factor_image[0]
                 else:
+                    width = container_width
                     height = width * factor_image[1]
             else:
+                width = container_width
                 height = width * factor_image[1]
 
         return [width, height]

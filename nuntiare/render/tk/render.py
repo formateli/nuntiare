@@ -26,55 +26,60 @@ class TkRender(Render):
 
         self._render_items(result.body.items.item_list)
 
-
     def _render_items(self, items):
         if not items:
             return
 
-        i = 0
         for it in items:
             if it.type == 'PageImage':
-                i += 1
                 self._draw_image(it)
-                if i == 4:
-                    break  # TODO just one for the moment
             else:
                 continue
 
     def _draw_image(self, it):
         width = it.width
         height = it.height
+        image_width = None
+        image_height = None
 
         if it.image_source == 'Embedded':
-            el = it.report.definition.EmbeddedImages
+            el = self.report.definition.EmbeddedImages
             imgem = el.embedded_images[it.image_value]
             data = imgem.ImageData
+            image_width = imgem.image_width
+            image_height = imgem.image_height
         elif it.image_source == 'External':
-            data = EmbeddedImage.get_base64_image(
-                it.image_value, it.name, it.mimetype)[2]
+            file_ = self.report.find_file(it.image_value)
+            data = None
+            if file_ is not None:
+                imgem = EmbeddedImage.get_base64_image(
+                    file_, it.name, it.mimetype)
+                data = imgem[2]
+                image_width = imgem[3].width
+                image_height = imgem[3].height
 
         resize = None
 
         if it.image_sizing == 'AutoSize':
-            width = Size.convert_from_pixel(
-                    imgem.image_width, 'pt', self._ppi)
-            height = Size.convert_from_pixel(
-                    imgem.image_height, 'pt', self._ppi)
+            width = self._px2pt(image_width)
+            height = self._px2pt(image_height)
         elif it.image_sizing == 'Fit':
-            resize = (int(Size.convert_to_pixel(width, 'pt', self._ppi)),
-                      int(Size.convert_to_pixel(height, 'pt', self._ppi)))
+            resize = (int(self._pt2px(width)),
+                      int(self._pt2px(height)))
         elif it.image_sizing == 'FitProportional':
             wd, hg = EmbeddedImage.get_proportional_size(
                     it.width, it.height,
-                    imgem.image_width,
-                    imgem.image_height)
-            resize = (int(wd), int(hg))
+                    image_width,
+                    image_height)
+            resize = (
+                int(self._pt2px(wd)),
+                int(self._pt2px(hg)),)
 
         self._draw_rectangle(
-            Size.convert_to_pixel(it.left, 'pt', self._ppi),
-            Size.convert_to_pixel(it.top, 'pt', self._ppi),
-            Size.convert_to_pixel(width, 'pt', self._ppi),
-            Size.convert_to_pixel(height, 'pt', self._ppi),
+            self._pt2px(it.left),
+            self._pt2px(it.top),
+            self._pt2px(width),
+            self._pt2px(height),
             it.style
             )
 
@@ -86,8 +91,8 @@ class TkRender(Render):
         image = ImageTk.PhotoImage(pil_img)
 
         self._canvas.create_image(
-            Size.convert_to_pixel(it.left, 'pt', self._ppi),
-            Size.convert_to_pixel(it.top, 'pt', self._ppi),
+            self._pt2px(it.left),
+            self._pt2px(it.top),
             image=image,
             anchor='nw',
             )
@@ -100,6 +105,12 @@ class TkRender(Render):
                 left, top,
                 left + width, top + height,
                 fill=style.background_color)
+
+    def _pt2px(self, val):
+        return Size.convert_to_pixel(val, 'pt', self._ppi)
+
+    def _px2pt(self, val):
+        return Size.convert_from_pixel(val, 'pt', self._ppi)
 
     def help(self):
         'Tk canvas Render help'

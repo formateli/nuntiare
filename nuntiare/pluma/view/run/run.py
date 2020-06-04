@@ -148,6 +148,9 @@ class RunView(PanedView):
         text = self.view.get_view('text')
         try:
             report = Report(text.text.get(1.0, tk.END))
+            print(report._paths)
+            report.add_path(self.view.directory_name)
+            print(report._paths)
             report.run()
 
             self._canvas.config(

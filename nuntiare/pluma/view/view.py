@@ -16,9 +16,12 @@ class NuntiareView(ttk.Frame):
         self.tabs = tabs
         self.full_file_name = full_file_name
         self.file_name = None
+        self.directory_name = None
         self.extension = None
         if full_file_name is not None:
             self.file_name = os.path.basename(full_file_name)
+            self.directory_name = os.path.dirname(
+                os.path.realpath(full_file_name))
             extension = self.file_name.split('.')
             if len(extension) > 1:
                 self.extension = extension[1]

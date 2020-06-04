@@ -46,8 +46,8 @@ class Report:
             'Version': None,
             'PageNumber': -1,
             'TotalPages': -1,
-            'ExecutionTime': None,
-            'ReportServerUrl': None,
+            'ExecutionTime': None,    # TODO
+            'ReportServerUrl': None,  # TODO
             'ReportName': None,
             'ReportFolder': None,
             'ReportFile': None,
@@ -55,6 +55,7 @@ class Report:
             'OutputDirectory': None,
             'OutputName': None,
         }
+        self._paths = []  # For searching files
 
         # The ReportDef object
         self.definition = self._parse(output_name, output_directory)
@@ -179,6 +180,36 @@ class Report:
                     True, "IOError")
             return True
 
+    def add_path(self, path):
+        if path not in self._paths:
+            self._paths.append(path)
+
+    def find_file(self, file_, paths=[]):
+        """
+        Verify if file_ exists and return it with full path.
+        Optional paths can be given.
+        """
+        LOGGER.debug("Finding file '{0}'...".format(file_))
+        res = file_
+        if not os.path.isfile(res):
+            LOGGER.debug('File not found.')
+            paths += self._paths
+            for pt in paths:
+                res = os.path.join(pt, file_)
+                LOGGER.debug(
+                    "Finding now: '{0}'...".format(res))
+                if not os.path.isfile(res):
+                    LOGGER.debug('File not found.')
+                    res = None
+                    continue
+                break
+        if res is None:
+            return
+        if os.access(res, os.R_OK):
+            LOGGER.debug('File found.')
+            return res
+        LOGGER.debug('File with no read access.')
+
     def _parse(self, output_name, output_directory):
         is_file = self._definition_source_is_file()
 
@@ -206,10 +237,15 @@ class Report:
         else:
             self._globals['ReportFile'] = 'From XML string.'
             self._globals['ReportFileName'] = 'From XML string.'
-            self._globals['ReportFolder'] = 'From XML string.'
+            self._globals['ReportFolder'] = \
+                    os.path.dirname(os.path.realpath(__file__))
             if not output_directory:
                 output_directory = os.path.dirname(
                     os.path.realpath(__file__))
+
+        self.add_path(self._globals['ReportFolder'])
+        self.add_path(os.path.dirname(os.path.realpath(__file__)))
+
         if not os.path.isdir(output_directory):
             LOGGER.error(
                 "'{0}' is not a valid directory.".format(
