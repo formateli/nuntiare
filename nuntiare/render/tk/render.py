@@ -8,6 +8,7 @@ from nuntiare.definition.element import EmbeddedImage
 from .. render import Render
 from ... import LOGGER
 
+TEST = True
 
 class TkRender(Render):
 
@@ -98,13 +99,14 @@ class TkRender(Render):
             )
 
         if not image in self._images:
-            self._images.append(image)
+            self._images.append(image)  # Avoid garbage collection
 
     def _draw_rectangle(self, left, top, width, height, style):
         self._canvas.create_rectangle(
                 left, top,
                 left + width, top + height,
-                fill=style.background_color)
+                fill=style.background_color,
+                width=1.0 if TEST else 0)
 
     def _pt2px(self, val):
         return Size.convert_to_pixel(val, 'pt', self._ppi)

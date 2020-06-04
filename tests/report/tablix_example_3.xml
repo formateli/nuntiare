@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Nuntiare>
   <Name>msdn_tablix_sample3</Name>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Description>MSDN tablix sample 3
-https://msdn.microsoft.com/en-us/library/ee240480(v=sql.105).aspx</Description>
+    https://msdn.microsoft.com/en-us/library/ee240480(v=sql.105).aspx</Description>
   <Page>
     <PageHeight>28cm</PageHeight>
     <PageWidth>21.5cm</PageWidth>

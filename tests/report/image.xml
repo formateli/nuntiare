@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Nuntiare>
-  <Name>Country tablix</Name>
+  <Name>Image report</Name>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Body>
     <ReportItems>
       <Textbox>

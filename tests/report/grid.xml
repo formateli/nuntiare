@@ -4,7 +4,7 @@
     A Simple Grid.
     Note that Tablix has no DataSet assigned.
   </Description>
-  <Author>Fredy Ramirez</Author>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Name>Grid Test</Name>
   <ReportParameters>
     <ReportParameter>

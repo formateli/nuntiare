@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <Nuntiare>
-  <Author>Fredy Ramirez</Author>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Name>tablix_example_2</Name>
   <Description>Tablix example 2
-https://msdn.microsoft.com/en-us/library/ee208845(v=sql.105).aspx</Description>
+    https://msdn.microsoft.com/en-us/library/ee208845(v=sql.105).aspx</Description>
   <Page/>
   <ReportParameters>
     <ReportParameter>

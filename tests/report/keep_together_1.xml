@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <Nuntiare>
-  <Author>Fredy Ramirez</Author>
   <Name>KeepTogether Test 1</Name>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Description>Vertical KeepTogether behavior.</Description>
   <Page>
     <PageWidth>225pt</PageWidth>

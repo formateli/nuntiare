@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Nuntiare>
   <Name>reportviewer_tablix_sample2</Name>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Description>ReportViewer tablix sample 2
-http://gotreportviewer.com/tablix/index.html</Description>
+    http://gotreportviewer.com/tablix/index.html</Description>
   <ReportParameters>
     <ReportParameter>
       <Name>data_provider</Name>

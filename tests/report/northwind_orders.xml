@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <Nuntiare>
   <Name>northwind_orders</Name>
+  <Author>Fredy Ramirez - https://formateli.com</Author>
   <Xxx>Prueba</Xxx>
   <ReportParameters>
     <ReportParameter>
