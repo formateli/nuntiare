@@ -120,10 +120,12 @@ class RunView(PanedView):
 
         up_frame = self.get_frame()
         self._canvas = tk.Canvas(
-            up_frame,
+            up_frame, bg='white',
             xscrollcommand=up_frame.xscrollbar.set,
             yscrollcommand=up_frame.yscrollbar.set)
-        self._canvas.grid(row=0, column=0, sticky='wens')
+        self._canvas.grid(
+            row=0, column=0, sticky='wens',
+            padx=(2, 2), pady=(2, 2))
         self.left_window.add(up_frame, weight=3)
         up_frame.xscrollbar.config(command=self._canvas.xview)
         up_frame.yscrollbar.config(command=self._canvas.yview)
@@ -147,6 +149,8 @@ class RunView(PanedView):
         self.log.clear()
         text = self.view.get_view('text')
         try:
+            self._canvas.delete(tk.ALL)
+
             report = Report(text.text.get(1.0, tk.END))
             report.add_path(self.view.directory_name)
             report.run()
@@ -159,7 +163,6 @@ class RunView(PanedView):
             render.render(report, self._canvas)
         except Exception as e:
             self.log.critical(e)
-            return
 
     def selected(self):
         tb = self.view.pluma.toolbar
