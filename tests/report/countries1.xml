@@ -73,18 +73,18 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>35</Width>
+              <Width>2cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>40</Width>
+              <Width>40pt</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>40</Width>
+              <Width>40pt</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
             <TablixRow>
-              <Height>14</Height>
+              <Height>14pt</Height>
               <TablixCells>
                 <TablixCell>
                   <CellContents>
@@ -231,7 +231,7 @@
           <TablixMembers>
             <TablixMember>
               <TablixHeader>
-                <Size>14</Size>
+                <Size>14pt</Size>
                 <CellContents>
                   <ReportItems>
                     <Textbox>
@@ -264,7 +264,7 @@
                     </SortExpressions>
                   </Group>
                   <TablixHeader>
-                    <Size>14</Size>
+                    <Size>14pt</Size>
                     <CellContents>
                       <ReportItems>
                         <Textbox>
@@ -296,7 +296,7 @@
                         </SortExpressions>
                       </Group>
                       <TablixHeader>
-                        <Size>14</Size>
+                        <Size>14pt</Size>
                         <CellContents>
                           <ReportItems>
                             <Textbox>
@@ -317,7 +317,7 @@
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>14</Size>
+                        <Size>14pt</Size>
                         <CellContents>
                           <ReportItems>
                             <Textbox>
@@ -340,7 +340,7 @@
                 </TablixMember>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>28</Size>
+                    <Size>28pt</Size>
                     <CellContents>
                       <ReportItems>
                         <Textbox>
@@ -378,7 +378,7 @@
                 </SortExpressions>
               </Group>
               <TablixHeader>
-                <Size>14</Size>
+                <Size>3cm</Size>
                 <CellContents>
                   <ReportItems>
                     <Textbox>
@@ -417,7 +417,7 @@
             </TablixMember>
             <TablixMember>
               <TablixHeader>
-                <Size>14</Size>
+                <Size>3cm</Size>
                 <CellContents>
                   <ReportItems>
                     <Textbox>

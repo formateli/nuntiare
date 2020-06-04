@@ -136,7 +136,7 @@ Line 2</Value>
           <TextAlign>Center</TextAlign>
           <Border>
             <BorderStyle>Solid</BorderStyle>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <Color>Black</Color>
           </Border>
         </Style>

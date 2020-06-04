@@ -4,26 +4,26 @@
   <Name>KeepTogether Test 2</Name>
   <Description>Horizontal KeepTogether behavior.</Description>
   <Page>
-    <PageWidth>100</PageWidth>
-    <PageHeight>225</PageHeight>
-    <BottomMargin>5</BottomMargin>
-    <RightMargin>5</RightMargin>
-    <TopMargin>5</TopMargin>
-    <LeftMargin>5</LeftMargin>
+    <PageWidth>100pt</PageWidth>
+    <PageHeight>225pt</PageHeight>
+    <BottomMargin>5pt</BottomMargin>
+    <RightMargin>5pt</RightMargin>
+    <TopMargin>5pt</TopMargin>
+    <LeftMargin>5pt</LeftMargin>
   </Page>
   <Body>
     <ReportItems>
       <Rectangle>
         <Name>Rectangle_1</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>70</Width>
-        <Height>30</Height>
-        <Top>5</Top>
-        <Left>40</Left>
+        <Width>70pt</Width>
+        <Height>30pt</Height>
+        <Top>5pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -32,10 +32,10 @@
           <Textbox>
             <Name>Rectangle_1_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>F</Value>
           </Textbox>
         </ReportItems>
@@ -43,14 +43,14 @@
       <Rectangle>
         <Name>Rectangle_1_b</Name>
         <KeepTogether>true</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>5</Top>
-        <Left>115</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>5pt</Top>
+        <Left>115pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -60,14 +60,14 @@
       <Rectangle>
         <Name>Rectangle_2</Name>
         <KeepTogether>true</KeepTogether>
-        <Width>70</Width>
-        <Height>30</Height>
-        <Top>40</Top>
-        <Left>40</Left>
+        <Width>70pt</Width>
+        <Height>30pt</Height>
+        <Top>40pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -76,10 +76,10 @@
           <Textbox>
             <Name>Rectangle_2_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>T</Value>
           </Textbox>
         </ReportItems>
@@ -87,14 +87,14 @@
       <Rectangle>
         <Name>Rectangle_2_b</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>40</Top>
-        <Left>115</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>40pt</Top>
+        <Left>115pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -104,14 +104,14 @@
       <Rectangle>
         <Name>Rectangle_3</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>160</Width>
-        <Height>30</Height>
-        <Top>75</Top>
-        <Left>40</Left>
+        <Width>160pt</Width>
+        <Height>30pt</Height>
+        <Top>75pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -120,10 +120,10 @@
           <Textbox>
             <Name>Rectangle_3_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>F</Value>
           </Textbox>
         </ReportItems>
@@ -131,14 +131,14 @@
       <Rectangle>
         <Name>Rectangle_3_b</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>75</Top>
-        <Left>205</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>75pt</Top>
+        <Left>205pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -148,14 +148,14 @@
       <Rectangle>
         <Name>Rectangle_4</Name>
         <KeepTogether>true</KeepTogether>
-        <Width>160</Width>
-        <Height>30</Height>
-        <Top>110</Top>
-        <Left>40</Left>
+        <Width>160pt</Width>
+        <Height>30pt</Height>
+        <Top>110pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -164,10 +164,10 @@
           <Textbox>
             <Name>Rectangle_4_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>T</Value>
           </Textbox>
         </ReportItems>
@@ -175,14 +175,14 @@
       <Rectangle>
         <Name>Rectangle_4_b</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>110</Top>
-        <Left>205</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>110pt</Top>
+        <Left>205pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -192,14 +192,14 @@
       <Rectangle>
         <Name>Rectangle_5</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>70</Width>
-        <Height>30</Height>
-        <Top>145</Top>
-        <Left>40</Left>
+        <Width>70pt</Width>
+        <Height>30pt</Height>
+        <Top>145pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -208,23 +208,23 @@
           <Textbox>
             <Name>Rectangle_5_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>F</Value>
           </Textbox>
           <Rectangle>
             <Name>Rectangle_5_2</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>40</Width>
-            <Height>20</Height>
-            <Top>5</Top>
-            <Left>20</Left>
+            <Width>40pt</Width>
+            <Height>20pt</Height>
+            <Top>5pt</Top>
+            <Left>20pt</Left>
             <Style>
               <BackgroundColor>red</BackgroundColor>
               <Border>
-                <Width>1</Width>
+                <Width>1pt</Width>
                 <BorderStyle>Solid</BorderStyle>
                 <Color>green</Color>
               </Border>
@@ -233,10 +233,10 @@
               <Textbox>
                 <Name>Rectangle_5_2_txt</Name>
                 <KeepTogether>false</KeepTogether>
-                <Width>10</Width>
-                <Height>15</Height>
-                <Top>2</Top>
-                <Left>2</Left>
+                <Width>10pt</Width>
+                <Height>15pt</Height>
+                <Top>2pt</Top>
+                <Left>2pt</Left>
                 <Value>F</Value>
                 <Style>
                   <Color>white</Color>
@@ -247,10 +247,10 @@
           <Rectangle>
             <Name>Rectangle_5_3</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>5</Width>
-            <Height>20</Height>
-            <Top>5</Top>
-            <Left>62</Left>
+            <Width>5pt</Width>
+            <Height>20pt</Height>
+            <Top>5pt</Top>
+            <Left>62pt</Left>
             <Style>
               <BackgroundColor>blue</BackgroundColor>
             </Style>
@@ -260,14 +260,14 @@
       <Rectangle>
         <Name>Rectangle_5_b</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>145</Top>
-        <Left>115</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>145pt</Top>
+        <Left>115pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -277,14 +277,14 @@
       <Rectangle>
         <Name>Rectangle_6</Name>
         <KeepTogether>true</KeepTogether>
-        <Width>70</Width>
-        <Height>30</Height>
-        <Top>180</Top>
-        <Left>40</Left>
+        <Width>70pt</Width>
+        <Height>30pt</Height>
+        <Top>180pt</Top>
+        <Left>40pt</Left>
         <Style>
           <BackgroundColor>khaki</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>red</Color>
           </Border>
@@ -293,14 +293,14 @@
           <Textbox>
             <Name>Rectangle_6_txt</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>10</Width>
-            <Height>15</Height>
-            <Top>2</Top>
-            <Left>2</Left>
+            <Width>10pt</Width>
+            <Height>15pt</Height>
+            <Top>2pt</Top>
+            <Left>2pt</Left>
             <Value>T</Value>
             <Style>
               <Border>
-                <Width>0.5</Width>
+                <Width>0.5pt</Width>
                 <BorderStyle>None</BorderStyle>
                 <Color>black</Color>
               </Border>
@@ -309,14 +309,14 @@
           <Rectangle>
             <Name>Rectangle_6_2</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>40</Width>
-            <Height>20</Height>
-            <Top>5</Top>
-            <Left>20</Left>
+            <Width>40pt</Width>
+            <Height>20pt</Height>
+            <Top>5pt</Top>
+            <Left>20pt</Left>
             <Style>
               <BackgroundColor>red</BackgroundColor>
               <Border>
-                <Width>1</Width>
+                <Width>1pt</Width>
                 <BorderStyle>Solid</BorderStyle>
                 <Color>green</Color>
               </Border>
@@ -325,15 +325,15 @@
               <Textbox>
                 <Name>Rectangle_6_2_txt</Name>
                 <KeepTogether>false</KeepTogether>
-                <Width>10</Width>
-                <Height>15</Height>
-                <Top>2</Top>
-                <Left>2</Left>
+                <Width>10pt</Width>
+                <Height>15pt</Height>
+                <Top>2pt</Top>
+                <Left>2pt</Left>
                 <Value>F</Value>
                 <Style>
                   <Color>white</Color>
                   <Border>
-                    <Width>0.5</Width>
+                    <Width>0.5pt</Width>
                     <BorderStyle>None</BorderStyle>
                     <Color>white</Color>
                   </Border>
@@ -344,10 +344,10 @@
           <Rectangle>
             <Name>Rectangle_6_3</Name>
             <KeepTogether>false</KeepTogether>
-            <Width>5</Width>
-            <Height>20</Height>
-            <Top>5</Top>
-            <Left>62</Left>
+            <Width>5pt</Width>
+            <Height>20pt</Height>
+            <Top>5pt</Top>
+            <Left>62pt</Left>
             <Style>
               <BackgroundColor>blue</BackgroundColor>
             </Style>
@@ -357,14 +357,14 @@
       <Rectangle>
         <Name>Rectangle_6_b</Name>
         <KeepTogether>false</KeepTogether>
-        <Width>10</Width>
-        <Height>30</Height>
-        <Top>180</Top>
-        <Left>115</Left>
+        <Width>10pt</Width>
+        <Height>30pt</Height>
+        <Top>180pt</Top>
+        <Left>115pt</Left>
         <Style>
           <BackgroundColor>green</BackgroundColor>
           <Border>
-            <Width>1</Width>
+            <Width>1pt</Width>
             <BorderStyle>Solid</BorderStyle>
             <Color>blue</Color>
           </Border>
@@ -373,7 +373,7 @@
     </ReportItems>
     <Style>
       <Border>
-        <Width>0.5</Width>
+        <Width>0.5pt</Width>
         <BorderStyle>Solid</BorderStyle>
         <Color>Black</Color>
       </Border>

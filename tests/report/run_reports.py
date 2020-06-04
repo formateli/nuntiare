@@ -29,6 +29,7 @@ def get_conn_string(file_name):
 REPORTS = {
     'countries1.xml': [['xml', 'html', 'csv'], {}],
     'countries2.xml': [['xml', 'html', 'csv'], {}],
+    'image.xml': [['html'], {}],
     'grid.xml': [['xml', 'html'], {}],
     'keep_together_1.xml': [['xml', 'html', 'pdf'], {}],
     'keep_together_2.xml': [['xml', 'html', 'pdf'], {}],

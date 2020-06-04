@@ -50,7 +50,7 @@
           <Width>40mm</Width>
           <CanGrow>True</CanGrow>
           <Value>Clipped in Section</Value>
-          <Left>300</Left>
+          <Left>300pt</Left>
           <Top>7mm</Top>
           <Style>
             <BackgroundColor>Green</BackgroundColor>
@@ -60,11 +60,11 @@
           </Style>
         </Textbox>
         <Rectangle>
-          <Width>100</Width>
-          <Height>50</Height>
+          <Width>100pt</Width>
+          <Height>50pt</Height>
           <Name>rec_header</Name>
-          <Top>20</Top>
-          <Left>450</Left>
+          <Top>20pt</Top>
+          <Left>450pt</Left>
           <Style>
             <BackgroundColor>Red</BackgroundColor>
           </Style>
@@ -103,8 +103,8 @@
           <Name>TextBoxFooter</Name>
           <Width>5cm</Width>
           <Value>=str(G.PageNumber) + ' of ' + str(G.TotalPages)</Value>
-          <Top>5</Top>
-          <Left>5</Left>
+          <Top>5pt</Top>
+          <Left>5pt</Left>
         </Textbox>
       </ReportItems>
     </PageFooter>

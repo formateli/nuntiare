@@ -127,7 +127,10 @@ class HtmlRender(Render):
     def _render_items(self, items, container):
         if not items:
             return
+
         for it in items:
+            el = None
+
             if it.type == 'PageLine':
                 continue  # Not supported
             if it.type in ['PageRectangle', 'PageText']:
@@ -590,7 +593,8 @@ class _HtmlElement(object):
 
         el_result = []
         for el in self.content:
-            el_result.extend(el.get_element())
+            if el is not None:
+                el_result.extend(el.get_element())
         result.extend(el_result)
 
         if self.tag != "DOCTYPE":
