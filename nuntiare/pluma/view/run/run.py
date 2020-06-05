@@ -64,8 +64,8 @@ class RunBar(GroupToolBar):
             # make sure to release the grab (Tk 8.0a1 only)
             self._renders_menu.grab_release()
 
-    def _run_render(self, render):
-        print(render)
+    def _run_render(self, render_name):
+        self._view.run_render(render_name)
 
 
 class LogWindow(tk.Text):
@@ -118,6 +118,8 @@ class RunView(PanedView):
         super(RunView, self).__init__(view)
         self.type = 'run'
 
+        self.report = None
+
         up_frame = self.get_frame()
         self._canvas = tk.Canvas(
             up_frame, bg='white',
@@ -141,8 +143,8 @@ class RunView(PanedView):
         down_frame.yscrollbar.config(command=self.log.yview)
 
         r_frame = self.get_frame()
-        runbar = RunBar(r_frame, self)
-        runbar.grid(row=0, column=0, sticky='wen')
+        self.runbar = RunBar(r_frame, self)
+        self.runbar.grid(row=0, column=0, sticky='wen')
         self.right_window.add(r_frame, weight=1)
 
     def run(self):
@@ -150,17 +152,27 @@ class RunView(PanedView):
         text = self.view.get_view('text')
         try:
             self._canvas.delete(tk.ALL)
-
-            report = Report(text.text.get(1.0, tk.END))
-            report.add_path(self.view.directory_name)
-            report.run()
-
             self._canvas.config(
                     width=1000, height=1000,
                     scrollregion=(0, 0, 1000, 1000))
 
-            render = Render.get_render('tk')
-            render.render(report, self._canvas)
+            self.report = Report(text.text.get(1.0, tk.END))
+            self.report.add_path(self.view.directory_name)
+            self.report.run()
+
+            self.run_render('tk', clear_logs=False,
+                            canvas=self._canvas)
+        except Exception as e:
+            self.log.critical(e)
+
+    def run_render(self, render_name, clear_logs=True, **kws):
+        if self.report is None:
+            return
+        if clear_logs:
+            self.log.clear()
+        try:
+            render = Render.get_render(render_name)
+            render.render(self.report, **kws)
         except Exception as e:
             self.log.critical(e)
 

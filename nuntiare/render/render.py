@@ -12,12 +12,15 @@ class Render(object):
         self.result_file = None
         self.report = None
 
-    def render(self, report, overwrite=True):
+    def render(self, report, **kws):
         if not report.result:
             LOGGER.critical(
                 'No Result object in report. Have you executed run()?', True)
 
         self.report = report
+
+        if kws is not None:
+            overwrite = kws.get('overwrite', True)
 
         if self.extension:
             self.result_file = os.path.join(

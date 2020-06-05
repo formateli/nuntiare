@@ -36,8 +36,8 @@ class HtmlRender(Render):
         self.doc = None
         self.style_helper = _StyleHelper()
 
-    def render(self, report, overwrite):
-        super(HtmlRender, self).render(report, overwrite)
+    def render(self, report, **kws):
+        super(HtmlRender, self).render(report, **kws)
 
         report.globals.TotalPages = 1
         report.globals.PageNumber = 1
@@ -270,8 +270,9 @@ class HtmlRender(Render):
             el = it.report.definition.EmbeddedImages
             data = el.embedded_images[it.image_value].ImageData
         elif it.image_source == 'External':
+            file_ = self.report.find_file(it.image_value)
             data = EmbeddedImage.get_base64_image(
-                it.image_value, it.name, it.mimetype)[2]
+                file_, it.name, it.mimetype)[2]
 
         image.add_attribute(
             'src',

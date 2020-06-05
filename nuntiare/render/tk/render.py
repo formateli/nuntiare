@@ -17,10 +17,11 @@ class TkRender(Render):
     def __init__(self):
         super(TkRender, self).__init__()
 
-    def render(self, report, canvas):
-        super(TkRender, self).render(report)
+    def render(self, report, **kws):
+        self._canvas = kws.pop('canvas')
+        super(TkRender, self).render(report, **kws)
 
-        self._canvas = canvas
+        #self._canvas = canvas
         self._ppi = self._canvas.winfo_pixels('1i')
 
         result = report.result
