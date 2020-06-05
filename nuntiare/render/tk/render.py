@@ -20,8 +20,6 @@ class TkRender(Render):
     def render(self, report, **kws):
         self._canvas = kws.pop('canvas')
         super(TkRender, self).render(report, **kws)
-
-        #self._canvas = canvas
         self._ppi = self._canvas.winfo_pixels('1i')
 
         result = report.result
@@ -44,38 +42,22 @@ class TkRender(Render):
         image_width = None
         image_height = None
 
-        if it.image_source == 'Embedded':
-            el = self.report.definition.EmbeddedImages
-            imgem = el.embedded_images[it.image_value]
-            data = imgem.ImageData
-            image_width = imgem.image_width
-            image_height = imgem.image_height
-        elif it.image_source == 'External':
-            file_ = self.report.find_file(it.image_value)
-            data = None
-            if file_ is not None:
-                imgem = EmbeddedImage.get_base64_image(
-                    file_, it.name, it.mimetype)
-                data = imgem[2]
-                image_width = imgem[3].width
-                image_height = imgem[3].height
-
         resize = None
 
         if it.image_sizing == 'AutoSize':
-            width = self._px2pt(image_width)
-            height = self._px2pt(image_height)
+            width = self._px2pt(it.image_width)
+            height = self._px2pt(it.image_height)
         elif it.image_sizing == 'Fit':
             resize = (int(self._pt2px(width)),
                       int(self._pt2px(height)))
         elif it.image_sizing == 'FitProportional':
             wd, hg = EmbeddedImage.get_proportional_size(
                     it.width, it.height,
-                    image_width,
-                    image_height)
+                    it.image_width,
+                    it.image_height)
             resize = (
                 int(self._pt2px(wd)),
-                int(self._pt2px(hg)),)
+                int(self._pt2px(hg)))
 
         self._draw_rectangle(
             self._pt2px(it.left),
@@ -86,10 +68,12 @@ class TkRender(Render):
             )
 
         if resize is not None:
-            img = EmbeddedImage.get_pil_image_from_base64(data)
+            img = EmbeddedImage.get_pil_image_from_base64(
+                    it.image_base64)
             pil_img = img.resize(resize)
         else:
-            pil_img = EmbeddedImage.get_pil_image_from_base64(data)
+            pil_img = EmbeddedImage.get_pil_image_from_base64(
+                    it.image_base64)
         image = ImageTk.PhotoImage(pil_img)
 
         self._canvas.create_image(

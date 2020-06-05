@@ -150,31 +150,48 @@ class RunView(PanedView):
     def run(self):
         self.log.clear()
         text = self.view.get_view('text')
-        try:
-            self._canvas.delete(tk.ALL)
-            self._canvas.config(
-                    width=1000, height=1000,
-                    scrollregion=(0, 0, 1000, 1000))
 
-            self.report = Report(text.text.get(1.0, tk.END))
-            self.report.add_path(self.view.directory_name)
-            self.report.run()
+        self._canvas.delete(tk.ALL)
+        self._canvas.config(
+                width=1000, height=1000,
+                scrollregion=(0, 0, 1000, 1000))
 
-            self.run_render('tk', clear_logs=False,
-                            canvas=self._canvas)
-        except Exception as e:
-            self.log.critical(e)
+        self.report = Report(text.text.get(1.0, tk.END))
+        self.report.add_path(self.view.directory_name)
+        self.report.run()
+
+        self.run_render('tk', clear_logs=False,
+                        canvas=self._canvas)
+
+#        try:
+#            self._canvas.delete(tk.ALL)
+#            self._canvas.config(
+#                    width=1000, height=1000,
+#                    scrollregion=(0, 0, 1000, 1000))
+
+#            self.report = Report(text.text.get(1.0, tk.END))
+#            self.report.add_path(self.view.directory_name)
+#            self.report.run()
+
+#            self.run_render('tk', clear_logs=False,
+#                            canvas=self._canvas)
+#        except Exception as e:
+#            self.log.critical(e)
 
     def run_render(self, render_name, clear_logs=True, **kws):
         if self.report is None:
             return
         if clear_logs:
             self.log.clear()
-        try:
-            render = Render.get_render(render_name)
-            render.render(self.report, **kws)
-        except Exception as e:
-            self.log.critical(e)
+
+        render = Render.get_render(render_name)
+        render.render(self.report, **kws)
+
+#        try:
+#            render = Render.get_render(render_name)
+#            render.render(self.report, **kws)
+#        except Exception as e:
+#            self.log.critical(e)
 
     def selected(self):
         tb = self.view.pluma.toolbar

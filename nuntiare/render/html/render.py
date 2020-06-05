@@ -265,18 +265,9 @@ class HtmlRender(Render):
     def _get_image(self, it):
         rec = _HtmlElement('div', it.name)
         image = _HtmlElement('img', None)
-
-        if it.image_source == 'Embedded':
-            el = it.report.definition.EmbeddedImages
-            data = el.embedded_images[it.image_value].ImageData
-        elif it.image_source == 'External':
-            file_ = self.report.find_file(it.image_value)
-            data = EmbeddedImage.get_base64_image(
-                file_, it.name, it.mimetype)[2]
-
         image.add_attribute(
             'src',
-            'data:' + it.mimetype + ';base64, ' + data)
+            'data:' + it.mimetype + ';base64, ' + it.image_base64)
 
         if it.image_sizing == 'Fit':
             image.add_attribute(
@@ -284,9 +275,9 @@ class HtmlRender(Render):
             image.add_attribute(
                 'width', it.width)
         elif it.image_sizing == 'FitProportional':
-            img = EmbeddedImage.get_pil_image_from_base64(data)
             width, height = EmbeddedImage.get_proportional_size(
-                    it.width, it.height, img.size[0], img.size[1])
+                    it.width, it.height,
+                    it.image_width, it.image_height)
 
             image.add_attribute(
                 'height', height)

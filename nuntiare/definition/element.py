@@ -638,6 +638,13 @@ class EmbeddedImage(Element):
         return [name, mimetype, res, img]
 
     @staticmethod
+    def get_pil_image_io_from_base64(image_str, mimetype):
+        buffered = io.BytesIO()
+        img = PilImage.open(io.BytesIO(base64.b64decode(image_str)))
+        img.save(buffered, format=EmbeddedImage._mimetype_valid[mimetype])
+        return buffered
+
+    @staticmethod
     def get_pil_image_from_base64(image_str):
         img = PilImage.open(io.BytesIO(base64.b64decode(image_str)))
         return img

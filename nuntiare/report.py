@@ -27,7 +27,6 @@ class Parameters(Collection):
 class Report:
     def __init__(self, definition_source, output_name=None,
                  output_directory=None):
-
         self.definition_source = definition_source
         self.result = None
         self.globals = None
@@ -56,6 +55,7 @@ class Report:
             'OutputName': None,
         }
         self._paths = []  # For searching files
+        self.image_base64_cache = {}
 
         # The ReportDef object
         self.definition = self._parse(output_name, output_directory)

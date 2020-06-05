@@ -4,6 +4,8 @@
 import sys
 from .. import LOGGER, FontManager
 from .. data.data_type import DataType
+from nuntiare.definition.expression import Size
+from nuntiare.definition.element import EmbeddedImage
 
 
 class PageItemsInfo():
@@ -215,6 +217,52 @@ class PageImage(PageItem):
             report_item_def, 'ImageSizing', 'AutoSize')
         self.image_value = report.get_value(
             report_item_def, 'Value', None)
+        self.image_base64 = None
+        self.image_width = None
+        self.image_height = None
+
+        uniq_name = self.image_value + '_' + self.image_source
+        if uniq_name in report.image_base64_cache:
+            LOGGER.debug("Getting Image '{}' from cache.".format(
+                    uniq_name))
+            self._set_image_properties(
+                    report.image_base64_cache[uniq_name])
+
+        if self.image_base64 is None:
+            image_base64 = []
+            if self.image_source == 'Embedded':
+                el = report.definition.EmbeddedImages
+                imgem = el.embedded_images[self.image_value]
+                image_base64.append(imgem.ImageData)
+                image_base64.append(imgem.image_width)
+                image_base64.append(imgem.image_height)
+            elif self.image_source == 'External':
+                file_ = report.find_file(self.image_value)
+                if file_ is None:
+                    LOGGER.error("Image source '{0}' not found.".format(
+                        self.image_value))
+                imgem = EmbeddedImage.get_base64_image(
+                        file_, self.name, self.mimetype)
+                image_base64.append(imgem[2])
+                image_base64.append(imgem[3].width)
+                image_base64.append(imgem[3].height)
+            else:
+                LOGGER.error("Image source '{0}' not implemented.".format(
+                    self.image_source))
+
+            report.image_base64_cache[uniq_name] = image_base64
+            self._set_image_properties(image_base64)
+
+        if self.image_sizing == 'AutoSize':
+            self.width = Size.convert_from_pixel(
+                    self.image_width, 'pt')
+            self.height = Size.convert_from_pixel(
+                    self.image_height, 'pt')
+
+    def _set_image_properties(self, image):
+        self.image_base64 = image[0]
+        self.image_width = image[1]
+        self.image_height = image[2]
 
 
 class PageLine(PageItem):
