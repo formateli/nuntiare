@@ -98,7 +98,10 @@ class LogWindow(tk.Text):
         self.update_idletasks()
 
     def flush(self):
-        self.config(state=tk.DISABLED)
+        try:
+            self.config(state=tk.DISABLED)
+        except:
+            pass
 
     @classmethod
     def _set_log_handler(cls):

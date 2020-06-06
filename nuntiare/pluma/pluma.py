@@ -139,7 +139,7 @@ class Pluma(TkMaterialTheme):
 
     def open_file(self, event=None):
         input_file_name = tk.filedialog.askopenfilename(
-                defaultextension='.txt',
+                defaultextension='.xml',
                 filetypes=[("All Files", "*.*"), ("Xml Documents", "*.xml")])
         if input_file_name:
             self._tab_added(self.tabs, file_name=input_file_name)

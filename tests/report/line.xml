@@ -4,8 +4,6 @@
   <Name>Line Test</Name>
   <Page>
     <LeftMargin>2cm</LeftMargin>
-    <PageHeight>280mm</PageHeight>
-    <PageWidth>210mm</PageWidth>
     <BottomMargin>2cm</BottomMargin>
     <RightMargin>2cm</RightMargin>
     <TopMargin>2cm</TopMargin>

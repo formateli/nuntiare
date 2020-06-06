@@ -9,7 +9,6 @@ from ttkwidgets import AutoHideScrollbar
 class FrameScrolled(ttk.Frame):
     def __init__(self, parent):
         super(FrameScrolled, self).__init__(parent)
-
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
@@ -26,6 +25,7 @@ class PanedView(ttk.PanedWindow):
     def __init__(self, view):
         self.view = view
         self.type = None
+        self.has_changed = False
 
         super(PanedView, self).__init__(view.notebook, orient=tk.HORIZONTAL)
         self.grid(row=0, column=0, sticky='wens')

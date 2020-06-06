@@ -5,6 +5,7 @@ import tkinter as tk
 from ..common import PanedView, MementoCaretaker
 from .text_event import TextEvent
 from .highlight import Highlight, HighlightBlocks
+from .xml_node import NuntiareXmlNode
 
 
 class TextView(PanedView):
@@ -15,8 +16,8 @@ class TextView(PanedView):
     def __init__(self, view):
         super(TextView, self).__init__(view)
         self.type = 'text'
-        frame = self.get_frame()
 
+        frame = self.get_frame()
         self.text = TextEvent(
                 frame,
                 xscrollcommand=frame.xscrollbar.set,
@@ -37,9 +38,28 @@ class TextView(PanedView):
 
         self.left_window.add(frame, weight=1)
 
+        r_frame = self.get_frame()
+        self._xml = NuntiareXmlNode(
+                r_frame,
+                xscrollcommand=r_frame.xscrollbar.set,
+                yscrollcommand=r_frame.yscrollbar.set)
+        self._xml.grid(
+            row=0, column=0, sticky='wens')
+        self.right_window.add(r_frame, weight=1)
+        r_frame.xscrollbar.config(command=self._xml.xview)
+        r_frame.yscrollbar.config(command=self._xml.yview)
+
         self._hl = None  # Highlight
         self._hl_blocks = HighlightBlocks()
-        self.new_file()
+
+        is_file = True
+        if self.view.full_file_name is None:
+            source = self.new_snipet()
+            is_file = False
+        else:
+            source = self.view.full_file_name
+        self._xml.parse(source, is_file)
+        self.new_file(source)
 
     def onTextModified(self, event):
         text_info = event.widget.text_changed_info.copy()
@@ -51,11 +71,11 @@ class TextView(PanedView):
         self.text.is_undo_redo = None
         self._verify_undo_redo()
 
-    def new_file(self):
+    def new_file(self, source):
         self.text.delete(1.0, tk.END)
-        if self.view.full_file_name is None:
+        if self.view.full_file_name != source:
             self._hl = TextView._highlight.get_hl_for_extension('xml')
-            self.text.insert('1.0', self.new_snipet(), True)
+            self.text.insert('1.0', source, True)
         else:
             self._hl = TextView._highlight.get_hl_for_extension(
                                         self.view.extension)
