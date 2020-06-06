@@ -2,10 +2,9 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import tkinter as tk
-from ..common import PanedView, MementoCaretaker
+from ..common import PanedView, MementoCaretaker, NuntiareXmlNode
 from .text_event import TextEvent
 from .highlight import Highlight, HighlightBlocks
-from .xml_node import NuntiareXmlNode
 
 
 class TextView(PanedView):
@@ -162,7 +161,7 @@ class TextView(PanedView):
 
     def _init_class(self):
         if TextView._title is None:
-            TextView._title = 'Text Editor'
+            TextView._title = 'XML'
 
             TextView._highlight = Highlight()
             TextView._highlight.load_syntax_files()

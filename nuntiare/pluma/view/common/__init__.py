@@ -4,9 +4,11 @@
 from .paned import PanedView, FrameScrolled
 from .memento import MementoCaretaker, CopyPaste
 from .text_info import TextInfoMixin
+from .xml_node import NuntiareXmlNode
 
 __all__ = [
         'PanedView', 'FrameScrolled',
         'MementoCaretaker', 'CopyPaste',
         'TextInfoMixin',
+        'NuntiareXmlNode'
     ]

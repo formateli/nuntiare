@@ -100,9 +100,8 @@ class Element:
                 Ignore if type is Element.ELEMENT. Default: None
         lnk: The linking object
         '''
-
-        super(Element, self).__init__()
-
+        if elements is None:
+            elements = self.__class__._element_list.copy()
         self._original_element_list = elements
 
         # Here we list elements found for this element
@@ -584,13 +583,22 @@ class EmbeddedImage(Element):
         'image/xpng': 'PNG'
         }
 
-    def __init__(self, node, lnk):
-        self.elements = {
+    _element_list = {
             'Name': [Element.STRING, Card.ONE, True],
             'MIMEType': [Element.STRING, Card.ONE, True],
             'ImageData': [Element.STRING, Card.ONE, True],
         }
-        super(EmbeddedImage, self).__init__(node, self.elements, lnk)
+
+    def __init__(self, node, lnk):
+        #self.elements = {
+        #    'Name': [Element.STRING, Card.ONE, True],
+        #    'MIMEType': [Element.STRING, Card.ONE, True],
+        #    'ImageData': [Element.STRING, Card.ONE, True],
+        #}
+
+        self.elements = EmbeddedImage._element_list.copy()
+
+        super(EmbeddedImage, self).__init__(node, None, lnk)
         # Original size in pixel
         self.image_width, self.image_height = \
                 self.get_pil_image_size_from_base64(self.ImageData)

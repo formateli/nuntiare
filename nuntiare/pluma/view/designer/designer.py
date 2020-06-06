@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 import tkinter as tk
 from tkinter import ttk
-from ..common import PanedView, MementoCaretaker
+from ..common import PanedView, MementoCaretaker, NuntiareXmlNode
 from nuntiare.report import Report
 
 
@@ -83,7 +83,26 @@ class DesignerView(PanedView):
         self.sections.create_body(self.get_frame())
         self.sections.create_footer(self.get_frame())
 
+        r_frame = self.get_frame()
+        self._xml = NuntiareXmlNode(
+                r_frame,
+                xscrollcommand=r_frame.xscrollbar.set,
+                yscrollcommand=r_frame.yscrollbar.set)
+        self._xml.grid(
+            row=0, column=0, sticky='wens')
+        self.right_window.add(r_frame, weight=1)
+        r_frame.xscrollbar.config(command=self._xml.xview)
+        r_frame.yscrollbar.config(command=self._xml.yview)
+
         self._memento = MementoCaretaker()
+
+        is_file = True
+        if self.view.full_file_name is None:
+            source = self.new_snipet()
+            is_file = False
+        else:
+            source = self.view.full_file_name
+        self._xml.parse(source, is_file)
         #self._load_definition()
 
     def _load_definition(self):
