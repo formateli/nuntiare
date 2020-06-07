@@ -256,28 +256,21 @@ class Element:
         el = {}
         for key, value in orig.items():
             el[key] = value
-        if additional_elements:
-            for key, value in additional_elements.items():
-                el[key] = value
+        for key, value in additional_elements.items():
+            el[key] = value
         return el
 
     @staticmethod
     def _get_element_list(class_):
-        base = class_.__base__.__name__
         elements = {}
-        if base in ('Element', '_ExpressionList'):
-            elements = class_._element_list.copy()
-        elif base in ('_ReportItem', '_DataRegion',
-                '_TablixHierarchy', 'Border', '_PageSection'):
+        while True:
+            if not hasattr(class_, '_element_list'):
+                break
             elements = Element.extend_element_list(
-                class_._element_list.copy(),
-                class_.__base__._element_list.copy()
+                elements,
+                getattr(class_, '_element_list'),
                 )
-            if base == '_DataRegion':
-                elements = Element.extend_element_list(
-                    elements,
-                    class_.__base__.__base__._element_list.copy()
-                    )
+            class_ = class_.__base__
         return elements
 
     @staticmethod
