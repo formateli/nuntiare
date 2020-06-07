@@ -10,7 +10,9 @@ class NuntiareXmlNode(ttk.Treeview):
 
     _properties = {}
 
-    def __init__(self, master, xscrollcommand, yscrollcommand):
+    def __init__(self, master,
+                 xscrollcommand,
+                 yscrollcommand):
         super(NuntiareXmlNode, self).__init__(
                 master,
                 columns=('name'),
@@ -18,8 +20,19 @@ class NuntiareXmlNode(ttk.Treeview):
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 
+        # Allow horizontal scrolling
+        # TODO width should be adjusted according to
+        # number of decendents nodes.
+        self.column("#0", width=600, stretch=False)
+
+        self._property = None
+
         # item: xml_node
         self._values = {}
+
+    def set_property(self, prperty_):
+        self._property = prperty_
+        self._property.clear()
 
     def parse(self, xml, is_file):
         if is_file:
@@ -84,8 +97,62 @@ class NuntiareXmlNode(ttk.Treeview):
                     continue
                 NuntiareXmlNode._properties[name].append(key)
 
+        self._property.clear()
+
         for prop in NuntiareXmlNode._properties[name]:
             print(prop)
+            self._property.add_property(prop, True)
 
 
+class NuntiareProperty(ttk.Frame):
+    def __init__(self, master):
+        super(NuntiareProperty, self).__init__(master)
+        self._properties = {}
+        self._row_count = 0
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=3)
 
+    def add_property(self, text, required):
+        id_ = text + '_' + str(required)
+        if id_ not in self._properties:            
+            self._properties[id_] = [
+                    ttk.Label(self, text=text),
+                    PropertyItem(self, text, required),
+                ]
+
+        property_ = self._properties[id_]
+        property_[0].grid(row=self._row_count, column=0, sticky='wens')
+        property_[1].grid(row=self._row_count, column=1, sticky='wens')
+        self._row_count += 1
+
+    def clear(self):
+        i = 1
+        while i < 3:
+            wgs = self.grid_slaves(column=i)
+            for wg in wgs:
+                wg.grid_forget()
+            i += 1
+        self._row_count = 0
+
+
+class PropertyItem(ttk.Frame):
+    def __init__(self, master, text, required):
+        super(PropertyItem, self).__init__(master)
+
+        entry = ttk.Entry(self)
+        entry.grid(row=0, column=0, sticky='wens')
+
+        self._text = text
+        self._required = required
+        self._value = None
+        self._default = None
+
+    def set_value(value, default):
+        self._value = value
+        self._default = default
+
+    def get_value(self):
+        if self._value:
+            return self._value
+        if not self._value and self._required and self._default:
+            return self._default

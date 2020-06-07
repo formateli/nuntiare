@@ -3,7 +3,9 @@
 # contains the full copyright notices and license terms.
 import tkinter as tk
 from tkinter import ttk
-from ..common import PanedView, MementoCaretaker, NuntiareXmlNode
+from ..common import (
+        PanedView, MementoCaretaker,
+        NuntiareXmlNode, NuntiareProperty)
 from nuntiare.report import Report
 
 
@@ -83,16 +85,23 @@ class DesignerView(PanedView):
         self.sections.create_body(self.get_frame())
         self.sections.create_footer(self.get_frame())
 
-        r_frame = self.get_frame()
+        r_xml_frame = self.get_frame()
         self._xml = NuntiareXmlNode(
-                r_frame,
-                xscrollcommand=r_frame.xscrollbar.set,
-                yscrollcommand=r_frame.yscrollbar.set)
+                r_xml_frame,
+                xscrollcommand=r_xml_frame.xscrollbar.set,
+                yscrollcommand=r_xml_frame.yscrollbar.set)
         self._xml.grid(
             row=0, column=0, sticky='wens')
-        self.right_window.add(r_frame, weight=1)
-        r_frame.xscrollbar.config(command=self._xml.xview)
-        r_frame.yscrollbar.config(command=self._xml.yview)
+        self.right_window.add(r_xml_frame, weight=1)
+        r_xml_frame.xscrollbar.config(command=self._xml.xview)
+        r_xml_frame.yscrollbar.config(command=self._xml.yview)
+
+        r_prop_frame = self.get_frame()
+        prop = NuntiareProperty(r_prop_frame)
+        prop.grid(row=0, column=0, sticky='wens')
+        self.right_window.add(r_prop_frame, weight=1)
+
+        self._xml.set_property(prop)
 
         self._memento = MementoCaretaker()
 

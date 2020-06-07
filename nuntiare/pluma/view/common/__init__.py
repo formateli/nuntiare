@@ -4,7 +4,7 @@
 from .paned import PanedView, FrameScrolled
 from .memento import MementoCaretaker, CopyPaste
 from .text_info import TextInfoMixin
-from .xml_node import NuntiareXmlNode
+from .xml_node import NuntiareXmlNode, NuntiareProperty
 
 __all__ = [
         'PanedView', 'FrameScrolled',
