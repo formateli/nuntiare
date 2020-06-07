@@ -73,7 +73,7 @@ def run_report(report_file, renders, parameters):
             LOGGER.warn(
                 "Render '{0}' not found.".format(r))
             continue
-        render.render(report, True)
+        render.render(report, overwrite=True)
 
 
 def run_reports(report_file):

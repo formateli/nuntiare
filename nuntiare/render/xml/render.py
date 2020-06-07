@@ -10,8 +10,8 @@ class XmlRender(Render):
     def __init__(self):
         super(XmlRender, self).__init__(extension='xml')
 
-    def render(self, report, overwrite):
-        super(XmlRender, self).render(report, overwrite)
+    def render(self, report, **kws):
+        super(XmlRender, self).render(report, **kws)
 
         doc = minidom.Document()
         root_element = doc.createElement(
