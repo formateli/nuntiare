@@ -3,14 +3,18 @@
 # contains the full copyright notices and license terms.
 from xml.dom import minidom
 from tkinter import ttk
-from nuntiare.definition.element import (
-        _ELEMENT_CLASSES, _EXPRESSION_LIST_CLASSES)
+import nuntiare.definition.element as nuntiare
 
 
 class NuntiareXmlNode(ttk.Treeview):
+
+    _properties = {}
+
     def __init__(self, master, xscrollcommand, yscrollcommand):
         super(NuntiareXmlNode, self).__init__(
                 master,
+                columns=('name'),
+                displaycolumns=(),
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 
@@ -23,26 +27,25 @@ class NuntiareXmlNode(ttk.Treeview):
         else:
             self._doc = minidom.parseString(xml)
         root = self._doc.getElementsByTagName('Nuntiare')[0]
-        item = self._add_node_element('', root, -1)
-        #item = self.insert('', 0, text='Report')
-        #self._values[item] = root
-        self._get_nodes(root, item, 0)
+        item = self._add_node_element('', root)
+        self._get_nodes(root, item)
 
-    def _get_nodes(self, node, parent, index):
+    def _get_nodes(self, node, parent):
         for n in node.childNodes:
             if n.nodeName in ('#comment', '#text'):
                 continue
-            if (n.nodeName in _ELEMENT_CLASSES
-                    or n.nodeName in _EXPRESSION_LIST_CLASSES):
-                item = self.insert(
-                    parent, index + 1, text=n.nodeName)
-                self._values[item] = n
-                self._set_node_name(item)
-                self._get_nodes(n, item, index + 1)
+            if (n.nodeName in nuntiare._ELEMENT_CLASSES
+                    or n.nodeName in nuntiare._EXPRESSION_LIST_CLASSES):
+                item = self._add_node_element(parent, n)
+                self._get_nodes(n, item)
 
-    def _add_node_element(self, parent, node, index):
-        item = self.insert(parent, index + 1, text=node.nodeName)
+    def _add_node_element(self, parent, node):
+        item = self.insert(parent, 'end',
+                           text=node.nodeName,
+                           values=(node.nodeName),
+                           tags=('element'))
         self._values[item] = node
+        self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._set_node_name(item)
         return item
 
@@ -61,3 +64,28 @@ class NuntiareXmlNode(ttk.Treeview):
         for n in node.childNodes:
             if n.nodeName in ('#text'):
                 return n.nodeValue
+
+    def _item_clicked(self, event):
+        sel = self.selection()
+        item = sel[0] if sel else None
+        if item is None:
+            return
+
+        name = self.set(item, 'name')
+        print('*******') 
+        print(name)
+        if name not in NuntiareXmlNode._properties:
+            NuntiareXmlNode._properties[name] = []
+            class_ = getattr(nuntiare, name)
+            elements = nuntiare.Element._get_element_list(class_)
+            for key, value in elements.items():
+                if (not value or value[0] == nuntiare.Element.ELEMENT
+                        or value[0] == nuntiare.Element.EXPRESSION_LIST):
+                    continue
+                NuntiareXmlNode._properties[name].append(key)
+
+        for prop in NuntiareXmlNode._properties[name]:
+            print(prop)
+
+
+
