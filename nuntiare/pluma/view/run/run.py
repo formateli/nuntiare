@@ -153,13 +153,15 @@ class RunView(PanedView):
     def run(self):
         self.log.clear()
         text = self.view.get_view('text')
+        designer = self.view.get_view('designer')
 
         self._canvas.delete(tk.ALL)
         self._canvas.config(
                 width=1000, height=1000,
                 scrollregion=(0, 0, 1000, 1000))
 
-        self.report = Report(text.text.get(1.0, tk.END))
+        #self.report = Report(text.text.get(1.0, tk.END))
+        self.report = Report(designer._xml._doc.toprettyxml(indent='  ', encoding='utf-8'))
         self.report.add_path(self.view.directory_name)
         self.report.run()
 

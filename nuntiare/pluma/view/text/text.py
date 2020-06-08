@@ -58,7 +58,7 @@ class TextView(PanedView):
         else:
             source = self.view.full_file_name
         self._xml.parse(source, is_file)
-        self.new_file(source)
+        #self.new_file(source)
 
     def onTextModified(self, event):
         text_info = event.widget.text_changed_info.copy()
