@@ -41,7 +41,7 @@ _ELEMENT_CLASSES = [
     'TopBorder', 'BottomBorder', 'LeftBorder', 'RightBorder',
     'BackgroundImage', 'Line', 'Rectangle', 'Textbox',
     'PageBreak', 'Image', 'Modules', 'Module'
-]
+    ]
 
 _ENUM_CLASSES = [
     'BorderStyle', 'FontStyle', 'FontWeight',
@@ -51,17 +51,24 @@ _ENUM_CLASSES = [
     'SortDirection', 'Operator', 'BreakLocation',
     'DataElementStyle', 'DataElementOutput',
     'ImageSource', 'ImageSizing'
-]
+    ]
 
 _EXPRESSION_CLASSES = [
     'String', 'Integer', 'Boolean',
     'Size', 'Color', 'Variant'
-]
+    ]
 
 _EXPRESSION_LIST_CLASSES = [
     'FilterValues',
     'GroupExpressions'
-]
+    ]
+
+_REPORT_ITEMS = [
+    'Line', 'Rectangle',
+    'Textbox', 'Image',
+    'Subreport', 'CustomReportItem',
+    'Tablix'
+    ]
 
 
 class Card:

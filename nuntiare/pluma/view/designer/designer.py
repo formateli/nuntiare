@@ -3,9 +3,8 @@
 # contains the full copyright notices and license terms.
 import tkinter as tk
 from tkinter import ttk
-from ..common import (
-        PanedView, MementoCaretaker,
-        NuntiareXmlNode, NuntiareProperty)
+from ..common import PanedView, MementoCaretaker
+from .xml_node import NuntiareXmlNode, NuntiareProperty
 from nuntiare.report import Report
 
 
@@ -88,6 +87,7 @@ class DesignerView(PanedView):
         r_xml_frame = self.get_frame()
         self._xml = NuntiareXmlNode(
                 r_xml_frame,
+                self,
                 xscrollcommand=r_xml_frame.xscrollbar.set,
                 yscrollcommand=r_xml_frame.yscrollbar.set)
         self._xml.grid(

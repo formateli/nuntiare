@@ -2,7 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import tkinter as tk
-from ..common import PanedView, MementoCaretaker, NuntiareXmlNode
+from ..common import PanedView, MementoCaretaker
 from .text_event import TextEvent
 from .highlight import Highlight, HighlightBlocks
 
@@ -37,17 +37,6 @@ class TextView(PanedView):
 
         self.left_window.add(frame, weight=1)
 
-        r_frame = self.get_frame()
-        self._xml = NuntiareXmlNode(
-                r_frame,
-                xscrollcommand=r_frame.xscrollbar.set,
-                yscrollcommand=r_frame.yscrollbar.set)
-        self._xml.grid(
-            row=0, column=0, sticky='wens')
-        self.right_window.add(r_frame, weight=1)
-        r_frame.xscrollbar.config(command=self._xml.xview)
-        r_frame.yscrollbar.config(command=self._xml.yview)
-
         self._hl = None  # Highlight
         self._hl_blocks = HighlightBlocks()
 
@@ -57,7 +46,7 @@ class TextView(PanedView):
             is_file = False
         else:
             source = self.view.full_file_name
-        self._xml.parse(source, is_file)
+
         #self.new_file(source)
 
     def onTextModified(self, event):

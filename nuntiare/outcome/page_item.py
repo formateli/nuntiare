@@ -232,7 +232,11 @@ class PageImage(PageItem):
             image_base64 = []
             if self.image_source == 'Embedded':
                 el = report.definition.EmbeddedImages
-                imgem = el.embedded_images[self.image_value]
+                try:
+                    imgem = el.embedded_images[self.image_value]
+                except KeyError:
+                    LOGGER.error("Embedded image '{}' not found.".format(
+                        self.image_value), raise_error=True)
                 image_base64.append(imgem.ImageData)
                 image_base64.append(imgem.image_width)
                 image_base64.append(imgem.image_height)
@@ -240,7 +244,7 @@ class PageImage(PageItem):
                 file_ = report.find_file(self.image_value)
                 if file_ is None:
                     LOGGER.error("Image source '{0}' not found.".format(
-                        self.image_value))
+                        self.image_value), raise_error=True)
                 imgem = EmbeddedImage.get_base64_image(
                         file_, self.name, self.mimetype)
                 image_base64.append(imgem[2])

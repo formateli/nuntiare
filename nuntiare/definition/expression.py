@@ -423,6 +423,8 @@ class Size(Expression):
     size_25_4 = float(25.4)
     size_72 = float(72)
 
+    units = ('in', 'cm', 'mm', 'pt', 'pc', 'px')
+
     def __init__(self, string_size, lnk, must_be_constant=False):
         super(Size, self).__init__(string_size, lnk, must_be_constant)
         self._size = None
@@ -438,7 +440,43 @@ class Size(Expression):
             return 0.0
         return self._get_value(result)
 
+    @classmethod
+    def split_size_string(cls, string_size):
+        if not string_size:
+            return
+
+        # convert to unicode
+        string_size = DataType.get_value('String', string_size)
+
+        string_size = string_size.strip()
+        if len(string_size) < 3:
+            raise ValueError("Invalid format for size: {0}".format(
+                string_size))
+
+        unit = string_size[len(string_size) - 2:]
+        if unit not in cls.units:
+            raise ValueError(
+                "Invalid unit '{0}' for size '{1}'. Valid are: {2}".format(
+                unit, string_size, cls.units))
+
+        size = string_size[:len(string_size) - 2]
+        size = size.strip()
+        return [size, unit]
+
     def _get_value(self, string_size):
+        try:
+            res = Size.split_size_string(string_size)
+        except Exception as e:
+            LOGGER.error(e, True)
+
+        if res is None:
+            self._size = 0.0
+            return self._size
+
+        self._size = Size.convert(float(res[0]), res[1], 'pt')  # Default point
+        return self._size
+
+    def _get_value_XXX(self, string_size):
         if not string_size:
             self._size = 0.0
             return self._size

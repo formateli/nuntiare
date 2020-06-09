@@ -4,13 +4,15 @@
 from xml.dom import minidom
 from tkinter import ttk
 import nuntiare.definition.element as nuntiare
+from .report_item import ReportItem
 
 
 class NuntiareXmlNode(ttk.Treeview):
 
-    _properties = {}
+    _elements = {}
 
     def __init__(self, master,
+                 designer,
                  xscrollcommand,
                  yscrollcommand):
         super(NuntiareXmlNode, self).__init__(
@@ -20,6 +22,8 @@ class NuntiareXmlNode(ttk.Treeview):
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 
+        self._designer = designer
+
         # Allow horizontal scrolling
         # TODO width should be adjusted according to
         # number of decendents nodes.
@@ -28,11 +32,11 @@ class NuntiareXmlNode(ttk.Treeview):
         self._property = None
         self._last_item = None
 
-        # item: xml_node
+        # item: [xml_node, report_item]
         self._values = {}
 
-    def set_property(self, prperty_):
-        self._property = prperty_
+    def set_property(self, property_):
+        self._property = property_
         self._property.bind('property_changed', self._property_changed)
         self._property.clear()
 
@@ -44,6 +48,13 @@ class NuntiareXmlNode(ttk.Treeview):
         root = self._doc.getElementsByTagName('Nuntiare')[0]
         item = self._add_node_element('', root)
         self._get_nodes(root, item)
+        self._draw_all()
+
+    def _draw_all(self):
+        for item, value in self._values.items():
+            if value[1] is None:
+                continue
+            value[1].draw()
 
     def _get_nodes(self, node, parent):
         for n in node.childNodes:
@@ -59,7 +70,11 @@ class NuntiareXmlNode(ttk.Treeview):
                            text=node.nodeName,
                            values=(node.nodeName),
                            tags=('element'))
-        self._values[item] = node
+        report_item = None
+        if node.nodeName in nuntiare._REPORT_ITEMS:
+            report_item = ReportItem(self, item)
+            report_item.set_canvas_section(self._designer.sections)
+        self._values[item] = [node, report_item]
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._show_item_name(item)
         return item
@@ -73,14 +88,17 @@ class NuntiareXmlNode(ttk.Treeview):
     def _set_node_value(self, item, name, value):
         self._get_node_value(item, name, value)
 
-    def _get_node_value(self, item, name, set_value=None):
-        node = self._values[item]
+    def _get_node_value(self, item, name, set_value=None, default=None):
+        node = self._values[item][0]
         for n in node.childNodes:
             if n.nodeName == name:
                 if set_value is None:
-                    return self._get_node_text(n)
+                    return self._get_node_text(n, default)
                 else:
                     self._set_node_text(n, set_value)
+                    return
+        if set_value is None:
+            return default
 
     def _set_node_text(self, node, value):
         for n in node.childNodes:
@@ -90,10 +108,11 @@ class NuntiareXmlNode(ttk.Treeview):
         text = self._doc.createTextNode(value)
         node.parent.appendChild(text)
 
-    def _get_node_text(self, node):
+    def _get_node_text(self, node, default):
         for n in node.childNodes:
             if n.nodeName in ('#text'):
                 return n.nodeValue
+        return default
 
     def _item_clicked(self, event):
         sel = self.selection()
@@ -105,30 +124,52 @@ class NuntiareXmlNode(ttk.Treeview):
             return
 
         name = self.set(item, 'name')
-        if name not in NuntiareXmlNode._properties:
-            NuntiareXmlNode._properties[name] = []
+        if name not in NuntiareXmlNode._elements:
+            NuntiareXmlNode._elements[name] = []
             class_ = getattr(nuntiare, name)
             elements = nuntiare.Element._get_element_list(class_)
             for key, value in elements.items():
                 if (not value or value[0] == nuntiare.Element.ELEMENT
                         or value[0] == nuntiare.Element.EXPRESSION_LIST):
                     continue
-                NuntiareXmlNode._properties[name].append(key)
-            NuntiareXmlNode._properties[name].sort()
+                NuntiareXmlNode._elements[name].append(key)
+            NuntiareXmlNode._elements[name].sort()
 
         self._property.set_item(item)
 
-        for prop in NuntiareXmlNode._properties[name]:
+        for prop in NuntiareXmlNode._elements[name]:
             property_ = self._property.add_property(prop, True)
             # Get the value, if any, in current node
             property_.set_value(self._get_node_value(item, prop), None)
 
-    def _property_changed(self, master, property_):
+    def _property_changed(self, event):
+        master = event[0]
+        property_ = event[1]
         item = master.get_item()
         self._set_node_value(item, property_._text, property_.get_value())
 
 
-class NuntiareProperty(ttk.Frame):
+class PropertyFrame(ttk.Frame):
+    def __init__(self, master):
+        super(PropertyFrame, self).__init__(master)
+        self._bind_callbacks = {}
+
+    def register_property_event(self, name):
+        self._bind_callbacks = {name: []}
+
+    def bind(self, event, callback):
+        if event in self._bind_callbacks:
+            self._bind_callbacks[event].append(callback)
+        else:
+            super(PropertyFrame, self).bind(event, callback)
+
+    def fire_event(self, event, data):
+        callbacks = self._bind_callbacks[event]
+        for cb in callbacks:
+            cb(data)
+
+
+class NuntiareProperty(PropertyFrame):
     def __init__(self, master):
         super(NuntiareProperty, self).__init__(master)
         self._properties = {}
@@ -137,9 +178,7 @@ class NuntiareProperty(ttk.Frame):
         self.grid_columnconfigure(1, weight=3)
         self._item = None
 
-        self._bind_callbacks = {
-                'property_changed': [],
-            }
+        self.register_property_event('property_changed')
 
     def add_property(self, text, required):
         id_ = text + '_' + str(required)
@@ -171,22 +210,11 @@ class NuntiareProperty(ttk.Frame):
             wg.grid_forget()
         self._row_count = 0
 
-    def bind(self, event, callback):
-        if event in self._bind_callbacks:
-            self._bind_callbacks[event].append(callback)
-        else:
-            super(NuntiareProperty, self).bind(event, callback)
-
-    def _fire_event(self, event, property_):
-        callbacks = self._bind_callbacks[event]
-        for cb in callbacks:
-            cb(self, property_)
-
     def _property_focusout(self, property_):
-        self._fire_event('property_changed', property_)
+        self.fire_event('property_changed', [self, property_])
 
 
-class PropertyItem(ttk.Frame):
+class PropertyItem(PropertyFrame):
     def __init__(self, master, text, required):
         super(PropertyItem, self).__init__(master)
 
@@ -198,9 +226,7 @@ class PropertyItem(ttk.Frame):
         self._value = None
         self._default = None
 
-        self._bind_callbacks = {
-                'property_focusout': [],
-            }
+        self.register_property_event('property_focusout')
         self.bind('<FocusOut>', self._focusout)
 
     def set_value(self, value, default):
@@ -216,19 +242,8 @@ class PropertyItem(ttk.Frame):
         if not self._value and self._required and self._default:
             return self._default
 
-    def bind(self, event, callback):
-        if event in self._bind_callbacks:
-            self._bind_callbacks[event].append(callback)
-        else:
-            super(PropertyItem, self).bind(event, callback)
-
-    def _fire_event(self, event):
-        callbacks = self._bind_callbacks[event]
-        for cb in callbacks:
-            cb(self)
-
     def _focusout(self, event):
         value = self._entry.get()
         if value != self._value:
             self._value = value
-            self._fire_event('property_focusout')
+            self.fire_event('property_focusout', self)
