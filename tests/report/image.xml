@@ -17,7 +17,7 @@
         <Name>txt_full_size</Name>
         <Value>Full size embedded image</Value>
         <Height>5mm</Height>
-        <Width>15cm</Width>
+        <Width>5cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -29,15 +29,18 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>AutoSize</ImageSizing>
         <Value>formateli</Value>
-        <Height>10cm</Height>
-        <Width>10cm</Width>
+        <Top>6mm</Top>
+        <Height>5cm</Height>
+        <Width>5cm</Width>
       </Image>
 
       <Textbox>
         <Name>txt_fit_size</Name>
         <Value>Fit size embedded image (15cm x 5cm)</Value>
+        <Top>2cm</Top>
+        <Left>6cm</Left>
         <Height>5mm</Height>
-        <Width>15cm</Width>
+        <Width>5cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -45,21 +48,23 @@
       </Textbox>
       <Image>
         <Name>image_fit_size</Name>
-        <Top>2cm</Top>
-        <Left>12cm</Left>
+        <Top>2.6cm</Top>
+        <Left>6cm</Left>
         <ImageSource>Embedded</ImageSource>
         <MIMEType>image/png</MIMEType>
         <ImageSizing>Fit</ImageSizing>
         <Value>formateli</Value>
         <Height>5cm</Height>
-        <Width>10cm</Width>
+        <Width>12cm</Width>
       </Image>
 
       <Textbox>
         <Name>txt_fit_proportiontal_size_1</Name>
         <Value>Fit proportional size embedded image (15cm x 5cm)</Value>
+        <Top>8cm</Top>
+        <Left>6cm</Left>
         <Height>5mm</Height>
-        <Width>15cm</Width>
+        <Width>10cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -71,7 +76,7 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli</Value>
-        <Top>8cm</Top>
+        <Top>8.6cm</Top>
         <Left>12cm</Left>
         <Height>5cm</Height>
         <Width>10cm</Width>

@@ -51,6 +51,7 @@ class NuntiareXmlNode(ttk.Treeview):
         self._draw_all()
 
     def _draw_all(self):
+        self._designer.sections.show_section()
         for item, value in self._values.items():
             if value[1] is None:
                 continue
@@ -77,6 +78,16 @@ class NuntiareXmlNode(ttk.Treeview):
         self._values[item] = [node, report_item]
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._show_item_name(item)
+
+        if node.nodeName == 'PageHeader':
+            self._designer.sections.set_page_item(item)
+        elif node.nodeName == 'PageHeader':
+            self._designer.sections.get_section('header').set_item(item)
+        elif node.nodeName == 'PageFooter':
+            self._designer.sections.get_section('footer').set_item(item)
+        elif node.nodeName == 'Body':
+            self._designer.sections.get_section('body').set_item(item)
+
         return item
 
     def _show_item_name(self, item):

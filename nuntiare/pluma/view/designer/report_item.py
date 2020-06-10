@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 import tkinter as tk
 from tkinter import ttk
-from nuntiare.definition.expression import Size
+from ..common.tools import get_size_px
 
 
 class ReportItem:
@@ -13,36 +13,47 @@ class ReportItem:
         self._parent = self._get_info('parent')
         self._section = self._get_info('section')
         self._canvas = None
-        self._ppi = None
+        self._type = self._treeview.set(tree_node, 'name')
 
     def set_canvas_section(self, sections):
         if self._section == 'PageHeader':
-            self._canvas = sections.header
+            self._canvas = sections.get_section('header')
         elif self._section == 'PageFooter':
-            self._canvas = sections.footer
+            self._canvas = sections.get_section('footer')
         elif self._section == 'Body':
-            self._canvas = sections.body
-        self._ppi = self._canvas.winfo_pixels('1i')
+            self._canvas = sections.get_section('body')
 
     def draw(self):
         get_node_value = self._treeview._get_node_value
 
-        self._canvas.create_rectangle(
-            self._get_size(
-                get_node_value(self._item, 'Top', default='0px')),
-            self._get_size(
-                get_node_value(self._item, 'Left', default='0px')),
-            self._get_size(
-                get_node_value(self._item, 'width', default='0px')),
-            self._get_size(
-                get_node_value(self._item, 'height', default='0px')),
-            fill="blue")
+        fill = 'blue'
+        if self._type == 'Textbox':
+            fill = 'red'
 
-    def _get_size(self, value):
-        res = Size.split_size_string(value)
-        if res is None:
-            return
-        return Size.convert_to_pixel(float(res[0]), res[1], self._ppi)
+        x1 = get_size_px(
+                get_node_value(self._item, 'Left', default='0px'))
+        y1 = get_size_px(
+                get_node_value(self._item, 'Top', default='0px'))
+        x2 = x1 + get_size_px(
+                get_node_value(self._item, 'Width', default='0px'))
+        y2 = y1 + get_size_px(
+                get_node_value(self._item, 'Height', default='0px'))
+
+        obj = self._canvas.draw_rectangle_style(x1, y1, x2, y2, style)
+
+        obj = self._canvas.create_rectangle(x1, y1, x2, y2, fill=fill)
+        self._canvas.add_object(obj, self)
+        self._canvas.tag_bind(obj, '<1>', self._item_click)
+
+    def _item_click(self, event):
+        it = self._canvas.find_overlapping(
+            event.x, event.y, event.x + 1, event.y + 1)[0]
+        report_item = self._canvas.get_object(it)
+        self._canvas.select_item(report_item._item)
+        self._treeview.focus_set()
+        self._treeview.see(report_item._item)
+        self._treeview.focus(report_item._item)
+        self._treeview.selection_set(report_item._item)
 
     def _get_info(self, val):
         itm = self._item

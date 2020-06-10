@@ -102,23 +102,25 @@ class PageItem(object):
         self.original_height = self.height
         self.original_width = self.width
 
-    @staticmethod
-    def in_zone_down_x(it_ref, it_to_move):
-        if it_to_move.original_top <= \
-                (it_ref.original_top + it_ref.original_height):
-            return
-        if (it_to_move.original_left + it_to_move.original_width) <= \
-                it_ref.original_left:
-            return
-        if it_to_move.original_left >= \
-                (it_ref.original_left + it_ref.original_width):
-            return
-
-        return True
+    #@staticmethod
+    #def in_zone_down_x(it_ref, it_to_move):
+    #    if it_to_move.original_top <= \
+    #            (it_ref.original_top + it_ref.original_height):
+    #        return
+    #    if (it_to_move.original_left + it_to_move.original_width) <= \
+    #            it_ref.original_left:
+    #        return
+    #    if it_to_move.original_left >= \
+    #            (it_ref.original_left + it_ref.original_width):
+    #        return
+    #    return True
 
     @staticmethod
     def in_zone_down(it_ref, it_to_move):
         if it_to_move.original_top <= it_ref.original_top:
+            return
+        if it_to_move.original_top <= \
+                it_ref.original_top + it_ref.original_height:
             return
 
         min_gap = it_to_move.original_top - \
@@ -130,24 +132,28 @@ class PageItem(object):
             return
         if (it_to_move.left + it_to_move.width) < it_ref.left:
             return
+
         return min_gap
 
-    @staticmethod
-    def in_zone_right(it_ref, it_to_move):
-        if it_to_move.original_left <= \
-                (it_ref.original_left + it_ref.original_width):
-            return
-        if (it_to_move.original_top + it_to_move.original_height) <= \
-                it_ref.original_top:
-            return
-        if it_to_move.original_top >= \
-                (it_ref.original_top + it_ref.original_height):
-            return
-        return True
+    #@staticmethod
+    #def in_zone_right(it_ref, it_to_move):
+    #    if it_to_move.original_left <= \
+    #            (it_ref.original_left + it_ref.original_width):
+    #        return
+    #    if (it_to_move.original_top + it_to_move.original_height) <= \
+    #            it_ref.original_top:
+    #        return
+    #    if it_to_move.original_top >= \
+    #            (it_ref.original_top + it_ref.original_height):
+    #        return
+    #    return True
 
     @staticmethod
     def in_zone_left(it_ref, it_to_move):
         if it_to_move.original_left <= it_ref.original_left:
+            return
+        if it_to_move.original_left <= \
+                it_ref.original_left + it_ref.original_width:
             return
 
         min_gap = it_to_move.original_left - \
