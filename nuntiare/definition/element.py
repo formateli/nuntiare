@@ -91,27 +91,25 @@ class Element:
     ENUM = 9
     VARIANT = 90
 
+    meta = {}
+
     def __init__(self, node, lnk):
         """
         node: Xml node with the element definition.
         lnk: The linking object
 
         Each Element sub class must declare a class member '_element_list'
-        wich is a dictionary with the elements that belongs to that element.
+        wich is a dictionary with the Meta objects for each member.
          key: Element name
-         value: A list [] with the following values:
-            Element type. Default: Element.ELEMENT
-            Card: ElementCard value.
-                Default: Card.ZERO_ONE
-            Must be a constant: If true,
-                this element value can not be an expression.
-                Ignore if type is Element.ELEMENT. Default: False
-            DefaultValue
-                Ignore if type is Element.ELEMENT. Default: None
+         value: Meta object
         """
 
-        elements = Element._get_element_list(self.__class__)
-        self._original_element_list = elements
+        if self.__class__.__name__ not in Element.meta:
+            Element.meta[self.__class__.__name__] = \
+                Element._get_element_list(self.__class__)
+
+        self._meta = Element.meta[self.__class__.__name__]
+        verified = []
 
         # Here we list elements found for this element
         self.element_list = {}
@@ -129,7 +127,7 @@ class Element:
         z_count = 0
 
         for n in node.childNodes:
-            if n.nodeName not in elements:
+            if n.nodeName not in self._meta:
                 if n.nodeName == 'DataEmbedded' and \
                         n.parentNode.nodeName == 'Nuntiare':
                     self.set_data()
@@ -140,13 +138,10 @@ class Element:
                             n.nodeName, self.element_name))
                 continue
 
-            element_type, card, must_be_constant, default_value = \
-                Element.get_element_def(elements[n.nodeName])
+            verified.append(n.nodeName)
+            meta = self._meta[n.nodeName]
 
-            elements[n.nodeName] = \
-                [element_type, card, must_be_constant, default_value, True]
-
-            if element_type == Element.ELEMENT:
+            if meta.type == Element.ELEMENT:
                 el = Element.element_factory(n.nodeName, n, lnk)
                 if n.nodeName in _REPORT_ITEMS:
                     if n.nodeName in ('Textbox'):
@@ -165,42 +160,43 @@ class Element:
                 self.element_list[n.nodeName] = el
                 self.non_expression_list[n.nodeName] = \
                     self.element_list[n.nodeName]
-            elif element_type == Element.EXPRESSION_LIST:
+            elif meta.type == Element.EXPRESSION_LIST:
                 self.element_list[n.nodeName] = \
                     Element.expression_list_factory(n.nodeName, n, lnk)
                 self.non_expression_list[n.nodeName] = \
                     self.element_list[n.nodeName]
-            elif element_type == Element.ENUM:
+            elif meta.type == Element.ENUM:
                 self.element_list[n.nodeName] = \
                     Element.enum_factory(
-                        n.nodeName, n, lnk, card, must_be_constant)
+                        n.nodeName, n, lnk, meta.card, meta.constant)
                 self.expression_list[n.nodeName] = \
                     self.element_list[n.nodeName]
                 self._set_attr(
-                    n.nodeName, False, default_value, must_be_constant)
+                    n.nodeName, False, meta.default,
+                    meta.constant)
             else:
                 self.element_list[n.nodeName] = \
                     Element.expression_factory(
-                        elements[n.nodeName][0], n, lnk,
-                        card, must_be_constant)
+                        meta.type, n, lnk,
+                        meta.card, meta.constant)
                 self.expression_list[n.nodeName] = \
                     self.element_list[n.nodeName]
                 self._set_attr(
-                    n.nodeName, False, default_value, must_be_constant)
+                    n.nodeName, False, meta.default,
+                    meta.constant)
 
         # Validate elements not used
-        for key, el in elements.items():
-            if len(el) < 5:  # Not verified in the node loop above
-                element_type, card, must_be_constant, default_value = \
-                    Element.get_element_def(el)
-                if card in [Card.ONE, Card.ONE_MANY]:
-                    LOGGER.error(
-                        "'{0}' must be defined for '{1}'.".format(
-                            key, self.element_name), True)
-                if default_value and element_type not in \
-                        [Element.ELEMENT, Element.EXPRESSION_LIST]:
-                    self._set_attr(
-                        key, False, default_value, True)
+        for key, meta in self._meta.items():
+            if key in verified:
+                continue
+            if meta.card in [Card.ONE, Card.ONE_MANY]:
+                LOGGER.error(
+                    "'{0}' must be defined for '{1}'.".format(
+                        key, self.element_name), True)
+            if meta.default is not None and meta.type not in \
+                    (Element.ELEMENT, Element.EXPRESSION_LIST):
+                self._set_attr(
+                    key, False, meta.default, True)
 
         # Z Order
         reportitems_list = []
@@ -224,30 +220,32 @@ class Element:
 
     def __getattr__(self, name):
         self._verify_element(name)
-        result = Element.get_element_def(
-                    self._original_element_list[name])
-        if result[0] in (
+        result = self._meta[name]
+        if result.type in (
                 Element.ELEMENT, Element.EXPRESSION_LIST):
             el = self.get_element(name)
             if el:
                 self._set_attr(name, True, el, False)
                 return self.__dict__[name]
         else:
-            if result[2] is None:
+            if not result.constant:
                 err_msg = "'{0}' is not a constant property " \
-                    "for element '{1}'. Use get_value() instead."
+                    "for element '{1}'. Use 'get_value()' instead."
                 LOGGER.error(err_msg.format(name, self.element_name), True)
             else:
-                self._set_attr(name, False, result[3], result[2])
+                self._set_attr(
+                        name, False,
+                        result.default,
+                        result.constant)
                 return self.__dict__[name]
 
     def _verify_element(self, name):
-        if name not in self._original_element_list.keys():
+        if name not in self._meta:
             err_msg = "'{0}' is not a valid member for element '{1}'. " \
                 "Valid are: {2}"
             LOGGER.error(err_msg.format(
                 name, self.element_name,
-                self._original_element_list.keys()), True)
+                self._meta.keys()), True)
 
     def get_value(self, report, name, default_value=None):
         if name in self.__dict__:
@@ -343,30 +341,6 @@ class Element:
                 node.nodeName, lnk.obj.__class__.__name__), True)
         return obj(value, ln, must_be_constant)
 
-    @staticmethod
-    def get_element_def(element):
-        element_type = Element.ELEMENT
-        card = Card.ZERO_ONE
-        must_be_constant = False
-        default_value = None
-
-        if len(element) > 0:
-            if element[0]:
-                element_type = element[0]
-            if len(element) >= 2:
-                if element[1]:
-                    card = element[1]
-            if len(element) >= 3:
-                if element[2]:
-                    must_be_constant = element[2]
-            if len(element) >= 4:
-                if element[3] is not None:
-                    default_value = element[3]
-
-            # len(element)==4 is ignored, it means that element was checked
-
-        return element_type, card, must_be_constant, default_value
-
     def get_element(self, name):
         if name in self.element_list:
             return self.element_list[name]
@@ -377,21 +351,20 @@ class Element:
             return True
 
 
-class ElementMeta:
+class Meta:
     def __init__(self,
                  type_=Element.ELEMENT,
                  card=Card.ZERO_ONE,
-                 must_be_constant=False,
+                 constant=False,
+                 default=None):
 
-                 default_value=None):
+        self.type = type_
+        self.card = card
+        self.constant = constant
+        self.default = default
 
-        self._type = type_
-        self._card = card
-        self._must_be_constant = must_be_constant
-        self._default_value = default_value
-
-        if self._default_value and type_ == Element.SIZE:
-            self._default_value = 0
+        if self.default is None and type_ == Element.SIZE:
+            self.default = 0
 
 
 class Link:
@@ -429,11 +402,9 @@ class _ExpressionList:
                             n.nodeName, lnk.obj.__class__.__name__))
                 continue
 
-            element_type, card, must_be_constant, default_value = \
-                Element.get_element_def(elements[n.nodeName])
-
+            meta = elements[n.nodeName]
             ex = Element.expression_factory(
-                elements[n.nodeName][0], n, lnk, card, must_be_constant)
+                meta.type, n, lnk, meta.card, meta.constant)
             self.expression_list.append(ex)
 
 
@@ -443,24 +414,24 @@ class Nuntiare(Element):
     '''
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Description': [Element.STRING, Card.ZERO_ONE, True],
-        'Author': [Element.STRING, Card.ZERO_ONE, True],
-        'Version': [Element.STRING, Card.ZERO_ONE, True],
-        'DateCreate': [Element.DATE, Card.ZERO_ONE, True],
-        'DateUpdate': [Element.DATE, Card.ZERO_ONE, True],
-        'DataSources': [],
-        'DataSets': [],
-        'Body': [Element.ELEMENT, Card.ONE],
-        'ReportParameters': [],
-        'Modules': [],
-        'EmbeddedImages': [],
-        'Page': [Element.ELEMENT, Card.ONE],
-        'Language': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementName': [
-            Element.STRING, Card.ZERO_ONE, True, 'Nuntiare'],
-        'DataElementStyle': [
-            Element.ENUM, Card.ZERO_ONE, True, 'Attribute'],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'Description': Meta(Element.STRING, constant=True),
+        'Author': Meta(Element.STRING, constant=True),
+        'Version': Meta(Element.STRING, constant=True),
+        'DateCreate': Meta(Element.DATE, constant=True),
+        'DateUpdate': Meta(Element.DATE, constant=True),
+        'DataSources': Meta(),
+        'DataSets': Meta(),
+        'Body': Meta(card=Card.ONE),
+        'ReportParameters': Meta(),
+        'Modules': Meta(),
+        'EmbeddedImages': Meta(),
+        'Page': Meta(card=Card.ONE),
+        'Language': Meta(Element.STRING, constant=True),
+        'DataElementName': Meta(
+            Element.STRING, constant=True, default='Nuntiare'),
+        'DataElementStyle': Meta(
+            Element.ENUM, constant=True, default='Attribute'),
         }
 
     class Data():
@@ -538,7 +509,7 @@ class Nuntiare(Element):
 class EmbeddedImages(Element):
 
     _element_list = {
-        'EmbeddedImage': [Element.ELEMENT, Card.ONE_MANY]
+        'EmbeddedImage': Meta(card=Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -617,9 +588,9 @@ class EmbeddedImages(Element):
 class EmbeddedImage(Element):
 
     _element_list = {
-            'Name': [Element.STRING, Card.ONE, True],
-            'MIMEType': [Element.STRING, Card.ONE, True],
-            'ImageData': [Element.STRING, Card.ONE, True],
+            'Name': Meta(Element.STRING, Card.ONE, True),
+            'MIMEType': Meta(Element.STRING, Card.ONE, True),
+            'ImageData': Meta(Element.STRING, Card.ONE, True),
         }
 
     _mimetype_valid = {
@@ -745,7 +716,7 @@ class EmbeddedImage(Element):
 class Modules(Element):
 
     _element_list = {
-        'Module': [Element.ELEMENT, Card.ONE_MANY]
+        'Module': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -756,9 +727,9 @@ class Modules(Element):
 class Module(Element):
 
     _element_list = {
-        'From': [Element.STRING, Card.ZERO_ONE, True],
-        'Import': [Element.STRING, Card.ZERO_ONE, True],
-        'As': [Element.STRING, Card.ZERO_ONE, True],
+        'From': Meta(Element.STRING, constant=True),
+        'Import': Meta(Element.STRING, constant=True),
+        'As': Meta(Element.STRING, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -769,7 +740,7 @@ class Module(Element):
 class ReportParameters(Element):
 
     _element_list = {
-        'ReportParameter': [Element.ELEMENT, Card.ONE_MANY]
+        'ReportParameter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -779,12 +750,12 @@ class ReportParameters(Element):
 class ReportParameter(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
-        'CanBeNone': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
-        'AllowBlank': [Element.BOOLEAN, Card.ZERO_ONE, True, True],
-        'DefaultValue': [Element.VARIANT, Card.ONE],
-        'Promt': [Element.STRING],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'DataType': Meta(Element.ENUM, constant=True, default='String'),
+        'CanBeNone': Meta(Element.BOOLEAN, constant=True, default=True),
+        'AllowBlank': Meta(Element.BOOLEAN, constant=True, default=True),
+        'DefaultValue': Meta(Element.VARIANT, Card.ONE),
+        'Promt': Meta(Element.STRING),
         }
 
     def __init__(self, node, lnk):
@@ -821,8 +792,8 @@ class ReportParameter(Element):
 class Visibility(Element):
 
     _element_list = {
-        'Hidden': [Element.BOOLEAN, Card.ZERO_ONE],
-        'ToggleItem': [Element.STRING, Card.ZERO_ONE, True],
+        'Hidden': Meta(Element.BOOLEAN),
+        'ToggleItem': Meta(Element.STRING, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -832,17 +803,17 @@ class Visibility(Element):
 class Page(Element):
 
     _element_list = {
-        'PageHeader': [],
-        'PageFooter': [],
-        'PageHeight': [Element.SIZE, Card.ZERO_ONE, True, 11 * 72],
-        'PageWidth': [Element.SIZE, Card.ZERO_ONE, True, 8.5 * 72],
-        'LeftMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'RightMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'TopMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'BottomMargin': [Element.SIZE, Card.ZERO_ONE, True, 0.0],
-        'Columns': [Element.INTEGER, Card.ZERO_ONE, True, 1],
-        'ColumnSpacing': [Element.SIZE, Card.ZERO_ONE, True, 0.5 * 72],
-        'Style': [],
+        'PageHeader': Meta(),
+        'PageFooter': Meta(),
+        'PageHeight': Meta(Element.SIZE, constant=True, default=11 * 72),
+        'PageWidth': Meta(Element.SIZE, constant=True, default=8.5 * 72),
+        'LeftMargin': Meta(Element.SIZE, constant=True),
+        'RightMargin': Meta(Element.SIZE, constant=True),
+        'TopMargin': Meta(Element.SIZE, constant=True),
+        'BottomMargin': Meta(Element.SIZE, constant=True),
+        'Columns': Meta(Element.INTEGER, constant=True, default=1),
+        'ColumnSpacing': Meta(Element.SIZE, constant=True, default=0.5 * 72),
+        'Style': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -852,13 +823,11 @@ class Page(Element):
 class _PageSection(Element):
 
     _element_list = {
-        'ReportItems': [],
-        'Height': [Element.SIZE, Card.ONE, True, 0.0],
-        'PrintOnFirstPage': [
-            Element.BOOLEAN, Card.ZERO_ONE, True],
-        'PrintOnLastPage': [
-            Element.BOOLEAN, Card.ZERO_ONE, True],
-        'Style': [],
+        'ReportItems': Meta(),
+        'Height': Meta(Element.SIZE, Card.ONE, True),
+        'PrintOnFirstPage': Meta(Element.BOOLEAN, constant=True),
+        'PrintOnLastPage': Meta(Element.BOOLEAN, constant=True),
+        'Style': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -880,8 +849,8 @@ class PageFooter(_PageSection):
 class Body(Element):
 
     _element_list = {
-        'ReportItems': [],
-        'Style': [],
+        'ReportItems': Meta(),
+        'Style': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -891,7 +860,7 @@ class Body(Element):
 class DataSources(Element):
 
     _element_list = {
-        'DataSource': [Element.ELEMENT, Card.ONE_MANY]
+        'DataSource': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -901,9 +870,9 @@ class DataSources(Element):
 class DataSource(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Transaction': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'ConnectionProperties': [],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'Transaction': Meta(Element.BOOLEAN, constant=True),
+        'ConnectionProperties': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -920,9 +889,9 @@ class DataSource(Element):
 class ConnectionProperties(Element):
 
     _element_list = {
-        'DataProvider': [Element.STRING, Card.ONE],
-        'ConnectObject': [Element.VARIANT, Card.ONE],
-        'Prompt': [Element.STRING, Card.ZERO_ONE, True],
+        'DataProvider': Meta(Element.STRING, Card.ONE),
+        'ConnectObject': Meta(Element.VARIANT, Card.ONE),
+        'Prompt': Meta(Element.STRING, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -932,7 +901,7 @@ class ConnectionProperties(Element):
 class DataSets(Element):
 
     _element_list = {
-        'DataSet': [Element.ELEMENT, Card.ONE_MANY]
+        'DataSet': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -942,11 +911,11 @@ class DataSets(Element):
 class DataSet(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Fields': [],
-        'Query': [Element.ELEMENT, Card.ONE],
-        'Filters': [],
-        'SortExpressions': [],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'Fields': Meta(),
+        'Query': Meta(Element.ELEMENT, Card.ONE),
+        'Filters': Meta(),
+        'SortExpressions': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -968,7 +937,7 @@ class DataSet(Element):
 class Fields(Element):
 
     _element_list = {
-        'Field': [Element.ELEMENT, Card.ONE_MANY]
+        'Field': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -982,10 +951,10 @@ class Field(Element):
     '''
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'DataType': [Element.ENUM, Card.ZERO_ONE, True, 'String'],
-        'DataField': [Element.STRING, Card.ZERO_ONE, True],
-        'Value': [Element.VARIANT],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'DataType': Meta(Element.ENUM, constant=True, default='String'),
+        'DataField': Meta(Element.STRING, constant=True),
+        'Value': Meta(Element.VARIANT),
         }
 
     def __init__(self, node, lnk):
@@ -1002,9 +971,9 @@ class Field(Element):
 class Query(Element):
 
     _element_list = {
-        'DataSourceName': [Element.STRING, Card.ONE, True],
-        'CommandText': [Element.STRING],
-        'QueryParameters': [],
+        'DataSourceName': Meta(Element.STRING, Card.ONE, True),
+        'CommandText': Meta(Element.STRING),
+        'QueryParameters': Meta(),
         }
 
     def __init__(self, node, lnk):
@@ -1022,7 +991,7 @@ class Query(Element):
 class QueryParameters(Element):
 
     _element_list = {
-        'QueryParameter': [Element.ELEMENT, Card.ONE_MANY]
+        'QueryParameter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1032,8 +1001,8 @@ class QueryParameters(Element):
 class QueryParameter(Element):
 
     _element_list = {
-            'Name': [Element.STRING, Card.ONE, True],
-            'Value': [Element.VARIANT, Card.ONE],
+            'Name': Meta(Element.STRING, Card.ONE, True),
+            'Value': Meta(Element.VARIANT, Card.ONE),
         }
 
     def __init__(self, node, lnk):
@@ -1043,7 +1012,7 @@ class QueryParameter(Element):
 class Filters(Element):
 
     _element_list = {
-        'Filter': [Element.ELEMENT, Card.ONE_MANY]
+        'Filter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1054,9 +1023,9 @@ class Filters(Element):
 class Filter(Element):
 
     _element_list = {
-        'FilterExpression': [Element.VARIANT, Card.ONE],
-        'Operator': [Element.ENUM, Card.ONE, True],
-        'FilterValues': [Element.EXPRESSION_LIST, Card.ONE],
+        'FilterExpression': Meta(Element.VARIANT, Card.ONE),
+        'Operator': Meta(Element.ENUM, Card.ONE, True),
+        'FilterValues': Meta(Element.EXPRESSION_LIST, Card.ONE),
         }
 
     def __init__(self, node, lnk):
@@ -1067,7 +1036,7 @@ class Filter(Element):
 class FilterValues(_ExpressionList):
 
     _element_list = {
-        'FilterValue': [Element.VARIANT, Card.ONE_MANY]
+        'FilterValue': Meta(Element.VARIANT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1077,15 +1046,15 @@ class FilterValues(_ExpressionList):
 class Group(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'GroupExpressions': [Element.EXPRESSION_LIST],
-        'PageBreak': [],
-        'Filters': [],
-        'SortExpressions': [],
-        'Parent': [Element.VARIANT],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [
-                Element.ENUM, Card.ZERO_ONE, True, 'Output'],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'GroupExpressions': Meta(Element.EXPRESSION_LIST),
+        'PageBreak': Meta(),
+        'Filters': Meta(),
+        'SortExpressions': Meta(),
+        'Parent': Meta(Element.VARIANT),
+        'DataElementName': Meta(Element.STRING, constant=True),
+        'DataElementOutput': Meta(
+                Element.ENUM, constant=True, default='Output'),
         }
 
     def __init__(self, node, lnk):
@@ -1095,7 +1064,7 @@ class Group(Element):
 class GroupExpressions(_ExpressionList):
 
     _element_list = {
-        'GroupExpression': [Element.VARIANT, Card.ONE_MANY]
+        'GroupExpression': Meta(Element.VARIANT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1105,7 +1074,7 @@ class GroupExpressions(_ExpressionList):
 class SortExpressions(Element):
 
     _element_list = {
-        'SortExpression': [Element.ELEMENT, Card.ONE_MANY]
+        'SortExpression': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1116,8 +1085,9 @@ class SortExpressions(Element):
 class SortExpression(Element):
 
     _element_list = {
-        'Value': [Element.VARIANT, Card.ONE],
-        'SortDirection': [Element.ENUM, Card.ZERO_ONE, True, 'Ascending'],
+        'Value': Meta(Element.VARIANT, Card.ONE),
+        'SortDirection': Meta(
+            Element.ENUM, constant=True, default='Ascending'),
         }
 
     def __init__(self, node, lnk):
@@ -1128,31 +1098,31 @@ class SortExpression(Element):
 class Style(Element):
 
     _element_list = {
-        'Border': [],
-        'TopBorder': [],
-        'BottomBorder': [],
-        'LeftBorder': [],
-        'RightBorder': [],
-        'BackgroundColor': [Element.COLOR],
-        'BackgroundGradientType': [Element.ENUM],
-        'BackgroundGradientEndColor': [Element.COLOR],
-        'BackgroundImage': [],
-        'FontStyle': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'FontFamily': [Element.STRING, Card.ZERO_ONE, False, 'Arial'],
-        'FontSize': [Element.SIZE, Card.ZERO_ONE, False, 10],
-        'FontWeight': [Element.ENUM, Card.ZERO_ONE, False, 'Normal'],
-        'Format': [Element.STRING],
-        'TextDecoration': [Element.ENUM, Card.ZERO_ONE, False, 'None'],
-        'TextAlign': [Element.ENUM, Card.ZERO_ONE, False, 'General'],
-        'VerticalAlign': [Element.ENUM, Card.ZERO_ONE, False, 'Top'],
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
-        'PaddingLeft': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingRight': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingTop': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'PaddingBottom': [Element.SIZE, Card.ZERO_ONE, False, 0.0],
-        'LineHeight': [Element.SIZE, Card.ZERO_ONE, False, 1.0],
-        'TextDirection': [Element.ENUM, Card.ZERO_ONE, False, 'LTR'],
-        'WritingMode': [Element.ENUM, Card.ZERO_ONE, False, 'Horizontal'],
+        'Border': Meta(),
+        'TopBorder': Meta(),
+        'BottomBorder': Meta(),
+        'LeftBorder': Meta(),
+        'RightBorder': Meta(),
+        'BackgroundColor': Meta(Element.COLOR),
+        'BackgroundGradientType': Meta(Element.ENUM),
+        'BackgroundGradientEndColor': Meta(Element.COLOR),
+        'BackgroundImage': Meta(),
+        'FontStyle': Meta(Element.ENUM, default='Normal'),
+        'FontFamily': Meta(Element.STRING, default='Arial'),
+        'FontSize': Meta(Element.SIZE, default=10),
+        'FontWeight': Meta(Element.ENUM, default='Normal'),
+        'Format': Meta(Element.STRING),
+        'TextDecoration': Meta(Element.ENUM, default='None'),
+        'TextAlign': Meta(Element.ENUM, default='General'),
+        'VerticalAlign': Meta(Element.ENUM, default='Top'),
+        'Color': Meta(Element.COLOR, default='#000000'),
+        'PaddingLeft': Meta(Element.SIZE),
+        'PaddingRight': Meta(Element.SIZE),
+        'PaddingTop': Meta(Element.SIZE),
+        'PaddingBottom': Meta(Element.SIZE),
+        'LineHeight': Meta(Element.SIZE, default=1.0),
+        'TextDirection': Meta(Element.ENUM, default='LTR'),
+        'WritingMode': Meta(Element.ENUM, default='Horizontal'),
         }
 
     def __init__(self, node, lnk):
@@ -1162,9 +1132,9 @@ class Style(Element):
 class Border(Element):
 
     _element_list = {
-        'Color': [Element.COLOR, Card.ZERO_ONE, False, '#000000'],
-        'BorderStyle': [Element.ENUM, Card.ZERO_ONE, False],
-        'Width': [Element.SIZE, Card.ZERO_ONE, False, 1],
+        'Color': Meta(Element.COLOR, default='#000000'),
+        'BorderStyle': Meta(Element.ENUM),  # TODO default Solid?
+        'Width': Meta(Element.SIZE, default=1),
         }
 
     def __init__(self, node, lnk):
@@ -1198,12 +1168,12 @@ class BottomBorder(Border):
 class BackgroundImage(Element):
 
     _element_list = {
-        'ImageSource': [Element.ENUM, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'MIMEType': [Element.STRING],
-        'BackgroundRepeat': [Element.ENUM],
-        'TransparentColor': [Element.COLOR],
-        'Position': [Element.ENUM],
+        'ImageSource': Meta(Element.ENUM, Card.ONE, True),
+        'Value': Meta(Element.VARIANT, Card.ONE),
+        'MIMEType': Meta(Element.STRING),
+        'BackgroundRepeat': Meta(Element.ENUM),
+        'TransparentColor': Meta(Element.COLOR),
+        'Position': Meta(Element.ENUM),
         }
 
     def __init__(self, node, lnk):
@@ -1214,13 +1184,13 @@ class BackgroundImage(Element):
 class ReportItems(Element):
 
     _element_list = {
-            'Line': [Element.ELEMENT, Card.ZERO_MANY],
-            'Rectangle': [Element.ELEMENT, Card.ZERO_MANY],
-            'Textbox': [Element.ELEMENT, Card.ZERO_MANY],
-            'Image': [Element.ELEMENT, Card.ZERO_MANY],
-            'Subreport': [Element.ELEMENT, Card.ZERO_MANY],
-            'Tablix': [Element.ELEMENT, Card.ZERO_MANY],
-            'Chart': [Element.ELEMENT, Card.ZERO_MANY],
+            'Line': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Rectangle': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Textbox': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Image': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Subreport': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Tablix': Meta(Element.ELEMENT, Card.ZERO_MANY),
+            'Chart': Meta(Element.ELEMENT, Card.ZERO_MANY),
         }
 
     def __init__(self, node, lnk):
@@ -1231,20 +1201,21 @@ class ReportItems(Element):
 class _ReportItem(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'ActionInfo': [],
-        'Top': [Element.SIZE, Card.ZERO_ONE, True],
-        'Left': [Element.SIZE, Card.ZERO_ONE, True],
-        'Height': [Element.SIZE, Card.ZERO_ONE, True],
-        'Width': [Element.SIZE, Card.ZERO_ONE, True],
-        'ZIndex': [Element.INTEGER, Card.ZERO_ONE, True, -1],
-        'Visibility': [],
-        'ToolTip': [Element.STRING],
-        'Bookmark': [Element.STRING],
-        'RepeatWith': [Element.STRING, Card.ZERO_ONE, True],
-        'Style': [],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'ActionInfo': Meta(),
+        'Top': Meta(Element.SIZE, constant=True),
+        'Left': Meta(Element.SIZE, constant=True),
+        'Height': Meta(Element.SIZE, constant=True),
+        'Width': Meta(Element.SIZE, constant=True),
+        'ZIndex': Meta(Element.INTEGER, constant=True, default=-1),
+        'Visibility': Meta(),
+        'ToolTip': Meta(Element.STRING),
+        'Bookmark': Meta(Element.STRING),
+        'RepeatWith': Meta(Element.STRING, constant=True),
+        'Style': Meta(),
+        'DataElementName': Meta(Element.STRING, constant=True),
+        'DataElementOutput': Meta(
+            Element.ENUM, constant=True, default='Auto'),
         }
 
     def __init__(self, type, node, lnk):
@@ -1262,10 +1233,10 @@ class Line(_ReportItem):
 class Rectangle(_ReportItem):
 
     _element_list = {
-        'ReportItems': [],
-        'PageBreak': [],
-        'KeepTogether': [Element.BOOLEAN, 0, True, False],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, 0, True, True],
+        'ReportItems': Meta(),
+        'PageBreak': Meta(),
+        'KeepTogether': Meta(Element.BOOLEAN, 0, True, False),
+        'OmitBorderOnPageBreak': Meta(Element.BOOLEAN, 0, True, True),
         }
 
     def __init__(self, node, lnk):
@@ -1275,12 +1246,12 @@ class Rectangle(_ReportItem):
 class Subreport(_ReportItem):
 
     _element_list = {
-        'ReportName': [Element.STRING, Card.ONE, True],
-        'Parameters': [],
-        'NoRowsMessage': [Element.STRING],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'MergeTransactions': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
+        'ReportName': Meta(Element.STRING, Card.ONE, True),
+        'Parameters': Meta(),
+        'NoRowsMessage': Meta(Element.STRING),
+        'KeepTogether': Meta(Element.BOOLEAN, constant=True, default=False),
+        'MergeTransactions': Meta(Element.BOOLEAN, constant=True),
+        'OmitBorderOnPageBreak': Meta(Element.BOOLEAN, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -1290,7 +1261,7 @@ class Subreport(_ReportItem):
 class Parameters(Element):
 
     _element_list = {
-        'Parameter': [Element.ELEMENT, Card.ONE_MANY]
+        'Parameter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1300,9 +1271,9 @@ class Parameters(Element):
 class Parameter(Element):
 
     _element_list = {
-        'Name': [Element.STRING, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'Omit': [Element.BOOLEAN],
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'Value': Meta(Element.VARIANT, Card.ONE),
+        'Omit': Meta(Element.BOOLEAN),
         }
 
     def __init__(self, node, lnk):
@@ -1312,10 +1283,10 @@ class Parameter(Element):
 class Image(_ReportItem):
 
     _element_list = {
-        'ImageSource': [Element.ENUM, Card.ONE, True],
-        'Value': [Element.VARIANT, Card.ONE],
-        'MIMEType': [Element.STRING],
-        'ImageSizing': [Element.ENUM, Card.ZERO_ONE, True, 'AutoSize'],
+        'ImageSource': Meta(Element.ENUM, Card.ONE, True),
+        'Value': Meta(Element.VARIANT, Card.ONE),
+        'MIMEType': Meta(Element.STRING),
+        'ImageSizing': Meta(Element.ENUM, constant=True, default='AutoSize'),
         }
 
     def __init__(self, node, lnk):
@@ -1325,14 +1296,14 @@ class Image(_ReportItem):
 class Textbox(_ReportItem):
 
     _element_list = {
-        'Value': [Element.VARIANT, Card.ZERO_ONE],
-        'CanGrow': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'CanShrink': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'HideDuplicates': [Element.STRING, Card.ZERO_ONE, True],
-        'ToggleImage': [],
-        'DataElementStyle': [
-            Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        'Value': Meta(Element.VARIANT),
+        'CanGrow': Meta(Element.BOOLEAN, constant=True),
+        'CanShrink': Meta(Element.BOOLEAN, constant=True),
+        'KeepTogether': Meta(Element.BOOLEAN, constant=True, default=False),
+        'HideDuplicates': Meta(Element.STRING, constant=True),
+        'ToggleImage': Meta(),
+        'DataElementStyle': Meta(
+            Element.ENUM, constant=True, default='Auto'),
         }
 
     def __init__(self, node, lnk):
@@ -1342,7 +1313,7 @@ class Textbox(_ReportItem):
 class ToggleImage(Element):
 
     _element_list = {
-        'InitialState': [Element.BOOLEAN, Card.ONE]
+        'InitialState': Meta(Element.BOOLEAN, Card.ONE)
         }
 
     def __init__(self, node, lnk):
@@ -1352,11 +1323,11 @@ class ToggleImage(Element):
 class _DataRegion(_ReportItem):
 
     _element_list = {
-        'NoRowsMessage': [Element.STRING],
-        'DataSetName': [Element.STRING, Card.ZERO_ONE, True],
-        'PageBreak': [],
-        'Filters': [],
-        'SortExpressions': [],
+        'NoRowsMessage': Meta(Element.STRING),
+        'DataSetName': Meta(Element.STRING, constant=True),
+        'PageBreak': Meta(),
+        'Filters': Meta(),
+        'SortExpressions': Meta(),
         }
 
     def __init__(self, type, node, lnk):
@@ -1366,18 +1337,18 @@ class _DataRegion(_ReportItem):
 class Tablix(_DataRegion):
 
     _element_list = {
-        'TablixCorner': [],
-        'TablixBody': [Element.ELEMENT, Card.ONE],
-        'TablixColumnHierarchy': [Element.ELEMENT, Card.ONE],
-        'TablixRowHierarchy': [Element.ELEMENT, Card.ONE],
-        'LayoutDirection': [Element.ENUM, Card.ZERO_ONE, True, 'LTR'],
-        'GroupsBeforeRowHeaders': [Element.INTEGER, Card.ZERO_ONE, True],
-        'RepeatColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'RepeatRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'FixedColumnHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'FixedRowHeaders': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'OmitBorderOnPageBreak': [Element.BOOLEAN, Card.ZERO_ONE, True],
+        'TablixCorner': Meta(),
+        'TablixBody': Meta(Element.ELEMENT, Card.ONE),
+        'TablixColumnHierarchy': Meta(Element.ELEMENT, Card.ONE),
+        'TablixRowHierarchy': Meta(Element.ELEMENT, Card.ONE),
+        'LayoutDirection': Meta(Element.ENUM, constant=True, default='LTR'),
+        'GroupsBeforeRowHeaders': Meta(Element.INTEGER, constant=True),
+        'RepeatColumnHeaders': Meta(Element.BOOLEAN, constant=True),
+        'RepeatRowHeaders': Meta(Element.BOOLEAN, constant=True),
+        'FixedColumnHeaders': Meta(Element.BOOLEAN, constant=True),
+        'FixedRowHeaders': Meta(Element.BOOLEAN, constant=True),
+        'KeepTogether': Meta(Element.BOOLEAN, constant=True, default=False),
+        'OmitBorderOnPageBreak': Meta(Element.BOOLEAN, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -1387,7 +1358,7 @@ class Tablix(_DataRegion):
 class TablixCorner(Element):
 
     _element_list = {
-        'TablixCornerRows': [Element.ELEMENT, Card.ONE]
+        'TablixCornerRows': Meta(Element.ELEMENT, Card.ONE)
         }
 
     def __init__(self, node, lnk):
@@ -1397,7 +1368,7 @@ class TablixCorner(Element):
 class TablixCornerRows(Element):
 
     _element_list = {
-        'TablixCornerRow': [Element.ELEMENT, Card.ONE_MANY]
+        'TablixCornerRow': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1408,7 +1379,7 @@ class TablixCornerRows(Element):
 class TablixCornerRow(Element):
 
     _element_list = {
-        'TablixCornerCell': [Element.ELEMENT, Card.ZERO_ONE]
+        'TablixCornerCell': Meta()
         }
 
     def __init__(self, node, lnk):
@@ -1420,7 +1391,7 @@ class TablixCornerRow(Element):
 class TablixCornerCell(Element):
 
     _element_list = {
-        'CellContents': []
+        'CellContents': Meta()
         }
 
     def __init__(self, node, lnk):
@@ -1431,9 +1402,9 @@ class TablixCornerCell(Element):
 class CellContents(Element):
 
     _element_list = {
-        'ReportItems': [],
-        'ColSpan': [Element.INTEGER, Card.ZERO_ONE, True],
-        'RowSpan': [Element.INTEGER, Card.ZERO_ONE, True],
+        'ReportItems': Meta(),
+        'ColSpan': Meta(Element.INTEGER, constant=True),
+        'RowSpan': Meta(Element.INTEGER, constant=True),
         }
 
     def __init__(self, node, lnk):
@@ -1443,7 +1414,7 @@ class CellContents(Element):
 class _TablixHierarchy(Element):
 
     _element_list = {
-        'TablixMembers': [Element.ELEMENT, Card.ONE]
+        'TablixMembers': Meta(Element.ELEMENT, Card.ONE)
         }
 
     def __init__(self, node, lnk):
@@ -1465,7 +1436,7 @@ class TablixColumnHierarchy(_TablixHierarchy):
 class TablixMembers(Element):
 
     _element_list = {
-        'TablixMember': [Element.ELEMENT, Card.ONE_MANY]
+        'TablixMember': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1476,16 +1447,18 @@ class TablixMembers(Element):
 class TablixMember(Element):
 
     _element_list = {
-        'Group': [],
-        'TablixHeader': [],
-        'TablixMembers': [],
-        'FixedData': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'Visibility': [],
-        'KeepTogether': [Element.BOOLEAN, Card.ZERO_ONE, True, False],
-        'HideIfNoRows': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'RepeatOnNewPage': [Element.BOOLEAN, Card.ZERO_ONE, True],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True],
-        'DataElementOutput': [Element.ENUM, Card.ZERO_ONE, True, 'Auto'],
+        'Group': Meta(),
+        'TablixHeader': Meta(),
+        'TablixMembers': Meta(),
+        'FixedData': Meta(Element.BOOLEAN, constant=True),
+        'Visibility': Meta(),
+        'KeepTogether': Meta(
+            Element.BOOLEAN, constant=True, default=False),
+        'HideIfNoRows': Meta(Element.BOOLEAN, constant=True),
+        'RepeatOnNewPage': Meta(Element.BOOLEAN, constant=True),
+        'DataElementName': Meta(Element.STRING, constant=True),
+        'DataElementOutput': Meta(
+            Element.ENUM, constant=True, default='Auto'),
         }
 
     def __init__(self, node, lnk):
@@ -1496,8 +1469,8 @@ class TablixMember(Element):
 class TablixHeader(Element):
 
     _element_list = {
-        'Size': [Element.SIZE, Card.ONE, True],
-        'CellContents': [Element.ELEMENT, Card.ONE],
+        'Size': Meta(Element.SIZE, Card.ONE, True),
+        'CellContents': Meta(Element.ELEMENT, Card.ONE),
         }
 
     def __init__(self, node, lnk):
@@ -1507,8 +1480,8 @@ class TablixHeader(Element):
 class TablixBody(Element):
 
     _element_list = {
-        'TablixColumns': [Element.ELEMENT, Card.ONE],
-        'TablixRows': [Element.ELEMENT, Card.ONE],
+        'TablixColumns': Meta(Element.ELEMENT, Card.ONE),
+        'TablixRows': Meta(Element.ELEMENT, Card.ONE),
         }
 
     def __init__(self, node, lnk):
@@ -1518,7 +1491,7 @@ class TablixBody(Element):
 class TablixColumns(Element):
 
     _element_list = {
-        'TablixColumn': [Element.ELEMENT, Card.ONE_MANY]
+        'TablixColumn': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1529,7 +1502,7 @@ class TablixColumns(Element):
 class TablixColumn(Element):
 
     _element_list = {
-        'Width': [Element.SIZE, Card.ONE, True]
+        'Width': Meta(Element.SIZE, Card.ONE, True)
         }
 
     def __init__(self, node, lnk):
@@ -1540,7 +1513,7 @@ class TablixColumn(Element):
 class TablixRows(Element):
 
     _element_list = {
-        'TablixRow': [Element.ELEMENT, Card.ONE_MANY]
+        'TablixRow': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1551,8 +1524,8 @@ class TablixRows(Element):
 class TablixRow(Element):
 
     _element_list = {
-            'Height': [Element.SIZE, Card.ONE, True],
-            'TablixCells': [Element.ELEMENT, Card.ONE],
+            'Height': Meta(Element.SIZE, Card.ONE, True),
+            'TablixCells': Meta(Element.ELEMENT, Card.ONE),
         }
 
     def __init__(self, node, lnk):
@@ -1563,7 +1536,7 @@ class TablixRow(Element):
 class TablixCells(Element):
 
     _element_list = {
-        'TablixCell': [Element.ELEMENT, Card.ONE_MANY]
+        'TablixCell': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
@@ -1574,10 +1547,11 @@ class TablixCells(Element):
 class TablixCell(Element):
 
     _element_list = {
-        'CellContents': [],
-        'DataElementName': [Element.STRING, Card.ZERO_ONE, True, 'Cell'],
-        'DataElementOutput': [
-            Element.ENUM, Card.ZERO_ONE, True, 'ContentsOnly'],
+        'CellContents': Meta(),
+        'DataElementName': Meta(
+            Element.STRING, constant=True, default='Cell'),
+        'DataElementOutput': Meta(
+            Element.ENUM, constant=True, default='ContentsOnly'),
         }
 
     def __init__(self, node, lnk):
@@ -1588,7 +1562,7 @@ class TablixCell(Element):
 class PageBreak(Element):
 
     _element_list = {
-        'BreakLocation': [Element.ENUM, Card.ONE, True]
+        'BreakLocation': Meta(Element.ENUM, Card.ONE, True)
         }
 
     def __init__(self, node, lnk):
