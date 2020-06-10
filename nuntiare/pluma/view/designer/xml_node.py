@@ -48,14 +48,6 @@ class NuntiareXmlNode(ttk.Treeview):
         root = self._doc.getElementsByTagName('Nuntiare')[0]
         item = self._add_node_element('', root)
         self._get_nodes(root, item)
-        self._draw_all()
-
-    def _draw_all(self):
-        self._designer.sections.show_section()
-        for item, value in self._values.items():
-            if value[1] is None:
-                continue
-            value[1].draw()
 
     def _get_nodes(self, node, parent):
         for n in node.childNodes:
@@ -71,23 +63,20 @@ class NuntiareXmlNode(ttk.Treeview):
                            text=node.nodeName,
                            values=(node.nodeName),
                            tags=('element'))
+        self._values[item] = [node, None]
         report_item = None
         if node.nodeName in nuntiare._REPORT_ITEMS:
-            report_item = ReportItem(self, item)
-            report_item.set_canvas_section(self._designer.sections)
-        self._values[item] = [node, report_item]
+            #report_item = ReportItem(self, item)
+            #report_item.set_canvas_section(self._designer.sections)
+            report_item = self._designer.sections.add_report_item(item)
+        self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._show_item_name(item)
 
         if node.nodeName == 'PageHeader':
             self._designer.sections.set_page_item(item)
-        elif node.nodeName == 'PageHeader':
-            self._designer.sections.get_section('header').set_item(item)
-        elif node.nodeName == 'PageFooter':
-            self._designer.sections.get_section('footer').set_item(item)
-        elif node.nodeName == 'Body':
-            self._designer.sections.get_section('body').set_item(item)
-
+        if node.nodeName in ('PageHeader', 'PageFooter', 'Body'):
+            self._designer.sections.get_section(node.nodeName).set_item(item)
         return item
 
     def _show_item_name(self, item):
@@ -158,6 +147,25 @@ class NuntiareXmlNode(ttk.Treeview):
         property_ = event[1]
         item = master.get_item()
         self._set_node_value(item, property_._text, property_.get_value())
+
+    def get_report_item_info(self, item):
+        itm = item
+        section = None
+        report_item_parent = None
+        type_ = self.set(item, 'name')
+        while True:
+            parent = self.parent(itm)
+            if not parent:
+                break
+            if self._values[parent][0].nodeName in (
+                    'PageHeader', 'PageFooter', 'Body'):
+                section = self._values[parent][0].nodeName
+            if self._values[parent][1] is not None:
+                report_item_parent = parent
+            if section is not None and report_item_parent is not None:
+                break
+            itm = parent
+        return section, report_item_parent, type_
 
 
 class PropertyFrame(ttk.Frame):

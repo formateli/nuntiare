@@ -6,28 +6,57 @@ from tkinter import ttk
 from ..common import PanedView, MementoCaretaker
 from ..common.tools import get_size_px
 from .xml_node import NuntiareXmlNode, NuntiareProperty
+from .report_item import ReportItem
 from nuntiare.report import Report
 
 
 class Section(tk.Canvas):
-    def __init__(self, name, master,
+    def __init__(self, master, master_widget,
                  xscrollcommand,
                  yscrollcommand):
         super(Section, self).__init__(
-                master, bg='#f2f2f2',
-                xscrollcommand=master.xscrollbar.set,
-                yscrollcommand=master.yscrollbar.set)
+                master_widget, bg='#f2f2f2',
+                xscrollcommand=master_widget.xscrollbar.set,
+                yscrollcommand=master_widget.yscrollbar.set)
         self.grid(row=0, column=0, sticky='nsew')
 
-        self.name = name
-        self.frame = master
+        self._master = master
+
+        self.frame = master_widget
+
         self._objects = {}
+        self._report_items = []
 
         self.config(
                 width=100, height=100,
                 scrollregion=(0, 0, 100, 100))
 
         self._item = None
+
+    def add_report_item(self, tree_node, parent, type_):
+        report_item = ReportItem(self, tree_node, parent, type_)
+
+        tw = self._master._treeview
+        report_item.set_size(
+            get_size_px(
+                tw._get_node_value(
+                    report_item.item, 'Left', default='0px')),
+            get_size_px(
+                tw._get_node_value(
+                    report_item.item, 'Top', default='0px')),
+            get_size_px(
+                tw._get_node_value(
+                    report_item.item, 'Width', default='0px')),
+            get_size_px(
+                tw._get_node_value(
+                    report_item.item, 'Height', default='0px')),
+            )
+        self._report_items.append(report_item)
+        return report_item
+
+    def draw_all(self):
+        for ri in self._report_items:
+            ri.draw()
 
     def set_item(self, item):
         self._item = item
@@ -41,7 +70,7 @@ class Section(tk.Canvas):
     def draw_rectangle_style(self, x1, y1, x2, y2, style):
         fill = style['color'] if style['color'] is not None else ''
         
-        border = style['border']:
+        border = style['border']
         if border is not None:
             outline = style['border_color']
             border_style = style['border_style']
@@ -67,10 +96,16 @@ class Sections(ttk.PanedWindow):
         self._page_item = None
         self._treeview = None
         self._sections = {
-            'header': None,
-            'body': None,
-            'footer': None,
+            'PageHeader': None,
+            'Body': None,
+            'PageFooter': None,
             }
+
+    def add_report_item(self, tree_node):
+        section, parent, type_ = \
+            self._treeview.get_report_item_info(tree_node)
+        return self._sections[section].add_report_item(
+            tree_node, parent, type_)
 
     def set_page_item(self, item):
         self._page_item = item
@@ -80,7 +115,7 @@ class Sections(ttk.PanedWindow):
 
     def create_section(self, name, frame):
         section = Section(
-            name,
+            self,
             frame,
             xscrollcommand=frame.xscrollbar.set,
             yscrollcommand=frame.yscrollbar.set)
@@ -92,6 +127,17 @@ class Sections(ttk.PanedWindow):
 
     def get_section(self, name):
         return self._sections[name]
+
+    def draw_all(self):
+        self.show_section()
+        #for item, value in self._treeview._values.items():
+        #    if value[1] is None:
+        #        # It is not a ReportItem
+        #        continue
+        #    value[1].draw()
+
+        for _, section in self._sections.items():
+            section.draw_all()
 
     def show_section(self, name=None):
         if name is None:
@@ -132,9 +178,9 @@ class DesignerView(PanedView):
         self.sections.grid(row=0, column=0, sticky='wens')
         self.left_window.add(frame, weight=1)
 
-        self.sections.create_section('header', self.get_frame())
-        self.sections.create_section('body', self.get_frame())
-        self.sections.create_section('footer', self.get_frame())
+        self.sections.create_section('PageHeader', self.get_frame())
+        self.sections.create_section('Body', self.get_frame())
+        self.sections.create_section('PageFooter', self.get_frame())
 
         r_xml_frame = self.get_frame()
         self._xml = NuntiareXmlNode(
@@ -165,6 +211,8 @@ class DesignerView(PanedView):
         else:
             source = self.view.full_file_name
         self._xml.parse(source, is_file)
+
+        self.sections.draw_all()
 
     @staticmethod
     def _new_snipet():

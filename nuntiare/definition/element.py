@@ -148,9 +148,7 @@ class Element:
 
             if element_type == Element.ELEMENT:
                 el = Element.element_factory(n.nodeName, n, lnk)
-                if n.nodeName in (
-                        'Line', 'Rectangle', 'Textbox', 'Image',
-                        'Subreport', 'CustomReportItem', 'Tablix'):
+                if n.nodeName in _REPORT_ITEMS:
                     if n.nodeName in ('Textbox'):
                         err_msg = "Report already has a " \
                             "Texbox with name '{0}'"
@@ -377,6 +375,23 @@ class Element:
         el = self.get_element(name)
         if el:
             return True
+
+
+class ElementMeta:
+    def __init__(self,
+                 type_=Element.ELEMENT,
+                 card=Card.ZERO_ONE,
+                 must_be_constant=False,
+
+                 default_value=None):
+
+        self._type = type_
+        self._card = card
+        self._must_be_constant = must_be_constant
+        self._default_value = default_value
+
+        if self._default_value and type_ == Element.SIZE:
+            self._default_value = 0
 
 
 class Link:
