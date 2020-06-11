@@ -15,15 +15,6 @@ class ReportItemAttribute:
         self.item = None
         self.style = None
 
-    def set_tree_item(self, item):
-        if item is None:
-            return
-        self.item = item
-        name = self._treeview.set(item, 'name')
-        if name != self.name:
-            raise Exception('Invalid name. {0} != {1}'.format(
-                name, self.name))
-
     def __getattr__(self, name):
         if name in self.__dict__:
             return self.__dict__[name]
@@ -58,6 +49,15 @@ class ReportItemAttribute:
             'Style', self._treeview)
         self.style.set_tree_item(self._get_sub_item('Style'))
 
+    def set_tree_item(self, item):
+        if item is None:
+            return
+        self.item = item
+        name = self._treeview.set(item, 'name')
+        if name != self.name:
+            raise Exception('Invalid name. {0} != {1}'.format(
+                name, self.name))
+
     def _get_sub_item(self, name):
         items = self._treeview.get_children(self.item)
         for it in items:
@@ -77,6 +77,18 @@ class ReportItem(ReportItemAttribute):
 
         if self.name in nuntiare._REPORT_ITEMS:
             self.set_style()
+
+    def update(self, name_changed):
+        print(name_changed)
+        obj = self._canvas.get_object_from_report_item(self)
+        x1, y1, x2, y2 = self._canvas.coords(obj)
+        self._canvas.coords(
+            obj,
+            get_size_px(self.Left),
+            get_size_px(self.Top),
+            get_size_px(self.Left) + get_size_px(self.Width),
+            get_size_px(self.Top) + get_size_px(self.Height)
+            )
 
     def _sum_parent(self, name):
         if self._parent is None:
@@ -98,28 +110,35 @@ class ReportItem(ReportItemAttribute):
         self._canvas.tag_bind(obj, '<1>', self._item_click)
 
     def _item_click(self, event):
+        x = self._canvas.canvasx(event.x)
+        y = self._canvas.canvasy(event.y)
+
+#        it = self._canvas.find_overlapping(
+#            event.x, event.y, event.x + 1, event.y + 1)
+
         it = self._canvas.find_overlapping(
-            event.x, event.y, event.x + 1, event.y + 1)
+            x, y, x + 1, y + 1)
+
         if not it:
             return
-        it = it[0]
-        report_item = self._canvas.get_object(it)
+        it = it[-1]
+        report_item = self._canvas.get_report_item_from_object(it)
         self._treeview.focus_set()
         self._treeview.see(report_item.item)
         self._treeview.focus(report_item.item)
         self._treeview.selection_set(report_item.item)
 
-    def _get_info(self, val):
-        itm = self._item
-        while True:
-            parent = self._treeview.parent(itm)
-            if not parent:
-                break
-            if val == 'section':
-                if self._treeview._values[parent][0].nodeName in (
-                        'PageHeader', 'PageFooter', 'Body'):
-                    return self._treeview._values[parent][0].nodeName
-            elif val == 'parent':
-                if self._treeview._values[parent][1] is not None:
-                    return parent
-            itm = parent
+#    def _get_info(self, val):
+#        itm = self._item
+#        while True:
+#            parent = self._treeview.parent(itm)
+#            if not parent:
+#                break
+#            if val == 'section':
+#                if self._treeview._values[parent][0].nodeName in (
+#                        'PageHeader', 'PageFooter', 'Body'):
+#                    return self._treeview._values[parent][0].nodeName
+#            elif val == 'parent':
+#                if self._treeview._values[parent][1] is not None:
+#                    return parent
+#            itm = parent

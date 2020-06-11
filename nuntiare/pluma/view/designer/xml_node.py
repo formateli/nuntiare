@@ -25,6 +25,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 
+        self._doc = None  # dom document
         self._designer = designer
         self._get_element_meta()
 
@@ -52,6 +53,30 @@ class NuntiareXmlNode(ttk.Treeview):
             add_meta(el)
         for el in nuntiare._EXPRESSION_LIST_CLASSES:
             add_meta(el)
+
+    def get_xml_text(self):
+        # This routine is necesary to avoid
+        # lines spaces when using toprettyxml()
+        data = self._doc.toprettyxml(indent='  ', encoding='utf-8')
+        data = data.decode('utf-8')
+
+        reparsed = minidom.parseString(data)
+        data = ''
+        for line in reparsed.toprettyxml(indent=' ').split('\n'):
+            st = line.strip()
+            if st:
+                data += st
+
+        dom = minidom.parseString(data)
+        root = dom.getElementsByTagName('Nuntiare')[0]
+
+        # TODO Verify that comment does not already exists, avoiding duplicate
+        comment = dom.createComment(
+            ' Created by Pluma - The Nuntiare Designer tool.\n'
+            '     Copyright Fredy Ramirez - https://formateli.com ')
+        dom.insertBefore(comment, root)
+
+        return dom.toprettyxml(indent='  ', encoding='utf-8')
 
     def set_property(self, property_):
         self._property = property_
@@ -84,8 +109,6 @@ class NuntiareXmlNode(ttk.Treeview):
         self._values[item] = [node, None]
         report_item = None
         if node.nodeName in nuntiare._REPORT_ITEMS:
-            #report_item = ReportItem(self, item)
-            #report_item.set_canvas_section(self._designer.sections)
             report_item = self._designer.sections.add_report_item(
                     node.nodeName, item)
         self._values[item][1] = report_item
@@ -105,17 +128,34 @@ class NuntiareXmlNode(ttk.Treeview):
             self.item(item, text=text)
 
     def _set_node_value(self, item, name, value):
-        self._get_node_value(item, name, value)
+        node = self._get_xml_sub_node(item, name)
+        if node is None:
+            master = self._values[item][0]
+            el = self._doc.createElement(name)
+            text = self._doc.createTextNode(value)
+            el.appendChild(text)
+            master.appendChild(el)
 
-    def _get_node_value(self, item, name, set_value=None):
+            new_item = self.insert(item, 'end',
+                text=name,
+                values=(name),
+                tags=('element'))
+            self._values[new_item] = [el, None]
+
+        else:
+            self._set_node_text(node, value)
+
+    def _get_node_value(self, item, name):
         node = self._values[item][0]
         for n in node.childNodes:
             if n.nodeName == name:
-                if set_value is None:
-                    return self._get_node_text(n)
-                else:
-                    self._set_node_text(n, set_value)
-                    return
+                return self._get_node_text(n)
+
+    def _get_xml_sub_node(self, item, name):
+        node = self._values[item][0]
+        for n in node.childNodes:
+            if n.nodeName == name:
+                return n
 
     def _set_node_text(self, node, value):
         for n in node.childNodes:
@@ -152,12 +192,6 @@ class NuntiareXmlNode(ttk.Treeview):
             property_.set_value(
                     self._get_node_value(item, key), meta.default)
 
-    def _property_changed(self, event):
-        master = event[0]
-        property_ = event[1]
-        item = master.get_item()
-        self._set_node_value(item, property_._text, property_.get_value())
-
     def get_report_item_info(self, item):
         itm = item
         section = None
@@ -177,6 +211,25 @@ class NuntiareXmlNode(ttk.Treeview):
                 break
             itm = parent
         return section, report_item_parent, meta
+
+    def _property_changed(self, event):
+        master = event[0]
+        property_ = event[1]
+        item = master.get_item()
+        self._set_node_value(item, property_._text, property_.get_value())
+
+        name = self.set(item, 'name')
+        if name == 'Page' and property_._text not in (
+                'PageHeader', 'PageFooter', 'Style',
+                'Columns', 'ColumnSpacing'):
+            self._designer.sections.update()
+        elif name in ('PageHeader', 'PageFooter') and \
+                    property_._text in ('Height'):
+            self._designer.sections.get_section[name].update()
+        elif name in nuntiare._REPORT_ITEMS and \
+                property_._text in ('Top', 'Left', 'Height', 'Width'):
+            report_item = self._values[item][1]
+            report_item.update(property_._text)
 
 
 class PropertyFrame(ttk.Frame):

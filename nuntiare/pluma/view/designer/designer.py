@@ -24,7 +24,9 @@ class Section(tk.Canvas):
 
         self.frame = master_widget
 
-        self._objects = {}
+        self._objects_2_ritems = {}
+        self._ritems_2_objects = {}
+
         self._report_items = []
         self.info = ReportItemAttribute(
                 name, master._treeview)
@@ -48,11 +50,20 @@ class Section(tk.Canvas):
         self.info.set_tree_item(item)
         self.info.set_style()
 
-    def add_object(self, obj, report_item):
-        self._objects[obj] = report_item
+    def update(self):
+        pass
 
-    def get_object(self, obj):
-        return self._objects[obj]
+    def add_object(self, obj, report_item):
+        self._objects_2_ritems[obj] = report_item
+        self._ritems_2_objects[report_item] = obj
+
+    def get_object_from_report_item(self, report_item):
+        if self._ritems_2_objects[report_item]:
+            return self._ritems_2_objects[report_item]
+
+    def get_report_item_from_object(self, obj):
+        if self._objects_2_ritems[obj]:
+            return self._objects_2_ritems[obj]
 
     def draw_rectangle_style(self, x1, y1, x2, y2, style):
         fill = style['color'] if style['color'] is not None else ''
@@ -102,6 +113,9 @@ class Sections(ttk.PanedWindow):
     def set_page_item(self, item):
         self._page_info.set_tree_item(item)
         self._page_info.set_style()
+
+    def update():
+        pass
 
     def create_section(self, name, frame):
         section = Section(

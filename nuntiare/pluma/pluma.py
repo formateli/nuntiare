@@ -39,7 +39,7 @@ class Pluma(TkMaterialTheme):
         self.toolbar.add_toolbar_item(
                 'file', 'open', self.open_file, 'folder-24px')
         self.toolbar.add_toolbar_item(
-                'file', 'save', self.open_file, 'save_alt-24px')
+                'file', 'save', self.save, 'save_alt-24px')
         self.toolbar.add_toolbar('right')
         self.toolbar.add_toolbar_item(
                 'right', 'toggle', self._toggle_right_pane,
@@ -178,7 +178,12 @@ class Pluma(TkMaterialTheme):
             view.xml.text.tag_add('sel', '1.0', 'end')
 
     def save(self, event=None):
-        pass
+        view = self.current_view.get_view('designer')
+        if view.view.full_file_name is None:
+            pass  # TODO New file
+        else:
+            with open(view.view.full_file_name, 'wb') as file_:
+                file_.write(view._xml.get_xml_text())
 
     def save_as(self, event=None):
         pass

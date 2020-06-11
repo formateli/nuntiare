@@ -88,6 +88,15 @@ class TextView(PanedView):
         tb = self.view.pluma.toolbar
         tb.show('text', True)
         tb.show('undo_redo', True)
+
+        treeview = self.view.get_view('designer')._xml
+
+        self.text.delete(1.0, tk.END)
+        self.text.insert(
+            '1.0',
+            treeview.get_xml_text(),
+            True)
+
         self._update_toolbar()
 
     def deselected(self):
