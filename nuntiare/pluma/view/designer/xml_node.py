@@ -9,7 +9,10 @@ from .report_item import ReportItem
 
 class NuntiareXmlNode(ttk.Treeview):
 
-    _elements = {}
+    # Cache elements meta.
+    # key: Element name
+    # Value: Dictionary of Meta
+    _element_meta = {}
 
     def __init__(self, master,
                  designer,
@@ -23,6 +26,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 yscrollcommand=yscrollcommand)
 
         self._designer = designer
+        self._get_element_meta()
 
         # Allow horizontal scrolling
         # TODO width should be adjusted according to
@@ -34,6 +38,20 @@ class NuntiareXmlNode(ttk.Treeview):
 
         # item: [xml_node, report_item]
         self._values = {}
+
+    @classmethod
+    def _get_element_meta(cls):
+        def add_meta(el):
+            class_ = getattr(nuntiare, el)
+            meta = nuntiare.Element._get_element_list(class_)
+            NuntiareXmlNode._element_meta[el] = meta
+
+        if NuntiareXmlNode._element_meta:
+            return
+        for el in nuntiare._ELEMENT_CLASSES:
+            add_meta(el)
+        for el in nuntiare._EXPRESSION_LIST_CLASSES:
+            add_meta(el)
 
     def set_property(self, property_):
         self._property = property_
@@ -68,7 +86,8 @@ class NuntiareXmlNode(ttk.Treeview):
         if node.nodeName in nuntiare._REPORT_ITEMS:
             #report_item = ReportItem(self, item)
             #report_item.set_canvas_section(self._designer.sections)
-            report_item = self._designer.sections.add_report_item(item)
+            report_item = self._designer.sections.add_report_item(
+                    node.nodeName, item)
         self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._show_item_name(item)
@@ -88,17 +107,15 @@ class NuntiareXmlNode(ttk.Treeview):
     def _set_node_value(self, item, name, value):
         self._get_node_value(item, name, value)
 
-    def _get_node_value(self, item, name, set_value=None, default=None):
+    def _get_node_value(self, item, name, set_value=None):
         node = self._values[item][0]
         for n in node.childNodes:
             if n.nodeName == name:
                 if set_value is None:
-                    return self._get_node_text(n, default)
+                    return self._get_node_text(n)
                 else:
                     self._set_node_text(n, set_value)
                     return
-        if set_value is None:
-            return default
 
     def _set_node_text(self, node, value):
         for n in node.childNodes:
@@ -108,11 +125,10 @@ class NuntiareXmlNode(ttk.Treeview):
         text = self._doc.createTextNode(value)
         node.parent.appendChild(text)
 
-    def _get_node_text(self, node, default):
+    def _get_node_text(self, node):
         for n in node.childNodes:
             if n.nodeName in ('#text'):
                 return n.nodeValue
-        return default
 
     def _item_clicked(self, event):
         sel = self.selection()
@@ -124,23 +140,17 @@ class NuntiareXmlNode(ttk.Treeview):
             return
 
         name = self.set(item, 'name')
-        if name not in NuntiareXmlNode._elements:
-            NuntiareXmlNode._elements[name] = []
-            class_ = getattr(nuntiare, name)
-            elements = nuntiare.Element._get_element_list(class_)
-            for key, value in elements.items():
-                if (not value or value[0] == nuntiare.Element.ELEMENT
-                        or value[0] == nuntiare.Element.EXPRESSION_LIST):
-                    continue
-                NuntiareXmlNode._elements[name].append(key)
-            NuntiareXmlNode._elements[name].sort()
-
         self._property.set_item(item)
 
-        for prop in NuntiareXmlNode._elements[name]:
-            property_ = self._property.add_property(prop, True)
+        for key, meta in NuntiareXmlNode._element_meta[name].items():
+            if (not meta or meta.type == nuntiare.Element.ELEMENT
+                    or meta.type == nuntiare.Element.EXPRESSION_LIST):
+                continue
+            property_ = self._property.add_property(
+                            key, meta.constant)
             # Get the value, if any, in current node
-            property_.set_value(self._get_node_value(item, prop), None)
+            property_.set_value(
+                    self._get_node_value(item, key), meta.default)
 
     def _property_changed(self, event):
         master = event[0]
@@ -152,7 +162,8 @@ class NuntiareXmlNode(ttk.Treeview):
         itm = item
         section = None
         report_item_parent = None
-        type_ = self.set(item, 'name')
+        name = self.set(item, 'name')
+        meta = NuntiareXmlNode._element_meta[name]
         while True:
             parent = self.parent(itm)
             if not parent:
@@ -165,7 +176,7 @@ class NuntiareXmlNode(ttk.Treeview):
             if section is not None and report_item_parent is not None:
                 break
             itm = parent
-        return section, report_item_parent, type_
+        return section, report_item_parent, meta
 
 
 class PropertyFrame(ttk.Frame):
@@ -254,6 +265,9 @@ class PropertyItem(PropertyFrame):
         self._entry.delete(0, 'end')
         if value is not None:
             self._entry.insert(0, self._value)
+        elif self._default is not None:
+            self._entry.insert(
+                0, '[Default: ' + str(self._default) + ']')
 
     def get_value(self):
         if self._value:
@@ -263,6 +277,6 @@ class PropertyItem(PropertyFrame):
 
     def _focusout(self, event):
         value = self._entry.get()
-        if value != self._value:
+        if value != self._value and not value.startswith('[Default: '):
             self._value = value
             self.fire_event('property_focusout', self)

@@ -21,6 +21,7 @@ from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
 
 _ELEMENT_CLASSES = [
+    'Nuntiare',
     'Page', 'PageHeader', 'PageFooter',
     'EmbeddedImages', 'EmbeddedImage',
     'Body', 'Visibility',
