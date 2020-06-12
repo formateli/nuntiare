@@ -21,6 +21,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 master,
                 columns=('name'),
                 displaycolumns=(),
+                selectmode='browse',
                 xscrollcommand=xscrollcommand,
                 yscrollcommand=yscrollcommand)
 
@@ -137,6 +138,7 @@ class NuntiareXmlNode(ttk.Treeview):
             ri_ri.Style.set_tree_item(item)
         self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
+        self.tag_bind('element', '<3>', self._item_menu)
         self._show_item_name(item)
 
         if node.nodeName == 'PageHeader':
@@ -188,6 +190,13 @@ class NuntiareXmlNode(ttk.Treeview):
         for n in node.childNodes:
             if n.nodeName in ('#text'):
                 return n.nodeValue
+
+    def _item_menu(self, event):
+        sel = self.selection()
+        item = sel[0] if sel else None
+        if item is None:
+            return
+        
 
     def _item_clicked(self, event):
         sel = self.selection()
