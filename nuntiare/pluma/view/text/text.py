@@ -50,6 +50,7 @@ class TextView(PanedView):
         #self.new_file(source)
 
     def onTextModified(self, event):
+        return
         text_info = event.widget.text_changed_info.copy()
         if not self.text.is_undo_redo:
             self._memento.insert_memento(text_info)

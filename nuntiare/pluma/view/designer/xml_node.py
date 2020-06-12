@@ -69,11 +69,26 @@ class NuntiareXmlNode(ttk.Treeview):
         dom = minidom.parseString(data)
         root = dom.getElementsByTagName('Nuntiare')[0]
 
-        # TODO Verify that comment does not already exists, avoiding duplicate
+        # Verify comments.
+        comment_nuntiare = (' This file is part of Nuntiare project.\n'
+            '     The COPYRIGHT file at the top level of this repository\n'
+            '     contains the full copyright notices and license terms. ')
+        comment_pluma = (' Created by Pluma - The Nuntiare Designer tool.\n'
+            '     Copyright Fredy Ramirez - https://formateli.com ')
         comment = dom.createComment(
             ' Created by Pluma - The Nuntiare Designer tool.\n'
             '     Copyright Fredy Ramirez - https://formateli.com ')
-        dom.insertBefore(comment, root)
+        for node in dom.childNodes:
+            if node.nodeName in ('#comment'):
+                val = node.nodeValue
+                if val.startswith(
+                        ' This file is part of Nuntiare project.'):
+                    comment = dom.createComment(comment_nuntiare)
+                    dom.replaceChild(comment, node)
+                elif val.startswith(
+                        ' Created by Pluma - The Nuntiare Designer tool.'):
+                    dom.removeChild(node)
+        dom.insertBefore(dom.createComment(comment_pluma), root)
 
         return dom.toprettyxml(indent='  ', encoding='utf-8')
 
@@ -337,6 +352,9 @@ class PropertyItem(PropertyFrame):
 
     def _focusout(self, event):
         value = self._entry.get()
-        if value != self._value and not value.startswith('[Default: '):
-            self._value = value
-            self.fire_event('property_focusout', self)
+        if (self._value is None and not value) or \
+                (value == self._value) or \
+                (value.startswith('[Default: ') and value.endswith(']')):
+            return
+        self._value = value
+        self.fire_event('property_focusout', self)

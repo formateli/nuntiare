@@ -21,12 +21,8 @@ class Section(tk.Canvas):
         self.grid(row=0, column=0, sticky='nsew')
 
         self._master = master
-
         self.frame = master_widget
-
         self._objects_2_ritems = {}
-        self._ritems_2_objects = {}
-
         self._report_items = []
         self.info = ElementStyle(
                 name, master._treeview)
@@ -42,9 +38,9 @@ class Section(tk.Canvas):
         self._report_items.append(report_item)
         return report_item
 
-    def draw_all(self):
+    def create_all(self):
         for ri in self._report_items:
-            ri.draw()
+            ri.create()
 
     def set_item(self, item):
         self.info.set_tree_item(item)
@@ -54,17 +50,12 @@ class Section(tk.Canvas):
 
     def add_object(self, obj, report_item):
         self._objects_2_ritems[obj] = report_item
-        self._ritems_2_objects[report_item] = obj
-
-    def get_object_from_report_item(self, report_item):
-        if self._ritems_2_objects[report_item]:
-            return self._ritems_2_objects[report_item]
 
     def get_report_item_from_object(self, obj):
         if self._objects_2_ritems[obj]:
             return self._objects_2_ritems[obj]
 
-    def draw_rectangle_style(self, x1, y1, x2, y2, style):
+    def create_rectangle_style(self, x1, y1, x2, y2, style):
         fill = style['color'] if style['color'] is not None else ''
 
         border = style['border']
@@ -129,10 +120,10 @@ class Sections(ttk.PanedWindow):
     def get_section(self, name):
         return self._sections[name]
 
-    def draw_all(self):
+    def create_all(self):
         self.show_section()
         for _, section in self._sections.items():
-            section.draw_all()
+            section.create_all()
 
     def show_section(self, name=None):
         if name is None:
@@ -205,7 +196,7 @@ class DesignerView(PanedView):
             source = self.view.full_file_name
         self._xml.parse(source, is_file)
 
-        self.sections.draw_all()
+        self.sections.create_all()
 
     @staticmethod
     def _new_snipet():
