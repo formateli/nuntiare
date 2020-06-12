@@ -4,7 +4,6 @@
 from xml.dom import minidom
 from tkinter import ttk
 import nuntiare.definition.element as nuntiare
-from .report_item import ReportItem
 
 
 class NuntiareXmlNode(ttk.Treeview):
@@ -102,15 +101,25 @@ class NuntiareXmlNode(ttk.Treeview):
                 self._get_nodes(n, item)
 
     def _add_node_element(self, parent, node):
-        item = self.insert(parent, 'end',
-                           text=node.nodeName,
-                           values=(node.nodeName),
-                           tags=('element'))
+        item = self.insert(
+                parent, 'end',
+                text=node.nodeName,
+                values=(node.nodeName),
+                tags=('element'))
         self._values[item] = [node, None]
         report_item = None
         if node.nodeName in nuntiare._REPORT_ITEMS:
             report_item = self._designer.sections.add_report_item(
                     node.nodeName, item)
+        elif node.nodeName == 'Page':
+            report_item = self._designer.sections.info
+        elif node.nodeName in ('PageHeader', 'PageFooter', 'Body'):
+            report_item = \
+                self._designer.sections._sections[node.nodeName].info
+        elif node.nodeName == 'Style':
+            ri_item = self.parent(item)
+            ri_ri = self._values[ri_item][1]
+            ri_ri.Style.set_tree_item(item)
         self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self._show_item_name(item)
@@ -128,20 +137,15 @@ class NuntiareXmlNode(ttk.Treeview):
             self.item(item, text=text)
 
     def _set_node_value(self, item, name, value):
+        print('set_node_value ' + name + ' ' + str(value))
         node = self._get_xml_sub_node(item, name)
         if node is None:
+            print(value)
             master = self._values[item][0]
             el = self._doc.createElement(name)
             text = self._doc.createTextNode(value)
             el.appendChild(text)
             master.appendChild(el)
-
-            new_item = self.insert(item, 'end',
-                text=name,
-                values=(name),
-                tags=('element'))
-            self._values[new_item] = [el, None]
-
         else:
             self._set_node_text(node, value)
 
@@ -220,7 +224,6 @@ class NuntiareXmlNode(ttk.Treeview):
 
         name = self.set(item, 'name')
         if name == 'Page' and property_._text not in (
-                'PageHeader', 'PageFooter', 'Style',
                 'Columns', 'ColumnSpacing'):
             self._designer.sections.update()
         elif name in ('PageHeader', 'PageFooter') and \
@@ -230,6 +233,10 @@ class NuntiareXmlNode(ttk.Treeview):
                 property_._text in ('Top', 'Left', 'Height', 'Width'):
             report_item = self._values[item][1]
             report_item.update(property_._text)
+        elif name == 'Style':
+            parent = self.parent(item)
+            report_item = self._values[parent][1]
+            report_item.Style.update(property_._text)
 
 
 class PropertyFrame(ttk.Frame):

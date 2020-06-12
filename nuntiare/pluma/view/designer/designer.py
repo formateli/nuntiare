@@ -6,7 +6,7 @@ from tkinter import ttk
 from ..common import PanedView, MementoCaretaker
 from ..common.tools import get_size_px
 from .xml_node import NuntiareXmlNode, NuntiareProperty
-from .report_item import ReportItem, ReportItemAttribute
+from .report_item import ReportItem, ElementStyle
 from nuntiare.report import Report
 
 
@@ -28,7 +28,7 @@ class Section(tk.Canvas):
         self._ritems_2_objects = {}
 
         self._report_items = []
-        self.info = ReportItemAttribute(
+        self.info = ElementStyle(
                 name, master._treeview)
 
         self.config(
@@ -48,7 +48,6 @@ class Section(tk.Canvas):
 
     def set_item(self, item):
         self.info.set_tree_item(item)
-        self.info.set_style()
 
     def update(self):
         pass
@@ -67,7 +66,7 @@ class Section(tk.Canvas):
 
     def draw_rectangle_style(self, x1, y1, x2, y2, style):
         fill = style['color'] if style['color'] is not None else ''
-        
+
         border = style['border']
         if border is not None:
             outline = style['border_color']
@@ -107,12 +106,11 @@ class Sections(ttk.PanedWindow):
 
     def set_treeview(self, treeview):
         self._treeview = treeview
-        self._page_info = ReportItemAttribute(
+        self._page_info = ElementStyle(
                 'Page', treeview)
 
     def set_page_item(self, item):
         self._page_info.set_tree_item(item)
-        self._page_info.set_style()
 
     def update():
         pass

@@ -7,13 +7,13 @@ import nuntiare.definition.element as nuntiare
 from ..common.tools import get_size_px
 
 
-class ReportItemAttribute:
+class ElementMixin:
     def __init__(self, name, treeview):
         self.name = name
         self._treeview = treeview
         self._meta = treeview._element_meta[name]
         self.item = None
-        self.style = None
+        self.parent_item = None
 
     def __getattr__(self, name):
         if name in self.__dict__:
@@ -44,10 +44,8 @@ class ReportItemAttribute:
 
         return result
 
-    def set_style(self):
-        self.style = ReportItemAttribute(
-            'Style', self._treeview)
-        self.style.set_tree_item(self._get_sub_item('Style'))
+    def update(self, name_changed):
+        raise NotImplementedError('update method not implemented.')
 
     def set_tree_item(self, item):
         if item is None:
@@ -57,38 +55,55 @@ class ReportItemAttribute:
         if name != self.name:
             raise Exception('Invalid name. {0} != {1}'.format(
                 name, self.name))
-
-    def _get_sub_item(self, name):
-        items = self._treeview.get_children(self.item)
-        for it in items:
-            if self._treeview.set(it, 'name') == name:
-                return it
+        self.parent_item = self._treeview.parent(self.item)
 
 
-class ReportItem(ReportItemAttribute):
+class Style(ElementMixin):
+    def __init__(self, name, treeview):
+        super(Style, self).__init__(name, treeview)
+        self.Border = ElementMixin('Border', self._treeview)
+        self.RightBorder = ElementMixin('RightBorder', self._treeview)
+        self.LeftBorder = ElementMixin('LeftBorder', self._treeview)
+        self.TopBorder = ElementMixin('TopBorder', self._treeview)
+        self.BottomBorder = ElementMixin('BottomBorder', self._treeview)
+
+    def update(self, name_changed, type_=None):
+        if type_ is None:
+            type_ = self.name
+        parent = self._treeview._values[self.parent_item][1]
+        parent.update(name_changed, type_=type_)
+
+
+class ElementStyle(ElementMixin):
+    def __init__(self, name, treeview):
+        super(ElementStyle, self).__init__(name, treeview)
+        self.Style = Style('Style', self._treeview)
+
+
+class ReportItem(ElementStyle):
     def __init__(self, name, canvas, tree_node, parent, meta):
         super(ReportItem, self).__init__(
                 name, canvas._master._treeview)
-
-        self.set_tree_item(tree_node)
-
         self._canvas = canvas
         self._parent = parent
+        self.set_tree_item(tree_node)
 
-        if self.name in nuntiare._REPORT_ITEMS:
-            self.set_style()
-
-    def update(self, name_changed):
-        print(name_changed)
+    def update(self, name_changed, type_=None):
         obj = self._canvas.get_object_from_report_item(self)
-        x1, y1, x2, y2 = self._canvas.coords(obj)
-        self._canvas.coords(
-            obj,
-            get_size_px(self.Left),
-            get_size_px(self.Top),
-            get_size_px(self.Left) + get_size_px(self.Width),
-            get_size_px(self.Top) + get_size_px(self.Height)
-            )
+        if type_ == 'Style':
+            if name_changed == 'BackgroundColor':
+                self._canvas.itemconfig(
+                    obj, fill=self.Style.BackgroundColor)
+        else: 
+            obj = self._canvas.get_object_from_report_item(self)
+            x1, y1, x2, y2 = self._canvas.coords(obj)
+            self._canvas.coords(
+                obj,
+                get_size_px(self.Left),
+                get_size_px(self.Top),
+                get_size_px(self.Left) + get_size_px(self.Width),
+                get_size_px(self.Top) + get_size_px(self.Height)
+                )
 
     def _sum_parent(self, name):
         if self._parent is None:
@@ -96,26 +111,34 @@ class ReportItem(ReportItemAttribute):
         return getattr(self._parent, name)
 
     def draw(self):
-        fill = 'blue'
-        if self.name == 'Textbox':
-            fill = 'red'
+        fill = 'white'
+        outline = None
+        if self.Style.item:
+            fill = self.Style.BackgroundColor
+            if fill is None: fill = 'white'
 
         obj = self._canvas.create_rectangle(
                 get_size_px(self.Left),
                 get_size_px(self.Top),
                 get_size_px(self.Left) + get_size_px(self.Width),
                 get_size_px(self.Top) + get_size_px(self.Height),
-                fill=fill)
+                fill=fill, outline=outline, width=0)
         self._canvas.add_object(obj, self)
         self._canvas.tag_bind(obj, '<1>', self._item_click)
+
+        if self.name == 'Textbox':
+            self._canvas.create_text(
+                get_size_px(self.Left),
+                get_size_px(self.Top),
+                anchor='nw',
+                width=get_size_px(self.Width),
+                fill=self.Style.Color,
+                text=self.Value
+                )
 
     def _item_click(self, event):
         x = self._canvas.canvasx(event.x)
         y = self._canvas.canvasy(event.y)
-
-#        it = self._canvas.find_overlapping(
-#            event.x, event.y, event.x + 1, event.y + 1)
-
         it = self._canvas.find_overlapping(
             x, y, x + 1, y + 1)
 
@@ -127,18 +150,3 @@ class ReportItem(ReportItemAttribute):
         self._treeview.see(report_item.item)
         self._treeview.focus(report_item.item)
         self._treeview.selection_set(report_item.item)
-
-#    def _get_info(self, val):
-#        itm = self._item
-#        while True:
-#            parent = self._treeview.parent(itm)
-#            if not parent:
-#                break
-#            if val == 'section':
-#                if self._treeview._values[parent][0].nodeName in (
-#                        'PageHeader', 'PageFooter', 'Body'):
-#                    return self._treeview._values[parent][0].nodeName
-#            elif val == 'parent':
-#                if self._treeview._values[parent][1] is not None:
-#                    return parent
-#            itm = parent

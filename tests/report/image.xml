@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This file is part of Nuntiare project.
-     The COPYRIGHT file at the top level of this repository
-     contains the full copyright notices and license terms. -->
+<!-- This file is part of Nuntiare project.The COPYRIGHT file at the top level of this repositorycontains the full copyright notices and license terms. -->
+<!-- Created by Pluma - The Nuntiare Designer tool.Copyright Fredy Ramirez - https://formateli.com -->
+<!-- Created by Pluma - The Nuntiare Designer tool.Copyright Fredy Ramirez - https://formateli.com -->
+<!-- Created by Pluma - The Nuntiare Designer tool.Copyright Fredy Ramirez - https://formateli.com -->
+<!-- Created by Pluma - The Nuntiare Designer tool.Copyright Fredy Ramirez - https://formateli.com -->
 <!-- Created by Pluma - The Nuntiare Designer tool.
      Copyright Fredy Ramirez - https://formateli.com -->
 <Nuntiare>
@@ -25,6 +27,7 @@
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
+          <Color>red</Color>
         </Style>
       </Textbox>
       <Image>
@@ -43,7 +46,7 @@
         <Top>2cm</Top>
         <Left>6cm</Left>
         <Height>5mm</Height>
-        <Width>5cm</Width>
+        <Width>12cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -69,7 +72,6 @@
         <Width>10cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
-          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>

@@ -1134,7 +1134,7 @@ class Border(Element):
 
     _element_list = {
         'Color': Meta(Element.COLOR, default='#000000'),
-        'BorderStyle': Meta(Element.ENUM),  # TODO default Solid?
+        'BorderStyle': Meta(Element.ENUM, default='None'),
         'Width': Meta(Element.SIZE, default=1),
         }
 
