@@ -190,12 +190,13 @@ class NuntiareXmlNode(ttk.Treeview):
         if node is None:
             print(value)
             master = self._values[item][0]
-            el = self._doc.createElement(name)
-            text = self._doc.createTextNode(value)
-            el.appendChild(text)
-            master.appendChild(el)
-        else:
-            self._set_node_text(node, value)
+            node = self._doc.createElement(name)
+            master.appendChild(node)
+            if value is None:
+                return
+            #    text = self._doc.createTextNode(value)
+            #    node.appendChild(text)
+        self._set_node_text(node, value)
 
     def _get_node_value(self, item, name):
         node = self._values[item][0]
@@ -212,10 +213,14 @@ class NuntiareXmlNode(ttk.Treeview):
     def _set_node_text(self, node, value):
         for n in node.childNodes:
             if n.nodeName in ('#text'):
-                n.nodeValue = value
-                return
+                if value is None:
+                    node.removeChild(n)
+                    return
+                else:
+                    n.nodeValue = value
+                    return
         text = self._doc.createTextNode(value)
-        node.parent.appendChild(text)
+        node.appendChild(text)
 
     def _get_node_text(self, node):
         for n in node.childNodes:
@@ -425,7 +430,8 @@ class PropertyItem(PropertyFrame):
         value = self._entry.get()
         if (self._value is None and not value) or \
                 (value == self._value) or \
-                (value.startswith('[Default: ') and value.endswith(']')):
+                (value.startswith('[Default: ') and value.endswith(']') or
+                (not value and self._default is None)):
             return
         self._value = value
         self.fire_event('property_focusout', self)

@@ -25,6 +25,7 @@
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
+          <Color/>
         </Style>
       </Textbox>
       <Image>
