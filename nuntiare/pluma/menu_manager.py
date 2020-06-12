@@ -15,12 +15,12 @@ class MenuManager():
         pass
 
     @classmethod
-    def new_menu(cls, name, parent_name, parent=None):
+    def new_menu(cls, name, parent_name, master=None):
         if name in cls._menues:
             raise Exception("Menu '{0}' already exists.".format(name))
-        if parent is None:
-            parent = cls.get_menu(parent_name)
-        menu = PlumaMenu(parent, name)
+        if master is None:
+            master = cls.get_menu(parent_name)
+        menu = PlumaMenu(master, name)
         cls._menues[name] = menu
         return menu
 

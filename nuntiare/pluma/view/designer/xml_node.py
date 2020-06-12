@@ -2,8 +2,10 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 from xml.dom import minidom
+import tkinter as tk
 from tkinter import ttk
 import nuntiare.definition.element as nuntiare
+from ...menu_manager import MenuManager
 
 
 class NuntiareXmlNode(ttk.Treeview):
@@ -27,6 +29,7 @@ class NuntiareXmlNode(ttk.Treeview):
 
         self._doc = None  # dom document
         self._designer = designer
+        self._menu_prefix = designer.menu_prefix
         self._get_element_meta()
 
         # Allow horizontal scrolling
@@ -39,6 +42,37 @@ class NuntiareXmlNode(ttk.Treeview):
 
         # item: [xml_node, report_item]
         self._values = {}
+        # element_name: menu
+        self._menu_add = {}
+
+        self._item_menu = MenuManager.new_menu(
+                self._menu_prefix + 'treview', None, master=self)
+        MenuManager.add_command(
+                self._menu_prefix + 'treview', 'up', 'Up',
+                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+        MenuManager.add_command(
+                self._menu_prefix + 'treview', 'down', 'Down',
+                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+        MenuManager.add_command(
+                self._menu_prefix + 'treview', 'remove', 'Remove',
+                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+        MenuManager.add_separator(self._menu_prefix + 'treview')
+        MenuManager.add_command(
+                self._menu_prefix + 'treview', 'copy', 'Copy',
+                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+        MenuManager.add_command(
+                self._menu_prefix + 'treview', 'paste', 'Paste',
+                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+        MenuManager.add_separator(self._menu_prefix + 'treview')
+        MenuManager.new_menu(
+                self._menu_prefix + 'treview' + '_add',
+                self._menu_prefix + 'treview')
+        MenuManager.add_command(
+                self._menu_prefix + 'treview' + '_add',
+                'dummy', 'dummy', None, None, state=tk.NORMAL)
+
+    def _item_up(self):
+        pass
 
     @classmethod
     def _get_element_meta(cls):
@@ -75,9 +109,6 @@ class NuntiareXmlNode(ttk.Treeview):
             '     The COPYRIGHT file at the top level of this repository\n'
             '     contains the full copyright notices and license terms. ')
         comment_pluma = (' Created by Pluma - The Nuntiare Designer tool.\n'
-            '     Copyright Fredy Ramirez - https://formateli.com ')
-        comment = dom.createComment(
-            ' Created by Pluma - The Nuntiare Designer tool.\n'
             '     Copyright Fredy Ramirez - https://formateli.com ')
         for node in dom.childNodes:
             if node.nodeName in ('#comment'):
@@ -138,7 +169,7 @@ class NuntiareXmlNode(ttk.Treeview):
             ri_ri.Style.set_tree_item(item)
         self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
-        self.tag_bind('element', '<3>', self._item_menu)
+        self.tag_bind('element', '<3>', self._item_3_clicked)
         self._show_item_name(item)
 
         if node.nodeName == 'PageHeader':
@@ -191,12 +222,44 @@ class NuntiareXmlNode(ttk.Treeview):
             if n.nodeName in ('#text'):
                 return n.nodeValue
 
-    def _item_menu(self, event):
-        sel = self.selection()
-        item = sel[0] if sel else None
-        if item is None:
+    def _item_3_clicked(self, event):
+        item = self.identify_row(event.y)
+
+        self.focus_set()
+        self.focus(item)
+        self.selection_set(item)
+        self._item_clicked(event)
+
+        self._item_menu.delete(7)
+        self._get_add_menu(item)
+        self._item_menu.post(event.x_root, event.y_root)
+
+    def _add_element(self):
+        pass
+
+    def _get_add_menu(self, item):
+        name = self.set(item, 'name')
+        parent = self._menu_prefix + 'treview'
+        menu = parent + '_add_' + name
+
+        if name in self._menu_add:
+            MenuManager.add_cascade('Add', parent, menu)
             return
-        
+
+        if len(NuntiareXmlNode._element_meta[name]) == 0:
+            return
+
+        MenuManager.new_menu(menu, parent)
+
+        for key, meta in NuntiareXmlNode._element_meta[name].items():
+            if (meta.type == nuntiare.Element.ELEMENT or
+                    meta.type == nuntiare.Element.EXPRESSION_LIST):
+                MenuManager.add_command(
+                        menu, key, key, None,
+                        command=self._add_element, state=tk.NORMAL)
+
+        MenuManager.add_cascade('Add', parent, menu)
+        self._menu_add[name] = menu
 
     def _item_clicked(self, event):
         sel = self.selection()
@@ -216,7 +279,6 @@ class NuntiareXmlNode(ttk.Treeview):
                 continue
             property_ = self._property.add_property(
                             key, meta.constant)
-            # Get the value, if any, in current node
             property_.set_value(
                     self._get_node_value(item, key), meta.default)
 
