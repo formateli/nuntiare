@@ -1108,7 +1108,7 @@ class Style(Element):
         'BackgroundGradientEndColor': Meta(Element.COLOR),
         'BackgroundImage': Meta(),
         'FontStyle': Meta(Element.ENUM, default='Normal'),
-        'FontFamily': Meta(Element.STRING, default='Arial'),
+        'FontFamily': Meta(Element.STRING, default='Helvetica'),
         'FontSize': Meta(Element.SIZE, default=10),
         'FontWeight': Meta(Element.ENUM, default='Normal'),
         'Format': Meta(Element.STRING),

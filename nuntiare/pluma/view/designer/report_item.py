@@ -1,6 +1,7 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
+#import tkinter as tk
 import tkinter as tk
 from tkinter import ttk
 import nuntiare.definition.element as nuntiare
@@ -14,7 +15,7 @@ class ElementMixin:
         self._meta = None
         self._meta = treeview._element_meta[name]
         self.item = None
-        self.parent_item = None 
+        self.parent_item = None
         self.last_is_default = False
 
     def __getattr__(self, name):
@@ -150,6 +151,9 @@ class ReportItem(ElementStyle):
             elif name_changed == 'Color':
                 self._canvas.itemconfig(
                     self._txt, fill=self.Style.Color)
+            elif name_changed in ('FontFamily', 'FontSize', 'FontWeigth'):
+                self._canvas.itemconfig(
+                    self._txt, font=self._get_font(self.Style))
         if type_ in ('Border', 'RightBorder',
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
             borders = self.Style.get_borders()
@@ -214,10 +218,20 @@ class ReportItem(ElementStyle):
                 get_size_px(self.Top),
                 anchor='nw',
                 width=get_size_px(self.Width),
+                font=self._get_font(self.Style),
                 fill=self.Style.Color,
                 text=self.Value
                 )
             self._add_object(self._txt)
+
+    @staticmethod
+    def _get_font(style):
+        font = tk.font.Font(
+            family=style.FontFamily,
+            size=-get_size_px(style.FontSize),
+            weight=style.FontWeight.lower(),
+            )
+        return font
 
     def _add_object(self, obj):
         self._canvas.add_object(obj, self)
