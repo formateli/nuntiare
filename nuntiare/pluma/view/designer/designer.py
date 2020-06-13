@@ -6,8 +6,7 @@ from tkinter import ttk
 from ..common import PanedView, MementoCaretaker
 from ..common.tools import get_size_px
 from .xml_node import NuntiareXmlNode, NuntiareProperty
-from .report_item import ReportItem, ElementStyle
-from nuntiare.report import Report
+from .report_item import ReportItem
 
 
 class Section(tk.Canvas):
@@ -24,16 +23,17 @@ class Section(tk.Canvas):
         self.frame = master_widget
         self._objects_2_ritems = {}
         self._report_items = []
-        self.info = ElementStyle(
-                name, master._treeview)
+        self.info = ReportItem(
+                name, self, master._treeview, None)
 
         self.config(
                 width=100, height=100,
                 scrollregion=(0, 0, 100, 100))
 
-    def add_report_item(self, name, tree_node, parent, meta):
-        report_item = ReportItem(name, self, tree_node, parent, meta)
-
+    def add_report_item(self, name, tree_node, parent):
+        report_item = ReportItem(
+                name, self, self._master._treeview, parent)
+        report_item.set_tree_item(tree_node)
         tw = self._master._treeview
         self._report_items.append(report_item)
         return report_item
@@ -81,7 +81,7 @@ class Sections(ttk.PanedWindow):
         super(Sections, self).__init__(master, orient=tk.VERTICAL)
         self.grid(row=0, column=0, sticky='wens')
 
-        self._page_info = None
+        self.page_info = None
         self._treeview = None
         self._sections = {
             'PageHeader': None,
@@ -93,15 +93,15 @@ class Sections(ttk.PanedWindow):
         section, parent, meta = \
             self._treeview.get_report_item_info(tree_node)
         return self._sections[section].add_report_item(
-            name, tree_node, parent, meta)
+            name, tree_node, parent)
 
     def set_treeview(self, treeview):
         self._treeview = treeview
-        self._page_info = ElementStyle(
-                'Page', treeview)
+        self.page_info = ReportItem(
+                'Page', None, treeview, None)
 
     def set_page_item(self, item):
-        self._page_info.set_tree_item(item)
+        self.page_info.set_tree_item(item)
 
     def update():
         pass
@@ -137,11 +137,11 @@ class Sections(ttk.PanedWindow):
         if section.info is None or section.info.item is None:
             self.forget(section.frame)
         else:
-            width = get_size_px(self._page_info.PageWidth)
+            width = get_size_px(self.page_info.PageWidth)
             if name in ('PageHeader', 'PageFooter'):
                 height = get_size_px(section.info.Height)
             else:
-                height = get_size_px(self._page_info.PageHeight)  # TODO
+                height = get_size_px(self.page_info.PageHeight)  # TODO
 
             section.config(
                 width=width, height=height,

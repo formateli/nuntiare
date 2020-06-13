@@ -49,20 +49,20 @@ class NuntiareXmlNode(ttk.Treeview):
                 self._menu_prefix + 'treview', None, master=self)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'up', 'Up',
-                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+                None, self._item_up, image='arrow_upward-24px', state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'down', 'Down',
-                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+                None, self._item_up, image='arrow_downward-24px', state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'remove', 'Remove',
-                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+                None, self._item_up, image='clear-24px', state=tk.NORMAL)
         MenuManager.add_separator(self._menu_prefix + 'treview')
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'copy', 'Copy',
-                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+                None, self._item_up, image='file_copy-24px', state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'paste', 'Paste',
-                None, self._item_up, image='save_alt-24px', state=tk.NORMAL)
+                None, self._item_up, image='file_paste-24px', state=tk.NORMAL)
         MenuManager.add_separator(self._menu_prefix + 'treview')
         MenuManager.new_menu(
                 self._menu_prefix + 'treview' + '_add',
@@ -159,24 +159,32 @@ class NuntiareXmlNode(ttk.Treeview):
             report_item = self._designer.sections.add_report_item(
                     node.nodeName, item)
         elif node.nodeName == 'Page':
-            report_item = self._designer.sections.info
+            report_item = self._designer.sections.page_info
+            self._designer.sections.set_page_item(item)
         elif node.nodeName in ('PageHeader', 'PageFooter', 'Body'):
             report_item = \
                 self._designer.sections._sections[node.nodeName].info
-        elif node.nodeName == 'Style':
+            self._designer.sections.get_section(node.nodeName).set_item(item)
+        elif node.nodeName in ('Style', 'Border', 'RightBorder',
+                'LeftBorder', 'TopBorder', 'BottomBorder'):
             ri_item = self.parent(item)
             ri_ri = self._values[ri_item][1]
-            ri_ri.Style.set_tree_item(item)
+            obj = getattr(ri_ri, node.nodeName)
+            obj.set_tree_item(item)
+            if node.nodeName == 'Style':
+                report_item = ri_ri.Style
+
         self._values[item][1] = report_item
         self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
         self.tag_bind('element', '<3>', self._item_3_clicked)
         self._show_item_name(item)
-
-        if node.nodeName == 'PageHeader':
-            self._designer.sections.set_page_item(item)
-        if node.nodeName in ('PageHeader', 'PageFooter', 'Body'):
-            self._designer.sections.get_section(node.nodeName).set_item(item)
         return item
+
+    def _create_sub_element(self, item, element):
+        node = self._values[item][0]
+        el = self._doc.createElement(element)
+        node.appendChild(el)
+        return self._add_node_element(item, el)
 
     def _show_item_name(self, item):
         text = self._get_node_value(item, 'Name')
@@ -185,17 +193,13 @@ class NuntiareXmlNode(ttk.Treeview):
             self.item(item, text=text)
 
     def _set_node_value(self, item, name, value):
-        print('set_node_value ' + name + ' ' + str(value))
         node = self._get_xml_sub_node(item, name)
         if node is None:
-            print(value)
             master = self._values[item][0]
             node = self._doc.createElement(name)
             master.appendChild(node)
             if value is None:
                 return
-            #    text = self._doc.createTextNode(value)
-            #    node.appendChild(text)
         self._set_node_text(node, value)
 
     def _get_node_value(self, item, name):
@@ -239,8 +243,23 @@ class NuntiareXmlNode(ttk.Treeview):
         self._get_add_menu(item)
         self._item_menu.post(event.x_root, event.y_root)
 
-    def _add_element(self):
-        pass
+    def _add_element(self, values):
+        item = values[0]
+        element = values[1]
+        meta = values[2]
+
+        if meta.card == nuntiare.Card.ONE:
+            for it in self.get_children(item):
+                if element == self.set(it, 'name'):
+                    # Ignore. Just one element of
+                    # this type
+                    return
+
+        new_item = self._create_sub_element(item, element)
+        self.focus(new_item)
+        self.see(new_item)
+        self.selection_set(new_item)
+        self._item_clicked(None)
 
     def _get_add_menu(self, item):
         name = self.set(item, 'name')
@@ -260,8 +279,9 @@ class NuntiareXmlNode(ttk.Treeview):
             if (meta.type == nuntiare.Element.ELEMENT or
                     meta.type == nuntiare.Element.EXPRESSION_LIST):
                 MenuManager.add_command(
-                        menu, key, key, None,
-                        command=self._add_element, state=tk.NORMAL)
+                    menu, key, key, None,
+                    command=lambda x=[item, key, meta]: self._add_element(x),
+                    state=tk.NORMAL)
 
         MenuManager.add_cascade('Add', parent, menu)
         self._menu_add[name] = menu
@@ -324,10 +344,12 @@ class NuntiareXmlNode(ttk.Treeview):
                 property_._text in ('Top', 'Left', 'Height', 'Width'):
             report_item = self._values[item][1]
             report_item.update(property_._text)
-        elif name == 'Style':
+        elif name in ('Style', 'Border', 'RightBorder',
+                'LeftBorder', 'TopBorder', 'BottomBorder'):
             parent = self.parent(item)
             report_item = self._values[parent][1]
-            report_item.Style.update(property_._text)
+            obj = getattr(report_item, name)
+            obj.update(property_._text)
 
 
 class PropertyFrame(ttk.Frame):

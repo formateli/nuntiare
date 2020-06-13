@@ -358,13 +358,12 @@ class Meta:
                  card=Card.ZERO_ONE,
                  constant=False,
                  default=None):
-
         self.type = type_
         self.card = card
         self.constant = constant
         self.default = default
 
-        if self.default is None and type_ == Element.SIZE:
+        if type_ == Element.SIZE and self.default is None:
             self.default = 0
 
 

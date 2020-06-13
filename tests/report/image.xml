@@ -26,6 +26,11 @@
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
           <Color/>
+          <Border>
+            <Color>red</Color>
+            <BorderStyle>Solid</BorderStyle>
+            <Width>2pt</Width>
+          </Border>
         </Style>
       </Textbox>
       <Image>
