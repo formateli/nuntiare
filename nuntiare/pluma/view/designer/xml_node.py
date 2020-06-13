@@ -15,6 +15,18 @@ class NuntiareXmlNode(ttk.Treeview):
     # Value: Dictionary of Meta
     _element_meta = {}
 
+    # Report item menu images
+    _ri_images = {
+        'Line': 'line-24px',
+        'Rectangle': 'rectangle-24px',
+        'Textbox': 'textbox-24px',
+        'Image': 'image-24px',
+        'Subreport': 'file_paste-24px',
+        'CustomReportItem': 'image-24px',
+        'Tablix': 'grid-24px',
+        'Chart': 'chart-24px'
+        }
+
     def __init__(self, master,
                  designer,
                  xscrollcommand,
@@ -46,30 +58,38 @@ class NuntiareXmlNode(ttk.Treeview):
         self._menu_add = {}
 
         self._item_menu = MenuManager.new_menu(
-                self._menu_prefix + 'treview', None, master=self)
+                self._menu_prefix + 'treview', None,
+                master=self, image_size='24x24')
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'up', 'Up',
-                None, self._item_up, image='arrow_upward-24px', state=tk.NORMAL)
+                None, self._item_up, image='arrow_upward-24px',
+                state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'down', 'Down',
-                None, self._item_up, image='arrow_downward-24px', state=tk.NORMAL)
+                None, self._item_up, image='arrow_downward-24px',
+                state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'remove', 'Remove',
-                None, self._item_up, image='clear-24px', state=tk.NORMAL)
+                None, self._item_up, image='clear-24px',
+                state=tk.NORMAL)
         MenuManager.add_separator(self._menu_prefix + 'treview')
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'copy', 'Copy',
-                None, self._item_up, image='file_copy-24px', state=tk.NORMAL)
+                None, self._item_up, image='file_copy-24px',
+                state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'paste', 'Paste',
-                None, self._item_up, image='file_paste-24px', state=tk.NORMAL)
+                None, self._item_up, image='file_paste-24px',
+                state=tk.NORMAL)
         MenuManager.add_separator(self._menu_prefix + 'treview')
         MenuManager.new_menu(
                 self._menu_prefix + 'treview' + '_add',
-                self._menu_prefix + 'treview')
+                self._menu_prefix + 'treview',
+                image_size='24x24')
         MenuManager.add_command(
                 self._menu_prefix + 'treview' + '_add',
-                'dummy', 'dummy', None, None, state=tk.NORMAL)
+                'dummy', 'dummy', None, None,
+                state=tk.NORMAL)
 
     def _item_up(self):
         pass
@@ -248,7 +268,7 @@ class NuntiareXmlNode(ttk.Treeview):
         element = values[1]
         meta = values[2]
 
-        if meta.card == nuntiare.Card.ONE:
+        if meta.card in (nuntiare.Card.ONE, nuntiare.Card.ZERO_ONE):
             for it in self.get_children(item):
                 if element == self.set(it, 'name'):
                     # Ignore. Just one element of
@@ -273,15 +293,18 @@ class NuntiareXmlNode(ttk.Treeview):
         if len(NuntiareXmlNode._element_meta[name]) == 0:
             return
 
-        MenuManager.new_menu(menu, parent)
+        MenuManager.new_menu(menu, parent, image_size='24x24')
 
         for key, meta in NuntiareXmlNode._element_meta[name].items():
             if (meta.type == nuntiare.Element.ELEMENT or
                     meta.type == nuntiare.Element.EXPRESSION_LIST):
+                image = None
+                if key in nuntiare._REPORT_ITEMS:
+                    image = NuntiareXmlNode._ri_images[key]
                 MenuManager.add_command(
                     menu, key, key, None,
                     command=lambda x=[item, key, meta]: self._add_element(x),
-                    state=tk.NORMAL)
+                    image=image, state=tk.NORMAL)
 
         MenuManager.add_cascade('Add', parent, menu)
         self._menu_add[name] = menu

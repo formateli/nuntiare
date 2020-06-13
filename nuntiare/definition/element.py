@@ -68,7 +68,7 @@ _REPORT_ITEMS = [
     'Line', 'Rectangle',
     'Textbox', 'Image',
     'Subreport', 'CustomReportItem',
-    'Tablix'
+    'Tablix', 'Chart'
     ]
 
 
