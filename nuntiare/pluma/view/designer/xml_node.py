@@ -325,8 +325,7 @@ class NuntiareXmlNode(ttk.Treeview):
             if (not meta or meta.type == nuntiare.Element.ELEMENT
                     or meta.type == nuntiare.Element.EXPRESSION_LIST):
                 continue
-            property_ = self._property.add_property(
-                            key, meta.constant)
+            property_ = self._property.add_property(key, meta.type)
             property_.set_value(
                     self._get_node_value(item, key), meta.default)
 
@@ -354,129 +353,22 @@ class NuntiareXmlNode(ttk.Treeview):
         master = event[0]
         property_ = event[1]
         item = master.get_item()
-        self._set_node_value(item, property_._text, property_.get_value())
+        self._set_node_value(item, property_.name, property_.get_value())
 
         name = self.set(item, 'name')
-        if name == 'Page' and property_._text not in (
+        if name == 'Page' and property_.name not in (
                 'Columns', 'ColumnSpacing'):
             self._designer.sections.update()
         elif name in ('PageHeader', 'PageFooter') and \
-                    property_._text in ('Height'):
+                    property_.name in ('Height'):
             self._designer.sections.get_section[name].update()
         elif name in nuntiare._REPORT_ITEMS and \
-                property_._text in ('Top', 'Left', 'Height', 'Width'):
+                property_.name in ('Top', 'Left', 'Height', 'Width'):
             report_item = self._values[item][1]
-            report_item.update(property_._text)
+            report_item.update(property_.name)
         elif name in ('Style', 'Border', 'RightBorder',
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
             parent = self.parent(item)
             report_item = self._values[parent][1]
             obj = getattr(report_item, name)
-            obj.update(property_._text)
-
-
-class PropertyFrame(ttk.Frame):
-    def __init__(self, master):
-        super(PropertyFrame, self).__init__(master)
-        self._bind_callbacks = {}
-
-    def register_property_event(self, name):
-        self._bind_callbacks = {name: []}
-
-    def bind(self, event, callback):
-        if event in self._bind_callbacks:
-            self._bind_callbacks[event].append(callback)
-        else:
-            super(PropertyFrame, self).bind(event, callback)
-
-    def fire_event(self, event, data):
-        callbacks = self._bind_callbacks[event]
-        for cb in callbacks:
-            cb(data)
-
-
-class NuntiareProperty(PropertyFrame):
-    def __init__(self, master):
-        super(NuntiareProperty, self).__init__(master)
-        self._properties = {}
-        self._row_count = 0
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=3)
-        self._item = None
-
-        self.register_property_event('property_changed')
-
-    def add_property(self, text, required):
-        id_ = text + '_' + str(required)
-        if id_ not in self._properties:
-            self._properties[id_] = [
-                    ttk.Label(self, text=text),
-                    PropertyItem(self, text, required),
-                ]
-            self._properties[id_][1].bind(
-                'property_focusout', self._property_focusout)
-
-        property_ = self._properties[id_]
-        property_[0].grid(row=self._row_count, column=0, sticky='wens')
-        property_[1].grid(row=self._row_count, column=1, sticky='wens')
-        self._row_count += 1
-        return property_[1]
-
-    def set_item(self, item):
-        if item != self._item:
-            self._item = item
-            self.clear()
-
-    def get_item(self):
-        return self._item
-
-    def clear(self):
-        wgs = self.grid_slaves()
-        for wg in wgs:
-            wg.grid_forget()
-        self._row_count = 0
-
-    def _property_focusout(self, property_):
-        self.fire_event('property_changed', [self, property_])
-
-
-class PropertyItem(PropertyFrame):
-    def __init__(self, master, text, required):
-        super(PropertyItem, self).__init__(master)
-
-        self._entry = ttk.Entry(self)
-        self._entry.grid(row=0, column=0, sticky='wens')
-
-        self._text = text
-        self._required = required
-        self._value = None
-        self._default = None
-
-        self.register_property_event('property_focusout')
-        self.bind('<FocusOut>', self._focusout)
-
-    def set_value(self, value, default):
-        self._value = value
-        self._default = default
-        self._entry.delete(0, 'end')
-        if value is not None:
-            self._entry.insert(0, self._value)
-        elif self._default is not None:
-            self._entry.insert(
-                0, '[Default: ' + str(self._default) + ']')
-
-    def get_value(self):
-        if self._value:
-            return self._value
-        if not self._value and self._required and self._default:
-            return self._default
-
-    def _focusout(self, event):
-        value = self._entry.get()
-        if (self._value is None and not value) or \
-                (value == self._value) or \
-                (value.startswith('[Default: ') and value.endswith(']') or
-                (not value and self._default is None)):
-            return
-        self._value = value
-        self.fire_event('property_focusout', self)
+            obj.update(property_.name)

@@ -5,7 +5,8 @@ import tkinter as tk
 from tkinter import ttk
 from ..common import PanedView, MementoCaretaker
 from ..common.tools import get_size_px
-from .xml_node import NuntiareXmlNode, NuntiareProperty
+from .xml_node import NuntiareXmlNode
+from .property import NuntiareProperty
 from .report_item import ReportItem
 
 
@@ -176,7 +177,7 @@ class DesignerView(PanedView):
         r_xml_frame.yscrollbar.config(command=self._xml.yview)
 
         r_prop_frame = self.get_frame()
-        prop = NuntiareProperty(r_prop_frame)
+        prop = NuntiareProperty(r_prop_frame, self._xml)
         prop.grid(row=0, column=0, sticky='wens')
         self.right_window.add(r_prop_frame, weight=1)
 
