@@ -76,7 +76,7 @@ class NuntiareProperty(_PropertyFrame):
 
     def _get_enum_list(self, name):
         enum = getattr(nuntiare_enum, name)
-        return enum.get_values_list()
+        return enum.enum_list
 
     def _property_focusout(self, property_):
         self.fire_event('property_changed', [self, property_])
@@ -149,8 +149,8 @@ class PropertyText(PropertyItem):
 class PropertyEnum(PropertyItem):
     def __init__(self, master, name, list_values):
         super(PropertyEnum, self).__init__(master, name)
-        self._entry = AutocompleteCombobox(master,
-            completevalues=list_values)
+        self._entry = AutocompleteCombobox(self,
+                completevalues=list_values)
         self._entry.grid(row=0, column=0, sticky='wens')
 
     def _set_widget_value(self, value):

@@ -151,7 +151,8 @@ class ReportItem(ElementStyle):
             elif name_changed == 'Color':
                 self._canvas.itemconfig(
                     self._txt, fill=self.Style.Color)
-            elif name_changed in ('FontFamily', 'FontSize', 'FontWeigth'):
+            elif name_changed in ('FontFamily', 'FontSize', 
+                    'FontWeight', 'TextDecoration', 'FontStyle'):
                 self._canvas.itemconfig(
                     self._txt, font=self._get_font(self.Style))
         if type_ in ('Border', 'RightBorder',
@@ -226,10 +227,24 @@ class ReportItem(ElementStyle):
 
     @staticmethod
     def _get_font(style):
+        slant = style.FontStyle.lower()
+        if slant != 'italic':
+            slant = 'roman'
+
+        underline = 0
+        overstrike = 0
+        if style.TextDecoration.lower() == 'underline':
+            underline = 1
+        if style.TextDecoration.lower() == 'LineThrough':
+            overstrike = 1
+
         font = tk.font.Font(
             family=style.FontFamily,
             size=-get_size_px(style.FontSize),
             weight=style.FontWeight.lower(),
+            slant=slant,
+            underline=underline,
+            overstrike=overstrike
             )
         return font
 
