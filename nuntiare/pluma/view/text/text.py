@@ -50,6 +50,7 @@ class TextView(PanedView):
         #self.new_file(source)
 
     def onTextModified(self, event):
+        return
         text_info = event.widget.text_changed_info.copy()
         if not self.text.is_undo_redo:
             self._memento.insert_memento(text_info)
@@ -88,6 +89,15 @@ class TextView(PanedView):
         tb = self.view.pluma.toolbar
         tb.show('text', True)
         tb.show('undo_redo', True)
+
+        treeview = self.view.get_view('designer')._xml
+
+        self.text.delete(1.0, tk.END)
+        self.text.insert(
+            '1.0',
+            treeview.get_xml_text(),
+            True)
+
         self._update_toolbar()
 
     def deselected(self):

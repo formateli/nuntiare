@@ -8,4 +8,4 @@ def get_size_px(value):
     res = Size.split_size_string(value)
     if res is None:
         return
-    return Size.convert_to_pixel(float(res[0]), res[1])
+    return int(Size.convert_to_pixel(float(res[0]), res[1]))

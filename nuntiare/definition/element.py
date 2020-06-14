@@ -21,6 +21,7 @@ from .. data.data_type import DataType as dt
 from .. tools import get_xml_tag_value
 
 _ELEMENT_CLASSES = [
+    'Nuntiare',
     'Page', 'PageHeader', 'PageFooter',
     'EmbeddedImages', 'EmbeddedImage',
     'Body', 'Visibility',
@@ -67,7 +68,7 @@ _REPORT_ITEMS = [
     'Line', 'Rectangle',
     'Textbox', 'Image',
     'Subreport', 'CustomReportItem',
-    'Tablix'
+    'Tablix', 'Chart'
     ]
 
 
@@ -357,13 +358,12 @@ class Meta:
                  card=Card.ZERO_ONE,
                  constant=False,
                  default=None):
-
         self.type = type_
         self.card = card
         self.constant = constant
         self.default = default
 
-        if self.default is None and type_ == Element.SIZE:
+        if type_ == Element.SIZE and self.default is None:
             self.default = 0
 
 
@@ -1108,7 +1108,7 @@ class Style(Element):
         'BackgroundGradientEndColor': Meta(Element.COLOR),
         'BackgroundImage': Meta(),
         'FontStyle': Meta(Element.ENUM, default='Normal'),
-        'FontFamily': Meta(Element.STRING, default='Arial'),
+        'FontFamily': Meta(Element.STRING, default='Helvetica'),
         'FontSize': Meta(Element.SIZE, default=10),
         'FontWeight': Meta(Element.ENUM, default='Normal'),
         'Format': Meta(Element.STRING),
@@ -1133,7 +1133,7 @@ class Border(Element):
 
     _element_list = {
         'Color': Meta(Element.COLOR, default='#000000'),
-        'BorderStyle': Meta(Element.ENUM),  # TODO default Solid?
+        'BorderStyle': Meta(Element.ENUM, default='None'),
         'Width': Meta(Element.SIZE, default=1),
         }
 

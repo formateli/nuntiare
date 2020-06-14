@@ -10,17 +10,18 @@ from .materialtheme import ImageManager
 class MenuManager():
 
     _menues = {}
+    _image_size = '16x16'
 
     def __init__(self, root):
         pass
 
     @classmethod
-    def new_menu(cls, name, parent_name, parent=None):
+    def new_menu(cls, name, parent_name, master=None, image_size=None):
         if name in cls._menues:
             raise Exception("Menu '{0}' already exists.".format(name))
-        if parent is None:
-            parent = cls.get_menu(parent_name)
-        menu = PlumaMenu(parent, name)
+        if master is None:
+            master = cls.get_menu(parent_name)
+        menu = PlumaMenu(master, name, image_size)
         cls._menues[name] = menu
         return menu
 
@@ -36,7 +37,10 @@ class MenuManager():
                     image=None, state=DISABLED):
         menu = cls.get_menu(menu_name)
         if image is not None:
-            image = ImageManager.get_image(image)
+            size = cls._image_size
+            if menu._image_size is not None:
+                size = menu._image_size
+            image = ImageManager.get_image(image, size=size)
         menu.add_command(item_name, label, acc, command, image, state)
 
     @classmethod
@@ -111,11 +115,12 @@ class MenuManager():
 
 
 class PlumaMenu(Menu):
-    def __init__(self, parent, name):
+    def __init__(self, parent, name, image_size=None):
         super(PlumaMenu, self).__init__(parent, tearoff=0)
         self.name = name
         self._next_val = 0
         self._items = {}
+        self._image_size = image_size
 
     def add_command(self, item_name, label, acc, command, image, state):
         if item_name in self._items:

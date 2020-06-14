@@ -26,6 +26,7 @@ class PanedView(ttk.PanedWindow):
         self.view = view
         self.type = None
         self.has_changed = False
+        self.menu_prefix = 'menu_' + str(view.id) + '_'
 
         super(PanedView, self).__init__(view.notebook, orient=tk.HORIZONTAL)
         self.grid(row=0, column=0, sticky='wens')

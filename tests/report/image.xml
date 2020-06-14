@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This file is part of Nuntiare project.
+     The COPYRIGHT file at the top level of this repository
+     contains the full copyright notices and license terms. -->
+<!-- Created by Pluma - The Nuntiare Designer tool.
+     Copyright Fredy Ramirez - https://formateli.com -->
 <Nuntiare>
   <Name>Image report</Name>
   <Author>Fredy Ramirez - https://formateli.com</Author>
@@ -12,7 +17,6 @@
   </Page>
   <Body>
     <ReportItems>
-
       <Textbox>
         <Name>txt_full_size</Name>
         <Value>Full size embedded image</Value>
@@ -21,6 +25,12 @@
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
+          <Color/>
+          <Border>
+            <Color>red</Color>
+            <BorderStyle>Solid</BorderStyle>
+            <Width>2pt</Width>
+          </Border>
         </Style>
       </Textbox>
       <Image>
@@ -33,14 +43,13 @@
         <Height>5cm</Height>
         <Width>5cm</Width>
       </Image>
-
       <Textbox>
         <Name>txt_fit_size</Name>
         <Value>Fit size embedded image (15cm x 5cm)</Value>
         <Top>2cm</Top>
         <Left>6cm</Left>
         <Height>5mm</Height>
-        <Width>5cm</Width>
+        <Width>12cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
@@ -57,17 +66,15 @@
         <Height>5cm</Height>
         <Width>12cm</Width>
       </Image>
-
       <Textbox>
         <Name>txt_fit_proportiontal_size_1</Name>
         <Value>Fit proportional size embedded image (15cm x 5cm)</Value>
         <Top>8cm</Top>
-        <Left>6cm</Left>
+        <Left>12cm</Left>
         <Height>5mm</Height>
         <Width>10cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
-          <PaddingBottom>2mm</PaddingBottom>
         </Style>
       </Textbox>
       <Image>
@@ -81,16 +88,17 @@
         <Height>5cm</Height>
         <Width>10cm</Width>
       </Image>
-
       <Textbox>
         <Name>txt_fit_proportiontal_size_2</Name>
         <Value>Fit proportional size embedded image (5cm x 15cm)</Value>
         <Height>5mm</Height>
-        <Width>15cm</Width>
+        <Width>5cm</Width>
         <Style>
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
         </Style>
+        <Top>15cm</Top>
+        <Left>12cm</Left>
       </Textbox>
       <Image>
         <Name>image_fitproportional_size_2</Name>
@@ -98,12 +106,11 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli</Value>
-        <Top>14cm</Top>
+        <Top>15.6cm</Top>
         <Left>12cm</Left>
         <Height>10cm</Height>
         <Width>5cm</Width>
       </Image>
-
       <Textbox>
         <Name>txt_external_fit_proportiontal_size</Name>
         <Value>Fit proportional size external image (10cm x 5cm)</Value>
@@ -113,6 +120,7 @@
           <FontSize>16pt</FontSize>
           <PaddingBottom>2mm</PaddingBottom>
         </Style>
+        <Top>9cm</Top>
       </Textbox>
       <Image>
         <Name>image_external_fitproportional_size</Name>
@@ -120,11 +128,10 @@
         <MIMEType>image/png</MIMEType>
         <ImageSizing>FitProportional</ImageSizing>
         <Value>formateli.png</Value>
-        <Top>11cm</Top>
+        <Top>9.6cm</Top>
         <Height>10cm</Height>
         <Width>10cm</Width>
       </Image>
-
     </ReportItems>
     <Style/>
   </Body>
