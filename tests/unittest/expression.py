@@ -5,22 +5,13 @@ import unittest
 from nuntiare.definition.expression import (
         String, Boolean,
         Integer, Color, Size)
+import nuntiare.definition.enum as enum
 from nuntiare.report import Report
 
 
 class ElementTypeTest(unittest.TestCase):
     def testElementType(self):
-        string_xml = r"""
-            <Nuntiare>
-                <Name>Element Type Test</Name>
-                <Width>21cm</Width>
-                <Page></Page>
-                <Body>
-                    <Height>300in</Height>
-                </Body>
-            </Nuntiare>"""
-
-        report = Report(string_xml)
+        report = Report(self._get_xml())
         report.run()
 
         # String
@@ -105,3 +96,26 @@ class ElementTypeTest(unittest.TestCase):
         self.assertEqual(rgb[0], 106)
         self.assertEqual(rgb[1], 90)
         self.assertEqual(rgb[2], 205)
+
+    def testEnum(self):
+        report = Report(self._get_xml())
+        report.run()
+
+        bs = enum.BorderStyle('Dotted', None, True)
+        self.assertEqual(bs.value(report), 'Dotted')
+        with self.assertRaises(ValueError):
+            # XXX not in enum
+            bs = enum.BorderStyle('XXX', None, True)
+            self.assertEqual(bs.value(report), 'XXX')
+
+    def _get_xml(self):
+        string_xml = r"""
+            <Nuntiare>
+                <Name>Element Type Test</Name>
+                <Width>21cm</Width>
+                <Page></Page>
+                <Body>
+                    <Height>300in</Height>
+                </Body>
+            </Nuntiare>"""
+        return string_xml
