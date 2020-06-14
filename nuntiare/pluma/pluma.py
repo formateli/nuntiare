@@ -178,14 +178,18 @@ class Pluma(TkMaterialTheme):
 
     def save(self, event=None):
         view = self.current_view.get_view('designer')
+        file_name = None
         if view.view.full_file_name is None:
-            pass  # TODO New file
+            file_name = tk.filedialog.asksaveasfilename(
+                    confirmoverwrite=True,
+                    defaultextension='.xml')
         else:
-            with open(view.view.full_file_name, 'wb') as file_:
-                file_.write(view._xml.get_xml_text())
+            file_name = view.view.full_file_name
 
-    def save_as(self, event=None):
-        pass
+        if file_name is not None:
+            with open(file_name, 'wb') as file_:
+                file_.write(view._xml.get_xml_text())
+            view.view.set_file_name(file_name)
 
     def exit_pluma(self, event=None):
         if tkinter.messagebox.askokcancel(

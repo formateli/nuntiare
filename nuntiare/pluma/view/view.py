@@ -19,15 +19,7 @@ class NuntiareView(ttk.Frame):
         self.directory_name = None
         self.extension = None
         if full_file_name is not None:
-            self.file_name = os.path.basename(full_file_name)
-            self.directory_name = os.path.dirname(
-                os.path.realpath(full_file_name))
-            extension = self.file_name.split('.')
-            if len(extension) > 1:
-                self.extension = extension[1]
-            tabs.set_title(id_, self.file_name)
-            tabs.set_dirty(id_, False)
-            tabs.set_tooltip(id_, self.full_file_name)
+            self.set_file_name(full_file_name)
 
         self.notebook = ttk.Notebook(self)
         self.notebook.columnconfigure(0, weight=1)
@@ -50,6 +42,17 @@ class NuntiareView(ttk.Frame):
 
         self.notebook.grid(row=0, column=0, sticky='ewns')
         self.notebook.bind("<<NotebookTabChanged>>", self.tab_changed)
+
+    def set_file_name(self, full_file_name):
+        self.file_name = os.path.basename(full_file_name)
+        self.directory_name = os.path.dirname(
+            os.path.realpath(full_file_name))
+        extension = self.file_name.split('.')
+        if len(extension) > 1:
+            self.extension = extension[1]
+        self.tabs.set_title(self.id, self.file_name)
+        self.tabs.set_dirty(self.id, False)
+        self.tabs.set_tooltip(self.id, self.full_file_name)
 
     def get_view(self, type_):
         for view in self._views:

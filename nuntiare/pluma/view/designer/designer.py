@@ -191,7 +191,7 @@ class DesignerView(PanedView):
 
         is_file = True
         if self.view.full_file_name is None:
-            source = self.new_snipet()
+            source = self._new_snipet()
             is_file = False
         else:
             source = self.view.full_file_name
@@ -201,9 +201,8 @@ class DesignerView(PanedView):
 
     @staticmethod
     def _new_snipet():
-        xml = '''<?xml version="1.0" ?>
-<Nuntiare>
-</Nuntiare>'''
+        xml = '<Nuntiare><Name>New Report</Name><Page/>' \
+            '<Body><ReportItems/></Body></Nuntiare>'
         return xml
 
     def selected(self):

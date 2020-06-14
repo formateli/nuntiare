@@ -55,8 +55,14 @@ class NuntiareProperty(_PropertyFrame):
                 'property_focusout', self._property_focusout)
 
         property_ = self._properties[name]
-        property_[0].grid(row=self._row_count, column=0, sticky='wens')
-        property_[1].grid(row=self._row_count, column=1, sticky='wens')
+        property_[0].grid(
+            row=self._row_count,
+            column=0, sticky='wens',
+            padx=2, pady=2)
+        property_[1].grid(
+            row=self._row_count,
+            column=1, sticky='wens',
+            padx=2, pady=2)
         self._row_count += 1
         return property_[1]
 

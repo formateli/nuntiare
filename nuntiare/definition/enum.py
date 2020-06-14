@@ -30,7 +30,6 @@ class DataElementStyle(_Enum):
         'Attribute',
         'Element'
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(DataElementStyle, self).__init__(
             expression, lnk, must_be_constant)
@@ -43,7 +42,6 @@ class DataElementOutput(_Enum):
         'NoOutput',
         'ContentsOnly'
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(DataElementOutput, self).__init__(
             expression, lnk, must_be_constant)
@@ -62,7 +60,6 @@ class BorderStyle(_Enum):
         'WindowInset',
         'Outset',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(BorderStyle, self).__init__(
             expression, lnk, must_be_constant)
@@ -73,7 +70,6 @@ class FontStyle(_Enum):
         'Normal',
         'Italic',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(FontStyle, self).__init__(
             expression, lnk, must_be_constant)
@@ -95,7 +91,6 @@ class FontWeight(_Enum):
         '800',
         '900',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(FontWeight, self).__init__(
             expression, lnk, must_be_constant)
@@ -108,7 +103,6 @@ class TextDecoration(_Enum):
         'Overline',
         'LineThrough',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(TextDecoration, self).__init__(
             expression, lnk, must_be_constant)
@@ -122,7 +116,6 @@ class TextAlign(_Enum):
         'Right',
         'Justify',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(TextAlign, self).__init__(
             expression, lnk, must_be_constant)
@@ -134,7 +127,6 @@ class VerticalAlign(_Enum):
         'Middle',
         'Bottom',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(VerticalAlign, self).__init__(
             expression, lnk, must_be_constant)
@@ -145,7 +137,6 @@ class TextDirection(_Enum):
         'LTR',
         'RTL',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(TextDirection, self).__init__(
             expression, lnk, must_be_constant)
@@ -156,7 +147,6 @@ class WritingMode(_Enum):
         'LR-TB',
         'TB-RL',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(WritingMode, self).__init__(
             expression, lnk, must_be_constant)
@@ -169,7 +159,6 @@ class BackgroundRepeat(_Enum):
         'RepeatX',
         'RepeatY',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(BackgroundRepeat, self).__init__(
             expression, lnk, must_be_constant)
@@ -186,7 +175,6 @@ class BackgroundGradientType(_Enum):
         'HorizontalCenter',
         'VerticalCenter',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(BackgroundGradientType, self).__init__(
             expression, lnk, must_be_constant)
@@ -202,7 +190,6 @@ class DataType(_Enum):
         'String',
         'Object',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(DataType, self).__init__(
             expression, lnk, must_be_constant)
@@ -224,7 +211,6 @@ class Operator(_Enum):
         'In',
         'Between',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(Operator, self).__init__(
             expression, lnk, must_be_constant)
@@ -235,7 +221,6 @@ class SortDirection(_Enum):
         'Ascending',
         'Descending',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(SortDirection, self).__init__(
             expression, lnk, must_be_constant)
@@ -248,7 +233,6 @@ class BreakLocation(_Enum):
         'StartAndEnd',
         'Between',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(BreakLocation, self).__init__(
             expression, lnk, must_be_constant)
@@ -260,7 +244,6 @@ class ImageSource(_Enum):
         'Embedded',
         'Database',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(ImageSource, self).__init__(
             expression, lnk, must_be_constant)
@@ -273,7 +256,6 @@ class ImageSizing(_Enum):
         'FitProportional',
         'Clip',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(ImageSizing, self).__init__(
             expression, lnk, must_be_constant)
@@ -284,7 +266,6 @@ class LayoutDirection(_Enum):
         'LTR',
         'RTL',
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(LayoutDirection, self).__init__(
             expression, lnk, must_be_constant)
@@ -302,7 +283,6 @@ class Position(_Enum):
         'Bottom',
         'BottomLeft'
     ]
-
     def __init__(self, expression, lnk, must_be_constant):
         super(LayoutDirection, self).__init__(
             expression, lnk, must_be_constant)
