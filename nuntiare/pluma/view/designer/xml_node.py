@@ -70,7 +70,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 state=tk.NORMAL)
         MenuManager.add_command(
                 self._menu_prefix + 'treview', 'remove', 'Remove',
-                None, self._item_up, image='clear-24px',
+                None, self._item_remove, image='clear-24px',
                 state=tk.NORMAL)
         MenuManager.add_separator(self._menu_prefix + 'treview')
         MenuManager.add_command(
@@ -93,6 +93,36 @@ class NuntiareXmlNode(ttk.Treeview):
 
     def _item_up(self):
         pass
+
+    def _item_remove(self):
+        sel = self.selection()
+        item = sel[0] if sel else None
+        if item is None:
+            return
+
+        name = self.set(item, 'name')
+        parent = self.parent(item)
+        parent_name = self.set(parent, 'name')
+
+        meta_parent = NuntiareXmlNode._element_meta[parent_name]
+        if meta_parent[name].card == nuntiare.Card.ONE:
+            return
+
+        if self.get_children(item):
+            print('has chilfren')
+            return
+
+        parent_xml_node = self._values[parent][0]
+        xml_node = self._values[item][0]
+        parent_xml_node.removeChild(xml_node)
+
+        ri = self._values[item][1]
+        if ri is not None:
+            ri.remove_all()
+
+        self.delete(item)
+
+        del self._values[item]
 
     @classmethod
     def _get_element_meta(cls):
@@ -195,7 +225,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 report_item = ri_ri.Style
 
         self._values[item][1] = report_item
-        self.tag_bind('element', '<<TreeviewSelect>>', self._item_clicked)
+        self.tag_bind('element', '<<TreeviewSelect>>', self._item_selected)
         self.tag_bind('element', '<3>', self._item_3_clicked)
         self._show_item_name(item)
         return item
@@ -257,7 +287,6 @@ class NuntiareXmlNode(ttk.Treeview):
         self.focus_set()
         self.focus(item)
         self.selection_set(item)
-        self._item_clicked(event)
 
         self._item_menu.delete(7)
         self._get_add_menu(item)
@@ -276,6 +305,14 @@ class NuntiareXmlNode(ttk.Treeview):
                     return
 
         new_item = self._create_sub_element(item, element)
+        if element in nuntiare._REPORT_ITEMS:
+            ri = self._values[new_item][1]
+            ri.create()
+        elif element in ('PageHeader', 'PageFooter'):
+            section = self._designer.sections.get_section(element)
+            section.set_item(new_item)
+            self._designer.sections.show_section(element)
+
         self.focus(new_item)
         self.see(new_item)
         self.selection_set(new_item)
@@ -308,7 +345,7 @@ class NuntiareXmlNode(ttk.Treeview):
         MenuManager.add_cascade('Add', parent, menu)
         self._menu_add[name] = menu
 
-    def _item_clicked(self, event):
+    def _item_selected(self, event):
         sel = self.selection()
         item = sel[0] if sel else None
         if self._last_item == item:
@@ -325,15 +362,28 @@ class NuntiareXmlNode(ttk.Treeview):
                     or meta.type == nuntiare.Element.EXPRESSION_LIST):
                 continue
             property_ = self._property.add_property(key, meta.type)
-            property_.set_value(
-                    self._get_node_value(item, key), meta.default)
+            value = self._get_node_value(item, key)
+
+            force_value = False
+            if name in nuntiare._REPORT_ITEMS or \
+                    name in ('PageHeader', 'PageFooter'):
+                if key in ('Height', 'Width') and value is None:
+                    value = '50pt'
+                    if name == 'Textbox':
+                        if key == 'Width':
+                            value = '70pt'
+                        else:
+                            value = '15pt'
+                    force_value = True
+            property_.set_value(value, meta.default, force_value)
+            if force_value:
+                property_._focusout(None)
 
     def get_report_item_info(self, item):
         itm = item
         section = None
         report_item_parent = None
         name = self.set(item, 'name')
-        meta = NuntiareXmlNode._element_meta[name]
         while True:
             parent = self.parent(itm)
             if not parent:
@@ -346,7 +396,7 @@ class NuntiareXmlNode(ttk.Treeview):
             if section is not None and report_item_parent is not None:
                 break
             itm = parent
-        return section, report_item_parent, meta
+        return section, report_item_parent
 
     def _property_changed(self, event):
         master = event[0]
@@ -360,9 +410,9 @@ class NuntiareXmlNode(ttk.Treeview):
             self._designer.sections.update()
         elif name in ('PageHeader', 'PageFooter', 'Body') and \
                     property_.name in ('Height'):
-            self._designer.sections.get_section[name].update()
+            self._designer.sections.get_section(name).update(property_.name)
         elif name in nuntiare._REPORT_ITEMS and \
-                property_.name in ('Top', 'Left', 'Height', 'Width'):
+                property_.name in ('Top', 'Left', 'Height', 'Width', 'Value'):
             report_item = self._values[item][1]
             report_item.update(property_.name)
         elif name in ('Style', 'Border', 'RightBorder',

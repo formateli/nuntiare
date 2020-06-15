@@ -12,7 +12,6 @@ class ElementMixin:
     def __init__(self, name, treeview):
         self.name = name
         self._treeview = treeview
-        self._meta = None
         self._meta = treeview._element_meta[name]
         self.item = None
         self.parent_item = None
@@ -50,7 +49,9 @@ class ElementMixin:
         return result
 
     def update(self, name_changed, type_=None):
-        raise NotImplementedError('update method not implemented.')
+        raise NotImplementedError(
+            'update method not implemented by {}'.format(
+                self.__class__.__name__))
 
     def set_tree_item(self, item):
         if item is None:
@@ -126,6 +127,7 @@ class Style(UpdateParentElement):
             result = getattr(self.Border, name)
         return result
 
+
 class ElementStyle(ElementMixin):
     def __init__(self, name, treeview):
         super(ElementStyle, self).__init__(name, treeview)
@@ -141,37 +143,39 @@ class ReportItem(ElementStyle):
         self._rec = None
         self._txt = None
 
+    def remove_all(self):
+        self._canvas.delete(self._txt)
+        self._canvas.delete(self._rec)
+        self._canvas.remove_report_items(self)
+
     def update(self, name_changed, type_=None):
         if self._canvas is None:
             return
 
+        opts_rec = {}
+        opts_txt = {}
+
         if type_ == 'Style':
             if name_changed == 'BackgroundColor':
-                self._canvas.itemconfig(
-                    self._rec, fill=self.Style.BackgroundColor)
+                opts_rec['fill'] = self.Style.BackgroundColor
 
             elif name_changed == 'Color':
-                self._canvas.itemconfig(
-                    self._txt, fill=self.Style.Color)
+                opts_txt['fill'] = self.Style.Color
 
             elif name_changed in ('FontFamily', 'FontSize', 
                     'FontWeight', 'TextDecoration', 'FontStyle'):
-                self._canvas.itemconfig(
-                    self._txt, font=self._get_font(self.Style))
+                opts_txt['font'] = self._get_font(self.Style)
 
         if type_ in ('Border', 'RightBorder',
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
             borders = self.Style.get_borders()
             if borders['equal']:
-                opts = {}
-                opts['outline'] = borders['TopBorder']['Color']
-                bw = get_size_px(borders['TopBorder']['Width'])
-                opts['width'] = borders['TopBorder']['BorderStyle']
+                opts_rec['outline'] = borders['TopBorder']['Color']
+                opts_rec['width'] = get_size_px(borders['TopBorder']['Width'])
+                bs = borders['TopBorder']['BorderStyle']
                 if bs == 'None':
-                    opts['width'] = 0
-                    opts['outline'] = None
-
-                self._canvas.itemconfig(self._rec, **opts)
+                    opts_rec['width'] = 0
+                    opts_rec['outline'] = None
 
         else:
             if name_changed in ('Left', 'Top', 'Width', 'Height'):
@@ -184,6 +188,14 @@ class ReportItem(ElementStyle):
                     get_size_px(self.Top) + get_size_px(self.Height)
                     )
 
+            elif name_changed == 'Value':
+                opts_txt['text'] = self.Value
+
+        if opts_rec:
+            self._canvas.itemconfig(self._rec, **opts_rec)
+        elif opts_txt:
+            self._canvas.itemconfig(self._txt, **opts_txt)
+
     def _sum_parent(self, name):
         if self._parent is None:
             return 0
@@ -192,20 +204,18 @@ class ReportItem(ElementStyle):
     def create(self):
         if self._canvas is None:
             return
-        fill = 'white'
+
+        fill = self.Style.BackgroundColor
+        if fill is None: fill = 'white'
+
         outline = None
         border_width = 0
-        if self.Style.item:
-            fill = self.Style.BackgroundColor
-            if fill is None: fill = 'white'
-
-            # outline
-            borders = self.Style.get_borders()
-            if borders['equal']:
-                outline = borders['TopBorder']['Color']
-                bs = borders['TopBorder']['BorderStyle']
-                if bs != 'None':
-                    border_width = get_size_px(borders['TopBorder']['Width'])
+        borders = self.Style.get_borders()
+        if borders['equal']:
+            outline = borders['TopBorder']['Color']
+            bs = borders['TopBorder']['BorderStyle']
+            if bs != 'None':
+                border_width = get_size_px(borders['TopBorder']['Width'])
 
         self._rec = self._canvas.create_rectangle(
             get_size_px(self.Left),

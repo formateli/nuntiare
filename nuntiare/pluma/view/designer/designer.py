@@ -7,7 +7,7 @@ from ..common import PanedView, MementoCaretaker
 from ..common.tools import get_size_px
 from .xml_node import NuntiareXmlNode
 from .property import NuntiareProperty
-from .report_item import ReportItem
+from .report_item import ReportItem, ElementStyle
 
 
 class Section(tk.Canvas):
@@ -24,8 +24,13 @@ class Section(tk.Canvas):
         self.frame = master_widget
         self._objects_2_ritems = {}
         self._report_items = []
-        self.info = ReportItem(
-                name, self, master._treeview, None)
+
+        self.info = ElementStyle(
+                name, master._treeview)
+        # Map update function
+        self.info.update = self.update
+        self._rec = None  # Canvas rectangle
+        self.visible = False
 
         self.config(
                 width=100, height=100,
@@ -39,6 +44,14 @@ class Section(tk.Canvas):
         self._report_items.append(report_item)
         return report_item
 
+    def remove_report_items(self, report_item):
+        i = 0
+        for ri in self._report_items:
+            if ri == report_item:
+                del self._report_items[i]
+                break
+            i += 1 
+
     def create_all(self):
         for ri in self._report_items:
             ri.create()
@@ -46,8 +59,89 @@ class Section(tk.Canvas):
     def set_item(self, item):
         self.info.set_tree_item(item)
 
-    def update(self):
-        pass
+    def update(self, name_changed=None, type_=None):
+        if self.info.item is None:
+            return
+
+        opts = {}
+        opts['fill'] = self.info.Style.BackgroundColor
+        borders = self.info.Style.get_borders()
+        if borders['equal']:
+            opts['outline'] = borders['TopBorder']['Color']
+            opts['width'] = get_size_px(borders['TopBorder']['Width'])
+            bs = borders['TopBorder']['BorderStyle']
+            if bs == 'None':
+                opts['width'] = 0
+                opts['outline'] = None
+
+        if self._rec is None:
+            width = get_size_px(self._master.page_info.PageWidth)
+            height = self.get_height()
+            self._rec = self.create_rectangle(
+                0, 0, width, height, **opts)
+        else:
+            if name_changed == 'Height':
+                width = get_size_px(self._master.page_info.PageWidth)
+                height = self.get_height()
+                x1, y1, x2, y2 = self.coords(self._rec)
+                self.coords(
+                    self._rec, 0, 0, width, height)
+                self.config(
+                    width=width, height=height,
+                    scrollregion=(0, 0, width, height))
+
+                # Update Body Height
+                if self.info.name != 'Body':
+                    self._master.get_section('Body').update('Height')
+            else:
+                self.itemconfig(self._rec, **opts)
+
+    def _set_sash_pos(self):
+        height = self.get_height()
+        sash_index = self._get_sash_index()
+
+        if sash_index is None:
+            return  # Body
+        if self.info.name == 'PageHeader':             
+            sash_height = height
+        else:
+            sash_height = self._master.winfo_height() \
+                - height
+        self._master.sashpos(sash_index, sash_height)
+
+    def _get_sash_index(self):
+        count = len(self._master.panes())
+
+        if count == 1:
+            # It must be Body
+            return
+        elif count == 3:
+            if self.info.name == 'PageHeader':
+                return 0
+            elif  self.info.name == 'PageFooter':
+                return 1
+            else:
+                return
+        else:
+            if self.info.name == 'PageHeader':
+                return 0
+            elif  self.info.name == 'PageFooter':
+                return 0
+            else:
+                return
+
+    def get_height(self):
+        if self.info is None or self.info.item is None:
+            return 0
+
+        if self.info.name == 'Body':
+            height = get_size_px(self._master.page_info.PageHeight) \
+                - self._master._sections['PageHeader'].get_height() \
+                - self._master._sections['PageFooter'].get_height()
+        else:
+            height = get_size_px(self.info.Height)
+
+        return height
 
     def add_object(self, obj, report_item):
         self._objects_2_ritems[obj] = report_item
@@ -71,15 +165,15 @@ class Sections(ttk.PanedWindow):
             }
 
     def add_report_item(self, name, tree_node):
-        section, parent, meta = \
+        section, parent = \
             self._treeview.get_report_item_info(tree_node)
         return self._sections[section].add_report_item(
             name, tree_node, parent)
 
     def set_treeview(self, treeview):
         self._treeview = treeview
-        self.page_info = ReportItem(
-                'Page', None, treeview, None)
+        self.page_info = ElementStyle(
+                'Page', treeview)
 
     def set_page_item(self, item):
         self.page_info.set_tree_item(item)
@@ -93,7 +187,6 @@ class Sections(ttk.PanedWindow):
             xscrollcommand=frame.xscrollbar.set,
             yscrollcommand=frame.yscrollbar.set)
         section.grid(row=0, column=0, sticky='wens')
-        self.add(frame, weight=1)
         frame.xscrollbar.config(command=section.xview)
         frame.yscrollbar.config(command=section.yview)
         self._sections[name] = section
@@ -115,18 +208,52 @@ class Sections(ttk.PanedWindow):
 
     def _show_section(self, name):
         section = self._sections[name]
-        if section.info is None or section.info.item is None:
-            self.forget(section.frame)
+        if section.info.item is None:
+            if section.visible:
+                self.forget(section.frame)
+                section.visible = False
         else:
+            if not section.visible:
+                self.add(section.frame, weight=1)
+                section.visible = True
+
             width = get_size_px(self.page_info.PageWidth)
             if name in ('PageHeader', 'PageFooter'):
                 height = get_size_px(section.info.Height)
             else:
-                height = get_size_px(self.page_info.PageHeight)  # TODO
+                t_height = self._sections['PageHeader'].get_height()
+                b_height = self._sections['PageFooter'].get_height()
+                height = get_size_px(self.page_info.PageHeight) \
+                    - t_height - b_height
 
             section.config(
                 width=width, height=height,
                 scrollregion=(0, 0, width, height))
+
+            section.update()
+
+            count = len(self.panes())
+            if count == 2:
+                header = self.get_section('PageHeader')
+                if header.info.item is not None:
+                    self.insert(
+                        0, self.get_section('PageHeader').frame, weight=1)
+                    self.insert(
+                        1, self.get_section('Body').frame, weight=1)
+                else:
+                    self.insert(
+                        0, self.get_section('Body').frame, weight=1)
+                    self.insert(
+                        1, self.get_section('PageFooter').frame, weight=1)
+            elif count == 3:
+                self.insert(
+                    0, self.get_section('PageHeader').frame, weight=1)
+                self.insert(
+                    1, self.get_section('Body').frame, weight=1)
+                self.insert(
+                    2, self.get_section('PageFooter').frame, weight=1)
+
+            self.after(500, lambda: section._set_sash_pos())
 
 
 class DesignerView(PanedView):

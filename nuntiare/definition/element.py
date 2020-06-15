@@ -860,7 +860,7 @@ class Body(Element):
 class DataSources(Element):
 
     _element_list = {
-        'DataSource': Meta(Element.ELEMENT, Card.ONE_MANY)
+        'DataSource': Meta(Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):

@@ -98,12 +98,14 @@ class PropertyItem(_PropertyFrame):
         self.register_property_event('property_focusout')
         self.bind('<FocusOut>', self._focusout)
 
-    def set_value(self, value, default):
+    def set_value(self, value, default, force_value):
         self._value = value
+        if force_value:
+            self._value = None
         self._default = default
         self._clear_widget()
         if value is not None:
-            self._set_widget_value(self._value)
+            self._set_widget_value(value)
         elif self._default is not None:
             self._set_widget_value('[Default: ' + str(self._default) + ']')
 
