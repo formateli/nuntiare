@@ -279,7 +279,6 @@ class NuntiareXmlNode(ttk.Treeview):
         self.focus(new_item)
         self.see(new_item)
         self.selection_set(new_item)
-        self._item_clicked(None)
 
     def _get_add_menu(self, item):
         name = self.set(item, 'name')
@@ -359,7 +358,7 @@ class NuntiareXmlNode(ttk.Treeview):
         if name == 'Page' and property_.name not in (
                 'Columns', 'ColumnSpacing'):
             self._designer.sections.update()
-        elif name in ('PageHeader', 'PageFooter') and \
+        elif name in ('PageHeader', 'PageFooter', 'Body') and \
                     property_.name in ('Height'):
             self._designer.sections.get_section[name].update()
         elif name in nuntiare._REPORT_ITEMS and \

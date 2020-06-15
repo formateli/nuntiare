@@ -144,32 +144,35 @@ class ReportItem(ElementStyle):
     def update(self, name_changed, type_=None):
         if self._canvas is None:
             return
+
         if type_ == 'Style':
             if name_changed == 'BackgroundColor':
                 self._canvas.itemconfig(
                     self._rec, fill=self.Style.BackgroundColor)
+
             elif name_changed == 'Color':
                 self._canvas.itemconfig(
                     self._txt, fill=self.Style.Color)
+
             elif name_changed in ('FontFamily', 'FontSize', 
                     'FontWeight', 'TextDecoration', 'FontStyle'):
                 self._canvas.itemconfig(
                     self._txt, font=self._get_font(self.Style))
+
         if type_ in ('Border', 'RightBorder',
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
             borders = self.Style.get_borders()
             if borders['equal']:
-                if name_changed == 'Color':
-                    outline = borders['TopBorder']['Color']
-                    self._canvas.itemconfig(
-                        self._rec, outline=outline)
-                if name_changed in ['BorderStyle', 'Width']:
-                    border_width = 0
-                    if borders['TopBorder']['BorderStyle'] != 'None':
-                        border_width = \
-                            get_size_px(borders['TopBorder']['Width'])
-                    self._canvas.itemconfig(
-                        self._rec, width=border_width)
+                opts = {}
+                opts['outline'] = borders['TopBorder']['Color']
+                bw = get_size_px(borders['TopBorder']['Width'])
+                opts['width'] = borders['TopBorder']['BorderStyle']
+                if bs == 'None':
+                    opts['width'] = 0
+                    opts['outline'] = None
+
+                self._canvas.itemconfig(self._rec, **opts)
+
         else:
             if name_changed in ('Left', 'Top', 'Width', 'Height'):
                 x1, y1, x2, y2 = self._canvas.coords(self._rec)

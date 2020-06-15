@@ -56,26 +56,6 @@ class Section(tk.Canvas):
         if self._objects_2_ritems[obj]:
             return self._objects_2_ritems[obj]
 
-    def create_rectangle_style(self, x1, y1, x2, y2, style):
-        fill = style['color'] if style['color'] is not None else ''
-
-        border = style['border']
-        if border is not None:
-            outline = style['border_color']
-            border_style = style['border_style']
-            border_width = style['border_width']
-
-        if border:
-            rec = self.create_rectangle(
-                    x1, y1, x2, y2, fill=fill,
-                    outline=outline, width=border_width)
-        else:
-            rec = self.create_rectangle(
-                    x1, y1, x2, y2, fill=fill,
-                    outline='', width=0)
-            # TODO draw line per each border
-        return rec
-
 
 class Sections(ttk.PanedWindow):
     def __init__(self, master):
