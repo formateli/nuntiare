@@ -14,7 +14,7 @@ class NuntiareView(ttk.Frame):
         self.id = id_
         self.pluma = pluma
         self.tabs = tabs
-        self.full_file_name = full_file_name
+        self.full_file_name = None
         self.file_name = None
         self.directory_name = None
         self.extension = None
@@ -44,6 +44,7 @@ class NuntiareView(ttk.Frame):
         self.notebook.bind("<<NotebookTabChanged>>", self.tab_changed)
 
     def set_file_name(self, full_file_name):
+        self.full_file_name = full_file_name
         self.file_name = os.path.basename(full_file_name)
         self.directory_name = os.path.dirname(
             os.path.realpath(full_file_name))
