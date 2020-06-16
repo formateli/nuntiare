@@ -203,6 +203,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 text=node.nodeName,
                 values=(node.nodeName),
                 tags=('element'))
+        print('new item: ' + str(item))
         self._values[item] = [node, None]
         report_item = None
         if node.nodeName in nuntiare._REPORT_ITEMS:
@@ -231,7 +232,10 @@ class NuntiareXmlNode(ttk.Treeview):
         return item
 
     def _create_sub_element(self, item, element):
+        print('Create sub element {} for {}/{}'.format(
+            element, item, self.set(item, 'name')))
         node = self._values[item][0]
+        print('node: ' + node.nodeName)
         el = self._doc.createElement(element)
         node.appendChild(el)
         return self._add_node_element(item, el)
@@ -283,6 +287,7 @@ class NuntiareXmlNode(ttk.Treeview):
 
     def _item_3_clicked(self, event):
         item = self.identify_row(event.y)
+        print('3c Selected: {}/{}'.format(item, self.set(item, 'name')))
 
         self.focus_set()
         self.focus(item)
@@ -296,6 +301,8 @@ class NuntiareXmlNode(ttk.Treeview):
         item = values[0]
         element = values[1]
         meta = values[2]
+
+        print('Add element to: {}/{}'.format(item, self.set(item, 'name')))
 
         if meta.card in (nuntiare.Card.ONE, nuntiare.Card.ZERO_ONE):
             for it in self.get_children(item):
@@ -320,9 +327,11 @@ class NuntiareXmlNode(ttk.Treeview):
     def _get_add_menu(self, item):
         name = self.set(item, 'name')
         parent = self._menu_prefix + 'treview'
-        menu = parent + '_add_' + name
 
-        if name in self._menu_add:
+        menu_name = '{}-{}'.format(str(item), name)
+        menu = parent + '_add_' + menu_name
+
+        if menu_name in self._menu_add:
             MenuManager.add_cascade('Add', parent, menu)
             return
 
@@ -343,7 +352,7 @@ class NuntiareXmlNode(ttk.Treeview):
                     image=image, state=tk.NORMAL)
 
         MenuManager.add_cascade('Add', parent, menu)
-        self._menu_add[name] = menu
+        self._menu_add[menu_name] = menu
 
     def _item_selected(self, event):
         sel = self.selection()
