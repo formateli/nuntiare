@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 
 
-class OutcomeStyle(object):
+class OutcomeStyle:
     '''
     Style cache. Must be one instance per report.
     See: nuntiare.report.Report
@@ -106,8 +106,8 @@ class OutcomeStyle(object):
             border.width = width
 
 
-class _StyleInfo(object):
-    class Border(object):
+class _StyleInfo:
+    class Border:
         def __init__(self):
             self._str_id = None
             self.color = None

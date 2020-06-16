@@ -135,13 +135,36 @@ class ElementStyle(ElementMixin):
 
 
 class ReportItem(ElementStyle):
-    def __init__(self, name, canvas, treeview, parent):
+    def __init__(self, name, canvas, treeview, parent_ri):
         super(ReportItem, self).__init__(
                 name, treeview)
         self._canvas = canvas
-        self._parent = parent
+        self._parent_ri = parent_ri
+        self._children_ri = []
         self._rec = None
         self._txt = None
+
+        if parent_ri is not None:
+            if parent_ri.name in ('Body', 'PageHeader', 'PageFooter'):
+                parent_ri = None
+            else:
+                parent_ri._children_ri.append(self)
+
+    def get_top(self):
+        result = 0
+        if self._parent_ri:
+            print(self._parent_ri.Name)
+            result += self._parent_ri.get_top()
+        result += get_size_px(self.Top)
+        return result
+
+    def get_left(self):
+        result = 0
+        if self._parent_ri:
+            print(self._parent_ri.Name)
+            result += self._parent_ri.get_left()
+        result += get_size_px(self.Left)
+        return result
 
     def remove_all(self):
         self._canvas.delete(self._txt)
@@ -162,7 +185,7 @@ class ReportItem(ElementStyle):
             elif name_changed == 'Color':
                 opts_txt['fill'] = self.Style.Color
 
-            elif name_changed in ('FontFamily', 'FontSize', 
+            elif name_changed in ('FontFamily', 'FontSize',
                     'FontWeight', 'TextDecoration', 'FontStyle'):
                 opts_txt['font'] = self._get_font(self.Style)
 
@@ -179,14 +202,27 @@ class ReportItem(ElementStyle):
 
         else:
             if name_changed in ('Left', 'Top', 'Width', 'Height'):
+                left = self.get_left()
+                top = self.get_top()
                 x1, y1, x2, y2 = self._canvas.coords(self._rec)
                 self._canvas.coords(
-                    self._rec,
-                    get_size_px(self.Left),
-                    get_size_px(self.Top),
-                    get_size_px(self.Left) + get_size_px(self.Width),
-                    get_size_px(self.Top) + get_size_px(self.Height)
+                    self._rec, left, top,
+                    left + get_size_px(self.Width),
+                    top + get_size_px(self.Height)
                     )
+
+                #if self._txt is not None:
+                #    x1, y1, x2, y2 = self._canvas.coords(self._txt)
+                #    self._canvas.coords(
+                #        self._txt, left, top,
+                #        left + get_size_px(self.Width),
+                #        top + get_size_px(self.Height)
+                #        )
+
+                if name_changed in ('Left', 'Top'):
+                    for ri in self._children_ri:
+                        print('Updating child ' + ri.name)
+                        ri.update(name_changed, type_)
 
             elif name_changed == 'Value':
                 opts_txt['text'] = self.Value
@@ -217,20 +253,20 @@ class ReportItem(ElementStyle):
             if bs != 'None':
                 border_width = get_size_px(borders['TopBorder']['Width'])
 
+        left = self.get_left()
+        top = self.get_top()
+
         self._rec = self._canvas.create_rectangle(
-            get_size_px(self.Left),
-            get_size_px(self.Top),
-            get_size_px(self.Left) + get_size_px(self.Width),
-            get_size_px(self.Top) + get_size_px(self.Height),
+            left, top,
+            left + get_size_px(self.Width),
+            top + get_size_px(self.Height),
             fill=fill, outline=outline, width=border_width
             )
         self._add_object(self._rec)
 
         if self.name == 'Textbox':
             self._txt = self._canvas.create_text(
-                get_size_px(self.Left),
-                get_size_px(self.Top),
-                anchor='nw',
+                left, top, anchor='nw',
                 width=get_size_px(self.Width),
                 font=self._get_font(self.Style),
                 fill=self.Style.Color,

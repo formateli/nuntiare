@@ -31,10 +31,24 @@ class TkRender(Render):
             return
 
         for it in items:
+            print(it.type)
             if it.type == 'PageImage':
                 self._draw_image(it)
+            elif it.type == 'PageRectangle':
+                self._draw_rectangle_item(it)
             else:
                 continue
+
+    def _draw_rectangle_item(self, it):
+        self._draw_rectangle(
+            self._pt2px(it.cumulative_left()),
+            self._pt2px(it.cumulative_top()),
+            self._pt2px(it.width),
+            self._pt2px(it.height),
+            it.style
+            )
+        self._render_items(
+            it.items_info.item_list)
 
     def _draw_image(self, it):
         width = it.width

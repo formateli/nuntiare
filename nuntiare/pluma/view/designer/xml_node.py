@@ -116,12 +116,12 @@ class NuntiareXmlNode(ttk.Treeview):
         xml_node = self._values[item][0]
         parent_xml_node.removeChild(xml_node)
 
-        ri = self._values[item][1]
-        if ri is not None:
-            ri.remove_all()
+        if name in nuntiare._REPORT_ITEMS:
+            ri = self._values[item][1]
+            if ri is not None:
+                ri.remove_all()
 
         self.delete(item)
-
         del self._values[item]
 
     @classmethod
@@ -391,7 +391,7 @@ class NuntiareXmlNode(ttk.Treeview):
     def get_report_item_info(self, item):
         itm = item
         section = None
-        report_item_parent = None
+        parent_ri = None
         name = self.set(item, 'name')
         while True:
             parent = self.parent(itm)
@@ -401,11 +401,12 @@ class NuntiareXmlNode(ttk.Treeview):
                     'PageHeader', 'PageFooter', 'Body'):
                 section = self._values[parent][0].nodeName
             if self._values[parent][1] is not None:
-                report_item_parent = parent
-            if section is not None and report_item_parent is not None:
+                if parent_ri is None:
+                    parent_ri = self._values[parent][1]
+            if section is not None and parent_ri is not None:
                 break
             itm = parent
-        return section, report_item_parent
+        return section, parent_ri
 
     def _property_changed(self, event):
         master = event[0]

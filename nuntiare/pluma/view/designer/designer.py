@@ -27,8 +27,12 @@ class Section(tk.Canvas):
 
         self.info = ElementStyle(
                 name, master._treeview)
-        # Map update function
+        # Map function
         self.info.update = self.update
+        self.info.get_left = self.get_left
+        self.info.get_top = self.get_top
+        self.info.Name = name
+
         self._rec = None  # Canvas rectangle
         self.visible = False
 
@@ -50,7 +54,7 @@ class Section(tk.Canvas):
             if ri == report_item:
                 del self._report_items[i]
                 break
-            i += 1 
+            i += 1
 
     def create_all(self):
         for ri in self._report_items:
@@ -102,7 +106,7 @@ class Section(tk.Canvas):
 
         if sash_index is None:
             return  # Body
-        if self.info.name == 'PageHeader':             
+        if self.info.name == 'PageHeader':
             sash_height = height
         else:
             sash_height = self._master.winfo_height() \
@@ -129,6 +133,12 @@ class Section(tk.Canvas):
                 return 0
             else:
                 return
+
+    def get_left(self):
+        return 0
+
+    def get_top(self):
+        return 0
 
     def get_height(self):
         if self.info is None or self.info.item is None:
