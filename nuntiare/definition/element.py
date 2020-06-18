@@ -1113,7 +1113,7 @@ class Style(Element):
         'FontWeight': Meta(Element.ENUM, default='Normal'),
         'Format': Meta(Element.STRING),
         'TextDecoration': Meta(Element.ENUM, default='None'),
-        'TextAlign': Meta(Element.ENUM, default='General'),
+        'TextAlign': Meta(Element.ENUM, default='None'),
         'VerticalAlign': Meta(Element.ENUM, default='Top'),
         'Color': Meta(Element.COLOR, default='#000000'),
         'PaddingLeft': Meta(Element.SIZE),

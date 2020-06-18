@@ -135,6 +135,9 @@ class ElementStyle(ElementMixin):
 
 
 class ReportItem(ElementStyle):
+
+    _id_count = 0
+
     def __init__(self, name, canvas, treeview, parent_ri):
         super(ReportItem, self).__init__(
                 name, treeview)
@@ -143,6 +146,8 @@ class ReportItem(ElementStyle):
         self._children_ri = []
         self._rec = None
         self._txt = None
+        self._label = None
+        self.id = self._get_ri_id()
 
         if parent_ri is not None:
             if parent_ri.name in ('Body', 'PageHeader', 'PageFooter'):
@@ -177,17 +182,26 @@ class ReportItem(ElementStyle):
 
         opts_rec = {}
         opts_txt = {}
+        opts_lbl = {}
 
         if type_ == 'Style':
             if name_changed == 'BackgroundColor':
                 opts_rec['fill'] = self.Style.BackgroundColor
+                if self._label:
+                    opts_lbl['background'] = self.Style.BackgroundColor
 
             elif name_changed == 'Color':
-                opts_txt['fill'] = self.Style.Color
+                opts_lbl['foreground'] = self.Style.Color
 
             elif name_changed in ('FontFamily', 'FontSize',
                     'FontWeight', 'TextDecoration', 'FontStyle'):
-                opts_txt['font'] = self._get_font(self.Style)
+                opts_lbl['font'] = self._get_font(self.Style)
+
+            elif name_changed in ('TextAlign', 'VerticalAlign'):
+                opts_lbl['anchor'], opts_lbl['justify'] = \
+                        self._get_text_justify(
+                            self.Style.TextAlign,
+                            self.Style.VerticalAlign)
 
         if type_ in ('Border', 'RightBorder',
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
@@ -204,38 +218,39 @@ class ReportItem(ElementStyle):
             if name_changed in ('Left', 'Top', 'Width', 'Height'):
                 left = self.get_left()
                 top = self.get_top()
-                x1, y1, x2, y2 = self._canvas.coords(self._rec)
                 self._canvas.coords(
                     self._rec, left, top,
                     left + get_size_px(self.Width),
                     top + get_size_px(self.Height)
                     )
 
-                #if self._txt is not None:
-                #    x1, y1, x2, y2 = self._canvas.coords(self._txt)
-                #    self._canvas.coords(
-                #        self._txt, left, top,
-                #        left + get_size_px(self.Width),
-                #        top + get_size_px(self.Height)
-                #        )
+                if self._txt is not None:
+                    if name_changed in ('Top', 'Left'):
+                        self._canvas.coords(
+                            self._txt, left, top)
+                    elif name_changed in ('Width', 'Height'):
+                        opts_txt['width'] = get_size_px(self.Width)
+                        opts_txt['height'] = get_size_px(self.Height)
 
                 if name_changed in ('Left', 'Top'):
                     for ri in self._children_ri:
-                        print('Updating child ' + ri.name)
                         ri.update(name_changed, type_)
 
             elif name_changed == 'Value':
-                opts_txt['text'] = self.Value
+                opts_lbl['text'] = self.Value
 
         if opts_rec:
             self._canvas.itemconfig(self._rec, **opts_rec)
-        elif opts_txt:
+        if opts_txt:
             self._canvas.itemconfig(self._txt, **opts_txt)
+        if self._label and opts_lbl:
+            opts_lbl.pop('background', None)
+            opts_lbl.pop('foreground', None)
+            style_name = self._get_label_style(
+                    self.Style.BackgroundColor, self.Style)
+            self._label.configure(style=style_name)
 
-    def _sum_parent(self, name):
-        if self._parent is None:
-            return 0
-        return getattr(self._parent, name)
+            self._label.configure(**opts_lbl)
 
     def create(self):
         if self._canvas is None:
@@ -265,17 +280,102 @@ class ReportItem(ElementStyle):
         self._add_object(self._rec)
 
         if self.name == 'Textbox':
-            self._txt = self._canvas.create_text(
-                left, top, anchor='nw',
-                width=get_size_px(self.Width),
+            lbl_style = self._get_label_style(
+                fill, self.Style)
+
+            anchor, justify = self._get_text_justify(
+                    self.Style.TextAlign, self.Style.VerticalAlign)
+            self._label = ttk.Label(
+                self._canvas,
+                text=self.Value,
+                anchor=anchor,
+                justify=justify,
+                style=lbl_style,
                 font=self._get_font(self.Style),
-                fill=self.Style.Color,
-                text=self.Value
+                wraplength=get_size_px(self.Width)
                 )
-            self._add_object(self._txt)
+            self._label.grid(row=0, column=0, sticky='nwes')
+
+            self._txt = self._canvas.create_window(
+                left, top, window=self._label, anchor='nw',
+                width=get_size_px(self.Width),
+                height=get_size_px(self.Height)
+                )
+
+            self._add_object(self._txt, self._label)
+
+
+    @classmethod
+    def _get_text_justify(cls, ha, va):
+        if ha in (None, 'Left', 'None'):
+            if va in 'Top':
+                anchor = 'nw'
+            elif va == 'Middle':
+                anchor = 'w'
+            else:
+                anchor = 'sw'
+            justify = 'left'
+        elif ha == 'Right':
+            if va in 'Top':
+                anchor = 'ne'
+            elif va == 'Middle':
+                anchor = 'e'
+            else:
+                anchor = 'se'
+            justify = 'right'
+        elif ha == 'Center':
+            if va in 'Top':
+                anchor = 'n'
+            elif va == 'Middle':
+                anchor = 'center'
+            else:
+                anchor = 's'
+            justify = 'center'
+
+        return anchor, justify
+
+    @classmethod
+    def _get_ri_id(cls):
+        ReportItem._id_count += 1
+        return ReportItem._id_count
+
+    def _get_label_style(self, bgcolor, style):
+        name = self.name + '-' + str(bgcolor) + '-' \
+            + str(style.Color) + '.TLabel'
+        s = ttk.Style()
+        s.configure(
+            name,
+            background=bgcolor,
+            foreground=style.Color)
+        return name
+
+    @staticmethod
+    def _get_label_style(bgcolor, style):
+        def add_option(opts, key, value):
+            if value is not None:
+                opts[key] = value
+            return opts
+
+        name = str(bgcolor) + '-' \
+            + str(style.Color) + '.TLabel'
+
+        opts = {}
+        add_option(opts, 'background', bgcolor)
+        add_option(opts, 'foreground', style.Color)
+
+        s = ttk.Style()
+        s.configure(name, **opts)
+        return name
 
     @staticmethod
     def _get_font(style):
+        def get_weight(val):
+            val = val.lower()
+            if val in ('bold', 'bolder'):
+                return 'bold'
+            else:
+                return 'normal'
+
         slant = style.FontStyle.lower()
         if slant != 'italic':
             slant = 'roman'
@@ -290,27 +390,24 @@ class ReportItem(ElementStyle):
         font = tk.font.Font(
             family=style.FontFamily,
             size=-get_size_px(style.FontSize),
-            weight=style.FontWeight.lower(),
+            weight=get_weight(style.FontWeight),
             slant=slant,
             underline=underline,
             overstrike=overstrike
             )
         return font
 
-    def _add_object(self, obj):
+    def _add_object(self, obj, label=None):
         self._canvas.add_object(obj, self)
         self._canvas.tag_bind(obj, '<1>', self._object_click)
+        if label is not None:
+            label.bind('<1>', self._label_click)
+
+    def _label_click(self, event):
+        self._object_click(event)
 
     def _object_click(self, event):
-        x = self._canvas.canvasx(event.x)
-        y = self._canvas.canvasy(event.y)
-        it = self._canvas.find_overlapping(
-            x, y, x + 1, y + 1)
-
-        if not it:
-            return
-        it = it[-1]
-        report_item = self._canvas.get_report_item_from_object(it)
+        report_item = self._canvas.get_report_item_from_object(self._rec)
         self._treeview.focus_set()
         self._treeview.see(report_item.item)
         self._treeview.focus(report_item.item)

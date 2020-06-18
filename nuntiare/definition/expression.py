@@ -473,33 +473,8 @@ class Size(Expression):
             self._size = 0.0
             return self._size
 
-        self._size = Size.convert(float(res[0]), res[1], 'pt')  # Default point
-        return self._size
-
-    def _get_value_XXX(self, string_size):
-        if not string_size:
-            self._size = 0.0
-            return self._size
-
-        # convert to unicode
-        string_size = DataType.get_value('String', string_size)
-
-        units = ('in', 'cm', 'mm', 'pt', 'pc')
-
-        string_size = string_size.strip()
-        if len(string_size) < 3:
-            LOGGER.error(
-                "Invalid format for size: {0}".format(string_size), True)
-
-        unit = string_size[len(string_size) - 2:]
-        if unit not in units:
-            LOGGER.error(
-                "Invalid unit '{0}' for size '{1}'. Valid are: {2}".format(
-                    unit, string_size, units), True)
-
-        size = string_size[:len(string_size) - 2]
-        size = size.strip()
-        self._size = Size.convert(float(size), unit, 'pt')  # Default point
+        # Default point
+        self._size = Size.convert(float(res[0]), res[1], 'pt')
         return self._size
 
     @staticmethod
@@ -508,7 +483,7 @@ class Size(Expression):
         if unit == 'px':
             return value
         points = Size.convert(value, unit, 'pt')
-        return (points * ppi) / Size.size_72
+        return int((points * ppi) / Size.size_72)
 
     @staticmethod
     def convert_from_pixel(value, unit, ppi=96):
@@ -541,6 +516,13 @@ class Size(Expression):
     def convert(value, from_unit, to_unit='mm'):
         from_unit = from_unit.strip().lower()
         to_unit = to_unit.strip().lower()
+
+        if from_unit == 'px':
+            value = Size.convert_from_pixel(value, to_unit)
+            to_unit = 'pt'
+        elif to_unit == 'px':
+            value = Size.convert_to_pixel(value, from_unit)
+            return value
 
         if from_unit == to_unit:
             return value

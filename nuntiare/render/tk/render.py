@@ -2,6 +2,7 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import tkinter as tk
+from tkinter import ttk
 from PIL import ImageTk
 from nuntiare.definition.expression import Size
 from nuntiare.definition.element import EmbeddedImage
@@ -20,7 +21,6 @@ class TkRender(Render):
     def render(self, report, **kws):
         self._canvas = kws.pop('canvas')
         super(TkRender, self).render(report, **kws)
-        self._ppi = self._canvas.winfo_pixels('1i')
 
         result = report.result
 
@@ -36,15 +36,43 @@ class TkRender(Render):
                 self._draw_image(it)
             elif it.type == 'PageRectangle':
                 self._draw_rectangle_item(it)
+            elif it.type == 'PageText':
+                self._draw_text(it)
             else:
                 continue
 
+    def _draw_text(self, it):
+        left = self._pt_2_px(it.cumulative_left())
+        top = self._pt_2_px(it.cumulative_top())
+        width = self._pt_2_px(it.width)
+        height = self._pt_2_px(it.height)
+
+        self._draw_rectangle(
+            left, top, width, height,
+            it.style
+            )
+
+        label = ttk.Label(
+            self._canvas,
+            text=it.value, anchor='nw',
+            style=self._get_label_style(it.style),
+            font=self._get_font(it.style)
+            )
+
+        label.grid(row=0, column=0, sticky='nwes')
+
+        self._canvas.create_window(
+            left, top, window=label, anchor='nw',
+            width=width,
+            height=height
+            )
+
     def _draw_rectangle_item(self, it):
         self._draw_rectangle(
-            self._pt2px(it.cumulative_left()),
-            self._pt2px(it.cumulative_top()),
-            self._pt2px(it.width),
-            self._pt2px(it.height),
+            self._pt_2_px(it.cumulative_left()),
+            self._pt_2_px(it.cumulative_top()),
+            self._pt_2_px(it.width),
+            self._pt_2_px(it.height),
             it.style
             )
         self._render_items(
@@ -59,25 +87,25 @@ class TkRender(Render):
         resize = None
 
         if it.image_sizing == 'AutoSize':
-            width = self._px2pt(it.image_width)
-            height = self._px2pt(it.image_height)
+            width = self._pt_2_px(it.image_width)
+            height = self._pt_2_px(it.image_height)
         elif it.image_sizing == 'Fit':
-            resize = (int(self._pt2px(width)),
-                      int(self._pt2px(height)))
+            resize = (self._pt_2_px(width),
+                      self._pt_2_px(height))
         elif it.image_sizing == 'FitProportional':
             wd, hg = EmbeddedImage.get_proportional_size(
                     it.width, it.height,
                     it.image_width,
                     it.image_height)
             resize = (
-                int(self._pt2px(wd)),
-                int(self._pt2px(hg)))
+                self._pt_2_px(wd),
+                self._pt_2_px(hg))
 
         self._draw_rectangle(
-            self._pt2px(it.left),
-            self._pt2px(it.top),
-            self._pt2px(width),
-            self._pt2px(height),
+            self._pt_2_px(it.left),
+            self._pt_2_px(it.top),
+            self._pt_2_px(width),
+            self._pt_2_px(height),
             it.style
             )
 
@@ -91,8 +119,8 @@ class TkRender(Render):
         image = ImageTk.PhotoImage(pil_img)
 
         self._canvas.create_image(
-            self._pt2px(it.left),
-            self._pt2px(it.top),
+            self._pt_2_px(it.left),
+            self._pt_2_px(it.top),
             image=image,
             anchor='nw',
             )
@@ -107,11 +135,50 @@ class TkRender(Render):
                 fill=style.background_color,
                 width=1.0 if TEST else 0)
 
-    def _pt2px(self, val):
-        return Size.convert_to_pixel(val, 'pt', self._ppi)
+    @staticmethod
+    def _get_font(style):
+        slant = style.font_style.lower()
+        if slant != 'italic':
+            slant = 'roman'
 
-    def _px2pt(self, val):
-        return Size.convert_from_pixel(val, 'pt', self._ppi)
+        underline = 0
+        overstrike = 0
+        if style.text_decoration.lower() == 'underline':
+            underline = 1
+        if style.text_decoration.lower() == 'LineThrough':
+            overstrike = 1
+
+        font = tk.font.Font(
+            family=style.font_family,
+            size=-TkRender._pt_2_px(style.font_size),
+            weight=style.font_weight.lower(),
+            slant=slant,
+            underline=underline,
+            overstrike=overstrike
+            )
+        return font
+
+    @staticmethod
+    def _get_label_style(style):
+        def add_option(opts, key, value):
+            if value is not None:
+                opts[key] = value
+            return opts
+
+        name = str(style.background_color) + '-' \
+            + str(style.color) + '.TLabel'
+
+        opts = {}
+        add_option(opts, 'background', style.background_color)
+        add_option(opts, 'foreground', style.color)
+
+        s = ttk.Style()
+        s.configure(name, **opts)
+        return name
+
+    @staticmethod
+    def _pt_2_px(value):
+        return Size.convert(value, 'pt', 'px')
 
     def help(self):
         'Tk canvas Render help'

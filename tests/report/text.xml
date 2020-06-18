@@ -1,4 +1,6 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created by Pluma - The Nuntiare Designer tool.
+     Copyright Fredy Ramirez - https://formateli.com -->
 <Nuntiare>
   <Author>Fredy Ramirez - https://formateli.com</Author>
   <Name>Text Test</Name>
@@ -74,12 +76,7 @@
     <ReportItems>
       <Textbox>
         <Name>TextBox1</Name>
-        <Value>Left top 14pt
-Line 2
-Line 3
-Line 4
-Line 5
-CanGrow=True</Value>
+        <Value>Left top 14ptLine 2Line 3Line 4Line 5CanGrow=True</Value>
         <CanGrow>True</CanGrow>
         <Height>2cm</Height>
         <Left>0cm</Left>
@@ -95,8 +92,7 @@ CanGrow=True</Value>
         </Style>
       </Textbox>
       <Textbox>
-        <Value>Left middle
-Line 2</Value>
+        <Value>Left middleLine 2</Value>
         <Name>TextBox2</Name>
         <Height>2cm</Height>
         <Width>4cm</Width>
@@ -110,8 +106,7 @@ Line 2</Value>
         </Style>
       </Textbox>
       <Textbox>
-        <Value>Left bottom
-Line 2</Value>
+        <Value>Left bottomLine 2</Value>
         <Name>TextBox3</Name>
         <Height>2cm</Height>
         <Width>4cm</Width>
@@ -206,8 +201,7 @@ Line 2</Value>
       </Textbox>
       <Textbox>
         <CanShrink>True</CanShrink>
-        <Value>Right top 18pt
-CanShrink=True</Value>
+        <Value>Right top 18ptCanShrink=True</Value>
         <Name>TextBox7</Name>
         <Height>4cm</Height>
         <Left>12cm</Left>
@@ -228,12 +222,7 @@ CanShrink=True</Value>
         </Style>
       </Textbox>
       <Textbox>
-        <Value>Text Clipped 1
-Text Clipped 2
-Text Clipped 3
-Text Clipped 4
-Text Clipped 5
-Text Clipped 6</Value>
+        <Value>Text Clipped 1Text Clipped 2Text Clipped 3Text Clipped 4Text Clipped 5Text Clipped 6</Value>
         <Name>TextBox9-2</Name>
         <Height>2cm</Height>
         <Left>12cm</Left>
@@ -289,7 +278,7 @@ Text Clipped 6</Value>
         <Name>TextBox13</Name>
         <Height>1cm</Height>
         <Left>0mm</Left>
-        <Width>7cm</Width>
+        <Width>5cm</Width>
         <Top>12cm</Top>
         <Style>
           <FontFamily>courier</FontFamily>
@@ -333,7 +322,6 @@ Text Clipped 6</Value>
           <FontSize>12 pt</FontSize>
         </Style>
       </Textbox>
-
       <Textbox>
         <Value>Weight 100</Value>
         <Name>TextBox17</Name>
@@ -347,7 +335,6 @@ Text Clipped 6</Value>
           <FontSize>12 pt</FontSize>
         </Style>
       </Textbox>
-
       <Textbox>
         <Value>Weight 200</Value>
         <Name>TextBox18</Name>
