@@ -6,10 +6,12 @@ from tkinter import ttk
 from PIL import ImageTk
 from nuntiare.definition.expression import Size
 from nuntiare.definition.element import EmbeddedImage
+from nuntiare.pluma.view.designer.report_item import ReportItem
 from .. render import Render
 from ... import LOGGER
 
 TEST = True
+
 
 class TkRender(Render):
 
@@ -38,6 +40,8 @@ class TkRender(Render):
                 self._draw_rectangle_item(it)
             elif it.type == 'PageText':
                 self._draw_text(it)
+            elif it.type == 'PageLine':
+                self._draw_line(it)
             else:
                 continue
 
@@ -52,11 +56,23 @@ class TkRender(Render):
             it.style
             )
 
+        anchor, justify = ReportItem.get_text_justify(
+                it.style.text_align, it.style.vertical_align)
         label = ttk.Label(
             self._canvas,
-            text=it.value, anchor='nw',
-            style=self._get_label_style(it.style),
-            font=self._get_font(it.style)
+            text=it.value,
+            anchor=anchor,
+            justify=justify,
+            style=ReportItem.get_label_style(
+                it.style.background_color, it.style.color),
+            font=ReportItem.get_font(
+                family=it.style.font_family,
+                size=self._pt_2_px(it.style.font_size),
+                weight=it.style.font_weight,
+                style=it.style.font_style,
+                decoration=it.style.text_decoration
+                ),
+            wraplength=self._pt_2_px(it.width)
             )
 
         label.grid(row=0, column=0, sticky='nwes')
@@ -77,6 +93,17 @@ class TkRender(Render):
             )
         self._render_items(
             it.items_info.item_list)
+
+    def _draw_line(self, it):
+        left = self._pt_2_px(it.cumulative_left())
+        top = self._pt_2_px(it.cumulative_top())
+        self._canvas.create_line(
+            left, top,
+            left + self._pt_2_px(it.width),
+            top + self._pt_2_px(it.height),
+            fill=it.style.top_border.color,
+            width=it.style.top_border.width
+            )
 
     def _draw_image(self, it):
         width = it.width
@@ -134,47 +161,6 @@ class TkRender(Render):
                 left + width, top + height,
                 fill=style.background_color,
                 width=1.0 if TEST else 0)
-
-    @staticmethod
-    def _get_font(style):
-        slant = style.font_style.lower()
-        if slant != 'italic':
-            slant = 'roman'
-
-        underline = 0
-        overstrike = 0
-        if style.text_decoration.lower() == 'underline':
-            underline = 1
-        if style.text_decoration.lower() == 'LineThrough':
-            overstrike = 1
-
-        font = tk.font.Font(
-            family=style.font_family,
-            size=-TkRender._pt_2_px(style.font_size),
-            weight=style.font_weight.lower(),
-            slant=slant,
-            underline=underline,
-            overstrike=overstrike
-            )
-        return font
-
-    @staticmethod
-    def _get_label_style(style):
-        def add_option(opts, key, value):
-            if value is not None:
-                opts[key] = value
-            return opts
-
-        name = str(style.background_color) + '-' \
-            + str(style.color) + '.TLabel'
-
-        opts = {}
-        add_option(opts, 'background', style.background_color)
-        add_option(opts, 'foreground', style.color)
-
-        s = ttk.Style()
-        s.configure(name, **opts)
-        return name
 
     @staticmethod
     def _pt_2_px(value):

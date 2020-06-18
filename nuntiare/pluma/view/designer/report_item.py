@@ -144,6 +144,7 @@ class ReportItem(ElementStyle):
         self._canvas = canvas
         self._parent_ri = parent_ri
         self._children_ri = []
+        self._line = None
         self._rec = None
         self._txt = None
         self._label = None
@@ -158,7 +159,6 @@ class ReportItem(ElementStyle):
     def get_top(self):
         result = 0
         if self._parent_ri:
-            print(self._parent_ri.Name)
             result += self._parent_ri.get_top()
         result += get_size_px(self.Top)
         return result
@@ -166,7 +166,6 @@ class ReportItem(ElementStyle):
     def get_left(self):
         result = 0
         if self._parent_ri:
-            print(self._parent_ri.Name)
             result += self._parent_ri.get_left()
         result += get_size_px(self.Left)
         return result
@@ -181,6 +180,7 @@ class ReportItem(ElementStyle):
             return
 
         opts_rec = {}
+        opts_line = {}
         opts_txt = {}
         opts_lbl = {}
 
@@ -195,11 +195,17 @@ class ReportItem(ElementStyle):
 
             elif name_changed in ('FontFamily', 'FontSize',
                     'FontWeight', 'TextDecoration', 'FontStyle'):
-                opts_lbl['font'] = self._get_font(self.Style)
+                opts_lbl['font'] = self.get_font(
+                    family=self.Style.FontFamily,
+                    size=get_size_px(self.Style.FontSize),
+                    weight=self.Style.FontWeight,
+                    style=self.Style.FontStyle,
+                    decoration=self.Style.TextDecoration
+                    )
 
             elif name_changed in ('TextAlign', 'VerticalAlign'):
                 opts_lbl['anchor'], opts_lbl['justify'] = \
-                        self._get_text_justify(
+                        self.get_text_justify(
                             self.Style.TextAlign,
                             self.Style.VerticalAlign)
 
@@ -207,30 +213,50 @@ class ReportItem(ElementStyle):
                 'LeftBorder', 'TopBorder', 'BottomBorder'):
             borders = self.Style.get_borders()
             if borders['equal']:
-                opts_rec['outline'] = borders['TopBorder']['Color']
-                opts_rec['width'] = get_size_px(borders['TopBorder']['Width'])
+                border_width = get_size_px(borders['TopBorder']['Width'])
+
+                if self.name != 'Line':
+                    opts_rec['outline'] = borders['TopBorder']['Color']
+                    opts_rec['width'] = border_width
+                else:
+                    opts_line['fill'] = borders['TopBorder']['Color']
+                    opts_line['width'] = border_width
+
                 bs = borders['TopBorder']['BorderStyle']
                 if bs == 'None':
-                    opts_rec['width'] = 0
-                    opts_rec['outline'] = None
-
+                    if self.name != 'Line':
+                        opts_rec['width'] = 0
+                        opts_rec['outline'] = None
+                    else:
+                        opts_line['width'] = 0
+                        opts_line['fill'] = None
         else:
             if name_changed in ('Left', 'Top', 'Width', 'Height'):
                 left = self.get_left()
                 top = self.get_top()
-                self._canvas.coords(
-                    self._rec, left, top,
-                    left + get_size_px(self.Width),
-                    top + get_size_px(self.Height)
-                    )
+                width = get_size_px(self.Width)
+                height = get_size_px(self.Height)
+
+                if self.name != 'Line':
+                    self._canvas.coords(
+                        self._rec, left, top,
+                        left + width,
+                        top + height
+                        )
+                else:
+                    self._canvas.coords(
+                        self._line, left, top,
+                        left + width,
+                        top + height
+                        )
 
                 if self._txt is not None:
                     if name_changed in ('Top', 'Left'):
                         self._canvas.coords(
                             self._txt, left, top)
                     elif name_changed in ('Width', 'Height'):
-                        opts_txt['width'] = get_size_px(self.Width)
-                        opts_txt['height'] = get_size_px(self.Height)
+                        opts_txt['width'] = width
+                        opts_txt['height'] = height
 
                 if name_changed in ('Left', 'Top'):
                     for ri in self._children_ri:
@@ -241,13 +267,15 @@ class ReportItem(ElementStyle):
 
         if opts_rec:
             self._canvas.itemconfig(self._rec, **opts_rec)
+        if opts_line:
+            self._canvas.itemconfig(self._line, **opts_line)
         if opts_txt:
             self._canvas.itemconfig(self._txt, **opts_txt)
         if self._label and opts_lbl:
             opts_lbl.pop('background', None)
             opts_lbl.pop('foreground', None)
-            style_name = self._get_label_style(
-                    self.Style.BackgroundColor, self.Style)
+            style_name = self.get_label_style(
+                    self.Style.BackgroundColor, self.Style.Color)
             self._label.configure(style=style_name)
 
             self._label.configure(**opts_lbl)
@@ -257,7 +285,6 @@ class ReportItem(ElementStyle):
             return
 
         fill = self.Style.BackgroundColor
-        if fill is None: fill = 'white'
 
         outline = None
         border_width = 0
@@ -270,20 +297,34 @@ class ReportItem(ElementStyle):
 
         left = self.get_left()
         top = self.get_top()
+        width = get_size_px(self.Width)
+        height = get_size_px(self.Height)
 
-        self._rec = self._canvas.create_rectangle(
-            left, top,
-            left + get_size_px(self.Width),
-            top + get_size_px(self.Height),
-            fill=fill, outline=outline, width=border_width
-            )
-        self._add_object(self._rec)
+        if self.name != 'Line':
+            self._rec = self._canvas.create_rectangle(
+                left, top,
+                left + width,
+                top + height,
+                fill=fill,
+                outline=outline,
+                width=border_width
+                )
+            self._add_object(self._rec)
 
-        if self.name == 'Textbox':
-            lbl_style = self._get_label_style(
-                fill, self.Style)
+        if self.name == 'Line':
+            self._line = self._canvas.create_line(
+                left, top,
+                left + width,
+                top + height,
+                fill=outline, width=border_width
+                )
+            self._add_object(self._line)
 
-            anchor, justify = self._get_text_justify(
+        elif self.name == 'Textbox':
+            lbl_style = self.get_label_style(
+                fill, self.Style.Color)
+
+            anchor, justify = self.get_text_justify(
                     self.Style.TextAlign, self.Style.VerticalAlign)
             self._label = ttk.Label(
                 self._canvas,
@@ -291,7 +332,13 @@ class ReportItem(ElementStyle):
                 anchor=anchor,
                 justify=justify,
                 style=lbl_style,
-                font=self._get_font(self.Style),
+                font=self.get_font(
+                    family=self.Style.FontFamily,
+                    size=get_size_px(self.Style.FontSize),
+                    weight=self.Style.FontWeight,
+                    style=self.Style.FontStyle,
+                    decoration=self.Style.TextDecoration
+                    ),
                 wraplength=get_size_px(self.Width)
                 )
             self._label.grid(row=0, column=0, sticky='nwes')
@@ -306,7 +353,7 @@ class ReportItem(ElementStyle):
 
 
     @classmethod
-    def _get_text_justify(cls, ha, va):
+    def get_text_justify(cls, ha, va):
         if ha in (None, 'Left', 'None'):
             if va in 'Top':
                 anchor = 'nw'
@@ -339,36 +386,27 @@ class ReportItem(ElementStyle):
         ReportItem._id_count += 1
         return ReportItem._id_count
 
-    def _get_label_style(self, bgcolor, style):
-        name = self.name + '-' + str(bgcolor) + '-' \
-            + str(style.Color) + '.TLabel'
-        s = ttk.Style()
-        s.configure(
-            name,
-            background=bgcolor,
-            foreground=style.Color)
-        return name
 
     @staticmethod
-    def _get_label_style(bgcolor, style):
+    def get_label_style(background, foreground):
         def add_option(opts, key, value):
             if value is not None:
                 opts[key] = value
             return opts
 
-        name = str(bgcolor) + '-' \
-            + str(style.Color) + '.TLabel'
+        name = str(background) + '-' \
+            + str(foreground) + '.TLabel'
 
         opts = {}
-        add_option(opts, 'background', bgcolor)
-        add_option(opts, 'foreground', style.Color)
+        add_option(opts, 'background', background)
+        add_option(opts, 'foreground', foreground)
 
         s = ttk.Style()
         s.configure(name, **opts)
         return name
 
     @staticmethod
-    def _get_font(style):
+    def get_font(family, size, weight, style, decoration):
         def get_weight(val):
             val = val.lower()
             if val in ('bold', 'bolder'):
@@ -376,21 +414,21 @@ class ReportItem(ElementStyle):
             else:
                 return 'normal'
 
-        slant = style.FontStyle.lower()
+        slant = style.lower()
         if slant != 'italic':
             slant = 'roman'
 
         underline = 0
         overstrike = 0
-        if style.TextDecoration.lower() == 'underline':
+        if decoration.lower() == 'underline':
             underline = 1
-        if style.TextDecoration.lower() == 'LineThrough':
+        if decoration.lower() == 'LineThrough':
             overstrike = 1
 
         font = tk.font.Font(
-            family=style.FontFamily,
-            size=-get_size_px(style.FontSize),
-            weight=get_weight(style.FontWeight),
+            family=family,
+            size=-size,
+            weight=get_weight(weight),
             slant=slant,
             underline=underline,
             overstrike=overstrike
@@ -407,7 +445,11 @@ class ReportItem(ElementStyle):
         self._object_click(event)
 
     def _object_click(self, event):
-        report_item = self._canvas.get_report_item_from_object(self._rec)
+        if self.name == 'Line':
+            obj = self._line
+        else:
+            obj = self._rec
+        report_item = self._canvas.get_report_item_from_object(obj)
         self._treeview.focus_set()
         self._treeview.see(report_item.item)
         self._treeview.focus(report_item.item)

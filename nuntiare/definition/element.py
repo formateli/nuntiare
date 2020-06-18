@@ -1225,6 +1225,9 @@ class _ReportItem(Element):
 
 
 class Line(_ReportItem):
+    """ Line ReportItem. Negative values for Height/Width allow
+    lines to be drawed Top/Left from its origin.
+    """
     _element_list = {}
     def __init__(self, node, lnk):
         super(Line, self).__init__('Line', node, lnk)
