@@ -9,6 +9,7 @@ from ... import LOGGER
 
 TEST = True
 
+
 class FPdfRender(Render):
     def __init__(self):
         super(FPdfRender, self).__init__(extension='pdf')
@@ -29,7 +30,8 @@ class FPdfRender(Render):
         author = report.definition.Author
         if author is not None:
             self._pdf.set_author(author)
-        self._pdf.set_creator('Nuntiare Report Tollkit - https://formateli.com')
+        self._pdf.set_creator(
+            'Nuntiare Report Tollkit - https://formateli.com')
         self._pdf.set_auto_page_break(False)
 
         self._pdf.set_margins(0, 0)
