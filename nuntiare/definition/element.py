@@ -220,6 +220,9 @@ class Element:
                         None, self, name, value))
 
     def __getattr__(self, name):
+        if name in self.__dict__:
+            return self.__dict__[name]
+
         self._verify_element(name)
         result = self._meta[name]
         if result.type in (
@@ -860,7 +863,7 @@ class Body(Element):
 class DataSources(Element):
 
     _element_list = {
-        'DataSource': Meta(Card.ONE_MANY)
+        'DataSource': Meta(card=Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):

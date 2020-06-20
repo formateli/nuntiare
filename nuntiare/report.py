@@ -318,6 +318,7 @@ System error: {1}'''
         result = {}
         for ds in self.definition.data_sources:
             try:
+                LOGGER.debug("Running DataSource '{0}'".format(ds.Name))
                 result[ds.Name] = DataSourceObject(self, ds)
                 result[ds.Name].connect()
             except Exception:
@@ -328,10 +329,10 @@ System error: {1}'''
     def _get_data_sets(self):
         data_sets = {}
         for ds in self.definition.data_sets:
-            LOGGER.info("Running DataSet '{0}'".format(ds.Name))
+            LOGGER.debug("Running DataSet '{0}'".format(ds.Name))
             data_sets[ds.Name] = DataSetObject(self, ds)
             data_sets[ds.Name].execute()
-            LOGGER.info(
+            LOGGER.debug(
                 " Row count: {0}".format(
                     data_sets[ds.Name].row_count()))
         return data_sets
