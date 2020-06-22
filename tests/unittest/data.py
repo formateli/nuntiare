@@ -5,14 +5,16 @@ import unittest
 import os
 import dateutil
 from nuntiare.report import Report
+from tools import get_test_path
 
 
 class DataTest(unittest.TestCase):
     def test_data(self):
         report1 = Report(self._get_xml_string_1())
-        con_file_info = open("db_test_connection_northwind", "r")
-        conn_str = con_file_info.readline()
-        con_file_info.close()
+
+        with open(get_test_path(
+                'db_test_connection_northwind'), 'r') as con_file_info:
+            conn_str = con_file_info.readline()
 
         parameters = {'conn_string': conn_str}
         report1.run(parameters)
@@ -38,9 +40,10 @@ class DataTest(unittest.TestCase):
 
     def test_sortening(self):
         report = Report(self._get_xml_string_2())
-        con_file_info = open('db_test_connection_adventure', 'r')
-        conn_str = con_file_info.readline()
-        con_file_info.close()
+
+        with open(get_test_path(
+                'db_test_connection_adventure'), 'r') as con_file_info:
+            conn_str = con_file_info.readline()
 
         parameters = {'conn_string': conn_str}
         report.run(parameters)

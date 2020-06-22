@@ -4,6 +4,7 @@
 from nuntiare.data.data import DataSource, DataSet
 from nuntiare.data.dataprovider import get_data_provider
 import unittest
+from tools import get_test_path, get_data_path
 
 "Nuntiare dataprovider test"
 
@@ -15,9 +16,9 @@ class DataProvidersTest(unittest.TestCase):
 
         test_params = []
 
-        conn_info_file = open('db_test_connection_panama', 'r')
-        psql = conn_info_file.readline()
-        conn_info_file.close()
+        with open(get_test_path(
+                'db_test_connection_panama'), 'r') as con_file_info:
+            psql = con_file_info.readline()
 
         test_params.append(self._get_test_params(
                 'postgresql',
@@ -27,7 +28,7 @@ class DataProvidersTest(unittest.TestCase):
 
         test_params.append(self._get_test_params(
                 'xml',
-                'file=../data/panama.xml',
+                'file=' + get_data_path('panama.xml'),
                 'SELECT * FROM city'
                 ))
 

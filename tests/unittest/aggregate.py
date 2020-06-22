@@ -3,7 +3,7 @@
 # The COYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import unittest
-from tools import get_report_path
+from tools import get_report_path, get_test_path
 from datetime import datetime
 from decimal import Decimal
 from nuntiare.report import Report
@@ -20,9 +20,9 @@ class AggregateTest(unittest.TestCase):
         '''
         report = Report(get_report_path('northwind_orders.xml'))
 
-        con_file_info = open("db_test_connection_northwind", "r")
-        conn_str = con_file_info.readline()
-        con_file_info.close()
+        with open(get_test_path(
+                'db_test_connection_northwind'), 'r') as con_file_info:
+            conn_str = con_file_info.readline()
 
         parameters = {
                 'conn_string': conn_str,
