@@ -3,13 +3,16 @@
 # contains the full copyright notices and license terms.
 from tkinter import ttk
 from ttkwidgets.autocomplete import AutocompleteCombobox
+#from ttkwidgets.color import askcolor
+from tkinter.colorchooser import askcolor
 import nuntiare.definition.element as nuntiare_element
 import nuntiare.definition.enum as nuntiare_enum
 
 
 class _PropertyFrame(ttk.Frame):
-    def __init__(self, master):
+    def __init__(self, master, root_window):
         super(_PropertyFrame, self).__init__(master)
+        self._root_window = root_window
         self._bind_callbacks = {}
 
     def register_property_event(self, name):
@@ -28,8 +31,8 @@ class _PropertyFrame(ttk.Frame):
 
 
 class NuntiareProperty(_PropertyFrame):
-    def __init__(self, master, treevew):
-        super(NuntiareProperty, self).__init__(master)
+    def __init__(self, master, treevew, root_window):
+        super(NuntiareProperty, self).__init__(master, root_window)
         self._properties = {}
         self._row_count = 0
         self.grid_columnconfigure(0, weight=1)
@@ -43,9 +46,11 @@ class NuntiareProperty(_PropertyFrame):
         if name not in self._properties:
             if type_ == nuntiare_element.Element.ENUM:
                 property_ = PropertyEnum(
-                    self, name, self._get_enum_list(name))
+                    self, self._root_window, name, self._get_enum_list(name))
+            elif type_ == nuntiare_element.Element.COLOR:
+                property_ = PropertyColor(self, self._root_window, name)
             else:
-                property_ = PropertyText(self, name)
+                property_ = PropertyText(self, self._root_window, name)
 
             self._properties[name] = [
                     ttk.Label(self, text=name),
@@ -89,8 +94,8 @@ class NuntiareProperty(_PropertyFrame):
 
 
 class PropertyItem(_PropertyFrame):
-    def __init__(self, master, name):
-        super(PropertyItem, self).__init__(master)
+    def __init__(self, master, root_window, name):
+        super(PropertyItem, self).__init__(master, root_window)
         self.name = name
         self._value = None
         self._default = None
@@ -139,10 +144,11 @@ class PropertyItem(_PropertyFrame):
 
 
 class PropertyText(PropertyItem):
-    def __init__(self, master, name):
-        super(PropertyText, self).__init__(master, name)
+    def __init__(self, master, root_window, name):
+        super(PropertyText, self).__init__(master, root_window, name)
         self._entry = ttk.Entry(self)
         self._entry.grid(row=0, column=0, sticky='wens')
+        self.columnconfigure(0, weight=1)
 
     def _set_widget_value(self, value):
         self._entry.insert(0, value)
@@ -155,11 +161,12 @@ class PropertyText(PropertyItem):
 
 
 class PropertyEnum(PropertyItem):
-    def __init__(self, master, name, list_values):
-        super(PropertyEnum, self).__init__(master, name)
+    def __init__(self, master, root_window, name, list_values):
+        super(PropertyEnum, self).__init__(master, root_window, name)
         self._entry = AutocompleteCombobox(self,
                 completevalues=list_values)
         self._entry.grid(row=0, column=0, sticky='wens')
+        self.columnconfigure(0, weight=1)
 
     def _set_widget_value(self, value):
         self._entry.insert(0, value)
@@ -169,3 +176,52 @@ class PropertyEnum(PropertyItem):
 
     def _clear_widget(self):
         self._entry.delete(0, 'end')
+
+
+class PropertyColor(PropertyItem):
+    def __init__(self, master, root_window, name):
+        super(PropertyColor, self).__init__(master, root_window, name)
+        self._entry = ttk.Entry(self)
+        self._entry.grid(row=0, column=0, sticky='wens')
+
+        self._btn = ttk.Button(self)
+        self._btn.grid(row=0, column=1, sticky='wens')
+        self._btn.bind('<1>', self._choose_color)
+
+        self.columnconfigure(0, weight=10)
+        self.columnconfigure(1, weight=1)
+
+    def _set_widget_value(self, value):
+        self._entry.insert(0, value)
+        st = self._style_by_color(value)
+        self._btn.configure(style=st)
+
+    def _get_widget_value(self):
+        return self._entry.get()
+
+    def _clear_widget(self):
+        self._entry.delete(0, 'end')
+        st = self._style_by_color(None)
+        self._btn.configure(style=st)
+
+    def _choose_color(self, event):
+        color = self._entry.get()
+        if color is not None and color.startswith('[Default: ') \
+                and color.endswith(']'):
+            color = color[10:len(color) - 1]
+
+        res = askcolor(
+            initialcolor=color,
+            parent=self._root_window,
+            title='Select a color')
+        if not res[0]:
+            return
+        self._entry.delete(0, 'end')
+        self._set_widget_value(res[1])
+
+    @staticmethod
+    def _style_by_color(color):
+        st_name = str(color) + '-property-color' + '.TButton'
+        st = ttk.Style()
+        st.configure(st_name, background=color)
+        return st_name

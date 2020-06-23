@@ -294,7 +294,7 @@ class DesignerView(PanedView):
         r_xml_frame.yscrollbar.config(command=self._xml.yview)
 
         r_prop_frame = self.get_frame()
-        prop = NuntiareProperty(r_prop_frame, self._xml)
+        prop = NuntiareProperty(r_prop_frame, self._xml, view.pluma)
         prop.grid(row=0, column=0, sticky='wens')
         self.right_window.add(r_prop_frame, weight=1)
 
