@@ -1,6 +1,7 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
+import tkinter as tk
 from tkinter import ttk
 from ttkwidgets.autocomplete import AutocompleteCombobox
 #from ttkwidgets.color import askcolor
@@ -178,10 +179,24 @@ class PropertyEnum(PropertyItem):
         self._entry.delete(0, 'end')
 
 
+class EntryModify(ttk.Entry):
+    def __init__(self, master, **kwargs):
+        self._var = StringVar()
+        self._var.trace("w", self._text_changed)
+        super(EntryModify, self).__init__(
+                master, textvariable=self._var, **kwargs)
+
+    def _text_changed(self):
+        return self._var.get()
+
+
 class PropertyColor(PropertyItem):
     def __init__(self, master, root_window, name):
         super(PropertyColor, self).__init__(master, root_window, name)
-        self._entry = ttk.Entry(self)
+
+        self._var = tk.StringVar()
+        self._var.trace("w", self._text_changed)
+        self._entry = ttk.Entry(self, textvariable=self._var)
         self._entry.grid(row=0, column=0, sticky='wens')
 
         self._btn = ttk.Button(self)
@@ -192,6 +207,7 @@ class PropertyColor(PropertyItem):
         self.columnconfigure(1, weight=1)
 
     def _set_widget_value(self, value):
+        self._entry.delete(0, 'end')
         self._entry.insert(0, value)
         st = self._style_by_color(value)
         self._btn.configure(style=st)
@@ -216,8 +232,11 @@ class PropertyColor(PropertyItem):
             title='Select a color')
         if not res[0]:
             return
-        self._entry.delete(0, 'end')
+
         self._set_widget_value(res[1])
+
+    def _text_changed(self, a, b, c):
+        self._set_widget_value(self._entry.get())
 
     @staticmethod
     def _style_by_color(color):
