@@ -8,6 +8,7 @@ from ttkwidgets.autocomplete import AutocompleteCombobox
 from tkinter.colorchooser import askcolor
 import nuntiare.definition.element as nuntiare_element
 import nuntiare.definition.enum as nuntiare_enum
+from nuntiare.data.data_type import DataType
 
 
 class _PropertyFrame(ttk.Frame):
@@ -50,6 +51,8 @@ class NuntiareProperty(_PropertyFrame):
                     self, self._root_window, name, self._get_enum_list(name))
             elif type_ == nuntiare_element.Element.COLOR:
                 property_ = PropertyColor(self, self._root_window, name)
+            elif type_ == nuntiare_element.Element.BOOLEAN:
+                property_ = PropertyBool(self, self._root_window, name)
             else:
                 property_ = PropertyText(self, self._root_window, name)
 
@@ -244,3 +247,49 @@ class PropertyColor(PropertyItem):
         st = ttk.Style()
         st.configure(st_name, background=color)
         return st_name
+
+
+class PropertyBool(PropertyItem):
+    def __init__(self, master, root_window, name):
+        super(PropertyBool, self).__init__(master, root_window, name)
+
+        self._var = tk.StringVar()
+        self._var.trace("w", self._text_changed)
+        self._entry = ttk.Entry(self, textvariable=self._var)
+        self._entry.grid(row=0, column=0, sticky='wens')
+
+        self._chk_var = tk.IntVar()
+        self._chk_var.trace("w", self._check_changed)
+        self._btn = ttk.Checkbutton(self, variable=self._chk_var)
+        self._btn.grid(row=0, column=1, sticky='wens')
+        self._btn.bind('<1>', self._check_clicked)
+        self._clicked = False
+
+        self.columnconfigure(0, weight=10)
+        self.columnconfigure(1, weight=1)
+
+    def _set_widget_value(self, value):
+        self._entry.delete(0, 'end')
+        self._entry.insert(0, value)
+        self._chk_var.set(int(DataType.get_value('Boolean', value)))
+
+    def _get_widget_value(self):
+        return self._entry.get()
+
+    def _clear_widget(self):
+        self._entry.delete(0, 'end')
+        self._chk_var.set(0)
+
+    def _text_changed(self, a, b, c):
+        self._set_widget_value(self._entry.get())
+
+    def _check_changed(self, a, b, c):
+        value = 'False'
+        if self._chk_var.get() != 0:
+            value = 'True'
+        if self._clicked:
+            self._set_widget_value(value)
+        self._clicked = False
+
+    def _check_clicked(self, event):
+        self._clicked = True
