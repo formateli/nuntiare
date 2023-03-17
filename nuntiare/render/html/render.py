@@ -36,8 +36,8 @@ class HtmlRender(Render):
         self.doc = None
         self.style_helper = _StyleHelper()
 
-    def render(self, report, **kws):
-        super(HtmlRender, self).render(report, **kws)
+    def render(self, report, kws):
+        super(HtmlRender, self).render(report, kws)
 
         report.globals.TotalPages = 1
         report.globals.PageNumber = 1

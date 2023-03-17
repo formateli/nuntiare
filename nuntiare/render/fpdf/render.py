@@ -14,8 +14,8 @@ class FPdfRender(Render):
     def __init__(self):
         super(FPdfRender, self).__init__(extension='pdf')
 
-    def render(self, report, **kws):
-        super(FPdfRender, self).render(report, **kws)
+    def render(self, report, kws):
+        super(FPdfRender, self).render(report, kws)
 
         result = report.result
 

@@ -13,8 +13,8 @@ class CairoRender(Render):
         self.surface = None
         self.pages = None  # public for test purposes
 
-    def render(self, report, overwrite):
-        super(CairoRender, self).render(report, overwrite)
+    def render(self, report, kws):
+        super(CairoRender, self).render(report, kws)
 
         result = report.result
 

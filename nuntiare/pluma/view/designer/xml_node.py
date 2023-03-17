@@ -92,7 +92,7 @@ class NuntiareXmlNode(ttk.Treeview):
                 state=tk.NORMAL)
 
     def _item_up(self):
-        pass
+        pass  #TODO
 
     def _item_remove(self):
         sel = self.selection()

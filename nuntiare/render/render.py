@@ -12,7 +12,7 @@ class Render(object):
         self.result_file = None
         self.report = None
 
-    def render(self, report, **kws):
+    def render(self, report, kws):
         if not report.result:
             LOGGER.critical(
                 'No Result object in report. Have you executed run()?', True)

@@ -10,8 +10,8 @@ class CsvRender(Render):
         super(CsvRender, self).__init__(extension='csv')
         self.lines = []
 
-    def render(self, report, **kws):
-        super(CsvRender, self).render(report, **kws)
+    def render(self, report, kws):
+        super(CsvRender, self).render(report, kws)
         self._render_items(
             report.result.body.items.item_list)
         self._write_to_file()

@@ -84,7 +84,9 @@ def do_render(args):
             LOGGER.warn(
                 "Render '{0}' not found.".format(r))
             continue
-        render.render(report, not args.no_overwrite)
+        #render.render(report, not args.no_overwrite)
+        evw = False
+        render.render(report, {'overwrite': not args.no_overwrite})
 
     if args.save:
         report.save(not args.no_overwrite)

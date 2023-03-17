@@ -20,9 +20,9 @@ class TkRender(Render):
     def __init__(self):
         super(TkRender, self).__init__()
 
-    def render(self, report, **kws):
+    def render(self, report, kws):
         self._canvas = kws.pop('canvas')
-        super(TkRender, self).render(report, **kws)
+        super(TkRender, self).render(report, kws)
 
         result = report.result
 
