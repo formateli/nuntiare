@@ -52,7 +52,9 @@ class Connect(object):
         con_error = "Connection string not valid!. Its format must be: '{0}'"
         con_error = con_error.format(string_format)
 
-        if connection_object is None or connection_object == '':
+        if (connection_object is None
+                or connection_object == ''
+                or connection_object == 'None'):
             raise OperationalError(con_error)
 
         self.connection_object = connection_object

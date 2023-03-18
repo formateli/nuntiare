@@ -313,4 +313,35 @@ LIMIT 500</CommandText>
       </Fields>
     </DataSet>
   </DataSets>
+  <DataEmbedded>
+    <Data>
+      <Name>AddressDataSet</Name>
+      <Records>
+        <Record>
+	  <AddressLine1>OConnor Street</AddressLine1>
+	  <AddressLine2>Line 2</AddressLine2>
+          <City>Ottawa</City>
+          <StateProvince>Ontario</StateProvince>
+          <PostalCode>K48 152</PostalCode>
+          <CountryRegion>Canada</CountryRegion>
+        </Record>
+        <Record>
+          <AddressLine1>Production Way</AddressLine1>
+	  <AddressLine2>Line 2</AddressLine2>
+          <City>Burnaby</City>
+          <StateProvince>British Columbia</StateProvince>
+          <PostalCode>B54 4X1</PostalCode>
+          <CountryRegion>Canada</CountryRegion>
+      </Record>
+        <Record>
+          <AddressLine1>Av A</AddressLine1>
+	  <AddressLine2>casco Antiguo</AddressLine2>
+          <City>Panama</City>
+          <StateProvince>Panama</StateProvince>
+          <PostalCode>0000</PostalCode>
+          <CountryRegion>Panama</CountryRegion>
+        </Record>
+      </Records>
+    </Data>
+  </DataEmbedded>
 </Nuntiare>

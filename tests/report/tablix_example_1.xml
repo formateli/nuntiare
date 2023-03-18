@@ -173,4 +173,25 @@ INNER JOIN countryregion ON countryregion.countryregioncode = stateprovince.coun
       </Fields>
     </DataSet>
   </DataSets>
+  <DataEmbedded>
+    <Data>
+      <Name>AddressDataSet</Name>
+      <Records>
+        <Record>
+	  <AddressLine1>OConnor Street</AddressLine1>
+          <City>Ottawa</City>
+          <StateProvince>Ontario</StateProvince>
+          <PostalCode>K48 152</PostalCode>
+          <CountryRegion>Canada</CountryRegion>
+        </Record>
+        <Record>
+	  <AddressLine1>Production Way</AddressLine1>
+          <City>Burnaby</City>
+          <StateProvince>British Columbia</StateProvince>
+          <PostalCode>B54 4X1</PostalCode>
+          <CountryRegion>Canada</CountryRegion>
+        </Record>
+      </Records>
+    </Data>
+  </DataEmbedded>
 </Nuntiare>
