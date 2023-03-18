@@ -147,7 +147,8 @@ class RunView(PanedView):
                 scrollregion=(0, 0, 1000, 1000))
 
         #self.report = Report(text.text.get(1.0, tk.END))
-        self.report = Report(designer._xml._doc.toprettyxml(indent='  ', encoding='utf-8'))
+        self.report = Report(designer._xml._doc.toprettyxml(
+                indent='  ', encoding='utf-8'))
         self.report.add_path(self.view.directory_name)
         self.report.run()
 
@@ -169,14 +170,14 @@ class RunView(PanedView):
 #        except Exception as e:
 #            self.log.critical(e)
 
-    def run_render(self, render_name, clear_logs=True, **kws):
+    def run_render(self, render_name, clear_logs=True, canvas=None):
         if self.report is None:
             return
         if clear_logs:
             self.log.clear()
 
         render = Render.get_render(render_name)
-        render.render(self.report, **kws)
+        render.render(self.report, canvas)
 
 #        try:
 #            render = Render.get_render(render_name)

@@ -19,6 +19,7 @@ class Render(object):
 
         self.report = report
 
+        overwrite = True 
         if kws is not None:
             overwrite = kws.get('overwrite', True)
 
