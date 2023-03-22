@@ -16,7 +16,7 @@ class _Aggregate(object):
 
             if expression is not None:
                 self.expression = Expression(
-                    '=' + expression, None, False)
+                    '=' + str(expression), None, False)
 
             self.current_scope['Row'] = \
                 report.current_data_scope[0]
