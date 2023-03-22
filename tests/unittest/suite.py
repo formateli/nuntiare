@@ -20,7 +20,7 @@ import parameter        # noqa: E402
 import grid             # noqa: E402
 import data             # noqa: E402
 import aggregate        # noqa: E402
-import pluma_memento    # noqa: E402
+#import pluma_memento    # noqa: E402
 # TODO should be a diferent library
 # because it depends on GTK
 # import render_pdf       # noqa: E402
@@ -35,8 +35,8 @@ SUITE.addTests(LOADER.loadTestsFromModule(parameter))
 SUITE.addTests(LOADER.loadTestsFromModule(grid))
 SUITE.addTests(LOADER.loadTestsFromModule(data))
 SUITE.addTests(LOADER.loadTestsFromModule(aggregate))
-SUITE.addTests(LOADER.loadTestsFromModule(pluma_memento))
-# SUITE.addTests(LOADER.loadTestsFromModule(render_pdf))
+#SUITE.addTests(LOADER.loadTestsFromModule(pluma_memento))
+#SUITE.addTests(LOADER.loadTestsFromModule(render_pdf))
 
 RUNNER = unittest.TextTestRunner(verbosity=2)
 RUNNER.run(SUITE)

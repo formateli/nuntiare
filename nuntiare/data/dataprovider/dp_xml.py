@@ -34,7 +34,7 @@ class XmlCursor(Cursor):
         dom = parse(self.connection.xmlfile)
         if not dom:
             raise InterfaceError(
-                "DOM object could not be created from file '{0}'".formta(
+                "DOM object could not be created from file '{0}'".format(
                     self.connection.xmlfile))
 
         self.description = ()

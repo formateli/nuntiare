@@ -47,6 +47,7 @@ class DataProvidersTest(unittest.TestCase):
                 ))
 
         for parameter in test_params:
+            print ("Running " + parameter['data_provider_name'])
             self._run_test(parameter)
 
     def _run_test(self, test_param):
@@ -68,7 +69,8 @@ class DataProvidersTest(unittest.TestCase):
                 name='datasource1',
                 data_provider=data_provider
                 )
-        data_source.connect(test_param['connection_object'])
+        if not data_source.connect(test_param['connection_object']):
+            raise Exception("Connection error.")
 
         data_set = DataSet(
                 report=None,
