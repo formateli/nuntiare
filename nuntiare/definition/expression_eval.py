@@ -15,8 +15,11 @@ class _Aggregate(object):
             self.current_scope = {'Column': None, 'Row': None}
 
             if expression is not None:
+                if not isinstance(expression, str):
+                    raise ValueError(
+                        "Expression in Aggregate functions must be a string type")
                 self.expression = Expression(
-                    '=' + str(expression), None, False)
+                    '=' + expression, None, False)
 
             self.current_scope['Row'] = \
                 report.current_data_scope[0]
@@ -31,9 +34,12 @@ class _Aggregate(object):
                         self.current_scope['Row']
                     ]
 
-            self.current_group['Column'] = report.data_groups[
-                    self.current_scope['Column']
-                ]
+            if self.current_scope['Column']:
+                self.current_group['Column'] = report.data_groups[
+                        self.current_scope['Column']
+                    ]
+            else:
+                self.current_group['Column'] = self.current_group['Row']
 
     class _AggregateCache(object):
         def __init__(self):
