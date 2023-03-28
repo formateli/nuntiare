@@ -9,9 +9,16 @@ class CsvRender(Render):
     def __init__(self):
         super(CsvRender, self).__init__(extension='csv')
         self.lines = []
+        self.separator = None
+        self.delimeter = None
 
     def render(self, report, kws):
         super(CsvRender, self).render(report, kws)
+        self.separator = ','
+        self.delimeter = '"'
+        if kws is not None:
+            self.separator = kws.get('separator', ',')
+            self.delimeter = kws.get('delimeter', '"')
         self._render_items(
             report.result.body.items.item_list)
         self._write_to_file()
@@ -54,10 +61,13 @@ class CsvRender(Render):
         res = ''
         i = 0
         for l in line:
-            res += '"' + l + '"'
+            if self.delimeter is None:
+                res += l
+            else:
+                res += self.delimeter + l + self.delimeter
             i += 1
             if i != len(line):
-                res += ','
+                res += self.separator
         return res
 
     def _write_to_file(self):
