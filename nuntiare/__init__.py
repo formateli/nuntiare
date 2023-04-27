@@ -43,7 +43,12 @@ __pixels_per_inch__ = float(
     get_config_value('general', 'pixels_per_inch', 72.0))
 
 # Configure logging
-LOGGER = NuntiareLog(get_config_value('logging', 'logger_level', 'DEBUG'))
+log_level = None
+if 'NUNTIARE_LOG_LEVEL' in os.environ:
+    log_level = os.environ['NUNTIARE_LOG_LEVEL']
+else:
+    log_level = get_config_value('logging', 'logger_level', 'DEBUG')
+LOGGER = NuntiareLog(log_level)
 
 log_file = get_config_value('logging', 'file', '')
 if log_file != '':
