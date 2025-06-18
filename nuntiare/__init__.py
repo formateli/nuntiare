@@ -16,7 +16,7 @@ except ImportError:
 PROJECT_NAME = 'Nuntiare'
 DESCRIPTION = 'Python report toolkit'
 AUTHOR = 'Fredy Ramirez - https://formateli.com'
-COPYRIGHT = '2013-2020, ' + AUTHOR
+COPYRIGHT = '2013-2025, ' + AUTHOR
 LICENSE = 'GNU GENERAL PUBLIC LICENSE v3'
 VERSION = '0.3.1'
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -70,7 +70,7 @@ if log_file != '':
 
 
 # FontManager
-
+# TODO ???
 LOGGER.debug('Loading Font Manager...')
 
 fm = get_config_value('font', 'manager', 'nuntiare.font.FontManager')

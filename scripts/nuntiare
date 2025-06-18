@@ -125,153 +125,6 @@ def do_embed_image(args):
     EmbeddedImages.embed_image_file(args.file, args.image, name, mimetype)
 
 
-def do_convert(args):
-    from xml.dom import minidom
-
-    def replace_text(text):
-        result = text.replace('Fields!', 'F.')
-        result = result.replace('Parameters!', 'P.')
-        result = result.replace('.Value', '')
-        return result
-
-    def get_element(doc, node, base_element):
-        for n in node.childNodes:
-            if n.nodeName in ignore_list:
-                continue
-            if n.nodeName in ('#comment') or n.nodeName.startswith("rd:"):
-                continue
-            parent = n.parentNode
-            if n.nodeName in ('#text'):
-                if len(parent.childNodes) == 1:
-                    text = doc.createTextNode(replace_text(n.nodeValue))
-                    base_element.appendChild(text)
-                continue
-
-            if parent.nodeName == "TextRun" and \
-                    n.nodeName != "Value":
-                continue
-            if parent.nodeName == "Paragraph" and \
-                    n.nodeName != "TextRuns":
-                continue
-            if parent.nodeName == "Report" and \
-                    n.nodeName == "Width":
-                continue
-            if parent.nodeName == "Body" and \
-                    n.nodeName == "Height":
-                continue
-
-            node_name = n.nodeName
-            if n.nodeName == "Style" \
-                    and parent.nodeName in border_list:
-                node_name = "BorderStyle"
-            if n.nodeName == "ConnectString":
-                node_name = "ConnectObject"
-
-            el = doc.createElement(node_name)
-
-            if n.hasAttributes():
-                if "Name" in n.attributes.keys():
-                    name_element = doc.createElement("Name")
-                    name_text = doc.createTextNode(
-                        n.attributes['Name'].value)
-                    if name_text:
-                        name_element.appendChild(name_text)
-                        el.appendChild(name_element)
-
-            element_to_append = el
-            if n.nodeName in report_item_list and \
-                    parent.nodeName == "CellContents":
-                item_element = doc.createElement("ReportItems")
-                item_element.appendChild(el)
-                element_to_append = item_element
-
-            in_nodename = n.nodeName in textbox_list
-            in_parent_nodename = parent.nodeName in textbox_list
-            in_parent_parentnode_nodename = \
-                parent.parentNode.nodeName in textbox_list
-
-            if in_nodename or \
-                    (in_parent_nodename and n.nodeName != 'Value') or \
-                    (in_parent_parentnode_nodename and n.nodeName != 'Value'):
-                el = base_element
-            else:
-                base_element.appendChild(element_to_append)
-
-            get_element(doc, n, el)
-
-    rdlc = args.rdl
-    verify_file(rdlc)
-
-    LOGGER.info(
-        "Converting '{0}' to nuntiare template file.".format(rdlc))
-
-    report_item_list = [
-                         "Line",
-                         "Rectangle",
-                         "Textbox",
-                         "Image",
-                         "Subreport",
-                         "CustomReportItem",
-                         "Tablix"
-                       ]
-    border_list = [
-                    "Border",
-                    "TopBorder",
-                    "BottomBorder",
-                    "LeftBorder",
-                    "RightBorder"
-                  ]
-    textbox_list = [
-                     "Paragraphs",
-                     "Paragraph",
-                     "TextRuns",
-                     "TextRun"
-                   ]
-    ignore_list = [
-                    "KeepTogether",
-                    "KeepWithGroup",
-                    "ConsumeContainerWhitespace",
-                    "AutoRefresh",
-                    "IntegratedSecurity",
-                    "Code",
-                    "CodeModules",
-                    "Classes",
-                    "DataElementName",
-                    "DataElementStyle",
-                    "InteractiveHeight",
-                    "InteractiveWidth",
-                    "Language",
-                  ]
-
-    rdlc_path, rdlc_file = os.path.split(rdlc)
-    rdlc_name = os.path.splitext(rdlc_file)[0]
-
-    nuntiare = os.path.join(rdlc_path, rdlc_name + '.xml')
-
-    dom = minidom.parse(rdlc)
-    node = dom.getElementsByTagName("Report")
-    if not node:
-        LOGGER.critical(
-            "Not a valid Rdlc report definition file.", True)
-
-    doc = minidom.Document()
-    root_element = doc.createElement('Nuntiare')
-    name_element = doc.createElement('Name')
-    name_element.appendChild(doc.createTextNode(rdlc_name))
-    root_element.appendChild(name_element)
-
-    get_element(doc, node[0], root_element)
-
-    doc.appendChild(root_element)
-
-    f = open(nuntiare, 'wb')
-    try:
-        f.write(doc.toprettyxml(indent='  ', encoding='utf-8'))
-    finally:
-        f.close()
-    LOGGER.info("'{0}' created.".format(nuntiare))
-
-
 def run():
     # ======== parser ==================
     parser = argparse.ArgumentParser(
@@ -354,15 +207,7 @@ def run():
             'image/gif', 'image/png', 'image/xpng'
             ], help=help)
 
-    # ======== convert ==================
-    help = 'Converts a Rdl 2008 file to Nuntiare xml definition file.'
-    parser_convert = subparsers.add_parser(
-        'convert',
-        formatter_class=argparse.RawTextHelpFormatter,
-        description=help)
-
-    help = 'The Rdl 2008 report file.'
-    parser_convert.add_argument("rdl", help=help)
+    # ====================================
 
     args = parser.parse_args()
 
@@ -370,8 +215,6 @@ def run():
         do_render(args)
     elif args.command == 'embed-image':
         do_embed_image(args)
-    elif args.command == 'convert':
-        do_convert(args)
 
 
 if __name__ == "__main__":
