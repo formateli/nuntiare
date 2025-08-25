@@ -57,3 +57,4 @@ db_test_connection_adventure
 .coverage
 
 TODO.rst
+*.swp

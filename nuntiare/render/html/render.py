@@ -250,14 +250,18 @@ class HtmlRender(Render):
                     tr_rows.append(_HtmlElement('tr', None))
                     x += 1
 
+                #print("render_header.comulative_sizes -1: {}".format(
+                #    len(it.row_hierarchy.cumulative_sizes) - 1))
+
                 if not header_item.cell.object:
                     #print("render_header not cell...")
                     render_header(
-                        len(it.row_hierarchy.cumulative_sizes) - 1,
+                        len(it.row_hierarchy.cumulative_sizes),
                         header_item.sub_items,
                         tr_rows)
                 else:
                     #print("render_header...")
+                    #print("  render_items {}".format(header_item.cell.object.item_list))
                     tr_rw = tr_rows[0]
                     self._render_items(
                         header_item.cell.object.item_list, tr_rw)

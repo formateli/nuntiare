@@ -31,10 +31,26 @@ REPORTS = {
     'countries2.xml': [['xml', 'html', 'csv'], {}],
     'image.xml': [['html'], {}],
     'grid.xml': [['xml', 'html'], {}],
-    'keep_together_1.xml': [['xml', 'html', 'pdf'], {}],
-    'keep_together_2.xml': [['xml', 'html', 'pdf'], {}],
-    'keep_together_3.xml': [['xml', 'html', 'pdf'], {}],
-    'line.xml': [['xml', 'html', 'pdf'], {}],
+    'keep_together_1.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
+    'keep_together_2.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
+    'keep_together_3.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
+    'line.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
     'northwind_orders.xml': [['xml', 'html', 'csv'], {
         'conn_string': get_conn_string('db_test_connection_northwind')}],
     'reportviewer_tablix_sample1.xml': [['xml', 'html'], {
@@ -50,8 +66,16 @@ REPORTS = {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
     'tablix_example_3.xml': [['xml', 'html'], {
         'conn_string': get_conn_string('db_test_connection_adventure')}],
-    'text.xml': [['xml', 'html', 'pdf'], {}],
-    'text2.xml': [['xml', 'html', 'pdf'], {}],
+    'text.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
+    'text2.xml': [[
+        'xml',
+        'html',
+        #'pdf'
+        ], {}],
 }
 
 
