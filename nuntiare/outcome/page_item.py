@@ -2,13 +2,13 @@
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
 import sys
-from .. import LOGGER, FontManager
-from .. data.data_type import DataType
 from nuntiare.definition.expression import Size
 from nuntiare.definition.element import EmbeddedImage
+from .. import LOGGER, FontManager
+from .. data.data_type import DataType
 
 
-class PageItemsInfo():
+class PageItemsInfo:
     def __init__(self, report, definition, parent):
         self.item_list = []
         self.total_height = 0
@@ -199,7 +199,7 @@ class PageItem(object):
 
 class PageImage(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageImage, self).__init__(
+        super().__init__(
             'PageImage', report, report_item_def, parent)
         self.image_source = report.get_value(
             report_item_def, 'ImageSource', None)
@@ -263,13 +263,13 @@ class PageImage(PageItem):
 
 class PageLine(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageLine, self).__init__(
+        super().__init__(
             'PageLine', report, report_item_def, parent)
 
 
 class PageRectangle(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageRectangle, self).__init__(
+        super().__init__(
             'PageRectangle', report, report_item_def, parent)
         self.omit_border_on_page_break = report.get_value(
             report_item_def, 'OmitBorderOnPageBreak', True)
@@ -282,7 +282,7 @@ class PageRectangle(PageItem):
 
 class PageText(PageItem):
     def __init__(self, report, report_item_def, parent):
-        super(PageText, self).__init__(
+        super().__init__(
             'PageText', report, report_item_def, parent)
 
         self.can_grow = report.get_value(

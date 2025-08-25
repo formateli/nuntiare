@@ -15,14 +15,10 @@ from . collection import Collection, CollectionItem
 
 
 class Globals(Collection):
-    def __init__(self):
-        super(Globals, self).__init__()
-
+    pass
 
 class Parameters(Collection):
-    def __init__(self):
-        super(Parameters, self).__init__()
-
+    pass
 
 class Report:
     def __init__(self, definition_source, output_name=None,

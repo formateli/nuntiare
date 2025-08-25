@@ -47,7 +47,7 @@ class NotSupportedError(DatabaseError):
     pass
 
 
-class Connect(object):
+class Connect:
     def __init__(self, connection_object, string_format):
         con_error = "Connection string not valid!. Its format must be: '{0}'"
         con_error = con_error.format(string_format)
@@ -94,7 +94,7 @@ class Connect(object):
         return parameters
 
 
-class Cursor(object):
+class Cursor:
     def __init__(self, connection):
         self.connection = connection
         self.rowcount = -1
@@ -125,3 +125,8 @@ class Cursor(object):
     def verify_close(self):
         if self.is_closed:
             raise InterfaceError('Cursor is closed!')
+
+    def add_description(self, column_name):
+        desc = ()
+        desc = desc + (column_name, None)
+        self.description = self.description + (desc,)

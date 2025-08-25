@@ -108,8 +108,7 @@ class HeaderItem:
 
 class PageTablix(PageItem):
     def __init__(self, report, tablix_def, parent):
-        super(PageTablix, self).__init__(
-            'PageTablix', report, tablix_def, parent)
+        super().__init__('PageTablix', report, tablix_def, parent)
 
         data_set = None
         tablix_group = None
@@ -454,8 +453,8 @@ class TablixHierarchy:
                     header_size = mb.header.get_total_size()
                 else:
                     if mb.header.get_total_size() != header_size:
-                        err = 'Peers members header size ' \
-                            'must be equal.'
+                        err = "Peers members header size must be equal. {0} != {1}".format(
+                                mb.header.get_total_size(), header_size)
                         LOGGER.error(err, True)
                 self.members.append(mb)
 
@@ -539,7 +538,7 @@ class TablixCell:
 
 
 class TablixMember:
-    class Header():
+    class Header:
         def __init__(self, member):
             self.member = member
             self.size = 0.0
@@ -944,7 +943,7 @@ class TablixCorner(Grid):
     def __init__(
             self, report, corner_def,
             column_hierarchy, row_hierarchy):
-        super(TablixCorner, self).__init__()
+        super().__init__()
         self.report = report
         row_index = 0
         for row in corner_def.TablixCornerRows.row_list:

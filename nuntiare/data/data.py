@@ -12,7 +12,7 @@ class Field(CollectionItem):
     def __init__(
             self, index, parent, name,
             data_field, field_value, data_type):
-        super(Field, self).__init__(name)
+        super().__init__(name)
 
         if ((not data_field and not field_value) or
                 (data_field and field_value)):
@@ -50,7 +50,7 @@ class Fields(Collection):
     Instance must be shared with descendants data interfaces.
     '''
     def __init__(self, report):
-        super(Fields, self).__init__()
+        super().__init__()
         self.report = report
         self._field_index = 0
         self.current_data = None
@@ -62,11 +62,11 @@ class Fields(Collection):
         field = Field(self._field_index, self,
                       name, data_field, field_value,
                       data_type)
-        super(Fields, self).add_item(field)
+        super().add_item(field)
         self._field_index += 1
 
     def __call__(self, name, function):
-        res = super(Fields, self).__call__(name, function)
+        res = super().__call__(name, function)
         if res:
             return res
 
@@ -257,7 +257,7 @@ class DataSource:
 
 class DataSet(DataInterface):
     def __init__(self, report, name, data_source, field_map):
-        super(DataSet, self).__init__(report, name)
+        super().__init__(report, name)
         self.data_source = data_source
         for f in field_map:
             self.add_field(
@@ -340,7 +340,7 @@ class DataSet(DataInterface):
 
 class DataGroupInstance(DataInterface):
     def __init__(self, data_parent, name, page_break):
-        super(DataGroupInstance, self).__init__(data_parent.report, name)
+        super().__init__(data_parent.report, name)
         self.data_parent = data_parent
         self.page_break = page_break
         # Share Fields definition
@@ -497,6 +497,7 @@ class FiltersObject:
                     FiltersObject._FilterObject(flt))
 
     def filter_data(self, data):
+        LOGGER.debug("Filtering data '{}'.".format(data.name))
         if len(self.filter_list) == 0 or \
                 len(data.rows) == 0:  # Nothing to filter
             return
@@ -606,13 +607,13 @@ class SortingObject:
         if len(self.sortby_list) == 0:
             return
 
-        LOGGER.debug("Begin data sorting for '{}'.".format(data.name))
+        LOGGER.debug("Sortering data '{}'.".format(data.name))
 
         groups = []
         to_delete = []
         i = 0
         for sortby in self.sortby_list:
-            LOGGER.debug("sortby...")
+            LOGGER.debug("  sorting...")
             reverse = False if sortby.direction == 'Ascending' else True
             if i == 0:
                 groups = DataGroupInstance.get_groups(
@@ -643,8 +644,6 @@ class SortingObject:
         for g in to_delete:
             # Delete from global collection
             del data.report.data_interfaces[g]
-
-        LOGGER.debug("End data sorting for '{}'.".format(data.name))
 
 
 class DataGroupObject:
@@ -682,6 +681,8 @@ class DataGroupObject:
             self.top_group = parent.top_group
             if parent.location:
                 self.location = parent.location
+        LOGGER.debug('Group Created: {}'.format(name))
+        
 
     def create_instances(self, group_def):
         if not group_def:
@@ -727,6 +728,7 @@ class DataGroupObject:
                 groups.append([None, self._create_one_group(data)])
 
             if data != parent_instance.data:
+                LOGGER.debug("Deleting data: {}".format(data.name))
                 del self.report.data_interfaces[data.name]
 
             for g in groups:
@@ -766,6 +768,7 @@ class DataGroupObject:
             flt.filter_data(result)
         if srt:
             srt.sort_data(result)
+        LOGGER.debug("  Total rows: {}".format(len(result.rows)))
         return result
 
     def _modify_name(self, data):

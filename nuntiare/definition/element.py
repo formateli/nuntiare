@@ -498,7 +498,7 @@ class Nuntiare(Element):
         self.node = node
 
         lnk = Link(None, None, self)
-        super(Nuntiare, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
     def get_parameter_def(self, parameter_name):
         for p in self.parameters_def:
@@ -517,7 +517,7 @@ class EmbeddedImages(Element):
 
     def __init__(self, node, lnk):
         self.embedded_images = {}
-        super(EmbeddedImages, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
     @staticmethod
     def embed_image_file(xml_file, image_file, name, mimetype):
@@ -605,7 +605,7 @@ class EmbeddedImage(Element):
         }
 
     def __init__(self, node, lnk):
-        super(EmbeddedImage, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         # Original size in pixel
         self.image_width, self.image_height = \
                 self.get_pil_image_size_from_base64(self.ImageData)
@@ -724,7 +724,7 @@ class Modules(Element):
 
     def __init__(self, node, lnk):
         self.modules = []
-        super(Modules, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class Module(Element):
@@ -736,7 +736,7 @@ class Module(Element):
         }
 
     def __init__(self, node, lnk):
-        super(Module, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.modules.append(self)
 
 
@@ -745,9 +745,6 @@ class ReportParameters(Element):
     _element_list = {
         'ReportParameter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
-
-    def __init__(self, node, lnk):
-        super(ReportParameters, self).__init__(node, lnk)
 
 
 class ReportParameter(Element):
@@ -762,7 +759,7 @@ class ReportParameter(Element):
         }
 
     def __init__(self, node, lnk):
-        super(ReportParameter, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         self._default_value = self.get_element('DefaultValue')
         self.lnk.report_def.parameters_def.append(self)
 
@@ -799,9 +796,6 @@ class Visibility(Element):
         'ToggleItem': Meta(Element.STRING, constant=True),
         }
 
-    def __init__(self, node, lnk):
-        super(Visibility, self).__init__(node, lnk)
-
 
 class Page(Element):
 
@@ -819,9 +813,6 @@ class Page(Element):
         'Style': Meta(),
         }
 
-    def __init__(self, node, lnk):
-        super(Page, self).__init__(node, lnk)
-
 
 class _PageSection(Element):
 
@@ -833,20 +824,13 @@ class _PageSection(Element):
         'Style': Meta(),
         }
 
-    def __init__(self, node, lnk):
-        super(_PageSection, self).__init__(node, lnk)
-
 
 class PageHeader(_PageSection):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(PageHeader, self).__init__(node, lnk)
 
 
 class PageFooter(_PageSection):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(PageFooter, self).__init__(node, lnk)
 
 
 class Body(Element):
@@ -856,18 +840,12 @@ class Body(Element):
         'Style': Meta(),
         }
 
-    def __init__(self, node, lnk):
-        super(Body, self).__init__(node, lnk)
-
 
 class DataSources(Element):
 
     _element_list = {
         'DataSource': Meta(card=Card.ONE_MANY)
         }
-
-    def __init__(self, node, lnk):
-        super(DataSources, self).__init__(node, lnk)
 
 
 class DataSource(Element):
@@ -879,7 +857,7 @@ class DataSource(Element):
         }
 
     def __init__(self, node, lnk):
-        super(DataSource, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         self.conn_properties = self.get_element('ConnectionProperties')
         for ds in lnk.report_def.data_sources:
             if ds.Name == self.Name:
@@ -897,18 +875,12 @@ class ConnectionProperties(Element):
         'Prompt': Meta(Element.STRING, constant=True),
         }
 
-    def __init__(self, node, lnk):
-        super(ConnectionProperties, self).__init__(node, lnk)
-
 
 class DataSets(Element):
 
     _element_list = {
         'DataSet': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
-
-    def __init__(self, node, lnk):
-        super(DataSets, self).__init__(node, lnk)
 
 
 class DataSet(Element):
@@ -923,7 +895,7 @@ class DataSet(Element):
 
     def __init__(self, node, lnk):
         self.fields = []
-        super(DataSet, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         self.fields_def = self.get_element('Fields')
         self.query_def = self.get_element('Query')
         self.filters_def = self.get_element('Filters')
@@ -943,9 +915,6 @@ class Fields(Element):
         'Field': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
-    def __init__(self, node, lnk):
-        super(Fields, self).__init__(node, lnk)
-
 
 class Field(Element):
     '''
@@ -961,7 +930,7 @@ class Field(Element):
         }
 
     def __init__(self, node, lnk):
-        super(Field, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         data_set = lnk.parent.lnk.parent  # Get Dataset
         for fd in data_set.fields:
             if fd.Name == self.Name:
@@ -979,8 +948,6 @@ class Query(Element):
         'QueryParameters': Meta(),
         }
 
-    def __init__(self, node, lnk):
-        super(Query, self).__init__(node, lnk)
 
     def get_command_text(self, report):
         cmd = Expression.get_value_or_default(
@@ -997,9 +964,6 @@ class QueryParameters(Element):
         'QueryParameter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
-    def __init__(self, node, lnk):
-        super(QueryParameters, self).__init__(node, lnk)
-
 
 class QueryParameter(Element):
 
@@ -1008,23 +972,38 @@ class QueryParameter(Element):
             'Value': Meta(Element.VARIANT, Card.ONE),
         }
 
-    def __init__(self, node, lnk):
-        super(QueryParameter, self).__init__(node, lnk)
-
 
 class Filters(Element):
-
+    '''
+    The Filters element specifies an ordered list of Filter elements that
+    apply to a DataSet or a group. 
+    '''
     _element_list = {
         'Filter': Meta(Element.ELEMENT, Card.ONE_MANY)
         }
 
     def __init__(self, node, lnk):
         self.filter_list = []
-        super(Filters, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class Filter(Element):
-
+    '''
+    The 'Filter' element specifies a filter to apply to rows of data within a DataSet,
+    a group, or a data region. 
+    The 'FilterExpression' element specifies an expression that is evaluated for each instance of a 
+    group, or for each row of data that is associated with a DataSet, a group, or a data region.
+    This expression is then compared to the value of the 'FilterValues' element by using the
+    'Operator' element. Failed comparisons MUST result in the row or instance being filtered out of
+    its containing group, dataset, or data region. 
+    The 'FilterExpression' element MUST be specified, and it MUST NOT contain references to 
+    report items. If the 'FilterExpression' element is not within a group, its value MUST NOT 
+    contain an aggregate function. If this element is within a group, it MUST NOT contain any
+    instances of the 'RunningValue' aggregate function, and it MUST NOT contain any 'First' or
+    'Last' aggregate 
+    functions with anything but the default (current) scope.
+    'Operator': See 'Operator' enum.
+    '''
     _element_list = {
         'FilterExpression': Meta(Element.VARIANT, Card.ONE),
         'Operator': Meta(Element.ENUM, Card.ONE, True),
@@ -1032,21 +1011,34 @@ class Filter(Element):
         }
 
     def __init__(self, node, lnk):
-        super(Filter, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.filter_list.append(self)
 
 
 class FilterValues(_ExpressionList):
-
+    '''
+    The 'FilterValue' element specifies a value to compare to the value of the 
+    'FilterExpression' element by using the 'Operator' element. 
+    If 'Operator' is not set to "In" or "Between", there MUST be exactly one 
+    'FilterValue' element.  
+    If 'Operator' is set to 'TopN' or 'BottomN', the value of the 'FilterValue' element 
+    MUST be an Integer or an expression that evaluates to an Integer.  
+    If 'Operator' is set to "TopPercent" or "BottomPercent", the value of the 
+    'FilterValue' element MUST be a Float or an expression that evaluates to a Float.  
+    If 'Operator' is set to 'Between', there MUST be exactly two FilterValue elements. 
+    '''
     _element_list = {
         'FilterValue': Meta(Element.VARIANT, Card.ONE_MANY)
         }
 
-    def __init__(self, node, lnk):
-        super(FilterValues, self).__init__(node, lnk)
-
 
 class Group(Element):
+    '''
+    The Group element defines expressions by which to categorize data and properties
+    of the resulting data categorization.  
+    If an element of type Group does not have exactly one child GroupExpressions.GroupExpression 
+    element, the Group.Parent element MUST NOT be specified. 
+    '''
 
     _element_list = {
         'Name': Meta(Element.STRING, Card.ONE, True),
@@ -1060,21 +1052,30 @@ class Group(Element):
                 Element.ENUM, constant=True, default='Output'),
         }
 
-    def __init__(self, node, lnk):
-        super(Group, self).__init__(node, lnk)
-
 
 class GroupExpressions(_ExpressionList):
+    '''
+    The Group.GroupExpressions element specifies a collection of GroupExpressions.GroupExpression 
+    elements of a Group. The Group.GroupExpressions element is optional and MUST NOT be specified 
+    more than once. If this element is specified, it MUST be of type GroupExpressions. If the 
+    Group.GroupExpressions element is not specified, the group is a detail group.
+    The GroupExpressions.GroupExpression element specifies an expression by which to group data. 
+    This element MUST be specified at least once and can be specified more than once.
+    The value of this element MUST be a String or an expression that evaluates to a Variant.
+    The value of the GroupExpressions.GroupExpression element MUST NOT include any aggregate 
+    functions other than the RowNumber aggregate function. If the RowNumber aggregate function is 
+    used, it MUST reference the immediately containing scope.
+    '''
 
     _element_list = {
         'GroupExpression': Meta(Element.VARIANT, Card.ONE_MANY)
         }
 
-    def __init__(self, node, lnk):
-        super(GroupExpressions, self).__init__(node, lnk)
-
 
 class SortExpressions(Element):
+    '''
+    The SortExpressions element defines a collection of SortExpression elements. 
+    '''
 
     _element_list = {
         'SortExpression': Meta(Element.ELEMENT, Card.ONE_MANY)
@@ -1082,10 +1083,15 @@ class SortExpressions(Element):
 
     def __init__(self, node, lnk):
         self.sortby_list = []
-        super(SortExpressions, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class SortExpression(Element):
+    '''
+    The SortExpressions.SortExpression element specifies an expression with which to order data. This 
+    element MUST be specified at least once and can be specified more than once, and is of type 
+    SortExpression. 
+    '''
 
     _element_list = {
         'Value': Meta(Element.VARIANT, Card.ONE),
@@ -1094,7 +1100,7 @@ class SortExpression(Element):
         }
 
     def __init__(self, node, lnk):
-        super(SortExpression, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.sortby_list.append(self)
 
 
@@ -1128,9 +1134,6 @@ class Style(Element):
         'WritingMode': Meta(Element.ENUM, default='Horizontal'),
         }
 
-    def __init__(self, node, lnk):
-        super(Style, self).__init__(node, lnk)
-
 
 class Border(Element):
 
@@ -1140,32 +1143,21 @@ class Border(Element):
         'Width': Meta(Element.SIZE, default=1),
         }
 
-    def __init__(self, node, lnk):
-        super(Border, self).__init__(node, lnk)
-
 
 class RightBorder(Border):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(RightBorder, self).__init__(node, lnk)
 
 
 class LeftBorder(Border):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(LeftBorder, self).__init__(node, lnk)
 
 
 class TopBorder(Border):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(TopBorder, self).__init__(node, lnk)
 
 
 class BottomBorder(Border):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(BottomBorder, self).__init__(node, lnk)
 
 
 class BackgroundImage(Element):
@@ -1179,9 +1171,21 @@ class BackgroundImage(Element):
         'Position': Meta(Element.ENUM),
         }
 
-    def __init__(self, node, lnk):
-        super(BackgroundImage, self).__init__(
-                'Image', node, lnk)
+
+class Parameters(Element):
+
+    _element_list = {
+        'Parameter': Meta(Element.ELEMENT, Card.ONE_MANY)
+        }
+
+
+class Parameter(Element):
+
+    _element_list = {
+        'Name': Meta(Element.STRING, Card.ONE, True),
+        'Value': Meta(Element.VARIANT, Card.ONE),
+        'Omit': Meta(Element.BOOLEAN),
+        }
 
 
 class ReportItems(Element):
@@ -1198,7 +1202,7 @@ class ReportItems(Element):
 
     def __init__(self, node, lnk):
         self.reportitems_list = []
-        super(ReportItems, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class _ReportItem(Element):
@@ -1221,9 +1225,9 @@ class _ReportItem(Element):
             Element.ENUM, constant=True, default='Auto'),
         }
 
-    def __init__(self, type, node, lnk):
-        super(_ReportItem, self).__init__(node, lnk)
-        self.type = type
+    def __init__(self, type_, node, lnk):
+        super().__init__(node, lnk)
+        self.type = type_
         lnk.parent.reportitems_list.append(self)
 
 
@@ -1233,7 +1237,7 @@ class Line(_ReportItem):
     """
     _element_list = {}
     def __init__(self, node, lnk):
-        super(Line, self).__init__('Line', node, lnk)
+        super().__init__('Line', node, lnk)
 
 
 class Rectangle(_ReportItem):
@@ -1246,7 +1250,7 @@ class Rectangle(_ReportItem):
         }
 
     def __init__(self, node, lnk):
-        super(Rectangle, self).__init__('Rectangle', node, lnk)
+        super().__init__('Rectangle', node, lnk)
 
 
 class Subreport(_ReportItem):
@@ -1261,29 +1265,7 @@ class Subreport(_ReportItem):
         }
 
     def __init__(self, node, lnk):
-        super(Subreport, self).__init__('Subreport', node, lnk)
-
-
-class Parameters(Element):
-
-    _element_list = {
-        'Parameter': Meta(Element.ELEMENT, Card.ONE_MANY)
-        }
-
-    def __init__(self, node, lnk):
-        super(Parameters, self).__init__(node, lnk)
-
-
-class Parameter(Element):
-
-    _element_list = {
-        'Name': Meta(Element.STRING, Card.ONE, True),
-        'Value': Meta(Element.VARIANT, Card.ONE),
-        'Omit': Meta(Element.BOOLEAN),
-        }
-
-    def __init__(self, node, lnk):
-        super(Parameter, self).__init__(node, lnk)
+        super().__init__('Subreport', node, lnk)
 
 
 class Image(_ReportItem):
@@ -1296,7 +1278,7 @@ class Image(_ReportItem):
         }
 
     def __init__(self, node, lnk):
-        super(Image, self).__init__('Image', node, lnk)
+        super().__init__('Image', node, lnk)
 
 
 class Textbox(_ReportItem):
@@ -1313,7 +1295,7 @@ class Textbox(_ReportItem):
         }
 
     def __init__(self, node, lnk):
-        super(Textbox, self).__init__('Textbox', node, lnk)
+        super().__init__('Textbox', node, lnk)
 
 
 class ToggleImage(Element):
@@ -1321,9 +1303,6 @@ class ToggleImage(Element):
     _element_list = {
         'InitialState': Meta(Element.BOOLEAN, Card.ONE)
         }
-
-    def __init__(self, node, lnk):
-        super(ToggleImage, self).__init__(node, lnk)
 
 
 class _DataRegion(_ReportItem):
@@ -1335,9 +1314,6 @@ class _DataRegion(_ReportItem):
         'Filters': Meta(),
         'SortExpressions': Meta(),
         }
-
-    def __init__(self, type, node, lnk):
-        super(_DataRegion, self).__init__(type, node, lnk)
 
 
 class Tablix(_DataRegion):
@@ -1358,7 +1334,7 @@ class Tablix(_DataRegion):
         }
 
     def __init__(self, node, lnk):
-        super(Tablix, self).__init__('Tablix', node, lnk)
+        super().__init__('Tablix', node, lnk)
 
 
 class TablixCorner(Element):
@@ -1366,9 +1342,6 @@ class TablixCorner(Element):
     _element_list = {
         'TablixCornerRows': Meta(Element.ELEMENT, Card.ONE)
         }
-
-    def __init__(self, node, lnk):
-        super(TablixCorner, self).__init__(node, lnk)
 
 
 class TablixCornerRows(Element):
@@ -1379,7 +1352,7 @@ class TablixCornerRows(Element):
 
     def __init__(self, node, lnk):
         self.row_list = []
-        super(TablixCornerRows, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class TablixCornerRow(Element):
@@ -1390,7 +1363,7 @@ class TablixCornerRow(Element):
 
     def __init__(self, node, lnk):
         self.cell_list = []
-        super(TablixCornerRow, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.row_list.append(self)
 
 
@@ -1401,7 +1374,7 @@ class TablixCornerCell(Element):
         }
 
     def __init__(self, node, lnk):
-        super(TablixCornerCell, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.cell_list.append(self)
 
 
@@ -1413,9 +1386,6 @@ class CellContents(Element):
         'RowSpan': Meta(Element.INTEGER, constant=True),
         }
 
-    def __init__(self, node, lnk):
-        super(CellContents, self).__init__(node, lnk)
-
 
 class _TablixHierarchy(Element):
 
@@ -1423,20 +1393,13 @@ class _TablixHierarchy(Element):
         'TablixMembers': Meta(Element.ELEMENT, Card.ONE)
         }
 
-    def __init__(self, node, lnk):
-        super(_TablixHierarchy, self).__init__(node, lnk)
-
 
 class TablixRowHierarchy(_TablixHierarchy):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(TablixRowHierarchy, self).__init__(node, lnk)
 
 
 class TablixColumnHierarchy(_TablixHierarchy):
     _element_list = {}
-    def __init__(self, node, lnk):
-        super(TablixColumnHierarchy, self).__init__(node, lnk)
 
 
 class TablixMembers(Element):
@@ -1447,7 +1410,7 @@ class TablixMembers(Element):
 
     def __init__(self, node, lnk):
         self.member_list = []
-        super(TablixMembers, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class TablixMember(Element):
@@ -1468,7 +1431,7 @@ class TablixMember(Element):
         }
 
     def __init__(self, node, lnk):
-        super(TablixMember, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.member_list.append(self)
 
 
@@ -1479,9 +1442,6 @@ class TablixHeader(Element):
         'CellContents': Meta(Element.ELEMENT, Card.ONE),
         }
 
-    def __init__(self, node, lnk):
-        super(TablixHeader, self).__init__(node, lnk)
-
 
 class TablixBody(Element):
 
@@ -1489,9 +1449,6 @@ class TablixBody(Element):
         'TablixColumns': Meta(Element.ELEMENT, Card.ONE),
         'TablixRows': Meta(Element.ELEMENT, Card.ONE),
         }
-
-    def __init__(self, node, lnk):
-        super(TablixBody, self).__init__(node, lnk)
 
 
 class TablixColumns(Element):
@@ -1502,7 +1459,7 @@ class TablixColumns(Element):
 
     def __init__(self, node, lnk):
         self.column_list = []
-        super(TablixColumns, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class TablixColumn(Element):
@@ -1512,7 +1469,7 @@ class TablixColumn(Element):
         }
 
     def __init__(self, node, lnk):
-        super(TablixColumn, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.column_list.append(self)
 
 
@@ -1524,7 +1481,7 @@ class TablixRows(Element):
 
     def __init__(self, node, lnk):
         self.row_list = []
-        super(TablixRows, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class TablixRow(Element):
@@ -1535,7 +1492,7 @@ class TablixRow(Element):
         }
 
     def __init__(self, node, lnk):
-        super(TablixRow, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.row_list.append(self)
 
 
@@ -1547,7 +1504,7 @@ class TablixCells(Element):
 
     def __init__(self, node, lnk):
         self.cell_list = []
-        super(TablixCells, self).__init__(node, lnk)
+        super().__init__(node, lnk)
 
 
 class TablixCell(Element):
@@ -1561,7 +1518,7 @@ class TablixCell(Element):
         }
 
     def __init__(self, node, lnk):
-        super(TablixCell, self).__init__(node, lnk)
+        super().__init__(node, lnk)
         lnk.parent.cell_list.append(self)
 
 
@@ -1570,6 +1527,3 @@ class PageBreak(Element):
     _element_list = {
         'BreakLocation': Meta(Element.ENUM, Card.ONE, True)
         }
-
-    def __init__(self, node, lnk):
-        super(PageBreak, self).__init__(node, lnk)

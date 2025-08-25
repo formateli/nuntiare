@@ -79,7 +79,7 @@ class Color(Expression):
     _default_color = '#000000'
 
     def __init__(self, string_color, lnk, must_be_constant=False):
-        super(Color, self).__init__(string_color, lnk, must_be_constant)
+        super().__init__(string_color, lnk, must_be_constant)
         self._color = None
         if not self.is_constant:
             return
@@ -88,7 +88,7 @@ class Color(Expression):
     def value(self, report):
         if self.is_constant:
             return self._color
-        result = super(Color, self).value(report)
+        result = super().value(report)
         if not result:
             return Color._default_color
         self._set_color(result)
@@ -426,7 +426,7 @@ class Size(Expression):
     units = ('in', 'cm', 'mm', 'pt', 'pc', 'px')
 
     def __init__(self, string_size, lnk, must_be_constant=False):
-        super(Size, self).__init__(string_size, lnk, must_be_constant)
+        super().__init__(string_size, lnk, must_be_constant)
         self._size = None
         if not self.is_constant:
             return
@@ -435,7 +435,7 @@ class Size(Expression):
     def value(self, report):
         if self.is_constant:
             return self._size
-        result = super(Size, self).value(report)
+        result = super().value(report)
         if not result:
             return 0.0
         return self._get_value(result)
@@ -549,40 +549,40 @@ class Size(Expression):
 
 class Boolean(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
-        super(Boolean, self).__init__(expression, lnk, must_be_constant)
+        super().__init__(expression, lnk, must_be_constant)
 
     def value(self, report):
-        val = super(Boolean, self).value(report)
+        val = super().value(report)
         return DataType.get_value('Boolean', val)
 
 
 class Float(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
-        super(Float, self).__init__(expression, lnk, must_be_constant)
+        super().__init__(expression, lnk, must_be_constant)
 
     def value(self, report):
-        val = super(Float, self).value(report)
+        val = super().value(report)
         return DataType.get_value('Float', val)
 
 
 class Integer(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
-        super(Integer, self).__init__(expression, lnk, must_be_constant)
+        super().__init__(expression, lnk, must_be_constant)
 
     def value(self, report):
-        val = super(Integer, self).value(report)
+        val = super().value(report)
         return DataType.get_value('Integer', val)
 
 
 class String(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
-        super(String, self).__init__(expression, lnk, must_be_constant)
+        super().__init__(expression, lnk, must_be_constant)
 
     def value(self, report):
-        val = super(String, self).value(report)
+        val = super().value(report)
         return DataType.get_value('String', val)
 
 
 class Variant(Expression):
     def __init__(self, expression, lnk, must_be_constant=False):
-        super(Variant, self).__init__(expression, lnk, must_be_constant)
+        super().__init__(expression, lnk, must_be_constant)

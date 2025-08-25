@@ -4,13 +4,13 @@
 import sys
 import html
 from PIL import Image
+from nuntiare.definition.element import EmbeddedImage
 from .. render import Render
 from ... import LOGGER
 from ... outcome.page_item import PageItemsInfo
-from nuntiare.definition.element import EmbeddedImage
 
 
-class HeaderFooterRectangle(object):
+class HeaderFooterRectangle:
     def __init__(self, report, definition):
         self.type = 'PageRectangle'
         self.name = None
@@ -32,21 +32,21 @@ class HeaderFooterRectangle(object):
 
 class HtmlRender(Render):
     def __init__(self):
-        super(HtmlRender, self).__init__(extension='html')
+        super().__init__(extension='html')
         self.doc = None
         self.style_helper = _StyleHelper()
 
     def render(self, report, kws):
-        super(HtmlRender, self).render(report, kws)
+        super().render(report, kws)
 
         report.globals.TotalPages = 1
         report.globals.PageNumber = 1
 
         self.doc = _HtmlElement('DOCTYPE', None)
-        html = _HtmlElement('html', None)
+        root = _HtmlElement('html', None)
         head = self._get_head(report)
-        html.add_element(head)
-        self.doc.add_element(html)
+        root.add_element(head)
+        self.doc.add_element(root)
 
         body = _HtmlElement('body', None)
 
@@ -61,7 +61,7 @@ class HtmlRender(Render):
             'footer', report, report.result.footer, container)
 
         body.add_element(container)
-        html.add_element(body)
+        root.add_element(body)
 
         str_style = "@page {size: " + str(report.result.width) + \
             "pt " + str(report.result.height) + "pt; " + \
@@ -204,60 +204,84 @@ class HtmlRender(Render):
             tablix.add_element(r)
 
     def _get_grid(self, it):
-        def render_header(items, rows, count):
+        def do_render_header(items, tr_rows):
+            if not items:
+                return []
+            res = []
+            y = 0
             for sub in items:
+                y += 1
                 if not sub.cell.object:
-                    count = render_header(
-                        sub.sub_items, rows, count)
-                rw = rows[count]
-                if sub.cell.object:
-                    self._render_items(
-                        sub.cell.object.item_list, rw)
-                count = render_header(
-                    sub.sub_items, rows, count)
-            return count + 1
+                    continue
+                tr = tr_rows[y - 1]
+                self._render_items(
+                    sub.cell.object.item_list, tr)
+                res += sub.sub_items
+                if len(sub.sub_items) > 1:
+                    y += len(sub.sub_items) - 1
+            return res
+
+        def render_header(header_count, items, tr_rows):
+            if not items:
+                return
+            i = 0
+            its = []
+            its += items
+            while i < header_count:
+                its = do_render_header(its, tr_rows)
+                i += 1
 
         tablix = _HtmlElement('table', it.name)
-        self._add_style(tablix, it, ignore_list=['height', ])
+        self._add_style(tablix, it, ignore_list=['height',])
 
         if it.column_hierarchy.has_header():
             self._set_tablix_column_header(tablix, it)
 
         if it.row_hierarchy.has_header():
             row_count = 0
+            #print("Headers count {}".format(len(it.row_hierarchy.cumulative_sizes)))
+            #print("row_headers_groups: {}".format(len(it.row_header_groups)))
             for header_item in it.row_header_groups:
-                rows = []
+                tr_rows = []
                 x = 0
+                #print('------------------------------')
+                #print("header_item.last_item_count: {0}".format(header_item.last_items_count))
                 while x < header_item.last_items_count:
-                    rows.append(_HtmlElement('tr', None))
+                    tr_rows.append(_HtmlElement('tr', None))
                     x += 1
 
                 if not header_item.cell.object:
+                    #print("render_header not cell...")
                     render_header(
-                        header_item.sub_items, rows, 0)
+                        len(it.row_hierarchy.cumulative_sizes) - 1,
+                        header_item.sub_items,
+                        tr_rows)
                 else:
-                    rw = rows[0]
+                    #print("render_header...")
+                    tr_rw = tr_rows[0]
                     self._render_items(
-                        header_item.cell.object.item_list, rw)
+                        header_item.cell.object.item_list, tr_rw)
                     render_header(
-                        header_item.sub_items, rows, 0)
+                        len(it.row_hierarchy.cumulative_sizes) - 1,
+                        header_item.sub_items,
+                        tr_rows)
 
-                for rw in rows:
+                for tr_rw in tr_rows:
                     row = it.grid_body.rows[row_count]
                     for cell in row.cells:
                         if not cell.object:
                             continue
-                        self._render_items(cell.object.item_list, rw)
-                    tablix.add_element(rw)
+                        self._render_items(cell.object.item_list, tr_rw)
+                    tablix.add_element(tr_rw)
                     row_count += 1
         else:
             for row in it.grid_body.rows:
-                rw = _HtmlElement('tr', None)
+                tr_rw = _HtmlElement('tr', None)
                 for cell in row.cells:
                     if not cell.object:
                         continue
-                    self._render_items(cell.object.item_list, rw)
-                tablix.add_element(rw)
+                    self._render_items(cell.object.item_list, tr_rw)
+                tablix.add_element(tr_rw)
 
         res = self._get_td_parent_element(it, tablix)
         return res
@@ -312,7 +336,7 @@ class HtmlRender(Render):
         sub_rec = None
         if is_div:
             rec = _HtmlElement('div', it.name)
-            if it.name == 'div_header' or it.name == 'div_footer':
+            if it.name in ('div_header', 'div_footer'):
                 ignore.append('overflow')
             if is_textbox and (it.can_grow or it.can_shrink):
                 ignore.append('height')
@@ -493,10 +517,7 @@ class HtmlRender(Render):
             f = open(self.result_file, "wb")
             try:
                 for l in lines:
-                    if sys.version_info[0] == 2:  # python2
-                        f.write(l)
-                    else:
-                        f.write(l.encode('utf-8'))
+                    f.write(l.encode('utf-8'))
             finally:
                 f.close()
         except IOError as e:
@@ -514,7 +535,7 @@ class HtmlRender(Render):
         'HtmlRender help'
 
 
-class _StyleHelper(object):
+class _StyleHelper:
     def __init__(self):
         self.style_object_list = {}
         self.style_list = {}
@@ -523,7 +544,7 @@ class _StyleHelper(object):
         if id in self.style_object_list:
             obj = self.style_object_list[id]
         else:
-            obj = _StyleHelperObject(tag, id)
+            obj = _StyleHelperObject()
         i = obj.get_id_enum(style)
         self.style_object_list[id] = obj
 
@@ -534,8 +555,8 @@ class _StyleHelper(object):
         return i
 
 
-class _StyleHelperObject(object):
-    def __init__(self, tag, id):
+class _StyleHelperObject:
+    def __init__(self):
         self.style_list = {}
 
     def get_id_enum(self, style):
@@ -546,7 +567,7 @@ class _StyleHelperObject(object):
         return i
 
 
-class _HtmlElement(object):
+class _HtmlElement:
     def __init__(self, tag, element_id, text=None):
         if element_id:
             element_id = element_id.replace('.', '_')
@@ -572,7 +593,7 @@ class _HtmlElement(object):
         if self.id:
             self.add_attribute("class", self.tag + "_" + self.id)
         if self.text and len(self.content) == 0:
-            return [self.text, ]
+            return [self.text,]
         if self.tag == "DOCTYPE":
             result.append("<!DOCTYPE html>\n")
         else:

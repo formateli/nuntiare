@@ -6,7 +6,7 @@ from importlib import import_module
 from .. import CONFIG, LOGGER
 
 
-class Render(object):
+class Render:
     def __init__(self, extension=None):
         self.extension = extension
         self.result_file = None
@@ -19,7 +19,7 @@ class Render(object):
 
         self.report = report
 
-        overwrite = True 
+        overwrite = True
         if kws is not None:
             overwrite = kws.get('overwrite', True)
 
@@ -64,6 +64,6 @@ class Render(object):
             LOGGER.info(
                 "Render '{0}' found.".format(render_name))
             return render_class()
-        else:
-            LOGGER.warn(
-                "Render '{0}' not found.".format(render_name))
+
+        LOGGER.warn(
+            "Render '{0}' not found.".format(render_name))

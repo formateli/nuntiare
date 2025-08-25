@@ -1,7 +1,6 @@
 # This file is part of Nuntiare project.
 # The COPYRIGHT file at the top level of this repository
 # contains the full copyright notices and license terms.
-
 from xml.dom.minidom import parse
 from nuntiare import logger
 from nuntiare.tools import get_xml_tag_value
@@ -14,7 +13,7 @@ paramstyle = 'pyformat'
 
 class connect(Connect):
     def __init__(self, connection_string):
-        super(connect, self).__init__(
+        super().__init__(
             connection_string, 'file=[path/xmlFile.xml]')
         self.xmlfile = self.parameters_dict['file']
 
@@ -26,7 +25,7 @@ class connect(Connect):
 
 class XmlCursor(Cursor):
     def __init__(self, connection):
-        super(XmlCursor, self).__init__(connection)
+        super().__init__(connection)
 
     def execute(self, operation, parameters=None):
         super(XmlCursor, self).execute(operation, parameters)
@@ -114,8 +113,3 @@ class XmlCursor(Cursor):
 
         result['table_name'] = table_name
         return result
-
-    def add_description(self, column_name):
-        desc = ()
-        desc = desc + (column_name, None)
-        self.description = self.description + (desc,)

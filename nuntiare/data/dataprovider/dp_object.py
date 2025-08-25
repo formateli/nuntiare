@@ -9,7 +9,7 @@ paramstyle = 'pyformat'
 
 class connect(Connect):
     def __init__(self, connection_object):
-        super(connect, self).__init__(
+        super().__init__(
             connection_object, 'A valid Python Object.')
 
     def cursor(self):
@@ -20,7 +20,7 @@ class connect(Connect):
 
 class ObjectCursor(Cursor):
     def __init__(self, connection):
-        super(ObjectCursor, self).__init__(connection)
+        super().__init__(connection)
 
     def execute(self, operation, parameters=None):
         super(ObjectCursor, self).execute(operation, parameters)

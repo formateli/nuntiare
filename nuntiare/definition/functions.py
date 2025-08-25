@@ -22,13 +22,17 @@ def CInt(value):
     return DataType.get_value('Integer', value)
 
 
-def CFloat(value):
+def CFloat(value, tozero=False):
     'Converts to float'
+    if tozero and (value is None or str(value).strip() == ''):
+        value = '0'
     return DataType.get_value('Float', value)
 
 
-def CDecimal(value):
+def CDecimal(value, tozero=False):
     'Converts to decimal'
+    if tozero and (value is None or str(value).strip() == ''):
+        value = '0'
     return DataType.get_value('Decimal', value)
 
 
