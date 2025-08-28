@@ -75,6 +75,7 @@ class ParameterTest(unittest.TestCase):
         # Test Modules
         self.assertEqual(report.parameters.para_module_1, math.pi)
         self.assertEqual(report.parameters.para_module_2, math.e)
+        self.assertEqual(report.parameters.para_module_3, 'Test Hello')
 
     def _get_xml_string(self):
         return '''
@@ -84,12 +85,17 @@ class ParameterTest(unittest.TestCase):
   <Page></Page>
   <Modules>
     <Module>
-      <From>math</From>
+      <From>nuntiare.extra.test</From>
       <Import>pi</Import>
       <As>pi_number</As>
     </Module>
     <Module>
-      <Import>math</Import>
+      <From>math</From>
+      <Import>e</Import>
+    </Module>
+    <Module>
+      <From>nuntiare.extra.test</From>
+      <Import>test_extra</Import>
     </Module>
   </Modules>
   <ReportParameters>
@@ -161,7 +167,11 @@ class ParameterTest(unittest.TestCase):
     <ReportParameter>
       <Name>para_module_2</Name>
       <DataType>Float</DataType>
-      <DefaultValue>=Modules.math.e</DefaultValue>
+      <DefaultValue>=Modules.e</DefaultValue>
+    </ReportParameter>
+    <ReportParameter>
+      <Name>para_module_3</Name>
+      <DefaultValue>=M.test_extra('Hello')</DefaultValue>
     </ReportParameter>
   </ReportParameters>
   <Body>

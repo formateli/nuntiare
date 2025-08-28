@@ -3,7 +3,7 @@
 # contains the full copyright notices and license terms.
 from importlib import import_module
 from . expression import Expression
-from . functions import *  # noqa: F401, F403
+from . functions import *
 from .. import LOGGER
 
 
@@ -390,7 +390,7 @@ class ExpressionEval:
         self.report = report
         self._context = {}
         self._loaded = False
-        self._aggregate = _Aggregate(report)
+        self.safe_eval = SafeEval(_Aggregate(report))
 
     def load_modules(self, modules_def):
         if not modules_def:
@@ -418,48 +418,36 @@ class ExpressionEval:
         self._context[alias] = mod_object
 
     def resolve_expression(self, expression):
-        if not self._loaded:
-            for key, value in self._context.items():
-                setattr(self, key, value)
-            self._loaded = True
-
-        Modules = M = self
-        Aggregate = self._aggregate.Aggregate
-        Avg = self._aggregate.Avg
-        Count = self._aggregate.Count
-        CountDistinct = self._aggregate.CountDistinct
-        CountRows = self._aggregate.CountRows
-        First = self._aggregate.First
-        Last = self._aggregate.Last
-        Max = self._aggregate.Max
-        Min = self._aggregate.Min
-        Previous = self._aggregate.Previous
-        RowNumber = self._aggregate.RowNumber
-        RunningValue = self._aggregate.RunningValue
-        Sum = self._aggregate.Sum
-        StDev = self._aggregate.StDev
-        StDevP = self._aggregate.StDevP
-        Var = self._aggregate.Var
-        VarP = self._aggregate.VarP
+        for key, value in self._context.items():
+            if not self._loaded:
+                setattr(self.safe_eval, key, value)
+            self.safe_eval.add_name(key, value)
+        self._loaded = True
 
         exp_error = "Error evaluating expression: '{0}'".format(expression)
 
         try:
             if self.report:
                 # Collections and aliases
-                Parameters = P = self.report.parameters
-                Globals = G = self.report.globals
+                self.safe_eval.add_name('P', self.report.parameters, 'Parameters')
+                self.safe_eval.add_name('G', self.report.globals, 'Globals')
                 # TODO ReportItems
 
+                fields = None
                 if self.report.current_data_scope[0]:  # Always in Row
-                    Fields = F = self.report.data_groups[
+                    fields = self.report.data_groups[
                             self.report.current_data_scope[0]
                         ].current_instance().data.fields
                 elif self.report.current_data_interface:
-                    Fields = F = self.report.data_interfaces[
+                    fields = self.report.data_interfaces[
                         self.report.current_data_interface].fields
+                self.safe_eval.add_name('F', fields, 'Fields')
 
-            result = eval(expression)
+                self.safe_eval.add_collection_names('P')
+                self.safe_eval.add_collection_names('G')
+                self.safe_eval.add_collection_names('F')
+
+            result = self.safe_eval.eval(expression)
 
         except KeyError as e:
             LOGGER.error(
@@ -471,3 +459,84 @@ class ExpressionEval:
                 "{0}. Unexpected error: '{1}'".format(
                     exp_error, e), True)
         return result
+
+
+class SafeEval:
+    def __init__(self, aggregate):
+        self._names = {
+            'CBool': CBool,
+            'CDate': CDate,
+            'CInt': CInt,
+            'CFloat': CFloat,
+            'CDecimal': CDecimal,
+            'CStr': CStr,
+            'Iif': Iif,
+            'Switch': Switch,
+            'Choose': Choose,
+            'Day': Day,
+            'Month': Month,
+            'Year': Year,
+            'Hour': Hour,
+            'Minute': Minute,
+            'Second': Second,
+            'Today': Today,
+            'DayOfWeek': DayOfWeek,
+            'Format': Format,
+            'LCase': LCase,
+            'UCase': UCase,
+            'Len': Len,
+            'LTrim': LTrim,
+            'RTrim': RTrim,
+            'Trim': Trim,
+            'Mid': Mid,
+            'Replace': Replace,
+            'String': String,
+            'M': self,
+            'Modules': self,
+            'Aggregate': aggregate.Aggregate,
+            'Avg': aggregate.Avg,
+            'Count': aggregate.Count,
+            'CountDistinc': aggregate.CountDistinct,
+            'CountRows': aggregate.CountRows,
+            'First': aggregate.First,
+            'Last': aggregate.Last,
+            'Max': aggregate.Max,
+            'Min': aggregate.Min,
+            'Previous': aggregate.Previous,
+            'RowNumber': aggregate.RowNumber,
+            'RunningValue': aggregate.RunningValue,
+            'Sum': aggregate.Sum,
+            'StDev': aggregate.StDev,
+            'StDevP': aggregate.StDevP,
+            'Var': aggregate.Var,
+            'VarP': aggregate.VarP
+        }
+
+        self._extra_names = {}
+
+    def add_collection_names(self, key):
+        if self._extra_names[key] is not None:
+            for c in self._extra_names[key]._items:
+                self.add_name(c.name, c)
+
+    def add_name(self, name, value, name2=None):
+        self._verify_key(name)
+        self._extra_names[name] = value
+        if name2 is not None:
+            self._verify_key(name2)
+            self._extra_names[name2] = value
+
+    def _verify_key(self, key):
+        if key in self._names or key in self._extra_names:
+            raise NameError(f"Eval: Name '{key}' already exists.")
+
+    def eval(self, expression):
+        names = self._names.copy()
+        names.update(self._extra_names)
+        code = compile(expression, '<string>', 'eval')
+        #print (code.co_names)
+        for name in code.co_names:
+            if name not in names:
+                raise NameError(f"Eval: Use of '{name}' not allowed.")
+        self._extra_names = {}
+        return eval(code, {'__builtins__': {}}, names)

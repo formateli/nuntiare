@@ -100,7 +100,7 @@
           <Height>1cm</Height>
           <Name>TextBoxFooter</Name>
           <Width>5cm</Width>
-          <Value>=str(G.PageNumber) + ' of ' + str(G.TotalPages)</Value>
+          <Value>=CStr(G.PageNumber) + ' of ' + CStr(G.TotalPages)</Value>
           <Top>5pt</Top>
           <Left>5pt</Left>
         </Textbox>

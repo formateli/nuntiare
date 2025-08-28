@@ -19,7 +19,7 @@ class ElementTypeTest(unittest.TestCase):
         self.assertEqual(s.value(report), None)
         s = String("Hello world!", True)
         self.assertEqual(s.value(report), "Hello world!", )
-        s = String("= 'abc' + 'def'", False)  # Eval Expression
+        s = String("='abc' + 'def'", False)  # Eval Expression
         self.assertEqual(s.value(report), "abcdef")
 
         # Boolean

@@ -1331,7 +1331,7 @@
 'INNER JOIN order_details ON order_details.orderid = orders.orderid ' + \
 'INNER JOIN products ON products.productid = order_details.productid ' + \
 'INNER JOIN categories ON categories.categoryid = products.categoryid ' + \
-'LIMIT ' + str(P.query_limit)</CommandText>
+'LIMIT ' + CStr(P.query_limit)</CommandText>
       </Query>
       <Fields>
         <Field>

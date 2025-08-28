@@ -354,7 +354,7 @@ class DataTest(unittest.TestCase):
         </Field>
         <Field>
           <Name>dummy_2</Name>
-          <Value>='Dummy id ' + str(F.id)</Value>
+          <Value>='Dummy id ' + CStr(F.id)</Value>
         </Field>
       </Fields>
       <Query>
@@ -395,15 +395,15 @@ employeeid, freight FROM orders ORDER BY orderid</CommandText>
         </Field>
         <Field>
           <Name>dummy_22</Name>
-          <Value>='Dummy id ' + str(F['id'])</Value>
+          <Value>='Dummy id ' + CStr(F['id'])</Value>
         </Field>
         <Field>
           <Name>dummy_property</Name>
-          <Value>=str(F.id)</Value>
+          <Value>=CStr(F.id)</Value>
         </Field>
         <Field>
           <Name>dummy_property_2</Name>
-          <Value>=str(F.id)</Value>
+          <Value>=CStr(F.id)</Value>
         </Field>
       </Fields>
       <Query>
@@ -416,15 +416,15 @@ employeeid, freight FROM orders ORDER BY orderid</CommandText>
           <FilterExpression>=F.id</FilterExpression>
           <Operator>NotEqual</Operator>
           <FilterValues>
-            <FilterValue>=int(10248)</FilterValue>
+            <FilterValue>=CInt(10248)</FilterValue>
           </FilterValues>
         </Filter>
         <Filter>
           <FilterExpression>=F.id</FilterExpression>
           <Operator>Between</Operator>
           <FilterValues>
-            <FilterValue>=int(10250)</FilterValue>
-            <FilterValue>=int(11076)</FilterValue>
+            <FilterValue>=CInt(10250)</FilterValue>
+            <FilterValue>=CInt(11076)</FilterValue>
           </FilterValues>
         </Filter>
       </Filters>
@@ -512,7 +512,7 @@ employeeid, freight FROM orders ORDER BY orderid</CommandText>
             <FilterExpression>=F.id</FilterExpression>
             <Operator>GreaterThan</Operator>
             <FilterValues>
-              <FilterValue>=int(10500)</FilterValue>
+              <FilterValue>=CInt(10500)</FilterValue>
             </FilterValues>
           </Filter>
         </Filters>

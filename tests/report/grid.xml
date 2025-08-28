@@ -117,7 +117,7 @@
           <Top>12mm</Top>
           <ZIndex>2</ZIndex>
           <Height>8mm</Height>
-          <Value>='Page ' + str(Globals.PageNumber) + ' of ' + str(Globals.TotalPages)</Value>
+          <Value>='Page ' + CStr(Globals.PageNumber) + ' of ' + CStr(Globals.TotalPages)</Value>
           <Style>
             <TextAlign>Right</TextAlign>
           </Style>
@@ -673,7 +673,7 @@
                                     <ReportItems>
                                       <Textbox>
                                         <Name>parameter1</Name>
-                                        <Value>='Int: ' + str(Parameters.parameter1 + 4200)</Value>
+                                        <Value>='Int: ' + CStr(Parameters.parameter1 + 4200)</Value>
                                         <Style>
                                           <TextAlign>Center</TextAlign>
                                           <VerticalAlign>Middle</VerticalAlign>

@@ -105,7 +105,7 @@
 'FROM salesorderheader ' + \
 'INNER JOIN salesorderdetail ON salesorderdetail.salesorderid = salesorderheader.salesorderid ' + \
 'INNER JOIN product ON product.productid = salesorderdetail.productid ' + \
-'LIMIT ' + str(P.query_limit)</CommandText>
+'LIMIT ' + CStr(P.query_limit)</CommandText>
       </Query>
     </DataSet>
   </DataSets>

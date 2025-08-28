@@ -102,7 +102,7 @@
 'INNER JOIN productsubcategory ON productsubcategory.productsubcategoryid = product.productsubcategoryid ' + \
 'INNER JOIN productcategory ON productcategory.productcategoryid = productsubcategory.productcategoryid ' + \
 'INNER JOIN salesterritory on salesorderheader.territoryid = salesterritory.territoryid ' + \
-'LIMIT ' + str(P.query_limit)</CommandText>
+'LIMIT ' + CStr(P.query_limit)</CommandText>
       </Query>
     </DataSet>
   </DataSets>

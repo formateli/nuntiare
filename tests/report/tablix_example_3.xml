@@ -87,7 +87,7 @@
 'INNER JOIN product ON product.productid = salesorderdetail.productid ' + \
 'INNER JOIN productsubcategory ON productsubcategory.productsubcategoryid = product.productsubcategoryid ' + \
 'INNER JOIN productcategory ON productcategory.productcategoryid = productsubcategory.productcategoryid ' + \
-'LIMIT ' + str(P.query_limit)</CommandText>
+'LIMIT ' + CStr(P.query_limit)</CommandText>
       </Query>
       <Fields>
         <Field>
@@ -120,7 +120,7 @@
         </Field>
         <Field>
           <Name>SalesPerson</Name>
-          <Value>=str(F.salespersonid)</Value>
+          <Value>=CStr(F.salespersonid)</Value>
         </Field>
         <Field>
           <Name>OrderMonth</Name>
