@@ -7,4 +7,3 @@ def test_extra(value):
     return 'Test ' + str(value)
 
 pi = math.pi
-#def e = math.e
