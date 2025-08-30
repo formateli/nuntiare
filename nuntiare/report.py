@@ -4,6 +4,7 @@
 import os
 import datetime
 from xml.dom import minidom
+from . import CONFIG
 from . result import Result
 from . import LOGGER
 from . definition.element import Nuntiare
@@ -22,7 +23,8 @@ class Parameters(Collection):
 
 class Report:
     def __init__(self, definition_source, output_name=None,
-                 output_directory=None):
+                 output_directory=None,
+                 expression_size=None):
         self.definition_source = definition_source
         self.result = None
         self.globals = None
@@ -52,6 +54,12 @@ class Report:
         }
         self._paths = []  # For searching files
         self.image_base64_cache = {}
+
+        self.expression_size = 900
+        if CONFIG.has_option('expressions', 'size'):
+            self.expression_size = int(CONFIG.get('expressions', 'size'))
+        if expression_size is not None:
+            self.expression_size = expression_size
 
         # The ReportDef object
         self.definition = self._parse(output_name, output_directory)

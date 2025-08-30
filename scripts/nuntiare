@@ -73,8 +73,10 @@ def do_render(args):
             renders = ['html']  # Default render
 
     report = Report(
-        args.file, output_name=args.o,
-        output_directory=args.d)
+        args.file,
+        output_name=args.o,
+        output_directory=args.d,
+        expression_size=int(args.e) if args.e else None)
 
     report.run(get_parameters(args.p))
 
@@ -152,6 +154,11 @@ def run():
         "form.\nEx: -p param1=2 'param2=a b c' param3=value3."
     parser_render.add_argument(
         "-p", metavar="parameters", nargs='+', help=help)
+
+    help = "Expression size." \
+        "\nDefault: 1000."
+    parser_render.add_argument(
+        "-e", metavar="expressions_size", help=help)
 
     help = "List of rendering types. Ex: pdf html csv." \
         "\nSee nuntiare.cfg for definitions.\nDefault: 'html'"

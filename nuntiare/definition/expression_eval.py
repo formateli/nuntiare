@@ -390,7 +390,8 @@ class ExpressionEval:
         self.report = report
         self._context = {}
         self._loaded = False
-        self.safe_eval = SafeEval(_Aggregate(report))
+        self.safe_eval = SafeEval(
+                _Aggregate(report), report.expression_size)
 
     def load_modules(self, modules_def):
         if not modules_def:
@@ -463,13 +464,12 @@ class ExpressionEval:
 
 class SafeEval:
 
-    _string_limit = 1000 # TODO as parameter
     _deny_string = ('{}', '**')
     _deny_name = ('eval','compile','exec','getattr','hasattr','setattr','delattr',
             'classmethod','globals','help','input','isinstance','issubclass','locals',
             'open','print','property','staticmethod','vars')
 
-    def __init__(self, aggregate):
+    def __init__(self, aggregate, expression_size):
         self._names = {
             'CBool': CBool,
             'CDate': CDate,
@@ -518,7 +518,7 @@ class SafeEval:
             'Var': aggregate.Var,
             'VarP': aggregate.VarP
         }
-
+        self.expression_size = expression_size
         self._extra_names = {}
 
     def add_collection_names(self, key):
@@ -538,9 +538,9 @@ class SafeEval:
             raise NameError(f"Eval: Name '{key}' already exists.")
 
     def eval(self, expression):
-        if len(expression) > SafeEval._string_limit:
+        if len(expression) > self.expression_size:
             raise ValueError(
-                    f"Expression ({len(expression)}) exceeds size limit ({SafeEval._string_limit}). {expression}")
+                    f"Expression ({len(expression)}) exceeds size limit ({self.expression_size}). {expression}")
         for ds in SafeEval._deny_string:
             if ds in expression:
                 raise NameError(f"Ivalid string in expression: '{ds}'")
