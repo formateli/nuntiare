@@ -462,6 +462,13 @@ class ExpressionEval:
 
 
 class SafeEval:
+
+    _string_limit = 1000 # TODO as parameter
+    _deny_string = ('{}', '**')
+    _deny_name = ('eval','compile','exec','getattr','hasattr','setattr','delattr',
+            'classmethod','globals','help','input','isinstance','issubclass','locals',
+            'open','print','property','staticmethod','vars')
+
     def __init__(self, aggregate):
         self._names = {
             'CBool': CBool,
@@ -531,12 +538,17 @@ class SafeEval:
             raise NameError(f"Eval: Name '{key}' already exists.")
 
     def eval(self, expression):
+        if len(expression) > SafeEval._string_limit:
+            raise ValueError(
+                    f"Expression ({len(expression)}) exceeds size limit ({SafeEval._string_limit}). {expression}")
+        for ds in SafeEval._deny_string:
+            if ds in expression:
+                raise NameError(f"Ivalid string in expression: '{ds}'")
         names = self._names.copy()
         names.update(self._extra_names)
         code = compile(expression, '<string>', 'eval')
-        #print (code.co_names)
         for name in code.co_names:
-            if name not in names:
+            if name not in names or name in SafeEval._deny_name:
                 raise NameError(f"Eval: Use of '{name}' not allowed.")
         self._extra_names = {}
         return eval(code, {'__builtins__': {}}, names)
