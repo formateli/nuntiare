@@ -3,10 +3,9 @@
 # contains the full copyright notices and license terms.
 import sys
 import base64
-from PIL import Image as PilImage
-import base64
 import io
 import os
+from PIL import Image as PilImage
 from . expression import (Expression, String, Boolean,  # noqa: F401
         Integer, Variant, Size, Color)                  # noqa: F401
 from . enum import (BorderStyle, FontStyle,             # noqa: F401
@@ -353,6 +352,7 @@ class Element:
         el = self.get_element(name)
         if el:
             return True
+        return False
 
 
 class Meta:
