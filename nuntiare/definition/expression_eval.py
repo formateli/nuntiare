@@ -404,6 +404,17 @@ class ExpressionEval:
             )
 
     def _add_context(self, from_name, import_name, alias):
+        '''
+        Load modules.
+        For security, all modules must be placed in
+        'extra' directory 
+        '''
+        def _verify_extra(name):
+            if not name.startswith('nuntiare.extra.'):
+                LOGGER.warn(
+                    "Invalid module '{}'. prefix 'nuntiare.extra.' was added".format(name))
+                name = 'nuntiare.extra.' + name
+            return name
         if alias is None:
             alias = import_name
         if alias in self._context:
@@ -412,9 +423,11 @@ class ExpressionEval:
             LOGGER.error(err_msg.format(alias), True)
         mod_object = None
         if from_name:
+            from_name = _verify_extra(from_name)
             module = import_module(from_name)
             mod_object = getattr(module, import_name)
         else:
+            import_name = _verify_extra(import_name)
             mod_object = import_module(import_name)
         self._context[alias] = mod_object
 
