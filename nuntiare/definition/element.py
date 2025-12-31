@@ -754,7 +754,7 @@ class ReportParameter(Element):
         'DataType': Meta(Element.ENUM, constant=True, default='String'),
         'CanBeNone': Meta(Element.BOOLEAN, constant=True, default=True),
         'AllowBlank': Meta(Element.BOOLEAN, constant=True, default=True),
-        'DefaultValue': Meta(Element.VARIANT, Card.ONE),
+        'DefaultValue': Meta(Element.VARIANT, Card.ZERO_ONE),
         'Promt': Meta(Element.STRING),
         }
 
@@ -764,29 +764,40 @@ class ReportParameter(Element):
         self.lnk.report_def.parameters_def.append(self)
 
     def get_default_value(self, report):
+        res = None
         if self._default_value:
-            return dt.get_value(
+            res = dt.get_value(
                 self.DataType, self._default_value.value(report))
+        else:
+            self._validate_param_val(res)
+        return res
 
     def get_value(self, report, passed_value):
         if passed_value is None:
             result = self.get_default_value(report)
         else:
-            result = dt.get_value(
-                self.DataType, self._default_value.value(
-                    report, passed_value))
+            dv = None
+            if self._default_value:
+                dv = self._default_value.value(report, passed_value)
+            else:
+                if passed_value:
+                    dv = dt.get_value(self.DataType, passed_value)
+            result = dt.get_value(self.DataType, dv)
 
-        if not result and not self.CanBeNone:
+        self._validate_param_val(result)
+
+        return result
+    
+    def _validate_param_val(self, val):
+        if not val and not self.CanBeNone:
             LOGGER.error(
                 "Parameter '{0}' value can not be 'None'".format(
                     self.Name), True)
-        if result and result == '' and \
+        if val and val == '' and \
                 not self.AllowBlank and self.DataType == 'String':
             LOGGER.error(
                 "Parameter '{0}' value can not be an empty string.".format(
                     self.Name), True)
-
-        return result
 
 
 class Visibility(Element):

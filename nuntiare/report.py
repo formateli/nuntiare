@@ -298,9 +298,12 @@ System error: {1}'''
 
     def _get_parameters(self, parameters):
         self.parameters = Parameters()
+        #print('** _get_parameters()')
+        #print(parameters)
         for p in self.definition.parameters_def:
             key = p.Name
             value = None
+            #print("  param: {0}".format(key))i
             if parameters:
                 if key in parameters:
                     value = p.get_value(self, parameters[key])
